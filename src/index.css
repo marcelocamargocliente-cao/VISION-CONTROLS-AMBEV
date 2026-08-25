@@ -1,0 +1,191 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    /* Fundo principal */
+    --bg-primary: #0A0E1A;        /* azul noite profundo */
+    --bg-card: #111827;           /* cards */
+    --bg-card-hover: #1a2235;     /* hover nos cards */
+
+    /* Acentos */
+    --accent-blue: #3B82F6;       /* azul elétrico principal */
+    --accent-purple: #8B5CF6;     /* roxo para gradientes */
+    --accent-cyan: #06B6D4;       /* ciano para destaques */
+    --accent-green: #10B981;      /* verde para OK/positivo */
+    --accent-red: #EF4444;        /* vermelho para alerta/parado */
+    --accent-amber: #F59E0B;      /* âmbar para atenção */
+
+    /* Texto */
+    --text-primary: #F9FAFB;
+    --text-secondary: #9CA3AF;
+    --text-muted: #6B7280;
+
+    /* Bordas e divisores */
+    --border: rgba(59, 130, 246, 0.15);  /* borda azul sutil */
+    --border-glow: rgba(59, 130, 246, 0.4); /* glow nos cards em destaque */
+
+    /* Compatibilidade */
+    --bg-deep: #0A0E1A;
+    --surface: #111827;
+    --surface-hover: #1a2235;
+    --border-light: rgba(59, 130, 246, 0.25);
+    --led-ok: #10B981;
+    --led-warn: #F59E0B;
+    --led-alert: #EF4444;
+    --led-off: #6B7280;
+  }
+
+  body {
+    background-color: #0A0E1A;
+    color: #F9FAFB;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+.font-condensed {
+  font-family: 'Inter', sans-serif;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Gradients and Glows */
+.kpi-card-gradient {
+  background: linear-gradient(135deg, #1a2235 0%, #111827 100%);
+  border: 1px solid rgba(59, 130, 246, 0.18);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.kpi-card-gradient:hover {
+  transform: translateY(-2px);
+  border-color: rgba(59, 130, 246, 0.45);
+  box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.15), 0 0 15px rgba(59, 130, 246, 0.12);
+}
+
+.kpi-card-danger {
+  background: linear-gradient(135deg, #2a1b24 0%, #111827 100%);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5), 0 0 15px rgba(239, 68, 68, 0.12);
+}
+
+.kpi-card-danger:hover {
+  transform: translateY(-2px);
+  border-color: rgba(239, 68, 68, 0.6);
+  box-shadow: 0 10px 25px -5px rgba(239, 68, 68, 0.25), 0 0 20px rgba(239, 68, 68, 0.2);
+}
+
+.btn-primary-gradient {
+  background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+  color: #FFFFFF;
+  transition: all 0.2s ease;
+}
+
+.btn-primary-gradient:hover {
+  opacity: 0.92;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+}
+
+.ai-border-glow {
+  border: 2px solid transparent;
+  background-image: linear-gradient(#111827, #111827), linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  box-shadow: 0 0 25px rgba(59, 130, 246, 0.15), 0 0 10px rgba(139, 92, 246, 0.1);
+}
+
+/* Industrial Tag Badge (Etiqueta Metálica) */
+.tag-badge {
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.12em;
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 1px 3px rgba(0, 0, 0, 0.4);
+  color: #E2E8F0;
+  text-transform: uppercase;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+}
+
+/* LED Indicators */
+.led-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  position: relative;
+  display: inline-block;
+}
+
+.led-ok {
+  background-color: #10B981;
+  box-shadow: 0 0 8px #10B981;
+}
+
+.led-warn {
+  background-color: #F59E0B;
+  box-shadow: 0 0 8px #F59E0B;
+}
+
+.led-alert {
+  background-color: #EF4444;
+  box-shadow: 0 0 10px #EF4444, 0 0 2px #FFFFFF;
+}
+
+.led-off {
+  background-color: #6B7280;
+  box-shadow: none;
+}
+
+/* Pulse animation for active alerts */
+@keyframes led-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.9); }
+}
+
+.animate-led-pulse {
+  animation: led-pulse 2s infinite ease-in-out;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0A0E1A;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Dedicated Print Stylesheet */
+@media print {
+  body {
+    background-color: #FFFFFF !important;
+    color: #000000 !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  .print-break-inside-avoid {
+    break-inside: avoid;
+  }
+  .tag-badge {
+    background: #EEEEEE !important;
+    color: #000000 !important;
+    border: 1px solid #000000 !important;
+    box-shadow: none !important;
+  }
+}
+
+

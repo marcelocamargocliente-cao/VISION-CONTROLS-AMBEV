@@ -1,0 +1,6 @@
+{
+  "name": "Integração Vision Controls AmBev",
+  "description": "Gestão de manutenção de ar-condicionado industrial para a Vision Controls no contrato AMBEV — Cervejaria RJ.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
