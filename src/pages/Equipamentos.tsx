@@ -1,83 +1,89 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Search,
   Plus,
-  Sparkles,
-  CheckCircle2,
   X,
   ChevronRight,
   RefreshCw,
 } from 'lucide-react';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { DataStore } from '../lib/dataStore';
 import {
-  VwEquipamento,
-  UG,
-  Area,
-  Linha,
-  CentroTrabalho,
   Equipamento,
+  EquipStatus,
 } from '../types/database';
-import { extrairLocal } from '../utils/formatters';
 import { EmptyState } from '../components/common/EmptyState';
 import { useAuth } from '../context/AuthContext';
 
 export const Equipamentos: React.FC = () => {
   const navigate = useNavigate();
-  const { canEdit, user } = useAuth();
+  const { canEdit } = useAuth();
 
-  const [equipamentos, setEquipamentos] = useState<VwEquipamento[]>([]);
+  const [equipamentos, setEquipamentos] = useState<Equipamento[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Filters & Search
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedUg, setSelectedUg] = useState('');
-  const [selectedArea, setSelectedArea] = useState('');
-  const [selectedLinha, setSelectedLinha] = useState('');
-  const [selectedTipo, setSelectedTipo] = useState('');
-  const [selectedMarca, setSelectedMarca] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<string>('');
-
-  // Hierarchy Data
-  const [hierarchy, setHierarchy] = useState<{
-    ugs: UG[];
-    areas: Area[];
-    linhas: Linha[];
-    centros_trabalho: CentroTrabalho[];
-  }>({ ugs: [], areas: [], linhas: [], centros_trabalho: [] });
+  const [selectedUg, setSelectedUg] = useState<string>('');
+  const [selectedArea, setSelectedArea] = useState<string>('');
+  const [selectedTipo, setSelectedTipo] = useState<string>('');
 
   // Modals
   const [showNewModal, setShowNewModal] = useState(false);
 
-  // New Equipment Form State
+  // New Equipment Form State (matching the new database fields)
   const [newEquip, setNewEquip] = useState<Partial<Equipamento>>({
     tag: '',
-    patrimonio: '',
-    tag_sap: '',
-    tipo: 'CPE porta',
+    ug_ref: 'N1',
+    area_ref: '',
+    localizacao_ref: '',
+    patrimonio_ref: '',
+    tipo_equipamento: 'RESFRIADOR DE PAINEL',
     marca: 'RITTAL',
     modelo: '',
     capacidade: '',
-    tensao: '230V 1F',
-    corrente: '',
-    gas_refrigerante: 'R-134a',
-    ano_fabricacao: 2023,
-    ppac: 'PPAC-MENSAL-CPE',
+    aplicacao: 'INDUSTRIAL',
     status: 'OK',
-    observacoes: '',
   });
 
   const loadData = async () => {
     setLoading(true);
     try {
-      const [eqs, hier] = await Promise.all([
-        DataStore.getVwEquipamentos(),
-        DataStore.getHierarchy(),
-      ]);
+      if (isSupabaseConfigured) {
+        const { data, error } = await supabase
+          .from('equipamentos')
+          .select('tag, ug_ref, area_ref, localizacao_ref, patrimonio_ref, tipo_equipamento, marca, modelo, capacidade, status, local_instalacao')
+          .order('tag', { ascending: true });
+
+        if (!error && data && data.length > 0) {
+          const mapped: Equipamento[] = data.map((item: any) => ({
+            id: `equip-${item.tag}`,
+            tag: String(item.tag || ''),
+            ug_ref: item.ug_ref || '',
+            area_ref: item.area_ref || '',
+            localizacao_ref: item.localizacao_ref || '',
+            patrimonio_ref: item.patrimonio_ref != null ? String(item.patrimonio_ref) : '',
+            tipo_equipamento: item.tipo_equipamento || '',
+            marca: item.marca || '',
+            modelo: item.modelo || '',
+            capacidade: item.capacidade || '',
+            aplicacao: item.aplicacao || 'INDUSTRIAL',
+            status: (item.status as EquipStatus) || 'OK',
+            local_instalacao: item.local_instalacao || (item.ug_ref ? `${item.ug_ref} · ${item.localizacao_ref || ''}` : ''),
+            tipo: item.tipo_equipamento || '',
+            patrimonio: item.patrimonio_ref != null ? String(item.patrimonio_ref) : '',
+          }));
+          setEquipamentos(mapped);
+          setLoading(false);
+          return;
+        }
+      }
+      const eqs = await DataStore.getEquipamentos();
       setEquipamentos(eqs);
-      setHierarchy(hier);
     } catch (e) {
-      console.error(e);
+      console.error('Erro ao carregar lista de equipamentos:', e);
     } finally {
       setLoading(false);
     }
@@ -87,7 +93,7 @@ export const Equipamentos: React.FC = () => {
     loadData();
   }, []);
 
-  // Keyboard shortcut ESC to close modals
+  // Keyboard shortcut ESC to close modal
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -98,72 +104,112 @@ export const Equipamentos: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  // List of UGs (N1, N2, N3, N4 + dynamic)
+  const distinctUgs = useMemo(() => {
+    const defaults = ['N1', 'N2', 'N3', 'N4'];
+    const fromData = equipamentos
+      .map((e) => e.ug_ref || (e.local_instalacao?.match(/^(N\d+)/i)?.[1]))
+      .filter(Boolean) as string[];
+    const combined = Array.from(new Set([...defaults, ...fromData]));
+    return combined.sort();
+  }, [equipamentos]);
+
+  // Unique list of Areas (from area_ref)
+  const distinctAreas = useMemo(() => {
+    const areas = equipamentos
+      .map((e) => e.area_ref)
+      .filter((a): a is string => Boolean(a && a.trim()));
+    return Array.from(new Set(areas)).sort((a: string, b: string) => a.localeCompare(b));
+  }, [equipamentos]);
+
+  // Unique list of Types (from tipo_equipamento)
+  const distinctTipos = useMemo(() => {
+    const tipos = equipamentos
+      .map((e) => e.tipo_equipamento || e.tipo)
+      .filter((t): t is string => Boolean(t && t.trim()));
+    return Array.from(new Set(tipos)).sort((a: string, b: string) => a.localeCompare(b));
+  }, [equipamentos]);
+
   // Filtered equipments
-  const filteredEquipamentos = equipamentos.filter((eq) => {
-    const term = searchTerm.toLowerCase();
-    const localInstalacao = eq.local_instalacao || extrairLocal(eq.centro_trabalho || eq.centro_trabalho_nome);
-    const matchesSearch =
-      !term ||
-      eq.tag.toLowerCase().includes(term) ||
-      (eq.patrimonio && eq.patrimonio.toLowerCase().includes(term)) ||
-      (eq.tag_sap && eq.tag_sap.toLowerCase().includes(term)) ||
-      (eq.modelo && eq.modelo.toLowerCase().includes(term)) ||
-      (eq.marca && eq.marca.toLowerCase().includes(term)) ||
-      (eq.tipo && eq.tipo.toLowerCase().includes(term)) ||
-      (eq.ug_codigo && eq.ug_codigo.toLowerCase().includes(term)) ||
-      (eq.capacidade && eq.capacidade.toLowerCase().includes(term)) ||
-      (localInstalacao && localInstalacao.toLowerCase().includes(term)) ||
-      (eq.linha_nome && eq.linha_nome.toLowerCase().includes(term)) ||
-      (eq.centro_trabalho_nome && eq.centro_trabalho_nome.toLowerCase().includes(term));
+  const filteredEquipamentos = useMemo(() => {
+    return equipamentos.filter((eq) => {
+      const term = searchTerm.toLowerCase().trim();
+      const tagStr = String(eq.tag || '').toLowerCase();
+      const marcaStr = (eq.marca || '').toLowerCase();
+      const modeloStr = (eq.modelo || '').toLowerCase();
+      const locStr = (eq.localizacao_ref || eq.local_instalacao || '').toLowerCase();
 
-    const matchesUg = !selectedUg || eq.ug_id === selectedUg || eq.ug_codigo === selectedUg;
-    const matchesArea = !selectedArea || eq.area_id === selectedArea;
-    const matchesLinha = !selectedLinha || eq.linha_id === selectedLinha;
-    const matchesTipo = !selectedTipo || eq.tipo === selectedTipo;
-    const matchesMarca = !selectedMarca || eq.marca === selectedMarca;
-    const matchesStatus = !selectedStatus || eq.status === selectedStatus;
+      const matchesSearch =
+        !term ||
+        tagStr.includes(term) ||
+        marcaStr.includes(term) ||
+        modeloStr.includes(term) ||
+        locStr.includes(term);
 
-    return matchesSearch && matchesUg && matchesArea && matchesLinha && matchesTipo && matchesMarca && matchesStatus;
-  });
+      const matchesStatus = !selectedStatus || eq.status === selectedStatus;
 
-  const distinctTipos = Array.from(new Set(equipamentos.map((e) => e.tipo))).filter(Boolean);
-  const distinctMarcas = Array.from(new Set(equipamentos.map((e) => e.marca))).filter(Boolean);
+      const ug = eq.ug_ref || (eq.local_instalacao?.match(/^(N\d+)/i)?.[1]) || '';
+      const matchesUg = !selectedUg || ug.toUpperCase() === selectedUg.toUpperCase();
 
+      const matchesArea = !selectedArea || eq.area_ref === selectedArea;
 
+      const tipo = eq.tipo_equipamento || eq.tipo || '';
+      const matchesTipo = !selectedTipo || tipo === selectedTipo;
+
+      return matchesSearch && matchesStatus && matchesUg && matchesArea && matchesTipo;
+    });
+  }, [equipamentos, searchTerm, selectedStatus, selectedUg, selectedArea, selectedTipo]);
 
   const paradosCount = filteredEquipamentos.filter((e) => e.status === 'PARADO').length;
-  const restricaoCount = filteredEquipamentos.filter((e) => e.status === 'RESTRICAO').length;
+  const okCount = filteredEquipamentos.filter((e) => e.status === 'OK').length;
 
-  const hasActiveFilters =
-    Boolean(searchTerm || selectedUg || selectedArea || selectedLinha || selectedTipo || selectedMarca || selectedStatus);
+  const hasActiveFilters = Boolean(searchTerm || selectedStatus || selectedUg || selectedArea || selectedTipo);
 
   const clearFilters = () => {
     setSearchTerm('');
+    setSelectedStatus('');
     setSelectedUg('');
     setSelectedArea('');
-    setSelectedLinha('');
     setSelectedTipo('');
-    setSelectedMarca('');
-    setSelectedStatus('');
   };
 
   const handleSaveNewEquip = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newEquip.tag) return;
     try {
-      await DataStore.saveEquipamento(newEquip);
+      const ug = newEquip.ug_ref || 'N1';
+      const loc = newEquip.localizacao_ref || '';
+      const localInst = ug ? `${ug} · ${loc}` : loc;
+
+      await DataStore.saveEquipamento({
+        ...newEquip,
+        local_instalacao: localInst,
+        aplicacao: 'INDUSTRIAL',
+      });
       setShowNewModal(false);
+      setNewEquip({
+        tag: '',
+        ug_ref: 'N1',
+        area_ref: '',
+        localizacao_ref: '',
+        patrimonio_ref: '',
+        tipo_equipamento: 'RESFRIADOR DE PAINEL',
+        marca: 'RITTAL',
+        modelo: '',
+        capacidade: '',
+        aplicacao: 'INDUSTRIAL',
+        status: 'OK',
+      });
       await loadData();
     } catch (err) {
       console.error(err);
     }
   };
 
-
   return (
     <div
       id="equipamentos-page"
-      className="flex flex-col h-screen p-3 md:px-4 md:py-3 gap-2 overflow-hidden box-border bg-[#0A0E1A] select-none  "
+      className="flex flex-col h-screen p-3 md:px-4 md:py-3 gap-2 overflow-hidden box-border bg-[#0A0E1A] select-none"
     >
       {/* 1. HEADER DA PÁGINA (Fixo, max 56px) */}
       <header
@@ -172,28 +218,26 @@ export const Equipamentos: React.FC = () => {
       >
         <div className="min-w-0">
           <div className="flex items-center gap-2 mb-0.5 leading-none">
-            <span className="text-[9px]  tracking-widest  bg-[#F59E0B]/10 px-1.5 py-0.5 rounded border border-[#F59E0B]/30 uppercase font-bold">
+            <span className="text-[9px] tracking-widest bg-[#F59E0B]/10 text-[#F59E0B] px-1.5 py-0.5 rounded border border-[#F59E0B]/30 uppercase font-bold">
               Cadastro de Ativos
             </span>
-            <span className="text-[10px]  ">·</span>
-            <span className="text-[10px]   tracking-wider uppercase truncate">
-              {equipamentos.length || 181} EQUIPAMENTOS CADASTRADOS
+            <span className="text-[10px] text-gray-500">·</span>
+            <span className="text-[10px] text-gray-400 tracking-wider uppercase truncate">
+              {equipamentos.length} EQUIPAMENTOS CADASTRADOS
             </span>
           </div>
-          <h1 className="text-[18px] md:text-[20px] font-bold  tracking-tight uppercase leading-tight truncate">
+          <h1 className="text-[18px] md:text-[20px] font-bold text-white tracking-tight uppercase leading-tight truncate">
             Parque de Equipamentos de Climatização
           </h1>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-
-
           {/* Action: + Novo Equipamento */}
           {canEdit && (
             <button
               id="btn-open-new-equip-modal"
               onClick={() => setShowNewModal(true)}
-              className="h-[32px] inline-flex items-center gap-1.5 px-3 text-[11px] font-bold rounded-md btn-primary-gradient uppercase tracking-wider transition-all shadow-md shadow-blue-500/15 cursor-pointer leading-none"
+              className="h-[32px] inline-flex items-center gap-1.5 px-3 text-[11px] font-bold rounded-md btn-primary-gradient uppercase tracking-wider transition-all shadow-md shadow-blue-500/15 cursor-pointer leading-none text-white"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>+ Novo Equipamento</span>
@@ -204,7 +248,7 @@ export const Equipamentos: React.FC = () => {
           <button
             onClick={loadData}
             title="Atualizar lista"
-            className="h-[32px] w-[32px] flex items-center justify-center rounded-md bg-[#0A0E1A] border border-blue-500/20  hover: transition-colors cursor-pointer"
+            className="h-[32px] w-[32px] flex items-center justify-center rounded-md bg-[#0A0E1A] border border-blue-500/20 text-gray-400 hover:text-white transition-colors cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-blue-400' : ''}`} />
           </button>
@@ -217,14 +261,14 @@ export const Equipamentos: React.FC = () => {
         className="shrink-0 flex items-center gap-2"
       >
         <div className="flex-1 relative">
-          <Search className="w-3.5 h-3.5  absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             id="input-search-equipamentos"
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Buscar por TAG, Tag Vision, Tag AMBEV, modelo, tipo ou Local de Instalação..."
-            className="w-full h-[36px] bg-[#111827] border border-blue-500/20 focus:border-blue-400  text-[12px] placeholder-gray-500 rounded-md pl-9 pr-3 outline-none transition-colors"
+            placeholder="Busca por TAG, Marca, Modelo ou Localização..."
+            className="w-full h-[36px] bg-[#111827] border border-blue-500/20 focus:border-blue-400 text-white text-[12px] placeholder-gray-500 rounded-md pl-9 pr-3 outline-none transition-colors"
           />
         </div>
 
@@ -232,7 +276,7 @@ export const Equipamentos: React.FC = () => {
         {hasActiveFilters && (
           <button
             onClick={clearFilters}
-            className="h-[36px] px-3 text-[11px] font-medium  hover: bg-[#111827] border border-blue-500/20 hover:border-blue-500/40 rounded-md transition-colors shrink-0 flex items-center gap-1 cursor-pointer"
+            className="h-[36px] px-3 text-[11px] font-medium text-gray-400 hover:text-white bg-[#111827] border border-blue-500/20 hover:border-blue-500/40 rounded-md transition-colors shrink-0 flex items-center gap-1 cursor-pointer"
           >
             <X className="w-3 h-3" />
             <span>Limpar filtros</span>
@@ -240,205 +284,203 @@ export const Equipamentos: React.FC = () => {
         )}
       </div>
 
-      {/* 3. FILTROS (Fixos, 6 selects, altura total ~52px) */}
+      {/* 3. FILTROS DA TELA (Status, UG, Área, Tipo) */}
       <div
         id="equipamentos-filters-row"
         className="shrink-0 bg-[#111827] border border-blue-500/15 rounded-lg px-3 py-2"
       >
-        <div className="filters-row">
-          <div className="filter-group filter-status">
-            <label>Status Operacional</label>
-            <select value={selectedStatus} onChange={e => setSelectedStatus(e.target.value)}>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          {/* Filtro 1: Status (OK / PARADO) */}
+          <div className="filter-group">
+            <label className="block text-[10px] uppercase font-bold text-gray-400 mb-1">Status</label>
+            <select
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              className="w-full h-[30px] bg-[#0A0E1A] border border-blue-500/20 text-white text-[11px] rounded px-2 outline-none cursor-pointer"
+            >
               <option value="">Todos os Status</option>
-              <option value="OK">Operando (OK)</option>
-              <option value="RESTRICAO">Restrição</option>
-              <option value="PARADO">Parado (Crítico)</option>
-              <option value="DESATIVADO">Desativado</option>
+              <option value="OK">OK</option>
+              <option value="PARADO">PARADO</option>
             </select>
           </div>
 
-          <div className="filter-group filter-ug">
-            <label>UG</label>
-            <select value={selectedUg} onChange={e => setSelectedUg(e.target.value)}>
-              <option value="">Todas UGs</option>
-              {hierarchy.ugs.map(ug => (
-                <option key={ug.id} value={ug.id}>{ug.codigo}</option>
+          {/* Filtro 2: UG (N1, N2, N3, N4) */}
+          <div className="filter-group">
+            <label className="block text-[10px] uppercase font-bold text-gray-400 mb-1">UG</label>
+            <select
+              value={selectedUg}
+              onChange={(e) => setSelectedUg(e.target.value)}
+              className="w-full h-[30px] bg-[#0A0E1A] border border-blue-500/20 text-white text-[11px] rounded px-2 outline-none cursor-pointer font-mono"
+            >
+              <option value="">Todas as UGs</option>
+              {distinctUgs.map((ug) => (
+                <option key={ug} value={ug}>
+                  UG {ug}
+                </option>
               ))}
             </select>
           </div>
 
-          <div className="filter-group filter-area">
-            <label>Área</label>
-            <select value={selectedArea} onChange={e => setSelectedArea(e.target.value)}>
-              <option value="">Todas Áreas</option>
-              {hierarchy.areas.map(a => (
-                <option key={a.id} value={a.id}>{a.nome}</option>
+          {/* Filtro 3: Área (Valores únicos de area_ref) */}
+          <div className="filter-group">
+            <label className="block text-[10px] uppercase font-bold text-gray-400 mb-1">Área</label>
+            <select
+              value={selectedArea}
+              onChange={(e) => setSelectedArea(e.target.value)}
+              className="w-full h-[30px] bg-[#0A0E1A] border border-blue-500/20 text-white text-[11px] rounded px-2 outline-none cursor-pointer truncate"
+            >
+              <option value="">Todas as Áreas</option>
+              {distinctAreas.map((area) => (
+                <option key={area} value={area}>
+                  {area}
+                </option>
               ))}
             </select>
           </div>
 
-          <div className="filter-group filter-linha">
-            <label>Linha</label>
-            <select value={selectedLinha} onChange={e => setSelectedLinha(e.target.value)}>
-              <option value="">Todas Linhas</option>
-              {hierarchy.linhas.map(l => (
-                <option key={l.id} value={l.id}>{l.nome}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="filter-group filter-tipo">
-            <label>Tipo</label>
-            <select value={selectedTipo} onChange={e => setSelectedTipo(e.target.value)}>
-              <option value="">Todos Tipos</option>
-              {distinctTipos.map(t => (
-                <option key={t} value={t}>{t}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="filter-group filter-marca">
-            <label>Marca</label>
-            <select value={selectedMarca} onChange={e => setSelectedMarca(e.target.value)}>
-              <option value="">Todas Marcas</option>
-              {distinctMarcas.map(m => (
-                <option key={m} value={m}>{m}</option>
+          {/* Filtro 4: Tipo (Valores únicos de tipo_equipamento) */}
+          <div className="filter-group">
+            <label className="block text-[10px] uppercase font-bold text-gray-400 mb-1">Tipo</label>
+            <select
+              value={selectedTipo}
+              onChange={(e) => setSelectedTipo(e.target.value)}
+              className="w-full h-[30px] bg-[#0A0E1A] border border-blue-500/20 text-white text-[11px] rounded px-2 outline-none cursor-pointer truncate"
+            >
+              <option value="">Todos os Tipos</option>
+              {distinctTipos.map((tipo) => (
+                <option key={tipo} value={tipo}>
+                  {tipo}
+                </option>
               ))}
             </select>
           </div>
         </div>
       </div>
 
-      {/* 4. TABELA — CRESCE E RECEBE O SCROLL (flex: 1 1 0, min-height: 0) */}
+      {/* 4. TABELA DE LISTAGEM — COLUNAS: TAG | UG | ÁREA | LOCALIZAÇÃO | TIPO | MARCA | MODELO | CAPACIDADE | STATUS | AÇÃO */}
       <div
         id="equipamentos-table-container"
-        className="flex-1 min-h-0 bg-[#111827] border border-blue-500/15 rounded-lg overflow-y-auto overflow-x-hidden flex flex-col relative shadow-lg"
+        className="flex-1 min-h-0 bg-[#111827] border border-blue-500/15 rounded-lg overflow-y-auto overflow-x-auto flex flex-col relative shadow-lg"
       >
         {filteredEquipamentos.length === 0 ? (
           <div className="flex-1 flex items-center justify-center p-6">
             <EmptyState
               icon={Search}
-              title="Nenhum equipamento corresponde aos filtros aplicados"
-              description="Tente ajustar a busca por TAG ou selecionar outra linha/UG para visualizar os equipamentos da cervejaria."
+              title="Nenhum equipamento encontrado"
+              description="Tente ajustar a busca por texto livre ou os filtros de Status, UG, Área ou Tipo."
               actionLabel="Limpar todos os filtros"
               onAction={clearFilters}
             />
           </div>
         ) : (
-          <table className="w-full text-left border-collapse table-fixed">
+          <table className="w-full text-left border-collapse min-w-[980px]">
             {/* CABEÇALHO DA TABELA (sticky) */}
-            <thead className="sticky top-0 z-10 bg-[#1a2235] border-b border-blue-500/20 shadow-sm">
+            <thead className="sticky top-0 z-10 bg-[#1a2235] border-b border-blue-500/20 shadow-sm text-gray-300">
               <tr className="text-[10px] uppercase tracking-wider h-[36px]">
-                <th className="py-2 px-3 w-[75px]">TAG</th>
-                <th className="py-2 px-3 w-[200px]">Tipo & Fabricante</th>
-                <th className="py-2 px-3 w-[140px]">Tag AMBEV / Tag Vision</th>
-                <th className="py-2 px-3">UG & Local de Instalação</th>
-                <th className="py-2 px-3 w-[120px]">Capacidade</th>
-                <th className="py-2 px-3 w-[140px] text-center">Status</th>
-                <th className="py-2 px-3 w-[75px] text-right">Ação</th>
+                <th className="py-2 px-3 w-[70px]">TAG</th>
+                <th className="py-2 px-3 w-[60px] text-center">UG</th>
+                <th className="py-2 px-3 w-[150px]">ÁREA</th>
+                <th className="py-2 px-3 min-w-[180px]">LOCALIZAÇÃO</th>
+                <th className="py-2 px-3 w-[150px]">TIPO</th>
+                <th className="py-2 px-3 w-[110px]">MARCA</th>
+                <th className="py-2 px-3 w-[120px]">MODELO</th>
+                <th className="py-2 px-3 w-[100px]">CAPACIDADE</th>
+                <th className="py-2 px-3 w-[90px] text-center">STATUS</th>
+                <th className="py-2 px-3 w-[75px] text-right">AÇÃO</th>
               </tr>
             </thead>
 
             {/* CORPO DA TABELA */}
-            <tbody className="divide-y divide-white/[0.04] ">
+            <tbody className="divide-y divide-white/[0.04]">
               {filteredEquipamentos.map((eq) => {
                 const isParado = eq.status === 'PARADO';
-                const isRestricao = eq.status === 'RESTRICAO';
                 const isOk = eq.status === 'OK';
-                const localInstalacao = eq.local_instalacao || extrairLocal(eq.centro_trabalho || eq.centro_trabalho_nome);
+                const targetKey = eq.tag || eq.id;
+                const ugCode = eq.ug_ref || (eq.local_instalacao?.match(/^(N\d+)/i)?.[1]) || '—';
+                const tipoNome = eq.tipo_equipamento || eq.tipo || '—';
 
                 return (
                   <tr
-                    key={eq.id}
-                    onClick={() => navigate(`/equipamentos/${eq.id}`)}
-                    className="h-[52px] hover:bg-blue-500/[0.05] cursor-pointer transition-colors duration-150 group"
+                    key={eq.tag || eq.id}
+                    onClick={() => navigate(`/equipamentos/${targetKey}`)}
+                    className="h-[44px] hover:bg-blue-500/[0.06] cursor-pointer transition-colors duration-150 group"
                   >
-                    {/* TAG: badge TAG */}
-                    <td className="py-2 px-3 align-middle w-[75px]">
-                      <span className="bg-[#1E3A5F] text-blue-400 font-bold text-[11px] rounded px-2 py-1 inline-flex items-center gap-1 border border-blue-500/30 font-mono">
-                        <span className="opacity-60 text-[9px]">TAG</span>
-                        <span>{eq.tag}</span>
+                    {/* 1. TAG */}
+                    <td className="py-2 px-3 align-middle w-[70px]">
+                      <span className="bg-[#1E3A5F] text-blue-400 font-bold text-[11px] rounded px-2 py-0.5 inline-flex items-center border border-blue-500/30 font-mono">
+                        {eq.tag}
                       </span>
                     </td>
 
-                    {/* TIPO & FABRICANTE */}
-                    <td className="py-2 px-3 align-middle w-[200px] min-w-0">
-                      <div className="font-bold text-[12px] truncate leading-tight text-white">
-                        {eq.tipo}
-                      </div>
-                      <div className="text-[10px] text-gray-400 truncate leading-tight mt-0.5">
-                        {[eq.marca, eq.modelo].filter(Boolean).join(' · ') || '—'}
+                    {/* 2. UG */}
+                    <td className="py-2 px-3 align-middle w-[60px] text-center">
+                      <span className="inline-block px-1.5 py-0.5 bg-blue-500/10 text-blue-300 border border-blue-500/20 rounded font-mono font-bold text-[10px]">
+                        {ugCode}
+                      </span>
+                    </td>
+
+                    {/* 3. ÁREA */}
+                    <td className="py-2 px-3 align-middle w-[150px]">
+                      <div className="text-gray-300 text-[11px] font-medium truncate leading-tight" title={eq.area_ref}>
+                        {eq.area_ref || '—'}
                       </div>
                     </td>
 
-                    {/* TAG AMBEV / TAG VISION */}
-                    <td className="py-2 px-3 align-middle w-[140px] min-w-0">
-                      <div className="text-cyan-400 text-[11px] font-semibold truncate leading-tight">
-                        {eq.patrimonio || '—'}
-                      </div>
-                      <div className="text-gray-400 text-[10px] truncate leading-tight mt-0.5 font-mono">
-                        TAG {eq.tag}
+                    {/* 4. LOCALIZAÇÃO */}
+                    <td className="py-2 px-3 align-middle min-w-[180px]">
+                      <div className="text-cyan-400 font-mono text-[11px] font-medium truncate leading-tight" title={eq.localizacao_ref || eq.local_instalacao}>
+                        {eq.localizacao_ref || eq.local_instalacao || '—'}
                       </div>
                     </td>
 
-                    {/* UG & LOCAL DE INSTALAÇÃO */}
-                    <td className="py-2 px-3 align-middle min-w-0">
-                      <div className="flex items-center gap-1.5 leading-tight truncate">
-                        <span className="px-1.5 py-0.5 bg-[#F5A623]/10 text-[#F5A623] border border-[#F5A623]/30 rounded font-bold text-[10px] shrink-0">
-                          UG {eq.ug_codigo || '—'}
-                        </span>
-                        {localInstalacao ? (
-                          <span className="text-[12px] font-medium text-white truncate">
-                            · {localInstalacao}
-                          </span>
-                        ) : null}
+                    {/* 5. TIPO */}
+                    <td className="py-2 px-3 align-middle w-[150px]">
+                      <div className="text-gray-200 text-[11px] truncate leading-tight" title={tipoNome}>
+                        {tipoNome}
                       </div>
-                      {eq.tag_sap && (
-                        <div className="text-[10px] text-cyan-400/70 mt-0.5 truncate leading-tight font-mono">
-                          {eq.tag_sap}
-                        </div>
-                      )}
                     </td>
 
-                    {/* CAPACIDADE */}
-                    <td className="py-2 px-3 align-middle w-[120px] min-w-0">
-                      <div className="text-[11px] text-gray-200 truncate leading-tight font-mono">
+                    {/* 6. MARCA */}
+                    <td className="py-2 px-3 align-middle w-[110px]">
+                      <span className="text-[#F5A623] font-semibold text-[11px] truncate block" title={eq.marca}>
+                        {eq.marca || '—'}
+                      </span>
+                    </td>
+
+                    {/* 7. MODELO */}
+                    <td className="py-2 px-3 align-middle w-[120px]">
+                      <span className="text-gray-300 text-[11px] font-mono truncate block" title={eq.modelo}>
+                        {eq.modelo || '—'}
+                      </span>
+                    </td>
+
+                    {/* 8. CAPACIDADE */}
+                    <td className="py-2 px-3 align-middle w-[100px]">
+                      <span className="text-emerald-400 font-mono text-[11px] font-medium truncate block" title={eq.capacidade}>
                         {eq.capacidade || '—'}
-                      </div>
+                      </span>
                     </td>
 
-                    {/* STATUS: Badge Colorido */}
-                    <td className="py-2 px-3 align-middle w-[140px] text-center">
-                      {isParado && (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-red-500/15 text-red-400 border border-red-500/30 whitespace-nowrap">
+                    {/* 9. STATUS (OK / PARADO) */}
+                    <td className="py-2 px-3 align-middle w-[90px] text-center">
+                      {isParado ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-500/15 text-red-400 border border-red-500/30 whitespace-nowrap">
                           <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shrink-0" />
-                          <span>Parado (Crítico)</span>
+                          <span>PARADO</span>
                         </span>
-                      )}
-
-                      {isRestricao && (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30 whitespace-nowrap">
-                          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
-                          <span>Restrição</span>
-                        </span>
-                      )}
-
-                      {isOk && (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 whitespace-nowrap">
+                      ) : isOk ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 whitespace-nowrap">
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                          <span>Operando (OK)</span>
+                          <span>OK</span>
                         </span>
-                      )}
-
-                      {!isParado && !isRestricao && !isOk && (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gray-500/15 text-gray-400 border border-gray-500/30 whitespace-nowrap">
-                          <span className="w-1.5 h-1.5 rounded-full bg-gray-400 shrink-0" />
-                          <span>{eq.status}</span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-500/15 text-gray-400 border border-gray-500/30 whitespace-nowrap">
+                          <span>{eq.status || 'OK'}</span>
                         </span>
                       )}
                     </td>
 
-                    {/* AÇÃO: Ficha > */}
+                    {/* 10. AÇÃO */}
                     <td className="py-2 px-3 align-middle w-[75px] text-right">
                       <span className="inline-flex items-center text-blue-400 group-hover:text-blue-300 font-semibold text-[11px] transition-colors leading-none">
                         <span>Ficha</span>
@@ -456,30 +498,28 @@ export const Equipamentos: React.FC = () => {
       {/* 5. RODAPÉ DA TABELA (Fixo no bottom) */}
       <footer
         id="equipamentos-table-footer"
-        className="shrink-0 h-[32px] flex items-center justify-between px-3 rounded-md bg-[#111827] border border-blue-500/10 text-[11px] "
+        className="shrink-0 h-[32px] flex items-center justify-between px-3 rounded-md bg-[#111827] border border-blue-500/10 text-[11px] text-gray-400"
       >
         <div className="flex items-center gap-1.5 truncate">
-          <span className=" font-medium">
-            Mostrando {filteredEquipamentos.length} equipamentos
+          <span className="font-medium text-gray-300">
+            Mostrando {filteredEquipamentos.length} de {equipamentos.length} equipamentos
           </span>
-          <span className="">·</span>
+          <span>·</span>
+          <span className="text-emerald-400 font-semibold">
+            {okCount} OK
+          </span>
+          <span>·</span>
           <span className={paradosCount > 0 ? 'text-red-400 font-bold' : ''}>
-            {paradosCount} parado{paradosCount === 1 ? '' : 's'}
-          </span>
-          <span className="">·</span>
-          <span className={restricaoCount > 0 ? 'text-amber-400 font-bold' : ''}>
-            {restricaoCount} em restrição
+            {paradosCount} PARADO{paradosCount === 1 ? '' : 'S'}
           </span>
         </div>
 
-        <div className="hidden sm:inline  text-[10px] ">
-          ↑ Scroll para ver mais equipamentos
+        <div className="hidden sm:inline text-gray-500 text-[10px]">
+          Clique na linha ou em "Ficha" para ver todos os detalhes
         </div>
       </footer>
 
-
-
-      {/* MODAL: NOVO EQUIPAMENTO */}
+      {/* MODAL: NOVO EQUIPAMENTO (Alinhado aos novos campos) */}
       {showNewModal && (
         <div
           className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
@@ -487,198 +527,178 @@ export const Equipamentos: React.FC = () => {
             if (e.target === e.currentTarget) setShowNewModal(false);
           }}
         >
-          <div className="bg-[#111827] border border-blue-500/30 rounded-lg w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+          <div className="bg-[#111827] border border-blue-500/30 rounded-lg w-full max-w-xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
             <div className="p-3.5 border-b border-white/[0.06] flex items-center justify-between bg-[#0A0E1A]">
               <div className="flex items-center gap-2">
                 <Plus className="w-4 h-4 text-blue-400" />
-                <h3 className="text-[14px] font-bold  uppercase tracking-tight">
-                  Novo Equipamento de Climatização
+                <h3 className="text-[14px] font-bold text-white uppercase tracking-tight">
+                  Novo Equipamento
                 </h3>
               </div>
               <button
                 onClick={() => setShowNewModal(false)}
-                className="p-1  hover: rounded hover:bg-white/[0.05]"
+                className="p-1 text-gray-400 hover:text-white rounded hover:bg-white/[0.05]"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <form onSubmit={handleSaveNewEquip} className="p-4 flex-1 overflow-y-auto space-y-3 text-[11px]">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {/* TAG */}
                 <div>
-                  <label className="block   mb-1 uppercase text-[9px] font-bold">TAG (Etiqueta)*</label>
+                  <label className="block text-gray-400 mb-1 uppercase text-[9px] font-bold">Tag Vision*</label>
                   <input
                     type="text"
                     required
                     value={newEquip.tag}
                     onChange={(e) => setNewEquip({ ...newEquip, tag: e.target.value })}
-                    placeholder="Ex: 361"
-                    className="w-full h-[32px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400  px-2.5 rounded  text-[11px] outline-none"
+                    placeholder="Ex: 352"
+                    className="w-full h-[32px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white px-2.5 rounded text-[11px] outline-none font-mono"
                   />
                 </div>
 
+                {/* UG */}
                 <div>
-                  <label className="block   mb-1 uppercase text-[9px] font-bold">Tag Vision</label>
-                  <input
-                    type="text"
-                    value={newEquip.patrimonio}
-                    onChange={(e) => setNewEquip({ ...newEquip, patrimonio: e.target.value })}
-                    placeholder="PAT-AMB-00361"
-                    className="w-full h-[32px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400  px-2.5 rounded  text-[11px] outline-none"
-                  />
+                  <label className="block text-gray-400 mb-1 uppercase text-[9px] font-bold">UG*</label>
+                  <select
+                    value={newEquip.ug_ref}
+                    onChange={(e) => setNewEquip({ ...newEquip, ug_ref: e.target.value })}
+                    className="w-full h-[32px] bg-[#0A0E1A] border border-blue-500/20 text-white px-2 rounded text-[11px] outline-none font-mono"
+                  >
+                    <option value="N1">N1</option>
+                    <option value="N2">N2</option>
+                    <option value="N3">N3</option>
+                    <option value="N4">N4</option>
+                  </select>
                 </div>
 
+                {/* Patrimônio AMBEV */}
                 <div>
-                  <label className="block   mb-1 uppercase text-[9px] font-bold">Tag AMBEV</label>
+                  <label className="block text-gray-400 mb-1 uppercase text-[9px] font-bold">Patrimônio AMBEV</label>
                   <input
                     type="text"
-                    value={newEquip.tag_sap}
-                    onChange={(e) => setNewEquip({ ...newEquip, tag_sap: e.target.value })}
-                    placeholder="ACO-L101-DEC-02"
-                    className="w-full h-[32px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400  px-2.5 rounded  text-[11px] outline-none"
+                    value={newEquip.patrimonio_ref || ''}
+                    onChange={(e) => setNewEquip({ ...newEquip, patrimonio_ref: e.target.value })}
+                    placeholder="Ex: 84"
+                    className="w-full h-[32px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white px-2.5 rounded text-[11px] outline-none font-mono"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Área */}
                 <div>
-                  <label className="block   mb-1 uppercase text-[9px] font-bold">Tipo</label>
-                  <select
-                    value={newEquip.tipo}
-                    onChange={(e) => setNewEquip({ ...newEquip, tipo: e.target.value })}
-                    className="w-full h-[32px] bg-[#0A0E1A] border border-blue-500/20  px-2 rounded text-[11px] outline-none"
-                  >
-                    <option value="CPE porta">CPE porta</option>
-                    <option value="CPE teto">CPE teto</option>
-                    <option value="Splitão">Splitão</option>
-                    <option value="Chiller">Chiller</option>
-                    <option value="Fan Coil">Fan Coil</option>
-                    <option value="Self Contained">Self Contained</option>
-                  </select>
+                  <label className="block text-gray-400 mb-1 uppercase text-[9px] font-bold">Área</label>
+                  <input
+                    type="text"
+                    value={newEquip.area_ref}
+                    onChange={(e) => setNewEquip({ ...newEquip, area_ref: e.target.value })}
+                    placeholder="Ex: RETORNÁVEIS, ONE WAY CERVEJA..."
+                    className="w-full h-[32px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white px-2.5 rounded text-[11px] outline-none"
+                  />
                 </div>
 
+                {/* Localização */}
                 <div>
-                  <label className="block   mb-1 uppercase text-[9px] font-bold">Marca / Fabricante</label>
+                  <label className="block text-gray-400 mb-1 uppercase text-[9px] font-bold">Localização</label>
+                  <input
+                    type="text"
+                    value={newEquip.localizacao_ref}
+                    onChange={(e) => setNewEquip({ ...newEquip, localizacao_ref: e.target.value })}
+                    placeholder="Ex: LINHA 542 / EMPACOTADORA 03"
+                    className="w-full h-[32px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white px-2.5 rounded text-[11px] outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {/* Tipo de Equipamento */}
+                <div>
+                  <label className="block text-gray-400 mb-1 uppercase text-[9px] font-bold">Tipo</label>
+                  <input
+                    type="text"
+                    value={newEquip.tipo_equipamento}
+                    onChange={(e) => setNewEquip({ ...newEquip, tipo_equipamento: e.target.value })}
+                    placeholder="Ex: RESFRIADOR DE PAINEL, SPLITÃO..."
+                    className="w-full h-[32px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white px-2.5 rounded text-[11px] outline-none"
+                  />
+                </div>
+
+                {/* Marca */}
+                <div>
+                  <label className="block text-gray-400 mb-1 uppercase text-[9px] font-bold">Marca</label>
                   <input
                     type="text"
                     value={newEquip.marca}
                     onChange={(e) => setNewEquip({ ...newEquip, marca: e.target.value })}
-                    placeholder="RITTAL, KRONES, YORK..."
-                    className="w-full h-[32px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400  px-2.5 rounded text-[11px] outline-none"
+                    placeholder="Ex: RITTAL, KRONES, YORK..."
+                    className="w-full h-[32px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white px-2.5 rounded text-[11px] outline-none"
                   />
                 </div>
 
+                {/* Modelo */}
                 <div>
-                  <label className="block   mb-1 uppercase text-[9px] font-bold">Modelo</label>
+                  <label className="block text-gray-400 mb-1 uppercase text-[9px] font-bold">Modelo</label>
                   <input
                     type="text"
                     value={newEquip.modelo}
                     onChange={(e) => setNewEquip({ ...newEquip, modelo: e.target.value })}
-                    placeholder="Blue e+ SK 3186.930"
-                    className="w-full h-[32px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400  px-2.5 rounded text-[11px] outline-none"
+                    placeholder="Ex: SK 3304.500"
+                    className="w-full h-[32px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white px-2.5 rounded text-[11px] outline-none font-mono"
                   />
                 </div>
               </div>
 
-              {/* Localização */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {/* Capacidade */}
                 <div>
-                  <label className="block   mb-1 uppercase text-[9px] font-bold">UG</label>
-                  <select
-                    value={newEquip.ug_id || hierarchy.ugs[0]?.id}
-                    onChange={(e) => setNewEquip({ ...newEquip, ug_id: e.target.value })}
-                    className="w-full h-[32px] bg-[#0A0E1A] border border-blue-500/20  px-2 rounded text-[11px] outline-none"
-                  >
-                    {hierarchy.ugs.map((u) => (
-                      <option key={u.id} value={u.id}>{u.codigo} — {u.nome}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block   mb-1 uppercase text-[9px] font-bold">Área</label>
-                  <select
-                    value={newEquip.area_id || hierarchy.areas[0]?.id}
-                    onChange={(e) => setNewEquip({ ...newEquip, area_id: e.target.value })}
-                    className="w-full h-[32px] bg-[#0A0E1A] border border-blue-500/20  px-2 rounded text-[11px] outline-none"
-                  >
-                    {hierarchy.areas.map((a) => (
-                      <option key={a.id} value={a.id}>{a.nome}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block   mb-1 uppercase text-[9px] font-bold">Linha de Produção</label>
-                  <select
-                    value={newEquip.linha_id || hierarchy.linhas[0]?.id}
-                    onChange={(e) => setNewEquip({ ...newEquip, linha_id: e.target.value })}
-                    className="w-full h-[32px] bg-[#0A0E1A] border border-blue-500/20  px-2 rounded text-[11px] outline-none"
-                  >
-                    {hierarchy.linhas.map((l) => (
-                      <option key={l.id} value={l.id}>{l.nome}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                <div>
-                  <label className="block   mb-1 uppercase text-[9px] font-bold">Capacidade</label>
+                  <label className="block text-gray-400 mb-1 uppercase text-[9px] font-bold">Capacidade</label>
                   <input
                     type="text"
                     value={newEquip.capacidade}
                     onChange={(e) => setNewEquip({ ...newEquip, capacidade: e.target.value })}
-                    placeholder="2.000 W / 60.000 BTU"
-                    className="w-full h-[32px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400  px-2.5 rounded text-[11px] outline-none"
+                    placeholder="Ex: 1500W, 36.000 BTU'S..."
+                    className="w-full h-[32px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white px-2.5 rounded text-[11px] outline-none font-mono"
                   />
                 </div>
 
+                {/* Aplicação */}
                 <div>
-                  <label className="block   mb-1 uppercase text-[9px] font-bold">Gás Refrigerante</label>
+                  <label className="block text-gray-400 mb-1 uppercase text-[9px] font-bold">Aplicação</label>
                   <input
                     type="text"
-                    value={newEquip.gas_refrigerante}
-                    onChange={(e) => setNewEquip({ ...newEquip, gas_refrigerante: e.target.value })}
-                    placeholder="R-134a / R-410A"
-                    className="w-full h-[32px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400  px-2.5 rounded text-[11px] outline-none"
+                    disabled
+                    value="INDUSTRIAL"
+                    className="w-full h-[32px] bg-[#0A0E1A]/60 border border-blue-500/10 text-gray-400 px-2.5 rounded text-[11px] outline-none cursor-not-allowed uppercase font-semibold"
                   />
                 </div>
 
+                {/* Status */}
                 <div>
-                  <label className="block   mb-1 uppercase text-[9px] font-bold">Tensão</label>
-                  <input
-                    type="text"
-                    value={newEquip.tensao}
-                    onChange={(e) => setNewEquip({ ...newEquip, tensao: e.target.value })}
-                    placeholder="230V 1F / 380V 3F"
-                    className="w-full h-[32px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400  px-2.5 rounded text-[11px] outline-none"
-                  />
+                  <label className="block text-gray-400 mb-1 uppercase text-[9px] font-bold">Status</label>
+                  <select
+                    value={newEquip.status}
+                    onChange={(e) => setNewEquip({ ...newEquip, status: e.target.value as EquipStatus })}
+                    className="w-full h-[32px] bg-[#0A0E1A] border border-blue-500/20 text-white px-2 rounded text-[11px] outline-none"
+                  >
+                    <option value="OK">OK</option>
+                    <option value="PARADO">PARADO</option>
+                  </select>
                 </div>
-              </div>
-
-              <div>
-                <label className="block   mb-1 uppercase text-[9px] font-bold">Observações Técnicas</label>
-                <textarea
-                  rows={2}
-                  value={newEquip.observacoes}
-                  onChange={(e) => setNewEquip({ ...newEquip, observacoes: e.target.value })}
-                  placeholder="Informações adicionais do ativo..."
-                  className="w-full bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400  p-2 rounded text-[11px] outline-none"
-                />
               </div>
 
               <div className="pt-2.5 border-t border-white/[0.06] flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setShowNewModal(false)}
-                  className="h-[30px] px-3 rounded bg-[#0A0E1A] border border-white/[0.08]  hover: cursor-pointer"
+                  className="h-[30px] px-3 rounded bg-[#0A0E1A] border border-white/[0.08] text-gray-300 hover:text-white cursor-pointer"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="h-[30px] px-4 rounded btn-primary-gradient font-bold tracking-wider uppercase text-[11px] cursor-pointer"
+                  className="h-[30px] px-4 rounded btn-primary-gradient font-bold tracking-wider uppercase text-[11px] cursor-pointer text-white"
                 >
                   Salvar Equipamento
                 </button>

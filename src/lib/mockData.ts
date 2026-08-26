@@ -119,8 +119,30 @@ export const INITIAL_CENTROS_TRABALHO: CentroTrabalho[] = [
 // Equipamentos reais baseados exclusivamente nas abas Industri_26 e Industrial-20.01.2026
 export const INITIAL_EQUIPAMENTOS: Equipamento[] = [
   {
+    id: 'equip-352',
+    tag: '352',
+    local_instalacao: 'N1-02010-EDIFICIO 01',
+    texto_breve: 'AC-1-01-Inspeção e limpeza Tag 352',
+    centro_trab_pr: 'CIV1-REF',
+    denominacao_local: 'Edifício 01 - Recebimento',
+    status: 'OK',
+    tipo: 'CPE (PORTA)',
+    marca: 'RITTAL',
+    modelo: 'SK 3304.500',
+    ug_id: 'ug-n1',
+    ug_codigo: 'N1',
+    area_id: 'area-1',
+    linha_id: 'linha-101',
+    centro_trabalho: 'N1-02010-EDIFICIO 01',
+    created_at: '2025-01-10T08:00:00Z',
+  },
+  {
     id: 'equip-1',
     tag: '1',
+    local_instalacao: 'N2-05010-EDIFICIO 01',
+    texto_breve: 'AC-2-01-Splitão Climatização Principal Tag 1',
+    centro_trab_pr: 'CIV1-GER',
+    denominacao_local: 'Edifício 01 - Envase',
     patrimonio: undefined,
     tag_sap: 'ACO501001',
     tipo: 'SPLITÃO',
@@ -144,6 +166,10 @@ export const INITIAL_EQUIPAMENTOS: Equipamento[] = [
   {
     id: 'equip-14',
     tag: '14',
+    local_instalacao: 'N2-05060-ENCHEDORA 01',
+    texto_breve: 'CPE-2-01-Climatizador Painel Força Enchedora Tag 14',
+    centro_trab_pr: 'CIV1-REF',
+    denominacao_local: 'Enchedora 01 - Linha 201',
     patrimonio: '84',
     tag_sap: 'ACO506136',
     tipo: 'CPE (PORTA)',
@@ -167,6 +193,10 @@ export const INITIAL_EQUIPAMENTOS: Equipamento[] = [
   {
     id: 'equip-360',
     tag: '360',
+    local_instalacao: 'N2-05010-DECORADORA',
+    texto_breve: 'CPE-2-02-Painel de Comando Decoradora Tag 360',
+    centro_trab_pr: 'CIV13GER',
+    denominacao_local: 'Decoradora Fuhrmeister',
     patrimonio: undefined,
     tag_sap: undefined,
     tipo: 'CPE (PORTA)',
@@ -190,6 +220,10 @@ export const INITIAL_EQUIPAMENTOS: Equipamento[] = [
   {
     id: 'equip-221',
     tag: '221',
+    local_instalacao: 'N3-04010-CASA DE COMPRESSORES',
+    texto_breve: 'CHL-3-01-Chiller Água Gelada Central Tag 221',
+    centro_trab_pr: 'MEC11TER',
+    denominacao_local: 'Casa de Compressores e Chillers',
     patrimonio: '110',
     tag_sap: 'ACO401001',
     tipo: 'CHILLER A ÁGUA',
@@ -215,6 +249,10 @@ export const INITIAL_EQUIPAMENTOS: Equipamento[] = [
   {
     id: 'equip-222',
     tag: '222',
+    local_instalacao: 'N3-04010-CASA DE COMPRESSORES',
+    texto_breve: 'CHL-3-02-Chiller a Ar Auxiliar Tag 222',
+    centro_trab_pr: 'MEC12TER',
+    denominacao_local: 'Base Metálica Externa Utilidades',
     patrimonio: '111',
     tag_sap: 'ACO401002',
     tipo: 'CHILLER A AR',
@@ -240,6 +278,10 @@ export const INITIAL_EQUIPAMENTOS: Equipamento[] = [
   {
     id: 'equip-223',
     tag: '223',
+    local_instalacao: 'N3-04010-CASA DE COMPRESSORES',
+    texto_breve: 'CHL-3-03-Chiller a Ar Industrial Tag 223',
+    centro_trab_pr: 'MEC13TER',
+    denominacao_local: 'Casa de Compressores - Circuito 2',
     patrimonio: '112',
     tag_sap: 'ACO401003',
     tipo: 'CHILLER A AR',
@@ -266,6 +308,10 @@ export const INITIAL_EQUIPAMENTOS: Equipamento[] = [
   {
     id: 'equip-104',
     tag: '104',
+    local_instalacao: 'N1-01020-RECRAVADORA',
+    texto_breve: 'CPE-1-01-Climatizador Teto Recravadora Tag 104',
+    centro_trab_pr: 'CIV1-GER',
+    denominacao_local: 'Linha 102 - Recravadora Latas',
     patrimonio: '56',
     tag_sap: 'ACO506140',
     tipo: 'CPE (TETO)',
@@ -289,6 +335,10 @@ export const INITIAL_EQUIPAMENTOS: Equipamento[] = [
   {
     id: 'equip-115',
     tag: '115',
+    local_instalacao: 'N1-01310-SUBCONJ COMUNS',
+    texto_breve: 'CPE-1-02-Climatizador Painel Rotuladora Tag 115',
+    centro_trab_pr: 'CIV1-REF',
+    denominacao_local: 'Linha 101 - Rotuladora Vidro',
     patrimonio: '92',
     tag_sap: 'ACO501002',
     tipo: 'CPE (PORTA)',
@@ -312,6 +362,10 @@ export const INITIAL_EQUIPAMENTOS: Equipamento[] = [
   {
     id: 'equip-189',
     tag: '189',
+    local_instalacao: 'N1-01030-SOPRADORA',
+    texto_breve: 'SPL-1-01-Splitão Plataforma Sopradora Tag 189',
+    centro_trab_pr: 'MEC11TER',
+    denominacao_local: 'Linha 103 - Sopradora PET',
     patrimonio: '105',
     tag_sap: 'ACO503001',
     tipo: 'SPLITÃO',
@@ -335,6 +389,10 @@ export const INITIAL_EQUIPAMENTOS: Equipamento[] = [
   {
     id: 'equip-402',
     tag: '402',
+    local_instalacao: 'N3-04030-SUBESTACAO GERAL',
+    texto_breve: 'FC-3-01-Fan Coil Subestação 13.8kV Tag 402',
+    centro_trab_pr: 'MEC12TER',
+    denominacao_local: 'Sala Elétrica Média Tensão 13.8kV',
     patrimonio: '120',
     tag_sap: 'ACO403001',
     tipo: 'FANCOIL',
@@ -358,6 +416,10 @@ export const INITIAL_EQUIPAMENTOS: Equipamento[] = [
   {
     id: 'equip-501',
     tag: '501',
+    local_instalacao: 'N3-05010-SALA DE CONTROLE COS',
+    texto_breve: 'FC-3-02-Fan Coil Precisão Servidores COS Tag 501',
+    centro_trab_pr: 'MEC13TER',
+    denominacao_local: 'Data Center Local e Sala de Controle',
     patrimonio: '135',
     tag_sap: 'ACO501005',
     tipo: 'FANCOIL',
@@ -380,16 +442,16 @@ export const INITIAL_EQUIPAMENTOS: Equipamento[] = [
   },
 ];
 
-// Gerar o restante dos 181 equipamentos do parque real cruzando as abas da planilha
+// Gerar o restante dos 194 equipamentos do parque real cruzando as abas da planilha
 const tiposPlanilha = [
-  'CPE (PORTA)',
-  'CPE (TETO)',
+  'RESFRIADOR DE PAINEL',
   'SPLITÃO',
+  'CÂMARA FRIA',
   'CHILLER A AR',
-  'CAMARA FRIA',
   'FANCOIL',
   'SPLIT SYSTEM',
   'CHILLER A ÁGUA',
+  'SELF CONTAINED',
 ];
 
 const marcasPlanilha = [
@@ -405,67 +467,111 @@ const marcasPlanilha = [
   'DAIKIN',
 ];
 
-const centrosTrabalhoModelos = [
-  { ct: 'N2-05010-EDIFICIO 01       -ACO501001', ug: 'N2', ug_id: 'ug-n2', area_id: 'area-4', linha_id: 'linha-201', sap: 'ACO501001' },
-  { ct: 'N2-05060-DESENCAIXOTADOR 01-ACO506136', ug: 'N2', ug_id: 'ug-n2', area_id: 'area-4', linha_id: 'linha-201', sap: 'ACO506136' },
-  { ct: 'N2-05060-ENCHEDORA 01-ACO506140', ug: 'N2', ug_id: 'ug-n2', area_id: 'area-4', linha_id: 'linha-201', sap: 'ACO506140' },
-  { ct: 'N2-05050-EDIFICIO 01', ug: 'N2', ug_id: 'ug-n2', area_id: 'area-4', linha_id: 'linha-202', sap: undefined },
-  { ct: 'N1-01310-SUBCONJ COMUNS-ACO131001', ug: 'N1', ug_id: 'ug-n1', area_id: 'area-1', linha_id: 'linha-101', sap: 'ACO131001' },
-  { ct: 'N1-01020-RECRAVADORA 01-ACO102001', ug: 'N1', ug_id: 'ug-n1', area_id: 'area-2', linha_id: 'linha-102', sap: 'ACO102001' },
-  { ct: 'N1-01030-SOPRADORA SIDEL-ACO103001', ug: 'N1', ug_id: 'ug-n1', area_id: 'area-3', linha_id: 'linha-103', sap: 'ACO103001' },
-  { ct: 'N3-04010-CASA DE COMPRESSORES-ACO401001', ug: 'N3', ug_id: 'ug-n3', area_id: 'area-6', linha_id: 'linha-401', sap: 'ACO401001' },
-  { ct: 'N3-04030-SUBESTACAO GERAL-ACO403001', ug: 'N3', ug_id: 'ug-n3', area_id: 'area-6', linha_id: 'linha-403', sap: 'ACO403001' },
-  { ct: 'N3-05140', ug: 'N3', ug_id: 'ug-n3', area_id: 'area-7', linha_id: 'linha-501', sap: undefined },
-  { ct: 'N1-03260', ug: 'N1', ug_id: 'ug-n1', area_id: 'area-1', linha_id: 'linha-104', sap: undefined },
+const areasRealistas = [
+  'RETORNÁVEIS',
+  'ONE WAY CERVEJA',
+  'XAROPE',
+  'LINHAS 500',
+  'REFRIGERAÇÃO INDUSTRIAL',
+  'UTILIDADES',
+  'COZINHA DE BRASSAGEM',
+  'SOPRAGEM SIDEL',
+  'ENVASE',
+  'RECEBIMENTO',
 ];
 
-const capacidadesPlanilha = ['710W', '1660W', '2550W', '1500W', '2000W', '60.000 BTU/h', '10 TR', '5 TR', '30.000 BTU/h'];
+const localizacoesRealistas = [
+  'LINHA 542 / EMPACOTADORA 03',
+  'LINHA 501 / ENCHEDORA 01',
+  'LINHA 502 / ROTULADORA KRONES',
+  'LINHA 503 / DESENCAIXOTADORA',
+  'SALA DE CONTROLE COS / TI',
+  'CASA DE COMPRESSORES NH3',
+  'SUBESTAÇÃO GERAL 13.8kV',
+  'LAB CENTRAL CROMATOGRAFIA',
+  'LINHA 504 / PALETIZADORA 02',
+  'BLOCO DE VÁLVULAS BRASSAGEM',
+];
 
-// Tags existentes já mapeadas: 1, 14, 104, 115, 189, 221, 222, 223, 360, 402, 501
-const tagsExistentes = new Set(INITIAL_EQUIPAMENTOS.map(e => Number(e.tag)));
+const capacidadesRealistas = [
+  '1500W',
+  '2550W',
+  '710W',
+  '2000W',
+  '36.000 BTU\'S',
+  '60.000 BTU/h',
+  '10 TR',
+  '5 TR',
+  '30.000 BTU/h',
+];
 
-let currentTag = 2;
-while (INITIAL_EQUIPAMENTOS.length < 181) {
-  if (!tagsExistentes.has(currentTag)) {
+const ugsOpcoes = ['N1', 'N2', 'N3', 'N4'];
+
+// Preencher até 194 equipamentos reais
+let currentTag = 1;
+const existingTags = new Set(INITIAL_EQUIPAMENTOS.map(e => Number(e.tag)));
+
+while (INITIAL_EQUIPAMENTOS.length < 194) {
+  if (!existingTags.has(currentTag)) {
     const idx = currentTag;
-    const ctTemplate = centrosTrabalhoModelos[idx % centrosTrabalhoModelos.length];
+    const ug = ugsOpcoes[idx % ugsOpcoes.length];
+    const area = areasRealistas[idx % areasRealistas.length];
+    const loc = localizacoesRealistas[idx % localizacoesRealistas.length];
     const tipo = tiposPlanilha[idx % tiposPlanilha.length];
-    const marca = idx % 5 === 0 ? undefined : marcasPlanilha[idx % marcasPlanilha.length];
-    const modelo = marca ? `SK-${(idx % 20) + 3000}` : undefined;
-    const numSerie = idx % 3 === 0 ? `SN-${idx * 17}` : undefined;
-    const capacidade = idx % 3 === 0 ? capacidadesPlanilha[idx % capacidadesPlanilha.length] : undefined;
-    const patrimonio = idx % 2 === 0 ? `${(idx * 7) % 300 + 10}` : undefined;
-    const ppac = idx % 4 === 0 ? 'PPAC-MENSAL-CPE' : idx % 4 === 1 ? 'PPAC-TRIMESTRAL-SPLITAO' : undefined;
-    
-    // Status: 44 itens com NOK no levantamento (RESTRICAO)
-    const isNok = idx % 4 === 0 && INITIAL_EQUIPAMENTOS.filter(e => e.status === 'RESTRICAO').length < 44;
-    const status: EquipStatus = isNok ? 'RESTRICAO' : 'OK';
+    const marca = marcasPlanilha[idx % marcasPlanilha.length];
+    const modelo = `SK ${(idx % 25) + 3300}.${(idx % 5) * 100 + 100}`;
+    const capacidade = capacidadesRealistas[idx % capacidadesRealistas.length];
+    const patrimonio = `${(idx * 13) % 400 + 10}`;
+    const isParado = idx % 6 === 0;
+    const status: EquipStatus = isParado ? 'PARADO' : 'OK';
+    const localInst = `${ug} · ${loc}`;
 
     INITIAL_EQUIPAMENTOS.push({
       id: `equip-${currentTag}`,
       tag: `${currentTag}`,
-      patrimonio,
-      tag_sap: ctTemplate.sap ? `${ctTemplate.sap}` : undefined,
-      tipo,
+      ug_ref: ug,
+      area_ref: area,
+      localizacao_ref: loc,
+      patrimonio_ref: patrimonio,
+      tipo_equipamento: tipo,
       marca,
       modelo,
-      numero_serie: numSerie,
       capacidade,
-      ppac,
-      ug_id: ctTemplate.ug_id,
-      ug_codigo: ctTemplate.ug,
-      area_id: ctTemplate.area_id,
-      linha_id: ctTemplate.linha_id,
-      centro_trabalho: ctTemplate.ct,
-      sublocal: idx % 2 === 0 ? `Painel elétrico módulo ${(idx % 10) + 1}` : undefined,
+      aplicacao: 'INDUSTRIAL',
       status,
-      observacoes: isNok ? 'Anomalia detectada no levantamento de campo de jan/2026 (NOK).' : 'Operando em conformidade técnica.',
+      local_instalacao: localInst,
+      tipo,
+      patrimonio,
+      ug_id: `ug-${ug.toLowerCase()}`,
+      ug_codigo: ug,
+      area_id: `area-${(idx % 7) + 1}`,
+      linha_id: `linha-${(idx % 10) + 101}`,
+      centro_trabalho: `${ug}-${loc}`,
+      observacoes: isParado ? 'Equipamento parado para manutenção corretiva.' : 'Operando em conformidade técnica.',
       qr_slug: `ivca-eq-${currentTag}`,
       created_at: '2025-01-10T08:00:00Z',
     });
   }
   currentTag++;
 }
+
+// Atualizar também os itens estáticos no topo do array
+INITIAL_EQUIPAMENTOS.forEach((eq, idx) => {
+  if (!eq.ug_ref) {
+    const ug = (eq.local_instalacao?.match(/^(N\d+)/i)?.[1]) || ugsOpcoes[idx % ugsOpcoes.length];
+    const loc = eq.denominacao_local || localizacoesRealistas[idx % localizacoesRealistas.length];
+    eq.ug_ref = ug;
+    eq.area_ref = eq.area_ref || areasRealistas[idx % areasRealistas.length];
+    eq.localizacao_ref = eq.localizacao_ref || loc;
+    eq.patrimonio_ref = eq.patrimonio_ref || eq.patrimonio || `${(idx * 7) % 300 + 10}`;
+    eq.tipo_equipamento = eq.tipo_equipamento || eq.tipo || tiposPlanilha[idx % tiposPlanilha.length];
+    eq.marca = eq.marca || marcasPlanilha[idx % marcasPlanilha.length];
+    eq.modelo = eq.modelo || `SK ${(idx % 20) + 3300}.100`;
+    eq.capacidade = eq.capacidade || capacidadesRealistas[idx % capacidadesRealistas.length];
+    eq.aplicacao = 'INDUSTRIAL';
+    eq.local_instalacao = `${ug} · ${eq.localizacao_ref}`;
+  }
+});
 
 export const INITIAL_OCORRENCIAS: Ocorrencia[] = [
   {

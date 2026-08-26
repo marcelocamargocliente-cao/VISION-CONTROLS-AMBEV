@@ -6,22 +6,13 @@ import {
   Cpu,
   ArrowLeft,
   Edit3,
-  Save,
-  Check,
   AlertTriangle,
   Wrench,
   Camera,
   QrCode,
-  Download,
   Printer,
   Plus,
-  Calendar,
-  Layers,
-  MapPin,
-  Clock,
-  Shield,
   FileText,
-  Upload,
 } from 'lucide-react';
 import { DataStore } from '../lib/dataStore';
 import {
@@ -35,12 +26,12 @@ import { IndustrialTag } from '../components/common/IndustrialTag';
 import { StatusBadge } from '../components/common/StatusBadge';
 import { EmptyState } from '../components/common/EmptyState';
 import { useAuth } from '../context/AuthContext';
-import { formatDate, formatDateTime, extrairLocal } from '../utils/formatters';
+import { formatDate, formatDateTime } from '../utils/formatters';
 
 export const EquipamentoDetalhe: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { canEdit, canCreateOccurrence, user } = useAuth();
+  const { canEdit, canCreateOccurrence } = useAuth();
 
   const [equipamento, setEquipamento] = useState<VwEquipamento | null>(null);
   const [ocorrencias, setOcorrencias] = useState<Ocorrencia[]>([]);
@@ -62,7 +53,7 @@ export const EquipamentoDetalhe: React.FC = () => {
         setFormData(eq);
 
         const allOccs = await DataStore.getOcorrencias();
-        setOcorrencias(allOccs.filter((o) => o.equipamento_id === eq.id));
+        setOcorrencias(allOccs.filter((o) => o.equipamento_id === eq.id || o.equipamento_id === eq.tag || o.equipamento_id === `equip-${eq.tag}`));
 
         const manuts = await DataStore.getManutencoesByEquipamento(eq.id);
         setManutencoes(manuts);
@@ -84,15 +75,30 @@ export const EquipamentoDetalhe: React.FC = () => {
   const handleSaveFicha = async () => {
     if (!equipamento) return;
     try {
+      const ug = formData.ug_ref || equipamento.ug_ref || 'N1';
+      const loc = formData.localizacao_ref ?? equipamento.localizacao_ref ?? '';
+      const localInst = ug ? `${ug} · ${loc}` : loc;
+
       await DataStore.saveEquipamento({
-        ...formData,
+        tag: formData.tag || equipamento.tag,
+        ug_ref: ug,
+        area_ref: formData.area_ref ?? equipamento.area_ref,
+        localizacao_ref: loc,
+        patrimonio_ref: formData.patrimonio_ref ?? equipamento.patrimonio_ref,
+        tipo_equipamento: formData.tipo_equipamento ?? equipamento.tipo_equipamento,
+        marca: formData.marca ?? equipamento.marca,
+        modelo: formData.modelo ?? equipamento.modelo,
+        capacidade: formData.capacidade ?? equipamento.capacidade,
+        aplicacao: 'INDUSTRIAL',
+        status: (formData.status as EquipStatus) ?? equipamento.status,
+        local_instalacao: localInst,
         id: equipamento.id,
       });
       toast.success('Ficha técnica atualizada com sucesso!');
       setIsEditing(false);
       await loadData();
     } catch (e: any) {
-      toast.error('Erro ao salvar: ' + e.message);
+      toast.error('Erro ao salvar: ' + (e.message || 'Falha ao atualizar'));
       console.error(e);
     }
   };
@@ -112,42 +118,6 @@ export const EquipamentoDetalhe: React.FC = () => {
     }
     setActiveTab(tabId);
   };
-
-  const Campo = ({ label, field, type = 'text', options = null, isTextArea = false }: { label: string, field: keyof VwEquipamento, type?: string, options?: {value: string, label: string}[] | null, isTextArea?: boolean }) => (
-    <div className="form-group">
-      <label>
-        {label}
-      </label>
-
-      {isEditing ? (
-        options ? (
-          <select
-            value={formData[field] as string || ''}
-            onChange={e => setFormData(prev => ({...prev, [field]: e.target.value}))}
-          >
-            {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-          </select>
-        ) : isTextArea ? (
-          <textarea
-            rows={3}
-            value={formData[field] as string || ''}
-            onChange={e => setFormData(prev => ({...prev, [field]: e.target.value}))}
-            style={{ resize: 'vertical' }}
-          />
-        ) : (
-          <input
-            type={type}
-            value={formData[field] as string || ''}
-            onChange={e => setFormData(prev => ({...prev, [field]: e.target.value}))}
-          />
-        )
-      ) : (
-        <div className="mt-1 py-2 text-[13px]  border-b border-[#21262D]">
-          {formData[field] || <span className="">—</span>}
-        </div>
-      )}
-    </div>
-  );
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!equipamento || !e.target.files || e.target.files.length === 0) return;
@@ -169,11 +139,11 @@ export const EquipamentoDetalhe: React.FC = () => {
     reader.readAsDataURL(file);
   };
 
-  const qrUrl = window.location.origin + `/equipamentos/${equipamento?.id || id}`;
+  const qrUrl = window.location.origin + `/equipamentos/${equipamento?.tag || equipamento?.id || id}`;
 
   if (loading) {
     return (
-      <div className="p-8 text-center   text-xs">
+      <div className="p-8 text-center text-gray-400 text-xs">
         Carregando ficha técnica do equipamento...
       </div>
     );
@@ -193,14 +163,17 @@ export const EquipamentoDetalhe: React.FC = () => {
     );
   }
 
+  const tipoNome = equipamento.tipo_equipamento || equipamento.tipo || 'RESFRIADOR DE PAINEL';
+  const ugNome = equipamento.ug_ref || 'N1';
+
   return (
-    <div className="equipamento-detalhe-page">
+    <div className="equipamento-detalhe-page flex flex-col p-4 gap-4 max-w-7xl mx-auto w-full min-h-screen">
       {/* Header Bar */}
-      <div className="equipamento-header flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="equipamento-header flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#111827] border border-blue-500/20 rounded-lg p-4 shadow-lg">
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('/equipamentos')}
-            className="p-2 rounded-[4px] card hover:bg-[#232B35]  hover: border border-[#2C343E]"
+            className="p-2 rounded-md bg-[#0A0E1A] hover:bg-[#1E293B] text-gray-400 hover:text-white border border-blue-500/20 transition-colors"
             title="Voltar para a lista"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -208,34 +181,54 @@ export const EquipamentoDetalhe: React.FC = () => {
           <div>
             <div className="flex items-center gap-2 mb-1">
               <IndustrialTag tag={equipamento.tag} size="lg" />
+              <span className="px-2 py-0.5 rounded font-mono font-bold text-xs bg-blue-500/10 text-blue-300 border border-blue-500/20">
+                UG {ugNome}
+              </span>
               <StatusBadge type="equip" status={equipamento.status} size="sm" />
             </div>
-            <h2 className="text-xl font-condensed font-bold  tracking-wide uppercase">
-              {equipamento.tipo} — {equipamento.marca} {equipamento.modelo}
+            <h2 className="text-lg md:text-xl font-bold text-white tracking-wide uppercase">
+              {tipoNome} · {equipamento.marca || 'EQUIPAMENTO'} {equipamento.modelo ? `(${equipamento.modelo})` : ''}
             </h2>
+            <div className="text-xs text-cyan-400 font-mono mt-0.5">
+              {equipamento.localizacao_ref || equipamento.local_instalacao || 'Fábrica AMBEV'} {equipamento.area_ref ? `· Área: ${equipamento.area_ref}` : ''}
+            </div>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
           {isEditing ? (
             <>
-              <button onClick={handleCancelEdit} className="btn-secondary">
+              <button
+                onClick={handleCancelEdit}
+                className="px-3 py-1.5 rounded-md bg-[#1F2937] hover:bg-[#374151] text-gray-300 hover:text-white text-xs font-semibold transition-colors"
+              >
                 Cancelar
               </button>
-              <button onClick={handleSaveFicha} className="btn-primary" >
+              <button
+                onClick={handleSaveFicha}
+                className="px-4 py-1.5 rounded-md btn-primary-gradient text-white text-xs font-bold uppercase tracking-wider shadow-md cursor-pointer"
+              >
                 ✓ Salvar Alterações
               </button>
             </>
           ) : (
             <>
               {canEdit && (
-                <button onClick={() => setIsEditing(true)} className="btn-secondary">
-                  ✏️ Editar Ficha
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="px-3 py-1.5 rounded-md bg-[#1E293B] hover:bg-[#334155] text-blue-400 border border-blue-500/30 text-xs font-semibold transition-colors flex items-center gap-1.5"
+                >
+                  <Edit3 className="w-3.5 h-3.5" />
+                  <span>Editar Ficha</span>
                 </button>
               )}
               {canCreateOccurrence && (
-                <button onClick={() => navigate(`/ocorrencias/nova?equipamento_id=${equipamento.id}`)} className="btn-primary" >
-                  + Abrir Ocorrência
+                <button
+                  onClick={() => navigate(`/ocorrencias/nova?equipamento_id=${equipamento.id}&tag=${equipamento.tag}`)}
+                  className="px-3 py-1.5 rounded-md bg-red-600 hover:bg-red-500 text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Abrir Ocorrência</span>
                 </button>
               )}
             </>
@@ -244,7 +237,7 @@ export const EquipamentoDetalhe: React.FC = () => {
       </div>
 
       {/* Tabs Navigation */}
-      <div className="equipamento-tabs flex items-center gap-1 overflow-x-auto">
+      <div className="equipamento-tabs flex items-center gap-1 overflow-x-auto border-b border-blue-500/15 pb-1">
         {[
           { id: 'ficha', label: 'Ficha Técnica', icon: FileText },
           { id: 'ocorrencias', label: `Ocorrências (${ocorrencias.length})`, icon: AlertTriangle },
@@ -258,7 +251,11 @@ export const EquipamentoDetalhe: React.FC = () => {
             <button
               key={tab.id}
               onClick={() => handleTabChange(tab.id as any)}
-              className={`tab-item flex items-center gap-2 ${isActive ? 'active' : ''}`}
+              className={`flex items-center gap-2 px-3 py-2 rounded-t-md text-xs font-bold transition-colors uppercase tracking-wider ${
+                isActive
+                  ? 'bg-[#111827] text-blue-400 border-t-2 border-t-blue-500 border-x border-blue-500/20'
+                  : 'text-gray-400 hover:text-gray-200 hover:bg-white/[0.02]'
+              }`}
             >
               <Icon className="w-4 h-4" />
               <span>{tab.label}</span>
@@ -267,399 +264,440 @@ export const EquipamentoDetalhe: React.FC = () => {
         })}
       </div>
 
-      {/* Conteúdo da aba ativa — ROLA */}
-      <div className="equipamento-tab-content space-y-6">
-        <div className="max-w-6xl mx-auto w-full space-y-6">
-      {/* TAB 1: FICHA TÉCNICA */}
-      {activeTab === 'ficha' && (
-        <div className="card border border-[#2C343E] rounded-[4px] p-6 space-y-6 shadow-xl">
-          {isEditing && (
-            <div className="flex items-center gap-2 p-3 rounded-lg text-xs font-medium bg-[var(--blue-dim)] border border-[rgba(47,129,247,0.2)] text-[var(--blue)] mb-4">
-              <Edit3 className="w-4 h-4" /> Modo de edição ativo — altere os campos e clique em "Salvar Alterações"
-            </div>
-          )}
-
-          {/* Seção 1 — LOCALIZAÇÃO */}
-          <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider mb-3 pb-1 border-b border-[#2C343E]">
-              1. Localização
-            </h3>
-            {isEditing ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                <Campo label="UG" field="ug_codigo" />
-                <Campo label="Centro de Trabalho / Local" field="centro_trabalho" />
-                <Campo label="Tag AMBEV (Tag SAP)" field="tag_sap" />
-                <Campo label="Sublocal / Posição" field="sublocal" />
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                {/* UG: sempre mostra */}
-                <div>
-                  <span className="block text-[10px] uppercase text-gray-400 font-bold">UG</span>
-                  <p className="text-sm font-semibold mt-0.5 flex items-center gap-1.5">
-                    <span className="px-1.5 py-0.5 bg-[#F5A623]/10 text-[#F5A623] border border-[#F5A623]/30 rounded font-bold text-[11px]">
-                      UG {equipamento.ug_codigo || '—'}
-                    </span>
-                  </p>
-                </div>
-
-                {/* Local de Instalação: só se existir */}
-                {(equipamento.local_instalacao || extrairLocal(equipamento.centro_trabalho || equipamento.centro_trabalho_nome)) ? (
-                  <div>
-                    <span className="block text-[10px] uppercase text-gray-400 font-bold">Local de Instalação</span>
-                    <p className="text-sm font-semibold text-white mt-0.5">
-                      {equipamento.local_instalacao || extrairLocal(equipamento.centro_trabalho || equipamento.centro_trabalho_nome)}
-                    </p>
-                  </div>
-                ) : null}
-
-                {/* Tag AMBEV: só se existir */}
-                {equipamento.tag_sap ? (
-                  <div>
-                    <span className="block text-[10px] uppercase text-gray-400 font-bold">Tag AMBEV</span>
-                    <p className="text-sm font-semibold text-cyan-400 mt-0.5 font-mono">
-                      {equipamento.tag_sap}
-                    </p>
-                  </div>
-                ) : null}
-
-                {/* Sublocal: só se existir */}
-                {equipamento.sublocal ? (
-                  <div>
-                    <span className="block text-[10px] uppercase text-gray-400 font-bold">Sublocal</span>
-                    <p className="text-sm font-semibold text-gray-200 mt-0.5">
-                      {equipamento.sublocal}
-                    </p>
-                  </div>
-                ) : null}
+      {/* Conteúdo da aba ativa */}
+      <div className="equipamento-tab-content flex-1">
+        {/* TAB 1: FICHA TÉCNICA (Campos: Tag Vision, UG, Área, Localização, Patrimônio, Tipo, Marca, Modelo, Capacidade, Aplicação, Status) */}
+        {activeTab === 'ficha' && (
+          <div className="bg-[#111827] border border-blue-500/20 rounded-lg p-6 space-y-6 shadow-xl">
+            {isEditing && (
+              <div className="flex items-center gap-2 p-3 rounded-lg text-xs font-medium bg-blue-500/10 border border-blue-500/30 text-blue-400">
+                <Edit3 className="w-4 h-4" /> Modo de edição ativo — altere os campos abaixo e clique em "Salvar Alterações".
               </div>
             )}
-          </div>
 
-          {/* Seção 2 — IDENTIFICAÇÃO DO EQUIPAMENTO */}
-          <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider mb-3 pb-1 border-b border-[#2C343E]">
-              2. Identificação do Equipamento
-            </h3>
+            <div className="border-b border-blue-500/15 pb-2">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-blue-400">
+                Ficha Técnica do Equipamento
+              </h3>
+              <p className="text-[11px] text-gray-400 mt-0.5">
+                Especificações e dados cadastrais do ativo na planta industrial
+              </p>
+            </div>
+
             {isEditing ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                <Campo label="Tag Vision" field="tag" />
-                <Campo label="Tag AMBEV (Patrimônio)" field="patrimonio" />
-                <Campo label="Tipo de Equipamento" field="tipo" />
-                <Campo label="Marca" field="marca" />
-                <Campo label="Modelo" field="modelo" />
-                <Campo label="Nº de Série" field="numero_serie" />
-                <Campo label="Capacidade" field="capacidade" />
-                <Campo label="PPAC" field="ppac" />
-                <Campo
-                  label="Status Operacional"
-                  field="status"
-                  options={[
-                    { value: 'OK', label: 'Operando (OK)' },
-                    { value: 'RESTRICAO', label: 'Restrição' },
-                    { value: 'PARADO', label: 'Parado (Crítico)' },
-                    { value: 'DESATIVADO', label: 'Desativado' },
-                  ]}
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 text-xs">
+                {/* 1. Tag Vision */}
+                <div className="space-y-1">
+                  <label className="block text-[10px] uppercase font-bold text-gray-400">Tag Vision*</label>
+                  <input
+                    type="text"
+                    value={formData.tag || ''}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, tag: e.target.value }))}
+                    className="w-full h-[36px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white px-3 rounded text-xs outline-none font-mono"
+                  />
+                </div>
+
+                {/* 2. UG */}
+                <div className="space-y-1">
+                  <label className="block text-[10px] uppercase font-bold text-gray-400">UG*</label>
+                  <select
+                    value={formData.ug_ref || 'N1'}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, ug_ref: e.target.value }))}
+                    className="w-full h-[36px] bg-[#0A0E1A] border border-blue-500/20 text-white px-3 rounded text-xs outline-none font-mono"
+                  >
+                    <option value="N1">N1</option>
+                    <option value="N2">N2</option>
+                    <option value="N3">N3</option>
+                    <option value="N4">N4</option>
+                  </select>
+                </div>
+
+                {/* 3. Área */}
+                <div className="space-y-1">
+                  <label className="block text-[10px] uppercase font-bold text-gray-400">Área</label>
+                  <input
+                    type="text"
+                    value={formData.area_ref || ''}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, area_ref: e.target.value }))}
+                    placeholder="RETORNÁVEIS, ONE WAY CERVEJA..."
+                    className="w-full h-[36px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white px-3 rounded text-xs outline-none"
+                  />
+                </div>
+
+                {/* 4. Localização */}
+                <div className="space-y-1 md:col-span-2">
+                  <label className="block text-[10px] uppercase font-bold text-gray-400">Localização</label>
+                  <input
+                    type="text"
+                    value={formData.localizacao_ref || ''}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, localizacao_ref: e.target.value }))}
+                    placeholder="Ex: LINHA 542 / EMPACOTADORA 03"
+                    className="w-full h-[36px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white px-3 rounded text-xs outline-none font-mono"
+                  />
+                </div>
+
+                {/* 5. Patrimônio AMBEV */}
+                <div className="space-y-1">
+                  <label className="block text-[10px] uppercase font-bold text-gray-400">Patrimônio AMBEV</label>
+                  <input
+                    type="text"
+                    value={formData.patrimonio_ref || ''}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, patrimonio_ref: e.target.value }))}
+                    placeholder="Ex: 84"
+                    className="w-full h-[36px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white px-3 rounded text-xs outline-none font-mono"
+                  />
+                </div>
+
+                {/* 6. Tipo */}
+                <div className="space-y-1">
+                  <label className="block text-[10px] uppercase font-bold text-gray-400">Tipo</label>
+                  <input
+                    type="text"
+                    value={formData.tipo_equipamento || ''}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, tipo_equipamento: e.target.value }))}
+                    placeholder="RESFRIADOR DE PAINEL, SPLITÃO..."
+                    className="w-full h-[36px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white px-3 rounded text-xs outline-none"
+                  />
+                </div>
+
+                {/* 7. Marca */}
+                <div className="space-y-1">
+                  <label className="block text-[10px] uppercase font-bold text-gray-400">Marca</label>
+                  <input
+                    type="text"
+                    value={formData.marca || ''}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, marca: e.target.value }))}
+                    placeholder="RITTAL, KRONES, YORK..."
+                    className="w-full h-[36px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white px-3 rounded text-xs outline-none"
+                  />
+                </div>
+
+                {/* 8. Modelo */}
+                <div className="space-y-1">
+                  <label className="block text-[10px] uppercase font-bold text-gray-400">Modelo</label>
+                  <input
+                    type="text"
+                    value={formData.modelo || ''}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, modelo: e.target.value }))}
+                    placeholder="Ex: SK 3304.500"
+                    className="w-full h-[36px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white px-3 rounded text-xs outline-none font-mono"
+                  />
+                </div>
+
+                {/* 9. Capacidade */}
+                <div className="space-y-1">
+                  <label className="block text-[10px] uppercase font-bold text-gray-400">Capacidade</label>
+                  <input
+                    type="text"
+                    value={formData.capacidade || ''}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, capacidade: e.target.value }))}
+                    placeholder="Ex: 1500W, 36.000 BTU'S..."
+                    className="w-full h-[36px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white px-3 rounded text-xs outline-none font-mono"
+                  />
+                </div>
+
+                {/* 10. Aplicação (sempre INDUSTRIAL) */}
+                <div className="space-y-1">
+                  <label className="block text-[10px] uppercase font-bold text-gray-400">Aplicação</label>
+                  <input
+                    type="text"
+                    disabled
+                    value="INDUSTRIAL"
+                    className="w-full h-[36px] bg-[#0A0E1A]/60 border border-blue-500/10 text-gray-400 px-3 rounded text-xs outline-none cursor-not-allowed uppercase font-semibold"
+                  />
+                </div>
+
+                {/* 11. Status */}
+                <div className="space-y-1">
+                  <label className="block text-[10px] uppercase font-bold text-gray-400">Status</label>
+                  <select
+                    value={formData.status || 'OK'}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, status: e.target.value as EquipStatus }))}
+                    className="w-full h-[36px] bg-[#0A0E1A] border border-blue-500/20 text-white px-3 rounded text-xs outline-none"
+                  >
+                    <option value="OK">OK</option>
+                    <option value="PARADO">PARADO</option>
+                  </select>
+                </div>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                {/* Tag Vision: sempre */}
-                <div>
-                  <span className="block text-[10px] uppercase text-gray-400 font-bold">Tag Vision</span>
-                  <p className="text-sm font-semibold text-blue-400 mt-0.5 font-mono">
-                    TAG {equipamento.tag}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {/* 1. Tag Vision */}
+                <div className="p-3.5 bg-[#0A0E1A] rounded-lg border border-blue-500/10">
+                  <span className="block text-[10px] uppercase text-gray-400 font-bold tracking-wider">Tag Vision</span>
+                  <p className="text-base font-bold text-blue-400 font-mono mt-1">
+                    {equipamento.tag}
                   </p>
                 </div>
 
-                {/* Tag AMBEV (Patrimônio): só se existir */}
-                {equipamento.patrimonio ? (
-                  <div>
-                    <span className="block text-[10px] uppercase text-gray-400 font-bold">Tag AMBEV (Patrimônio)</span>
-                    <p className="text-sm font-semibold text-cyan-400 mt-0.5">
-                      {equipamento.patrimonio}
-                    </p>
-                  </div>
-                ) : null}
-
-                {/* Tipo: sempre */}
-                <div>
-                  <span className="block text-[10px] uppercase text-gray-400 font-bold">Tipo</span>
-                  <p className="text-sm font-semibold text-white mt-0.5">
-                    {equipamento.tipo}
+                {/* 2. UG */}
+                <div className="p-3.5 bg-[#0A0E1A] rounded-lg border border-blue-500/10">
+                  <span className="block text-[10px] uppercase text-gray-400 font-bold tracking-wider">UG</span>
+                  <p className="text-base font-bold text-blue-300 font-mono mt-1">
+                    {equipamento.ug_ref || 'N1'}
                   </p>
                 </div>
 
-                {/* Marca: só se existir */}
-                {equipamento.marca ? (
-                  <div>
-                    <span className="block text-[10px] uppercase text-gray-400 font-bold">Marca</span>
-                    <p className="text-sm font-semibold text-gray-200 mt-0.5">
-                      {equipamento.marca}
-                    </p>
-                  </div>
-                ) : null}
+                {/* 3. Área */}
+                <div className="p-3.5 bg-[#0A0E1A] rounded-lg border border-blue-500/10">
+                  <span className="block text-[10px] uppercase text-gray-400 font-bold tracking-wider">Área</span>
+                  <p className="text-sm font-semibold text-gray-200 mt-1">
+                    {equipamento.area_ref || '—'}
+                  </p>
+                </div>
 
-                {/* Modelo: só se existir */}
-                {equipamento.modelo ? (
-                  <div>
-                    <span className="block text-[10px] uppercase text-gray-400 font-bold">Modelo</span>
-                    <p className="text-sm font-semibold text-gray-200 mt-0.5">
-                      {equipamento.modelo}
-                    </p>
-                  </div>
-                ) : null}
+                {/* 4. Localização */}
+                <div className="p-3.5 bg-[#0A0E1A] rounded-lg border border-blue-500/10 sm:col-span-2 lg:col-span-1">
+                  <span className="block text-[10px] uppercase text-gray-400 font-bold tracking-wider">Localização</span>
+                  <p className="text-sm font-semibold text-cyan-400 font-mono mt-1">
+                    {equipamento.localizacao_ref || equipamento.local_instalacao || '—'}
+                  </p>
+                </div>
 
-                {/* Nº de Série: só se existir */}
-                {equipamento.numero_serie ? (
-                  <div>
-                    <span className="block text-[10px] uppercase text-gray-400 font-bold">Nº de Série</span>
-                    <p className="text-sm font-semibold text-gray-200 mt-0.5 font-mono">
-                      {equipamento.numero_serie}
-                    </p>
-                  </div>
-                ) : null}
+                {/* 5. Patrimônio */}
+                <div className="p-3.5 bg-[#0A0E1A] rounded-lg border border-blue-500/10">
+                  <span className="block text-[10px] uppercase text-gray-400 font-bold tracking-wider">Patrimônio</span>
+                  <p className="text-sm font-mono text-gray-200 mt-1">
+                    {equipamento.patrimonio_ref || '—'}
+                  </p>
+                </div>
 
-                {/* Capacidade: só se existir */}
-                {equipamento.capacidade ? (
-                  <div>
-                    <span className="block text-[10px] uppercase text-gray-400 font-bold">Capacidade</span>
-                    <p className="text-sm font-semibold text-gray-200 mt-0.5 font-mono">
-                      {equipamento.capacidade}
-                    </p>
-                  </div>
-                ) : null}
+                {/* 6. Tipo */}
+                <div className="p-3.5 bg-[#0A0E1A] rounded-lg border border-blue-500/10">
+                  <span className="block text-[10px] uppercase text-gray-400 font-bold tracking-wider">Tipo</span>
+                  <p className="text-sm font-semibold text-white mt-1">
+                    {equipamento.tipo_equipamento || equipamento.tipo || '—'}
+                  </p>
+                </div>
 
-                {/* PPAC: só se existir */}
-                {equipamento.ppac ? (
-                  <div>
-                    <span className="block text-[10px] uppercase text-gray-400 font-bold">PPAC</span>
-                    <p className="text-sm font-semibold text-gray-200 mt-0.5">
-                      {equipamento.ppac}
-                    </p>
-                  </div>
-                ) : null}
+                {/* 7. Marca */}
+                <div className="p-3.5 bg-[#0A0E1A] rounded-lg border border-blue-500/10">
+                  <span className="block text-[10px] uppercase text-gray-400 font-bold tracking-wider">Marca</span>
+                  <p className="text-sm font-semibold text-[#F5A623] mt-1">
+                    {equipamento.marca || '—'}
+                  </p>
+                </div>
 
-                {/* Status: sempre */}
-                <div>
-                  <span className="block text-[10px] uppercase text-gray-400 font-bold">Status</span>
+                {/* 8. Modelo */}
+                <div className="p-3.5 bg-[#0A0E1A] rounded-lg border border-blue-500/10">
+                  <span className="block text-[10px] uppercase text-gray-400 font-bold tracking-wider">Modelo</span>
+                  <p className="text-sm font-mono text-gray-200 mt-1">
+                    {equipamento.modelo || '—'}
+                  </p>
+                </div>
+
+                {/* 9. Capacidade */}
+                <div className="p-3.5 bg-[#0A0E1A] rounded-lg border border-blue-500/10">
+                  <span className="block text-[10px] uppercase text-gray-400 font-bold tracking-wider">Capacidade</span>
+                  <p className="text-sm font-mono text-emerald-400 font-medium mt-1">
+                    {equipamento.capacidade || '—'}
+                  </p>
+                </div>
+
+                {/* 10. Aplicação */}
+                <div className="p-3.5 bg-[#0A0E1A] rounded-lg border border-blue-500/10">
+                  <span className="block text-[10px] uppercase text-gray-400 font-bold tracking-wider">Aplicação</span>
+                  <p className="text-sm font-semibold text-gray-300 mt-1 uppercase">
+                    {equipamento.aplicacao || 'INDUSTRIAL'}
+                  </p>
+                </div>
+
+                {/* 11. Status */}
+                <div className="p-3.5 bg-[#0A0E1A] rounded-lg border border-blue-500/10">
+                  <span className="block text-[10px] uppercase text-gray-400 font-bold tracking-wider">Status</span>
                   <div className="mt-1">
-                    <StatusBadge type="equip" status={equipamento.status} size="sm" />
+                    <StatusBadge type="equip" status={equipamento.status} size="md" />
                   </div>
                 </div>
               </div>
             )}
           </div>
+        )}
 
-          {/* Seção 3 — OBSERVAÇÕES */}
-          <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider mb-3 pb-1 border-b border-[#2C343E]">
-              3. Observações
-            </h3>
-            {isEditing ? (
-              <Campo label="Observações" field="observacoes" isTextArea={true} />
-            ) : (
-              <div className="p-3 bg-[#0A0E1A] border border-[#2C343E] rounded text-xs text-gray-300 min-h-[60px] leading-relaxed">
-                {equipamento.observacoes || <span className="text-gray-500 italic">Nenhuma observação registrada.</span>}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* TAB 2: OCORRÊNCIAS */}
-      {activeTab === 'ocorrencias' && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-condensed font-bold uppercase tracking-wider ">
-              Histórico de Ocorrências do Equipamento ({ocorrencias.length})
-            </h3>
-            {canCreateOccurrence && (
-              <button
-                onClick={() => navigate(`/ocorrencias/nova?equipamento_id=${equipamento.id}`)}
-                className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-[4px] bg-[#E5484D] hover:bg-[#C93B40] "
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Nova Ocorrência</span>
-              </button>
-            )}
-          </div>
-
-          {ocorrencias.length === 0 ? (
-            <EmptyState
-              icon={AlertTriangle}
-              title="Sem histórico de avarias"
-              description="Este equipamento está com histórico 100% limpo, sem ocorrências ativas ou anomalias registradas."
-              actionLabel="Registrar Anomalia de Campo"
-              onAction={() => navigate(`/ocorrencias/nova?equipamento_id=${equipamento.id}`)}
-            />
-          ) : (
-            <div className="space-y-3">
-              {ocorrencias.map((occ) => (
-                <div
-                  key={occ.id}
-                  onClick={() => navigate(`/ocorrencias/${occ.id}`)}
-                  className="card border border-[#2C343E] hover:border-[#F5A623] p-4 rounded-[4px] cursor-pointer transition-colors"
+        {/* TAB 2: OCORRÊNCIAS */}
+        {activeTab === 'ocorrencias' && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-white">
+                Histórico de Ocorrências do Equipamento ({ocorrencias.length})
+              </h3>
+              {canCreateOccurrence && (
+                <button
+                  onClick={() => navigate(`/ocorrencias/nova?equipamento_id=${equipamento.id}&tag=${equipamento.tag}`)}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md bg-red-600 hover:bg-red-500 text-white transition-colors"
                 >
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <span className=" font-bold text-sm ">#{occ.numero}</span>
-                      <span className="text-xs  ">• {occ.tipo_servico}</span>
-                      <StatusBadge type="ocorrencia" status={occ.status} size="sm" />
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Nova Ocorrência</span>
+                </button>
+              )}
+            </div>
+
+            {ocorrencias.length === 0 ? (
+              <EmptyState
+                icon={AlertTriangle}
+                title="Sem histórico de avarias"
+                description="Este equipamento está com histórico 100% limpo, sem ocorrências ativas ou anomalias registradas."
+                actionLabel="Registrar Anomalia de Campo"
+                onAction={() => navigate(`/ocorrencias/nova?equipamento_id=${equipamento.id}&tag=${equipamento.tag}`)}
+              />
+            ) : (
+              <div className="space-y-3">
+                {ocorrencias.map((occ) => (
+                  <div
+                    key={occ.id}
+                    onClick={() => navigate(`/ocorrencias/${occ.id}`)}
+                    className="p-3.5 rounded-lg bg-[#111827] border border-blue-500/20 hover:border-blue-500/40 cursor-pointer transition-all hover:bg-[#1E293B]"
+                  >
+                    <div className="flex items-center justify-between gap-2 mb-1.5">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-xs font-bold text-blue-400">{occ.codigo}</span>
+                        <StatusBadge type="ocorrencia" status={occ.status} size="xs" />
+                      </div>
+                      <span className="text-[10px] text-gray-400">{formatDateTime(occ.created_at)}</span>
                     </div>
-                    <span className="text-[11px]  ">
-                      {formatDate(occ.data_avaria)}
-                    </span>
+                    <h4 className="text-xs font-bold text-white mb-1">{occ.tipo_falha}</h4>
+                    <p className="text-[11px] text-gray-400 line-clamp-2">{occ.descricao_falha}</p>
                   </div>
-                  <p className="text-xs  mb-2">{occ.descricao_anomalia}</p>
-                  <div className="flex items-center justify-between text-[11px]   pt-2 border-t border-[#2C343E]">
-                    <span>Relatado por: {occ.relatante_nome}</span>
-                    <span>Nota SAP: {occ.nota_sap || '-'}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* TAB 3: MANUTENÇÕES EXECUTADAS */}
-      {activeTab === 'manutencoes' && (
-        <div className="space-y-4">
-          <h3 className="text-sm font-condensed font-bold uppercase tracking-wider ">
-            Ordens SAP & Preventivas Executadas ({manutencoes.length})
-          </h3>
-
-          {manutencoes.length === 0 ? (
-            <EmptyState
-              icon={Wrench}
-              title="Sem ordens executadas registradas"
-              description="Nenhum apontamento histórico de manutenção SAP sincronizado para esta TAG."
-            />
-          ) : (
-            <div className="card border border-[#2C343E] rounded-[4px] overflow-hidden">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="bg-[var(--bg-input)]   uppercase text-[10px] border-b border-[#2C343E]">
-                    <th className="py-2.5 px-3">Data</th>
-                    <th className="py-2.5 px-3">Tipo</th>
-                    <th className="py-2.5 px-3">Ordem / Nota SAP</th>
-                    <th className="py-2.5 px-3">Técnico</th>
-                    <th className="py-2.5 px-3">Descrição do Serviço</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#2C343E]/60 ">
-                  {manutencoes.map((m) => (
-                    <tr key={m.id} className="hover:bg-[#232B35]">
-                      <td className="py-3 px-3 ">{formatDate(m.data_execucao)}</td>
-                      <td className="py-3 px-3">
-                        <span className="px-2 py-0.5 rounded-[2px] text-[10px]  bg-[#38BDF8]/15 ">
-                          {m.tipo_servico}
-                        </span>
-                      </td>
-                      <td className="py-3 px-3  ">
-                        {m.ordem_sap || '-'} / {m.nota_sap || '-'}
-                      </td>
-                      <td className="py-3 px-3 ">{m.tecnico_nome}</td>
-                      <td className="py-3 px-3 ">{m.descricao_servico}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* TAB 4: FOTOS */}
-      {activeTab === 'fotos' && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-condensed font-bold uppercase tracking-wider ">
-              Galeria de Fotos do Equipamento (Bucket `fotos`)
-            </h3>
-            {canEdit && (
-              <label className="inline-flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-[4px] card hover:bg-[#232B35]  border border-[#F5A623]/40 cursor-pointer transition-colors">
-                <Camera className="w-4 h-4" />
-                <span>Upload da Câmera / Arquivo</span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  capture="environment"
-                  onChange={handlePhotoUpload}
-                  className="hidden"
-                />
-              </label>
+                ))}
+              </div>
             )}
           </div>
+        )}
 
-          {fotos.length === 0 ? (
-            <EmptyState
-              icon={Camera}
-              title="Nenhuma foto anexada"
-              description="Técnicos em campo podem fotografar placas de identificação, serpentinas ou anomalias direto do celular."
-            />
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-              {fotos.map((foto) => (
-                <div key={foto.id} className="card border border-[#2C343E] rounded-[4px] overflow-hidden group">
-                  <div className="aspect-video bg-[var(--bg-input)] overflow-hidden">
-                    <img
-                      src={foto.url}
-                      alt={foto.nome_arquivo}
-                      referrerPolicy="no-referrer"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                    />
-                  </div>
-                  <div className="p-2 text-[10px]   truncate">
-                    {foto.nome_arquivo}
-                  </div>
-                </div>
-              ))}
+        {/* TAB 3: MANUTENÇÕES */}
+        {activeTab === 'manutencoes' && (
+          <div className="space-y-4">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-white">
+              Histórico de Ordens e Serviços Executados ({manutencoes.length})
+            </h3>
+            {manutencoes.length === 0 ? (
+              <EmptyState
+                icon={Wrench}
+                title="Nenhuma manutenção registrada"
+                description="Histórico de preventivas e corretivas executadas pela equipe de refrigeração."
+              />
+            ) : (
+              <div className="bg-[#111827] border border-blue-500/20 rounded-lg overflow-hidden">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead className="bg-[#1a2235] text-gray-400 text-[10px] uppercase font-bold">
+                    <tr>
+                      <th className="py-2.5 px-3">Data</th>
+                      <th className="py-2.5 px-3">Tipo</th>
+                      <th className="py-2.5 px-3">Ordem / Nota</th>
+                      <th className="py-2.5 px-3">Técnico</th>
+                      <th className="py-2.5 px-3">Descrição</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/[0.04] text-gray-200">
+                    {manutencoes.map((m) => (
+                      <tr key={m.id} className="hover:bg-blue-500/[0.05]">
+                        <td className="py-2.5 px-3 whitespace-nowrap">{formatDate(m.data_execucao)}</td>
+                        <td className="py-2.5 px-3">
+                          <span className="px-2 py-0.5 rounded text-[10px] bg-cyan-500/15 text-cyan-400 border border-cyan-500/30 font-semibold">
+                            {m.tipo_servico}
+                          </span>
+                        </td>
+                        <td className="py-2.5 px-3 font-mono text-gray-400">
+                          {m.ordem_sap || '-'} / {m.nota_sap || '-'}
+                        </td>
+                        <td className="py-2.5 px-3">{m.tecnico_nome}</td>
+                        <td className="py-2.5 px-3 text-gray-300">{m.descricao_servico}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* TAB 4: FOTOS */}
+        {activeTab === 'fotos' && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-white">
+                Galeria de Fotos do Equipamento ({fotos.length})
+              </h3>
+              {canEdit && (
+                <label className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md bg-[#1E293B] hover:bg-[#334155] text-gray-200 border border-blue-500/30 cursor-pointer transition-colors">
+                  <Camera className="w-4 h-4 text-blue-400" />
+                  <span>Upload de Foto</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    onChange={handlePhotoUpload}
+                    className="hidden"
+                  />
+                </label>
+              )}
             </div>
-          )}
-        </div>
-      )}
 
-      {/* TAB 5: QR CODE */}
-      {activeTab === 'qrcode' && (
-        <div className="card border border-[#2C343E] rounded-[4px] p-6 text-center max-w-md mx-auto space-y-4 shadow-xl">
-          <h3 className="text-sm font-condensed font-bold uppercase tracking-wider ">
-            Etiqueta Física com QR Code do Equipamento
-          </h3>
-          <p className="text-xs ">
-            Cole esta etiqueta na carcaça do climatizador. Ao apontar a câmera do smartphone, a ficha técnica e abertura de chamado abrem instantaneamente.
-          </p>
+            {fotos.length === 0 ? (
+              <EmptyState
+                icon={Camera}
+                title="Nenhuma foto anexada"
+                description="Técnicos em campo podem fotografar placas de identificação ou serpentinas direto do celular."
+              />
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                {fotos.map((foto) => (
+                  <div key={foto.id} className="bg-[#111827] border border-blue-500/20 rounded-lg overflow-hidden group">
+                    <div className="aspect-video bg-[#0A0E1A] overflow-hidden">
+                      <img
+                        src={foto.url}
+                        alt={foto.nome_arquivo}
+                        referrerPolicy="no-referrer"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                      />
+                    </div>
+                    <div className="p-2 text-[10px] text-gray-400 truncate">
+                      {foto.nome_arquivo}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
-          <div className="inline-block p-4 bg-white rounded-[6px] shadow-2xl border-4 border-[#2C343E]">
-            <QRCodeSVG
-              value={qrUrl}
-              size={180}
-              level="H"
-              includeMargin={true}
-            />
-            <div className="mt-2 text-center   font-bold text-sm tracking-widest border-t border-gray-300 pt-1">
-              TAG {equipamento.tag}
+        {/* TAB 5: QR CODE */}
+        {activeTab === 'qrcode' && (
+          <div className="bg-[#111827] border border-blue-500/20 rounded-lg p-6 text-center max-w-md mx-auto space-y-4 shadow-xl">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-white">
+              Etiqueta com QR Code do Ativo
+            </h3>
+            <p className="text-xs text-gray-400">
+              Cole esta etiqueta na carcaça do climatizador. Ao apontar a câmera do smartphone, a ficha técnica abre instantaneamente.
+            </p>
+
+            <div className="inline-block p-4 bg-white rounded-lg shadow-2xl border-4 border-blue-500/30">
+              <QRCodeSVG
+                value={qrUrl}
+                size={180}
+                level="H"
+                includeMargin={true}
+              />
+              <div className="mt-2 text-center text-black font-bold text-sm tracking-widest border-t border-gray-300 pt-1 font-mono">
+                TAG {equipamento.tag}
+              </div>
+              <div className="text-[10px] text-gray-700 font-mono font-semibold">
+                UG {ugNome} · {equipamento.localizacao_ref || equipamento.local_instalacao || 'AMBEV'}
+              </div>
             </div>
-            <div className="text-[9px]  ">
-              AMBEV RJ • VISION CONTROLS
+
+            <div className="flex items-center justify-center gap-2 pt-2">
+              <button
+                onClick={() => window.print()}
+                className="inline-flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-md bg-[#F5A623] hover:bg-[#D98E1A] text-black uppercase tracking-wider transition-colors cursor-pointer"
+              >
+                <Printer className="w-4 h-4" />
+                <span>Imprimir Etiqueta</span>
+              </button>
             </div>
           </div>
-
-          <div className="flex items-center justify-center gap-2 pt-2">
-            <button
-              onClick={() => window.print()}
-              className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-[4px] bg-[#F5A623] hover:bg-[#D98E1A]  font-condensed font-bold uppercase tracking-wider"
-            >
-              <Printer className="w-4 h-4" />
-              <span>Imprimir Etiqueta</span>
-            </button>
-          </div>
-        </div>
-      )}
-        </div>
+        )}
       </div>
     </div>
   );
 };
-

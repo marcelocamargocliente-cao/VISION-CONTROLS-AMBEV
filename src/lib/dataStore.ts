@@ -161,6 +161,40 @@ export const DataStore = {
   },
 
   // 2. View: Equipamentos
+  async getEquipamentos(): Promise<Equipamento[]> {
+    if (isSupabaseConfigured) {
+      try {
+        const { data, error } = await supabase
+          .from('equipamentos')
+          .select('tag, ug_ref, area_ref, localizacao_ref, patrimonio_ref, tipo_equipamento, marca, modelo, capacidade, status, local_instalacao')
+          .order('tag', { ascending: true });
+
+        if (!error && data && data.length > 0) {
+          return data.map((item: any) => ({
+            id: `equip-${item.tag}`,
+            tag: String(item.tag || ''),
+            ug_ref: item.ug_ref || '',
+            area_ref: item.area_ref || '',
+            localizacao_ref: item.localizacao_ref || '',
+            patrimonio_ref: item.patrimonio_ref != null ? String(item.patrimonio_ref) : '',
+            tipo_equipamento: item.tipo_equipamento || '',
+            marca: item.marca || '',
+            modelo: item.modelo || '',
+            capacidade: item.capacidade || '',
+            aplicacao: item.aplicacao || 'INDUSTRIAL',
+            status: (item.status as EquipStatus) || 'OK',
+            local_instalacao: item.local_instalacao || (item.ug_ref ? `${item.ug_ref} · ${item.localizacao_ref || ''}` : ''),
+            tipo: item.tipo_equipamento || '',
+            patrimonio: item.patrimonio_ref != null ? String(item.patrimonio_ref) : '',
+          })) as Equipamento[];
+        }
+      } catch (err) {
+        console.warn('Erro ao buscar equipamentos no Supabase:', err);
+      }
+    }
+    return dbState.equipamentos;
+  },
+
   async getVwEquipamentos(filters?: GlobalFilters): Promise<VwEquipamento[]> {
     const ugsMap = new Map(dbState.ugs.map((u) => [u.id, u]));
     const areasMap = new Map(dbState.areas.map((a) => [a.id, a]));
@@ -174,7 +208,7 @@ export const DataStore = {
       const ct = eq.centro_trabalho_id ? ctsMap.get(eq.centro_trabalho_id) : undefined;
 
       const openOcc = dbState.ocorrencias.find(
-        (o) => o.equipamento_id === eq.id && o.status !== 'CONCLUIDA' && o.status !== 'CANCELADA'
+        (o) => (o.equipamento_id === eq.id || o.equipamento_id === eq.tag || o.equipamento_id === `equip-${eq.tag}`) && o.status !== 'CONCLUIDA' && o.status !== 'CANCELADA'
       );
 
       let diasParado = 0;
@@ -183,30 +217,36 @@ export const DataStore = {
         diasParado = Math.max(0, diff);
       }
 
-      const ugCodigo = eq.ug_codigo || ug?.codigo || 'N/D';
-      const ugNome = ug?.nome || (eq.ug_codigo ? `UG ${eq.ug_codigo}` : 'UG Não Definida');
-      const ctTexto = eq.centro_trabalho || ct?.nome || '';
-      const localExtraido = extrairLocal(ctTexto);
+      const ugCodigo = eq.ug_ref || eq.ug_codigo || ug?.codigo || (eq.local_instalacao?.match(/^(N\d+)/i)?.[1]) || 'N/D';
+      const ugNome = ug?.nome || (ugCodigo !== 'N/D' ? `UG ${ugCodigo}` : 'UG Não Definida');
+      const ctTexto = eq.localizacao_ref || eq.centro_trabalho || ct?.nome || '';
+      const localExtraido = eq.local_instalacao || (eq.ug_ref ? `${eq.ug_ref} · ${eq.localizacao_ref || ''}` : extrairLocal(ctTexto));
 
       return {
         ...eq,
+        local_instalacao: localExtraido,
+        ug_ref: eq.ug_ref || ugCodigo,
+        area_ref: eq.area_ref || area?.nome || 'Geral',
+        localizacao_ref: eq.localizacao_ref || ctTexto,
+        patrimonio_ref: eq.patrimonio_ref || eq.patrimonio,
+        tipo_equipamento: eq.tipo_equipamento || eq.tipo || 'Climatizador',
+        aplicacao: eq.aplicacao || 'INDUSTRIAL',
         ug_codigo: ugCodigo,
         ug_nome: ugNome,
-        area_nome: area?.nome || 'Área Geral',
-        linha_nome: linha?.nome || 'Linha Geral',
+        area_nome: eq.area_ref || area?.nome || 'Área Geral',
+        linha_nome: eq.localizacao_ref || linha?.nome || 'Linha Geral',
         centro_trabalho_nome: ctTexto || 'CT Não Definido',
-        centro_trabalho_sap: eq.tag_sap || ct?.codigo_sap,
-        local_instalacao: localExtraido,
+        centro_trabalho_sap: ct?.codigo_sap,
         total_ocorrencias_abertas: openOcc ? 1 : 0,
         dias_parado_atual: diasParado,
       } as VwEquipamento;
     });
 
     if (filters) {
-      if (filters.ug_id) list = list.filter((e) => e.ug_id === filters.ug_id);
-      if (filters.area_id) list = list.filter((e) => e.area_id === filters.area_id);
+      if (filters.ug_id) list = list.filter((e) => e.ug_id === filters.ug_id || e.ug_codigo === filters.ug_id || e.ug_ref === filters.ug_id);
+      if (filters.area_id) list = list.filter((e) => e.area_id === filters.area_id || e.area_ref === filters.area_id);
       if (filters.linha_id) list = list.filter((e) => e.linha_id === filters.linha_id);
-      if (filters.tipo) list = list.filter((e) => e.tipo === filters.tipo);
+      if (filters.tipo) list = list.filter((e) => (e.tipo_equipamento === filters.tipo || e.tipo === filters.tipo));
     }
 
     return list;
@@ -477,44 +517,104 @@ export const DataStore = {
 
   // 12. Equipamentos CRUD & Details
   async getEquipamentoById(idOrTag: string): Promise<VwEquipamento | null> {
+    const rawTag = idOrTag.replace(/^equip-/, '');
+    if (isSupabaseConfigured) {
+      try {
+        const { data, error } = await supabase
+          .from('equipamentos')
+          .select('tag, ug_ref, area_ref, localizacao_ref, patrimonio_ref, tipo_equipamento, marca, modelo, capacidade, status, local_instalacao')
+          .eq('tag', rawTag)
+          .maybeSingle();
+
+        if (!error && data) {
+          const item = data as any;
+          const ug = item.ug_ref || 'N1';
+          return {
+            id: `equip-${item.tag}`,
+            tag: String(item.tag || ''),
+            ug_ref: ug,
+            area_ref: item.area_ref || '',
+            localizacao_ref: item.localizacao_ref || '',
+            patrimonio_ref: item.patrimonio_ref != null ? String(item.patrimonio_ref) : '',
+            tipo_equipamento: item.tipo_equipamento || '',
+            marca: item.marca || '',
+            modelo: item.modelo || '',
+            capacidade: item.capacidade || '',
+            aplicacao: item.aplicacao || 'INDUSTRIAL',
+            status: (item.status as EquipStatus) || 'OK',
+            local_instalacao: item.local_instalacao || (ug ? `${ug} · ${item.localizacao_ref || ''}` : ''),
+            ug_codigo: ug,
+            ug_nome: `UG ${ug}`,
+            area_nome: item.area_ref || 'Geral',
+            linha_nome: item.localizacao_ref || 'Geral',
+            centro_trabalho_nome: item.localizacao_ref || '',
+            tipo: item.tipo_equipamento || 'Climatizador',
+          } as VwEquipamento;
+        }
+      } catch (err) {
+        console.warn('Erro ao buscar equipamento por ID/TAG do Supabase:', err);
+      }
+    }
+
     const list = await this.getVwEquipamentos();
-    const found = list.find((e) => e.id === idOrTag || e.tag === idOrTag || e.qr_slug === idOrTag);
+    const found = list.find((e) => e.id === idOrTag || e.tag === idOrTag || e.tag === rawTag || e.qr_slug === idOrTag);
     return found || null;
   },
 
   async saveEquipamento(equip: Partial<Equipamento>): Promise<Equipamento> {
-    if (equip.id) {
-      const idx = dbState.equipamentos.findIndex((e) => e.id === equip.id);
+    const rawTag = String(equip.tag || `TAG-${Math.floor(Math.random() * 900 + 100)}`).replace(/^equip-/, '');
+    const ugRef = equip.ug_ref || 'N1';
+    const locRef = equip.localizacao_ref || '';
+    const payload = {
+      tag: rawTag,
+      ug_ref: ugRef,
+      area_ref: equip.area_ref || '',
+      localizacao_ref: locRef,
+      patrimonio_ref: equip.patrimonio_ref != null ? String(equip.patrimonio_ref) : undefined,
+      tipo_equipamento: equip.tipo_equipamento || equip.tipo || 'RESFRIADOR DE PAINEL',
+      marca: equip.marca || 'RITTAL',
+      modelo: equip.modelo || '',
+      capacidade: equip.capacidade || '',
+      aplicacao: equip.aplicacao || 'INDUSTRIAL',
+      status: equip.status || 'OK',
+      local_instalacao: equip.local_instalacao || (ugRef ? `${ugRef} · ${locRef}` : ''),
+    };
+
+    if (isSupabaseConfigured) {
+      try {
+        const { data, error } = await supabase
+          .from('equipamentos')
+          .upsert(payload, { onConflict: 'tag' })
+          .select()
+          .single();
+
+        if (!error && data) {
+          const idx = dbState.equipamentos.findIndex((e) => String(e.tag) === rawTag || e.id === equip.id);
+          if (idx >= 0) {
+            dbState.equipamentos[idx] = { ...dbState.equipamentos[idx], ...payload, updated_at: new Date().toISOString() };
+          } else {
+            dbState.equipamentos.unshift({ id: `equip-${payload.tag}`, ...payload, created_at: new Date().toISOString() } as Equipamento);
+          }
+          persistState();
+          return data as Equipamento;
+        }
+      } catch (err) {
+        console.warn('Erro ao salvar no Supabase:', err);
+      }
+    }
+
+    if (equip.id || equip.tag) {
+      const idx = dbState.equipamentos.findIndex((e) => e.id === equip.id || String(e.tag) === rawTag);
       if (idx >= 0) {
-        dbState.equipamentos[idx] = { ...dbState.equipamentos[idx], ...equip, updated_at: new Date().toISOString() };
+        dbState.equipamentos[idx] = { ...dbState.equipamentos[idx], ...equip, ...payload, updated_at: new Date().toISOString() };
         persistState();
         return dbState.equipamentos[idx];
       }
     }
 
     const newEquip: Equipamento = {
-      id: `equip-${Date.now()}`,
-      tag: equip.tag || `TAG-${Math.floor(Math.random() * 900 + 100)}`,
-      patrimonio: equip.patrimonio || `PAT-AMB-${Math.floor(Math.random() * 9000 + 1000)}`,
-      tag_sap: equip.tag_sap || `ACO-${equip.tag}`,
-      tipo: equip.tipo || 'CPE porta',
-      marca: equip.marca || 'RITTAL',
-      modelo: equip.modelo || 'SK Industrial',
-      numero_serie: equip.numero_serie,
-      capacidade: equip.capacidade,
-      tensao: equip.tensao || '230V 1F',
-      corrente: equip.corrente,
-      gas_refrigerante: equip.gas_refrigerante || 'R-134a',
-      ano_fabricacao: equip.ano_fabricacao || 2023,
-      ppac: equip.ppac || 'PPAC-MENSAL-CPE',
-      ug_id: equip.ug_id || dbState.ugs[0].id,
-      area_id: equip.area_id || dbState.areas[0].id,
-      linha_id: equip.linha_id || dbState.linhas[0].id,
-      centro_trabalho_id: equip.centro_trabalho_id || dbState.centros_trabalho[0].id,
-      sublocal: equip.sublocal,
-      status: equip.status || 'OK',
-      observacoes: equip.observacoes,
-      qr_slug: `ivca-eq-${equip.tag}`,
+      id: equip.id || `equip-${rawTag}`,
+      ...payload,
       created_at: new Date().toISOString(),
     };
 

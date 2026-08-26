@@ -96,28 +96,40 @@ export interface CentroTrabalho {
 }
 
 export interface Equipamento {
-  id: string;
+  id?: string;
   tag: string;
-  patrimonio?: string;
-  tag_sap?: string;
-  tipo: string; // 'CPE (PORTA)', 'CPE (TETO)', 'SPLITÃO', 'CHILLER A AR', 'CAMARA FRIA', 'FANCOIL', 'SPLIT SYSTEM', 'CHILLER A ÁGUA'
+  ug_ref?: string;
+  area_ref?: string;
+  localizacao_ref?: string;
+  patrimonio_ref?: string;
+  tipo_equipamento?: string;
   marca?: string;
   modelo?: string;
+  capacidade?: string;
+  aplicacao?: string; // sempre 'INDUSTRIAL'
+  status: EquipStatus;
+  local_instalacao?: string; // UG + Localização concatenados
+
+  // Campos auxiliares e compatibilidade com outras telas existentes
+  tipo?: string;
+  patrimonio?: string;
+  tag_sap?: string;
   numero_serie?: string;
-  capacidade?: string; // ex: '710W', '1660W', '2550W', '60.000 BTU/h', '10 TR', '120 TR'
+  texto_breve?: string;
+  centro_trab_pr?: string;
+  denominacao_local?: string;
+  ppac?: string;
+  sublocal?: string;
   tensao?: string;
   corrente?: string;
   gas_refrigerante?: string;
   ano_fabricacao?: number;
-  ppac?: string; // Plano de Manutenção
   ug_id?: string;
   ug_codigo?: string;
   area_id?: string;
   linha_id?: string;
   centro_trabalho_id?: string;
-  centro_trabalho?: string; // ex: N2-05010-EDIFICIO 01 -ACO501001
-  sublocal?: string;
-  status: EquipStatus;
+  centro_trabalho?: string;
   observacoes?: string;
   qr_slug?: string;
   created_at?: string;
