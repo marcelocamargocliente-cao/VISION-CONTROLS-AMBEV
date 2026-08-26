@@ -162,41 +162,7 @@ export const DataStore = {
 
   // 2. View: Equipamentos
   async getEquipamentos(): Promise<Equipamento[]> {
-    // 1. Tentar endpoint do servidor backend conectado ao PostgreSQL com usuário ai_studio
-    try {
-      const res = await fetch('/api/equipamentos');
-      if (res.ok) {
-        const json = await res.json();
-        if (json.data && Array.isArray(json.data) && json.data.length > 0) {
-          const list: Equipamento[] = json.data.map((item: any) => ({
-            id: item.id || `equip-${item.tag}`,
-            tag: String(item.tag || ''),
-            ug_ref: item.ug_ref || 'N2',
-            area_ref: item.area_ref || 'NÃO CLASSIFICADO',
-            localizacao_ref: item.localizacao_ref || '',
-            patrimonio_ref: item.patrimonio_ref != null ? String(item.patrimonio_ref) : undefined,
-            tipo_equipamento: item.tipo_equipamento || '',
-            marca: item.marca || undefined,
-            modelo: item.modelo || undefined,
-            capacidade: item.capacidade || undefined,
-            aplicacao: item.aplicacao || 'INDUSTRIAL',
-            status: (item.status as EquipStatus) || 'OK',
-            local_instalacao: item.local_instalacao || (item.ug_ref ? `${item.ug_ref} · ${item.localizacao_ref || ''}` : ''),
-            tipo: item.tipo_equipamento || '',
-            patrimonio: item.patrimonio_ref != null ? String(item.patrimonio_ref) : undefined,
-            qr_slug: item.qr_slug || `ivca-eq-${item.tag}`,
-            ug_id: item.ug_ref ? `ug-${item.ug_ref.toLowerCase()}` : 'ug-n2',
-            ug_codigo: item.ug_ref || 'N2',
-            centro_trabalho: item.local_instalacao || 'CIV1-GER',
-          }));
-          return list;
-        }
-      }
-    } catch {
-      // continua para supabase
-    }
-
-    // 2. Tentar consulta direta Supabase
+    // 1. Tentar consulta direta Supabase
     if (isSupabaseConfigured) {
       try {
         const { data, error } = await supabase
@@ -580,27 +546,26 @@ export const DataStore = {
 
         if (!error && data) {
           const item = data as any;
-          const ug = item.ug_ref || 'N1';
           return {
             id: `equip-${item.tag}`,
             tag: String(item.tag || ''),
-            ug_ref: ug,
-            area_ref: item.area_ref || '',
-            localizacao_ref: item.localizacao_ref || '',
-            patrimonio_ref: item.patrimonio_ref != null ? String(item.patrimonio_ref) : '',
-            tipo_equipamento: item.tipo_equipamento || '',
-            marca: item.marca || '',
-            modelo: item.modelo || '',
-            capacidade: item.capacidade || '',
+            ug_ref: item.ug_ref,
+            area_ref: item.area_ref,
+            localizacao_ref: item.localizacao_ref,
+            patrimonio_ref: item.patrimonio_ref != null ? String(item.patrimonio_ref) : undefined,
+            tipo_equipamento: item.tipo_equipamento,
+            marca: item.marca,
+            modelo: item.modelo,
+            capacidade: item.capacidade,
             aplicacao: item.aplicacao || 'INDUSTRIAL',
             status: (item.status as EquipStatus) || 'OK',
-            local_instalacao: item.local_instalacao || (ug ? `${ug} · ${item.localizacao_ref || ''}` : ''),
-            ug_codigo: ug,
-            ug_nome: `UG ${ug}`,
-            area_nome: item.area_ref || 'Geral',
-            linha_nome: item.localizacao_ref || 'Geral',
-            centro_trabalho_nome: item.localizacao_ref || '',
-            tipo: item.tipo_equipamento || 'Climatizador',
+            local_instalacao: item.local_instalacao || (item.ug_ref ? `${item.ug_ref} · ${item.localizacao_ref || ''}` : ''),
+            ug_codigo: item.ug_ref,
+            ug_nome: item.ug_ref ? `UG ${item.ug_ref}` : undefined,
+            area_nome: item.area_ref,
+            linha_nome: item.localizacao_ref,
+            centro_trabalho_nome: item.localizacao_ref,
+            tipo: item.tipo_equipamento,
           } as VwEquipamento;
         }
       } catch (err) {

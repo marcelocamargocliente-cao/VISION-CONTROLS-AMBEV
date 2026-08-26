@@ -51,39 +51,7 @@ export const Equipamentos: React.FC = () => {
   const loadData = async () => {
     setLoading(true);
     try {
-      // 1. Tentar endpoint da API conectado ao PostgreSQL do Supabase (lê a view vw_equipamentos com 194 equipamentos)
-      try {
-        const res = await fetch('/api/equipamentos');
-        if (res.ok) {
-          const json = await res.json();
-          if (json.data && Array.isArray(json.data) && json.data.length > 0) {
-            const mapped: Equipamento[] = json.data.map((item: any) => ({
-              id: item.id || `equip-${item.tag}`,
-              tag: String(item.tag || ''),
-              ug_ref: item.ug_ref || 'N2',
-              area_ref: item.area_ref || 'NÃO CLASSIFICADO',
-              localizacao_ref: item.localizacao_ref || '',
-              patrimonio_ref: item.patrimonio_ref != null ? String(item.patrimonio_ref) : undefined,
-              tipo_equipamento: item.tipo_equipamento || '',
-              marca: item.marca || undefined,
-              modelo: item.modelo || undefined,
-              capacidade: item.capacidade || undefined,
-              aplicacao: item.aplicacao || 'INDUSTRIAL',
-              status: (item.status as EquipStatus) || 'OK',
-              local_instalacao: item.local_instalacao || (item.ug_ref ? `${item.ug_ref} · ${item.localizacao_ref || ''}` : ''),
-              tipo: item.tipo_equipamento || '',
-              patrimonio: item.patrimonio_ref != null ? String(item.patrimonio_ref) : undefined,
-            }));
-            setEquipamentos(mapped);
-            setLoading(false);
-            return;
-          }
-        }
-      } catch {
-        // segue para Supabase / DataStore
-      }
-
-      // 2. Consulta direta Supabase
+      // 1. Consulta direta Supabase
       if (isSupabaseConfigured) {
         const { data, error } = await supabase
           .from('equipamentos')
@@ -98,9 +66,9 @@ export const Equipamentos: React.FC = () => {
           const mapped: Equipamento[] = data.map((item: any) => ({
             id: `equip-${item.tag}`,
             tag: String(item.tag || ''),
-            ug_ref: item.ug_ref || '',
-            area_ref: item.area_ref || '',
-            localizacao_ref: item.localizacao_ref || '',
+            ug_ref: item.ug_ref,
+            area_ref: item.area_ref,
+            localizacao_ref: item.localizacao_ref,
             patrimonio_ref: item.patrimonio_ref != null ? String(item.patrimonio_ref) : undefined,
             tipo_equipamento: item.tipo_equipamento || '',
             marca: item.marca || undefined,
@@ -143,14 +111,12 @@ export const Equipamentos: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // List of UGs (N1, N2, N3, N4 + dynamic)
+  // List of UGs
   const distinctUgs = useMemo(() => {
-    const defaults = ['N1', 'N2', 'N3', 'N4'];
     const fromData = equipamentos
-      .map((e) => e.ug_ref || (e.local_instalacao?.match(/^(N\d+)/i)?.[1]))
-      .filter(Boolean) as string[];
-    const combined = Array.from(new Set([...defaults, ...fromData]));
-    return combined.sort();
+      .map((e) => e.ug_ref)
+      .filter((u): u is string => Boolean(u && u.trim()));
+    return Array.from(new Set(fromData)).sort();
   }, [equipamentos]);
 
   // Unique list of Areas (from area_ref)
@@ -187,7 +153,7 @@ export const Equipamentos: React.FC = () => {
 
       const matchesStatus = !selectedStatus || eq.status === selectedStatus;
 
-      const ug = eq.ug_ref || (eq.local_instalacao?.match(/^(N\d+)/i)?.[1]) || '';
+      const ug = eq.ug_ref || '';
       const matchesUg = !selectedUg || ug.toUpperCase() === selectedUg.toUpperCase();
 
       const matchesArea = !selectedArea || eq.area_ref === selectedArea;
@@ -435,8 +401,8 @@ export const Equipamentos: React.FC = () => {
                 const isParado = eq.status === 'PARADO';
                 const isOk = eq.status === 'OK';
                 const targetKey = eq.tag || eq.id;
-                const ugCode = eq.ug_ref || (eq.local_instalacao?.match(/^(N\d+)/i)?.[1]) || '—';
-                const tipoNome = eq.tipo_equipamento || eq.tipo || '—';
+                const ugCode = eq.ug_ref || '—';
+                const tipoNome = eq.tipo_equipamento || '—';
 
                 return (
                   <tr
@@ -474,8 +440,8 @@ export const Equipamentos: React.FC = () => {
 
                     {/* 5. TIPO */}
                     <td className="py-2 px-3 align-middle w-[150px]">
-                      <div className="text-gray-200 text-[11px] truncate leading-tight" title={tipoNome}>
-                        {tipoNome}
+                      <div className="text-gray-200 text-[11px] truncate leading-tight" title={eq.tipo_equipamento || '—'}>
+                        {eq.tipo_equipamento || '—'}
                       </div>
                     </td>
 
