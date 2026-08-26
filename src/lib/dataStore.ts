@@ -849,6 +849,11 @@ export const DataStore = {
     return newAnexo;
   },
 
+  async deleteAnexo(id: string): Promise<void> {
+    dbState.anexos = dbState.anexos.filter((a) => a.id !== id);
+    persistState();
+  },
+
   // 18. Manutenções Históricas
   async getManutencoesByEquipamento(equipamentoId: string): Promise<Manutencao[]> {
     return dbState.manutencoes

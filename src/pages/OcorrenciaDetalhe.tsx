@@ -50,6 +50,7 @@ import { ModalOrcamentoDetalhe } from '../components/orcamentos/ModalOrcamentoDe
 import { ModalRevisaoOrcamento } from '../components/orcamentos/ModalRevisaoOrcamento';
 import { ModalNovoOrcamento } from '../components/orcamentos/ModalNovoOrcamento';
 import { ModalDuplicarOrcamento } from '../components/orcamentos/ModalDuplicarOrcamento';
+import { FotoCard } from '../components/ocorrencias/FotoCard';
 
 const STATUS_FLOW: OcorrenciaStatus[] = [
   'ABERTA',
@@ -600,9 +601,14 @@ export const OcorrenciaDetalhe: React.FC = () => {
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                   {fotos.map((f) => (
-                    <div key={f.id} className="aspect-video bg-[#0D1117] border border-[#30363D] rounded-lg overflow-hidden group">
-                      <img src={f.url} alt={f.nome_arquivo} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                    </div>
+                    <FotoCard
+                      key={f.id}
+                      foto={f}
+                      canDelete={Boolean(user?.role && ['ADMIN', 'GESTOR', 'ENCARREGADO'].includes(user.role))}
+                      onDeletada={(idDeletado) => {
+                        setFotos((prev) => prev.filter((item) => item.id !== idDeletado));
+                      }}
+                    />
                   ))}
                 </div>
               )}

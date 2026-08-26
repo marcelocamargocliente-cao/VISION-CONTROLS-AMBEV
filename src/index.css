@@ -686,3 +686,16 @@ a:hover {
 .filter-linha   { min-width: 140px; flex: 1 1 140px; }
 .filter-tipo    { min-width: 140px; flex: 1 1 140px; }
 .filter-marca   { min-width: 140px; flex: 1 1 140px; }
+
+/* ============================================
+   BOTÃO DELETAR FOTO NA GALERIA (HOVER & MOBILE)
+   ============================================ */
+.foto-card-container:hover .foto-delete-btn {
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .foto-delete-btn {
+    opacity: 1 !important;
+  }
+}
