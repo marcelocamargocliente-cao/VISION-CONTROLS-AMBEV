@@ -57,6 +57,7 @@ interface ModalOrcamentoDetalheProps {
   onClose: () => void;
   onUpdated: (updatedOrc: Orcamento) => void;
   onOpenRevisao: (orc: Orcamento) => void;
+  initialEditMode?: boolean;
 }
 
 export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
@@ -67,6 +68,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
   onClose,
   onUpdated,
   onOpenRevisao,
+  initialEditMode = false,
 }) => {
   const navigate = useNavigate();
   const { profile } = useAuth();
@@ -77,7 +79,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
     profile?.role === 'GESTOR' ||
     profile?.role === 'ENCARREGADO';
 
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(initialEditMode);
   const [pecas, setPecas] = useState<Peca[]>([]);
   const [loadingPecas, setLoadingPecas] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -132,7 +134,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
         observacoes: orcamento.observacoes || '',
         arquivo_pdf_url: orcamento.arquivo_pdf_url || orcamento.arquivo_url || '',
       });
-      setIsEditing(false);
+      setIsEditing(initialEditMode);
 
       // Load pecas for linked occurrence
       if (orcamento.ocorrencia_id) {
@@ -143,7 +145,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
           .finally(() => setLoadingPecas(false));
       }
     }
-  }, [orcamento]);
+  }, [orcamento, isOpen, initialEditMode]);
 
   if (!isOpen || !orcamento) return null;
 

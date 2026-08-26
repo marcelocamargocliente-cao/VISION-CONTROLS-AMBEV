@@ -48,6 +48,8 @@ import {
 } from '../utils/formatters';
 import { ModalOrcamentoDetalhe } from '../components/orcamentos/ModalOrcamentoDetalhe';
 import { ModalRevisaoOrcamento } from '../components/orcamentos/ModalRevisaoOrcamento';
+import { ModalNovoOrcamento } from '../components/orcamentos/ModalNovoOrcamento';
+import { ModalDuplicarOrcamento } from '../components/orcamentos/ModalDuplicarOrcamento';
 
 const STATUS_FLOW: OcorrenciaStatus[] = [
   'ABERTA',
@@ -94,28 +96,21 @@ export const OcorrenciaDetalhe: React.FC = () => {
   const [showAddOrcModal, setShowAddOrcModal] = useState(false);
   const [selectedOrcamento, setSelectedOrcamento] = useState<Orcamento | null>(null);
   const [isOrcDetailOpen, setIsOrcDetailOpen] = useState(false);
+  const [isOrcEditMode, setIsOrcEditMode] = useState(false);
+  const [duplicarOrigem, setDuplicarOrigem] = useState<Orcamento | null>(null);
+  const [isDuplicarOpen, setIsDuplicarOpen] = useState(false);
   const [revisaoOrigem, setRevisaoOrigem] = useState<Orcamento | null>(null);
   const [isRevisaoOpen, setIsRevisaoOpen] = useState(false);
 
-  const [newOrc, setNewOrc] = useState<Partial<Orcamento>>({
-    numero: '',
-    fornecedor: 'Rittal Sistemas Eletromecânicos Ltda',
-    valor_total: 0,
-    data_envio: new Date().toISOString().slice(0, 10),
-    enviado_para: 'Engenharia de Utilidades AMBEV',
-    status: 'ENVIADO',
-  });
+  const abrirEdicao = (orc: Orcamento) => {
+    setSelectedOrcamento(orc);
+    setIsOrcEditMode(true);
+    setIsOrcDetailOpen(true);
+  };
 
-  const handleOpenAddOrcModal = () => {
-    setNewOrc({
-      numero: gerarNumeroOrcamento(),
-      fornecedor: 'Rittal Sistemas Eletromecânicos Ltda',
-      valor_total: 0,
-      data_envio: new Date().toISOString().slice(0, 10),
-      enviado_para: 'Engenharia de Utilidades AMBEV',
-      status: 'ENVIADO',
-    });
-    setShowAddOrcModal(true);
+  const abrirDuplicar = (orc: Orcamento) => {
+    setDuplicarOrigem(orc);
+    setIsDuplicarOpen(true);
   };
 
   const loadData = async () => {
@@ -203,21 +198,6 @@ export const OcorrenciaDetalhe: React.FC = () => {
         valor_unitario: 0,
         status: 'PENDENTE_COTACAO',
       });
-      await loadData();
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  const handleSaveNewOrcamento = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!ocorrencia || !newOrc.numero || !newOrc.valor_total) return;
-    try {
-      await DataStore.saveOrcamento({
-        ...newOrc,
-        ocorrencia_id: ocorrencia.id,
-      });
-      setShowAddOrcModal(false);
       await loadData();
     } catch (e) {
       console.error(e);
@@ -510,7 +490,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
                 </div>
                 {canEdit && (
                   <button
-                    onClick={handleOpenAddOrcModal}
+                    onClick={() => setShowAddOrcModal(true)}
                     className="btn-primary !py-1 !px-2.5 !text-[11px] gap-1 cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
@@ -530,29 +510,58 @@ export const OcorrenciaDetalhe: React.FC = () => {
                       key={orc.id}
                       onClick={() => {
                         setSelectedOrcamento(orc);
+                        setIsOrcEditMode(false);
                         setIsOrcDetailOpen(true);
                       }}
-                      className="p-3 bg-[#0D1117] hover:bg-[#1C2128] border border-[#30363D] hover:border-[#2F81F7]/50 rounded-lg flex items-center justify-between text-xs cursor-pointer transition-all group"
+                      className="p-3 bg-[#0D1117] hover:bg-[#1C2128] border border-[#30363D] hover:border-[#2F81F7]/50 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs cursor-pointer transition-all group"
                     >
-                      <div className="min-w-0 pr-3">
+                      <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className=" font-bold  group-hover:underline">
+                          <span className="font-bold group-hover:underline">
                             {orc.numero}
                           </span>
-                          <span className="text-[10px]  px-2 py-0.5 rounded-full bg-[#21262D]  border border-[#30363D]">
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#21262D] border border-[#30363D] font-mono">
                             {orc.status}
                           </span>
                         </div>
-                        <p className=" mt-1 font-medium truncate">{orc.fornecedor}</p>
-                        <p className="text-[10px]  ">
+                        <p className="mt-1 font-medium truncate">{orc.fornecedor}</p>
+                        <p className="text-[10px] text-[#8B949E]">
                           Enviado em {formatDate(orc.data_envio)} • {calculateDaysDiff(orc.data_envio)} dias aguardando
                         </p>
                       </div>
-                      <div className="text-right shrink-0">
-                        <span className="text-sm  font-bold ">
-                          {formatCurrency(orc.valor_total)}
-                        </span>
-                        <span className="block text-[10px]  ">Clique para detalhes</span>
+                      <div className="flex flex-col sm:items-end gap-1.5 shrink-0">
+                        <div className="flex items-center sm:flex-col sm:items-end justify-between gap-1">
+                          <span className="text-sm font-bold text-[#38BDF8]">
+                            {formatCurrency(orc.valor_total)}
+                          </span>
+                          <span className="block text-[10px] text-[#8B949E] hidden sm:inline">Clique para detalhes</span>
+                        </div>
+                        {canEdit && (
+                          <div className="flex items-center gap-1.5 pt-0.5">
+                            <button
+                              type="button"
+                              className="btn-secondary"
+                              style={{ fontSize: 11, padding: '4px 10px' }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                abrirEdicao(orc);
+                              }}
+                            >
+                              ✏️ Editar
+                            </button>
+                            <button
+                              type="button"
+                              className="btn-primary"
+                              style={{ fontSize: 11, padding: '4px 10px' }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                abrirDuplicar(orc);
+                              }}
+                            >
+                              📋 Duplicar e Reenviar
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -736,66 +745,19 @@ export const OcorrenciaDetalhe: React.FC = () => {
         </div>
       )}
 
-      {/* MODAL: ADICIONAR ORÇAMENTO */}
-      {showAddOrcModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#161B22] border border-[#30363D] rounded-xl w-full max-w-md p-5 space-y-4 shadow-2xl">
-            <h3 className="text-sm font-display font-bold  uppercase">
-              Cadastrar Orçamento / Proposta Comercial
-            </h3>
-            <form onSubmit={handleSaveNewOrcamento} className="space-y-3.5 text-xs font-body">
-              <div className="grid grid-cols-2 gap-2.5">
-                <div>
-                  <label className="block eyebrow  mb-1">Nº Proposta</label>
-                  <input
-                    type="text"
-                    required
-                    value={newOrc.numero || ''}
-                    onChange={(e) => setNewOrc({ ...newOrc, numero: e.target.value })}
-                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none  font-bold"
-                  />
-                </div>
-                <div>
-                  <label className="block eyebrow  mb-1">Valor Total (R$)</label>
-                  <input
-                    type="number"
-                    required
-                    value={newOrc.valor_total || 0}
-                    onChange={(e) => setNewOrc({ ...newOrc, valor_total: Number(e.target.value) })}
-                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none  font-bold"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block eyebrow  mb-1">Fornecedor</label>
-                <input
-                  type="text"
-                  value={newOrc.fornecedor || ''}
-                  onChange={(e) => setNewOrc({ ...newOrc, fornecedor: e.target.value })}
-                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none"
-                />
-              </div>
-
-              <div className="pt-2 flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowAddOrcModal(false)}
-                  className="btn-secondary !py-1.5 !px-3 text-xs cursor-pointer"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="btn-primary !py-1.5 !px-4 text-xs font-display font-bold cursor-pointer"
-                >
-                  Salvar Orçamento
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* Modal Cadastro de Proposta / Orçamento Completo */}
+      <ModalNovoOrcamento
+        isOpen={showAddOrcModal}
+        onClose={() => setShowAddOrcModal(false)}
+        onCreated={async (novoOrc) => {
+          await loadData();
+          setSelectedOrcamento(novoOrc);
+          setIsOrcDetailOpen(true);
+        }}
+        defaultOcorrenciaId={ocorrencia?.id}
+        ocorrencias={ocorrencia ? [ocorrencia] : []}
+        equipamentosMap={equipamento ? new Map([[equipamento.id, equipamento]]) : new Map()}
+      />
 
       {/* Modal Detalhe do Orçamento */}
       <ModalOrcamentoDetalhe
@@ -803,15 +765,34 @@ export const OcorrenciaDetalhe: React.FC = () => {
         ocorrencia={ocorrencia}
         equipamento={equipamento}
         isOpen={isOrcDetailOpen}
-        onClose={() => setIsOrcDetailOpen(false)}
+        initialEditMode={isOrcEditMode}
+        onClose={() => {
+          setIsOrcDetailOpen(false);
+          setIsOrcEditMode(false);
+        }}
         onUpdated={async (updatedOrc) => {
           setSelectedOrcamento(updatedOrc);
           await loadData();
         }}
         onOpenRevisao={(orc) => {
           setIsOrcDetailOpen(false);
-          setRevisaoOrigem(orc);
-          setIsRevisaoOpen(true);
+          setIsOrcEditMode(false);
+          setDuplicarOrigem(orc);
+          setIsDuplicarOpen(true);
+        }}
+      />
+
+      {/* Modal Duplicar e Reenviar Proposta */}
+      <ModalDuplicarOrcamento
+        orcamentoOriginal={duplicarOrigem}
+        ocorrenciaId={ocorrencia?.id || ''}
+        isOpen={isDuplicarOpen}
+        onFechar={() => {
+          setIsDuplicarOpen(false);
+          setDuplicarOrigem(null);
+        }}
+        onSalvo={async () => {
+          await loadData();
         }}
       />
 

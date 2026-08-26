@@ -100,20 +100,22 @@ export interface Equipamento {
   tag: string;
   patrimonio?: string;
   tag_sap?: string;
-  tipo: string; // 'CPE porta', 'CPE teto', 'Splitão', 'Chiller', 'Self Contained', 'Fan Coil', etc.
-  marca: string;
-  modelo: string;
+  tipo: string; // 'CPE (PORTA)', 'CPE (TETO)', 'SPLITÃO', 'CHILLER A AR', 'CAMARA FRIA', 'FANCOIL', 'SPLIT SYSTEM', 'CHILLER A ÁGUA'
+  marca?: string;
+  modelo?: string;
   numero_serie?: string;
-  capacidade?: string; // ex: '60.000 BTU/h', '10 TR'
-  tensao?: string; // '220V', '380V', '440V'
-  corrente?: string; // ex: '15A'
-  gas_refrigerante?: string; // 'R-410A', 'R-134a', 'R-22', 'R-407C'
+  capacidade?: string; // ex: '710W', '1660W', '2550W', '60.000 BTU/h', '10 TR', '120 TR'
+  tensao?: string;
+  corrente?: string;
+  gas_refrigerante?: string;
   ano_fabricacao?: number;
   ppac?: string; // Plano de Manutenção
-  ug_id: string;
-  area_id: string;
-  linha_id: string;
-  centro_trabalho_id: string;
+  ug_id?: string;
+  ug_codigo?: string;
+  area_id?: string;
+  linha_id?: string;
+  centro_trabalho_id?: string;
+  centro_trabalho?: string; // ex: N2-05010-EDIFICIO 01 -ACO501001
   sublocal?: string;
   status: EquipStatus;
   observacoes?: string;
@@ -176,7 +178,14 @@ export interface Orcamento {
   status: OrcamentoStatus;
   arquivo_pdf_url?: string;
   arquivo_url?: string;
+  descricao_anomalia?: string;
   observacoes?: string;
+  pecas?: Array<{
+    descricao: string;
+    part_number?: string;
+    quantidade: number;
+    valor_unitario?: number | string;
+  }>;
   created_at: string;
 }
 
@@ -249,6 +258,7 @@ export interface VwEquipamento extends Equipamento {
   linha_nome: string;
   centro_trabalho_nome: string;
   centro_trabalho_sap?: string;
+  local_instalacao?: string;
   total_ocorrencias_abertas?: number;
   dias_parado_atual?: number;
 }

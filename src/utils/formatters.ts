@@ -29,6 +29,39 @@ import {
  *   VP131004, ACO501001 — ponto exato no SAP
  *   NEM SEMPRE presente | banco: tag_sap
  */
+/**
+ * Extrai o Local de Instalação a partir do Centro de Trabalho da planilha:
+ * Ex: "N2-05010-EDIFICIO 01       -ACO501001" → "EDIFICIO 01"
+ * Ex: "N2-05060-DESENCAIXOTADOR 01-ACO506136" → "DESENCAIXOTADOR 01"
+ * Ex: "N2-05050-EDIFICIO 01"                  → "EDIFICIO 01"
+ * Ex: "N3-05140"                              → ""
+ */
+export const extrairLocal = (ct?: string | null): string => {
+  if (!ct) return '';
+  // Remove prefixo UG-codigo- e sufixo -ACOxxxxxx
+  const semUG = ct.replace(/^N\d-\d{5}-/, '');       // remove "N2-05010-"
+  const semTag = semUG.replace(/\s*-ACO\w+\s*$/i, '') // remove " -ACO501001"
+    .replace(/\s*\/\s*LINHA\s+\d+(\s+E\s+\d+)?/i, '') // remove " / LINHA 512"
+    .trim();
+  return semTag || '';
+};
+
+/**
+ * Define o status operacional do equipamento conforme regras da planilha:
+ * - Tag 360 = PARADO (ou status explícito na planilha)
+ * - NOK no levantamento = RESTRICAO
+ * - Demais = OK
+ */
+export const definirStatus = (
+  tagVision: number | string,
+  statusPlanilha?: string | null,
+  statusLevantamento?: string | null
+): EquipStatus => {
+  if (String(tagVision) === '360' || statusPlanilha === 'PARADO') return 'PARADO';
+  if (statusLevantamento === 'NOK') return 'RESTRICAO';
+  return 'OK';
+};
+
 export function montarLocalizacao(equip: any): string {
   if (!equip) return '';
   const partes: string[] = [];
@@ -38,18 +71,22 @@ export function montarLocalizacao(equip: any): string {
     partes.push(`UG ${equip.ug_codigo || equip.ug}`);
   }
 
-  // 2º+3º nível — Local de Instalação (código + nome juntos)
-  const codigo = equip.codigo_sap || equip.centro_trabalho_sap;
-  const maquina = equip.maquina || equip.centro_trabalho_nome;
-  const localInstalacao = [codigo, maquina].filter(Boolean).join(' - ');
-
-  if (localInstalacao) {
-    partes.push(localInstalacao);
-  } else if (equip.linha_nome || equip.linha) {
-    partes.push(equip.linha_nome || equip.linha);
+  // 2º nível — Local de Instalação extraído ou do CT
+  const localExtraido = extrairLocal(equip.centro_trabalho || equip.centro_trabalho_nome);
+  if (localExtraido) {
+    partes.push(localExtraido);
+  } else {
+    const codigo = equip.codigo_sap || equip.centro_trabalho_sap;
+    const maquina = equip.maquina || equip.centro_trabalho_nome;
+    const localInstalacao = [codigo, maquina].filter(Boolean).join(' - ');
+    if (localInstalacao) {
+      partes.push(localInstalacao);
+    } else if (equip.linha_nome || equip.linha) {
+      partes.push(equip.linha_nome || equip.linha);
+    }
   }
 
-  // 4º nível — Tag AMBEV só se existir
+  // 3º nível — Tag AMBEV / Tag SAP só se existir
   if (equip.tag_sap) {
     partes.push(equip.tag_sap);
   }

@@ -319,19 +319,13 @@ export const Orcamentos: React.FC = () => {
           </p>
         </div>
 
-        {/* Aguardando Aprovação AMBEV com Alerta de 15 dias */}
-        <div className="card border border-[#2C343E] rounded-[4px] p-3.5 relative overflow-hidden flex flex-col justify-between">
-          {orcamentosEmAlerta.length > 0 && (
-            <div className="absolute top-2 right-2 flex items-center gap-1 bg-[#E5484D]/20  border border-[#E5484D]/50 px-2 py-0.5 rounded text-[10px]  font-bold animate-pulse">
-              <Bell className="w-3 h-3 " />
-              <span>{orcamentosEmAlerta.length} em alerta (&gt;15d)</span>
-            </div>
-          )}
+        {/* Aguardando Aprovação AMBEV */}
+        <div className="card border border-[#2C343E] rounded-[4px] p-3.5 flex flex-col justify-between">
           <div>
-            <span className="text-[10px]  uppercase  block mb-1 font-bold">
+            <span className="text-[10px] uppercase block mb-1 font-bold">
               Aguardando Aprovação AMBEV
             </span>
-            <div className="text-2xl font-condensed font-bold ">
+            <div className="text-2xl font-condensed font-bold">
               {formatCurrency(totalPendente)}
             </div>
           </div>

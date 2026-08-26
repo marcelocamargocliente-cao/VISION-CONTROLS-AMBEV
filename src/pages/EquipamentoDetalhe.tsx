@@ -35,7 +35,7 @@ import { IndustrialTag } from '../components/common/IndustrialTag';
 import { StatusBadge } from '../components/common/StatusBadge';
 import { EmptyState } from '../components/common/EmptyState';
 import { useAuth } from '../context/AuthContext';
-import { formatDate, formatDateTime } from '../utils/formatters';
+import { formatDate, formatDateTime, extrairLocal } from '../utils/formatters';
 
 export const EquipamentoDetalhe: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -279,102 +279,190 @@ export const EquipamentoDetalhe: React.FC = () => {
             </div>
           )}
 
-          {/* Identificação & Localização */}
+          {/* Seção 1 — LOCALIZAÇÃO */}
           <div>
-            <h3 className="text-xs  font-bold  uppercase tracking-wider mb-3 pb-1 border-b border-[#2C343E]">
-              1. Localização Física & Hierarquia Fabril (AMBEV RJ)
+            <h3 className="text-xs font-bold uppercase tracking-wider mb-3 pb-1 border-b border-[#2C343E]">
+              1. Localização
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-              {/* UG — sempre mostra */}
-              <div>
-                <span className="block text-[10px] uppercase text-gray-400">UG — Unidade Gerencial</span>
-                <p className="text-sm font-semibold mt-0.5 flex items-center gap-1.5">
-                  <span className="px-1.5 py-0.5 bg-[#F5A623]/10 text-[#F5A623] border border-[#F5A623]/30 rounded font-bold text-[11px]">
-                    {equipamento.ug_codigo}
-                  </span>
-                  <span>{equipamento.ug_nome}</span>
-                </p>
-              </div>
-
-              {/* Local de Instalação — código + nome juntos */}
-              {((equipamento.centro_trabalho_sap || (equipamento as any).codigo_sap) || (equipamento.centro_trabalho_nome || (equipamento as any).maquina)) ? (
-                <div>
-                  <span className="block text-[10px] uppercase text-gray-400">Local de Instalação</span>
-                  <p className="text-sm font-semibold mt-0.5">
-                    {[(equipamento.centro_trabalho_sap || (equipamento as any).codigo_sap), (equipamento.centro_trabalho_nome || (equipamento as any).maquina)].filter(Boolean).join(' - ')}
-                  </p>
-                </div>
-              ) : (
-                equipamento.linha_nome && (
-                  <div>
-                    <span className="block text-[10px] uppercase text-gray-400">Local de Instalação</span>
-                    <p className="text-sm font-semibold mt-0.5">{equipamento.linha_nome}</p>
-                  </div>
-                )
-              )}
-
-              {/* Tag AMBEV — 4º nível, só mostra se existir */}
-              {equipamento.tag_sap && (
-                <div>
-                  <span className="block text-[10px] uppercase text-gray-400">Tag AMBEV</span>
-                  <p className="text-sm font-semibold text-cyan-400 mt-0.5">{equipamento.tag_sap}</p>
-                </div>
-              )}
-
-              {/* Tag Vision */}
-              <div>
-                <span className="block text-[10px] uppercase text-gray-400">Tag Vision</span>
-                <p className="text-sm font-semibold text-cyan-400 mt-0.5">{equipamento.patrimonio || '—'}</p>
-              </div>
-            </div>
-
-            {/* Sublocal — só mostra se existir ou em edição */}
             {isEditing ? (
-              <div className="mt-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <Campo label="UG" field="ug_codigo" />
+                <Campo label="Centro de Trabalho / Local" field="centro_trabalho" />
+                <Campo label="Tag AMBEV (Tag SAP)" field="tag_sap" />
                 <Campo label="Sublocal / Posição" field="sublocal" />
               </div>
-            ) : equipamento.sublocal && (
-              <div className="mt-3 text-xs">
-                <strong className="text-gray-400">Sublocal / Posição:</strong> {equipamento.sublocal}
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                {/* UG: sempre mostra */}
+                <div>
+                  <span className="block text-[10px] uppercase text-gray-400 font-bold">UG</span>
+                  <p className="text-sm font-semibold mt-0.5 flex items-center gap-1.5">
+                    <span className="px-1.5 py-0.5 bg-[#F5A623]/10 text-[#F5A623] border border-[#F5A623]/30 rounded font-bold text-[11px]">
+                      UG {equipamento.ug_codigo || '—'}
+                    </span>
+                  </p>
+                </div>
+
+                {/* Local de Instalação: só se existir */}
+                {(equipamento.local_instalacao || extrairLocal(equipamento.centro_trabalho || equipamento.centro_trabalho_nome)) ? (
+                  <div>
+                    <span className="block text-[10px] uppercase text-gray-400 font-bold">Local de Instalação</span>
+                    <p className="text-sm font-semibold text-white mt-0.5">
+                      {equipamento.local_instalacao || extrairLocal(equipamento.centro_trabalho || equipamento.centro_trabalho_nome)}
+                    </p>
+                  </div>
+                ) : null}
+
+                {/* Tag AMBEV: só se existir */}
+                {equipamento.tag_sap ? (
+                  <div>
+                    <span className="block text-[10px] uppercase text-gray-400 font-bold">Tag AMBEV</span>
+                    <p className="text-sm font-semibold text-cyan-400 mt-0.5 font-mono">
+                      {equipamento.tag_sap}
+                    </p>
+                  </div>
+                ) : null}
+
+                {/* Sublocal: só se existir */}
+                {equipamento.sublocal ? (
+                  <div>
+                    <span className="block text-[10px] uppercase text-gray-400 font-bold">Sublocal</span>
+                    <p className="text-sm font-semibold text-gray-200 mt-0.5">
+                      {equipamento.sublocal}
+                    </p>
+                  </div>
+                ) : null}
               </div>
             )}
           </div>
 
-          {/* Especificações Técnicas (Editáveis) */}
+          {/* Seção 2 — IDENTIFICAÇÃO DO EQUIPAMENTO */}
           <div>
-            <h3 className="text-xs  font-bold  uppercase tracking-wider mb-3 pb-1 border-b border-[#2C343E]">
-              2. Parâmetros Eletromecânicos & Refrigeração
+            <h3 className="text-xs font-bold uppercase tracking-wider mb-3 pb-1 border-b border-[#2C343E]">
+              2. Identificação do Equipamento
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              <Campo label="Tipo de Climatizador" field="tipo" />
-              <Campo label="Marca / Fabricante" field="marca" />
-              <Campo label="Modelo Comercial" field="modelo" />
-              <Campo label="Tag AMBEV" field="tag_sap" />
-              <Campo label="Tag Vision" field="patrimonio" />
-              <Campo label="Nº de Série" field="numero_serie" />
-              <Campo label="Capacidade Térmica" field="capacidade" />
-              <Campo label="Tensão / Corrente Nominal" field="tensao" />
-              <Campo label="Fluido Refrigerante" field="gas_refrigerante" />
-              <Campo label="Ano / PPAC" field="ppac" />
-              <Campo
-                label="Status Operacional"
-                field="status"
-                options={[
-                  {value:'OK', label:'Operando (OK)'},
-                  {value:'RESTRICAO', label:'Restrição Operacional'},
-                  {value:'PARADO', label:'Parado (Crítico)'},
-                  {value:'DESATIVADO', label:'Desativado'},
-                ]}
-              />
-            </div>
+            {isEditing ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <Campo label="Tag Vision" field="tag" />
+                <Campo label="Tag AMBEV (Patrimônio)" field="patrimonio" />
+                <Campo label="Tipo de Equipamento" field="tipo" />
+                <Campo label="Marca" field="marca" />
+                <Campo label="Modelo" field="modelo" />
+                <Campo label="Nº de Série" field="numero_serie" />
+                <Campo label="Capacidade" field="capacidade" />
+                <Campo label="PPAC" field="ppac" />
+                <Campo
+                  label="Status Operacional"
+                  field="status"
+                  options={[
+                    { value: 'OK', label: 'Operando (OK)' },
+                    { value: 'RESTRICAO', label: 'Restrição' },
+                    { value: 'PARADO', label: 'Parado (Crítico)' },
+                    { value: 'DESATIVADO', label: 'Desativado' },
+                  ]}
+                />
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                {/* Tag Vision: sempre */}
+                <div>
+                  <span className="block text-[10px] uppercase text-gray-400 font-bold">Tag Vision</span>
+                  <p className="text-sm font-semibold text-blue-400 mt-0.5 font-mono">
+                    TAG {equipamento.tag}
+                  </p>
+                </div>
+
+                {/* Tag AMBEV (Patrimônio): só se existir */}
+                {equipamento.patrimonio ? (
+                  <div>
+                    <span className="block text-[10px] uppercase text-gray-400 font-bold">Tag AMBEV (Patrimônio)</span>
+                    <p className="text-sm font-semibold text-cyan-400 mt-0.5">
+                      {equipamento.patrimonio}
+                    </p>
+                  </div>
+                ) : null}
+
+                {/* Tipo: sempre */}
+                <div>
+                  <span className="block text-[10px] uppercase text-gray-400 font-bold">Tipo</span>
+                  <p className="text-sm font-semibold text-white mt-0.5">
+                    {equipamento.tipo}
+                  </p>
+                </div>
+
+                {/* Marca: só se existir */}
+                {equipamento.marca ? (
+                  <div>
+                    <span className="block text-[10px] uppercase text-gray-400 font-bold">Marca</span>
+                    <p className="text-sm font-semibold text-gray-200 mt-0.5">
+                      {equipamento.marca}
+                    </p>
+                  </div>
+                ) : null}
+
+                {/* Modelo: só se existir */}
+                {equipamento.modelo ? (
+                  <div>
+                    <span className="block text-[10px] uppercase text-gray-400 font-bold">Modelo</span>
+                    <p className="text-sm font-semibold text-gray-200 mt-0.5">
+                      {equipamento.modelo}
+                    </p>
+                  </div>
+                ) : null}
+
+                {/* Nº de Série: só se existir */}
+                {equipamento.numero_serie ? (
+                  <div>
+                    <span className="block text-[10px] uppercase text-gray-400 font-bold">Nº de Série</span>
+                    <p className="text-sm font-semibold text-gray-200 mt-0.5 font-mono">
+                      {equipamento.numero_serie}
+                    </p>
+                  </div>
+                ) : null}
+
+                {/* Capacidade: só se existir */}
+                {equipamento.capacidade ? (
+                  <div>
+                    <span className="block text-[10px] uppercase text-gray-400 font-bold">Capacidade</span>
+                    <p className="text-sm font-semibold text-gray-200 mt-0.5 font-mono">
+                      {equipamento.capacidade}
+                    </p>
+                  </div>
+                ) : null}
+
+                {/* PPAC: só se existir */}
+                {equipamento.ppac ? (
+                  <div>
+                    <span className="block text-[10px] uppercase text-gray-400 font-bold">PPAC</span>
+                    <p className="text-sm font-semibold text-gray-200 mt-0.5">
+                      {equipamento.ppac}
+                    </p>
+                  </div>
+                ) : null}
+
+                {/* Status: sempre */}
+                <div>
+                  <span className="block text-[10px] uppercase text-gray-400 font-bold">Status</span>
+                  <div className="mt-1">
+                    <StatusBadge type="equip" status={equipamento.status} size="sm" />
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Observações */}
+          {/* Seção 3 — OBSERVAÇÕES */}
           <div>
-            <h3 className="text-xs  font-bold  uppercase tracking-wider mb-3 pb-1 border-b border-[#2C343E]">
-              3. Observações de Campo & Diagnóstico
+            <h3 className="text-xs font-bold uppercase tracking-wider mb-3 pb-1 border-b border-[#2C343E]">
+              3. Observações
             </h3>
-            <Campo label="Observações de Campo & Diagnóstico" field="observacoes" isTextArea={true} />
+            {isEditing ? (
+              <Campo label="Observações" field="observacoes" isTextArea={true} />
+            ) : (
+              <div className="p-3 bg-[#0A0E1A] border border-[#2C343E] rounded text-xs text-gray-300 min-h-[60px] leading-relaxed">
+                {equipamento.observacoes || <span className="text-gray-500 italic">Nenhuma observação registrada.</span>}
+              </div>
+            )}
           </div>
         </div>
       )}

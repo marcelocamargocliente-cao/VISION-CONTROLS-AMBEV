@@ -42,8 +42,10 @@ import {
   INITIAL_LEVANTAMENTO_LEGADO,
 } from './mockData';
 
+import { extrairLocal } from '../utils/formatters';
+
 // Local storage keys for caching and optimistic updates
-const STORAGE_KEY = 'IVCA_DATABASE_LOCAL_V1';
+const STORAGE_KEY = 'IVCA_DATABASE_LOCAL_V3';
 
 interface LocalDbState {
   profiles: Profile[];
@@ -166,10 +168,10 @@ export const DataStore = {
     const ctsMap = new Map(dbState.centros_trabalho.map((c) => [c.id, c]));
 
     let list = dbState.equipamentos.map((eq) => {
-      const ug = ugsMap.get(eq.ug_id);
-      const area = areasMap.get(eq.area_id);
-      const linha = linhasMap.get(eq.linha_id);
-      const ct = ctsMap.get(eq.centro_trabalho_id);
+      const ug = eq.ug_id ? ugsMap.get(eq.ug_id) : undefined;
+      const area = eq.area_id ? areasMap.get(eq.area_id) : undefined;
+      const linha = eq.linha_id ? linhasMap.get(eq.linha_id) : undefined;
+      const ct = eq.centro_trabalho_id ? ctsMap.get(eq.centro_trabalho_id) : undefined;
 
       const openOcc = dbState.ocorrencias.find(
         (o) => o.equipamento_id === eq.id && o.status !== 'CONCLUIDA' && o.status !== 'CANCELADA'
@@ -181,14 +183,20 @@ export const DataStore = {
         diasParado = Math.max(0, diff);
       }
 
+      const ugCodigo = eq.ug_codigo || ug?.codigo || 'N/D';
+      const ugNome = ug?.nome || (eq.ug_codigo ? `UG ${eq.ug_codigo}` : 'UG Não Definida');
+      const ctTexto = eq.centro_trabalho || ct?.nome || '';
+      const localExtraido = extrairLocal(ctTexto);
+
       return {
         ...eq,
-        ug_codigo: ug?.codigo || 'N/D',
-        ug_nome: ug?.nome || 'UG Não Definida',
-        area_nome: area?.nome || 'Área Não Definida',
-        linha_nome: linha?.nome || 'Linha Não Definida',
-        centro_trabalho_nome: ct?.nome || 'CT Não Definido',
-        centro_trabalho_sap: ct?.codigo_sap,
+        ug_codigo: ugCodigo,
+        ug_nome: ugNome,
+        area_nome: area?.nome || 'Área Geral',
+        linha_nome: linha?.nome || 'Linha Geral',
+        centro_trabalho_nome: ctTexto || 'CT Não Definido',
+        centro_trabalho_sap: eq.tag_sap || ct?.codigo_sap,
+        local_instalacao: localExtraido,
         total_ocorrencias_abertas: openOcc ? 1 : 0,
         dias_parado_atual: diasParado,
       } as VwEquipamento;
@@ -754,9 +762,12 @@ export const DataStore = {
       data_envio: orc.data_envio || new Date().toISOString(),
       enviado_para: orc.enviado_para,
       validade: orc.validade,
-      status: orc.status || 'ELABORACAO',
+      status: orc.status || 'RASCUNHO',
       arquivo_pdf_url: orc.arquivo_pdf_url,
+      arquivo_url: orc.arquivo_url || orc.arquivo_pdf_url,
+      descricao_anomalia: orc.descricao_anomalia,
       observacoes: orc.observacoes,
+      pecas: orc.pecas,
       created_at: new Date().toISOString(),
     };
 

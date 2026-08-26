@@ -16,9 +16,9 @@ import {
   Area,
   Linha,
   CentroTrabalho,
-  
   Equipamento,
 } from '../types/database';
+import { extrairLocal } from '../utils/formatters';
 import { EmptyState } from '../components/common/EmptyState';
 import { useAuth } from '../context/AuthContext';
 
@@ -101,18 +101,22 @@ export const Equipamentos: React.FC = () => {
   // Filtered equipments
   const filteredEquipamentos = equipamentos.filter((eq) => {
     const term = searchTerm.toLowerCase();
+    const localInstalacao = eq.local_instalacao || extrairLocal(eq.centro_trabalho || eq.centro_trabalho_nome);
     const matchesSearch =
       !term ||
       eq.tag.toLowerCase().includes(term) ||
       (eq.patrimonio && eq.patrimonio.toLowerCase().includes(term)) ||
       (eq.tag_sap && eq.tag_sap.toLowerCase().includes(term)) ||
-      eq.modelo.toLowerCase().includes(term) ||
-      eq.marca.toLowerCase().includes(term) ||
-      eq.tipo.toLowerCase().includes(term) ||
-      eq.linha_nome.toLowerCase().includes(term) ||
-      eq.centro_trabalho_nome.toLowerCase().includes(term);
+      (eq.modelo && eq.modelo.toLowerCase().includes(term)) ||
+      (eq.marca && eq.marca.toLowerCase().includes(term)) ||
+      (eq.tipo && eq.tipo.toLowerCase().includes(term)) ||
+      (eq.ug_codigo && eq.ug_codigo.toLowerCase().includes(term)) ||
+      (eq.capacidade && eq.capacidade.toLowerCase().includes(term)) ||
+      (localInstalacao && localInstalacao.toLowerCase().includes(term)) ||
+      (eq.linha_nome && eq.linha_nome.toLowerCase().includes(term)) ||
+      (eq.centro_trabalho_nome && eq.centro_trabalho_nome.toLowerCase().includes(term));
 
-    const matchesUg = !selectedUg || eq.ug_id === selectedUg;
+    const matchesUg = !selectedUg || eq.ug_id === selectedUg || eq.ug_codigo === selectedUg;
     const matchesArea = !selectedArea || eq.area_id === selectedArea;
     const matchesLinha = !selectedLinha || eq.linha_id === selectedLinha;
     const matchesTipo = !selectedTipo || eq.tipo === selectedTipo;
@@ -324,12 +328,12 @@ export const Equipamentos: React.FC = () => {
           <table className="w-full text-left border-collapse table-fixed">
             {/* CABEÇALHO DA TABELA (sticky) */}
             <thead className="sticky top-0 z-10 bg-[#1a2235] border-b border-blue-500/20 shadow-sm">
-              <tr className="  text-[10px] uppercase tracking-wider h-[36px]">
+              <tr className="text-[10px] uppercase tracking-wider h-[36px]">
                 <th className="py-2 px-3 w-[75px]">TAG</th>
-                <th className="py-2 px-3 w-[180px]">Tipo & Fabricante</th>
+                <th className="py-2 px-3 w-[200px]">Tipo & Fabricante</th>
                 <th className="py-2 px-3 w-[140px]">Tag AMBEV / Tag Vision</th>
-                <th className="py-2 px-3">Localização (UG / Local de Instalação)</th>
-                <th className="py-2 px-3 w-[150px]">Capacidade / Gás</th>
+                <th className="py-2 px-3">UG & Local de Instalação</th>
+                <th className="py-2 px-3 w-[120px]">Capacidade</th>
                 <th className="py-2 px-3 w-[140px] text-center">Status</th>
                 <th className="py-2 px-3 w-[75px] text-right">Ação</th>
               </tr>
@@ -341,6 +345,7 @@ export const Equipamentos: React.FC = () => {
                 const isParado = eq.status === 'PARADO';
                 const isRestricao = eq.status === 'RESTRICAO';
                 const isOk = eq.status === 'OK';
+                const localInstalacao = eq.local_instalacao || extrairLocal(eq.centro_trabalho || eq.centro_trabalho_nome);
 
                 return (
                   <tr
@@ -348,58 +353,57 @@ export const Equipamentos: React.FC = () => {
                     onClick={() => navigate(`/equipamentos/${eq.id}`)}
                     className="h-[52px] hover:bg-blue-500/[0.05] cursor-pointer transition-colors duration-150 group"
                   >
-                    {/* TAG: badge TAG 360 */}
+                    {/* TAG: badge TAG */}
                     <td className="py-2 px-3 align-middle w-[75px]">
-                      <span className="bg-[#1E3A5F] text-blue-400  font-bold text-[11px] rounded px-2 py-1 inline-flex items-center gap-1 border border-blue-500/30">
+                      <span className="bg-[#1E3A5F] text-blue-400 font-bold text-[11px] rounded px-2 py-1 inline-flex items-center gap-1 border border-blue-500/30 font-mono">
                         <span className="opacity-60 text-[9px]">TAG</span>
                         <span>{eq.tag}</span>
                       </span>
                     </td>
 
                     {/* TIPO & FABRICANTE */}
-                    <td className="py-2 px-3 align-middle w-[180px] min-w-0">
-                      <div className="font-bold  text-[12px] truncate leading-tight">
+                    <td className="py-2 px-3 align-middle w-[200px] min-w-0">
+                      <div className="font-bold text-[12px] truncate leading-tight text-white">
                         {eq.tipo}
                       </div>
-                      <div className="text-[10px]  truncate leading-tight">
-                        {eq.marca} · {eq.modelo}
+                      <div className="text-[10px] text-gray-400 truncate leading-tight mt-0.5">
+                        {[eq.marca, eq.modelo].filter(Boolean).join(' · ') || '—'}
                       </div>
                     </td>
 
                     {/* TAG AMBEV / TAG VISION */}
-                    <td className="py-2 px-3 align-middle w-[140px] min-w-0 ">
+                    <td className="py-2 px-3 align-middle w-[140px] min-w-0">
                       <div className="text-cyan-400 text-[11px] font-semibold truncate leading-tight">
-                        {eq.tag_sap || '-'}
+                        {eq.patrimonio || '—'}
                       </div>
-                      <div className=" text-[10px] truncate leading-tight">
-                        {eq.patrimonio || '-'}
+                      <div className="text-gray-400 text-[10px] truncate leading-tight mt-0.5 font-mono">
+                        TAG {eq.tag}
                       </div>
                     </td>
 
-                    {/* LOCALIZAÇÃO (UG / LOCAL DE INSTALAÇÃO) */}
+                    {/* UG & LOCAL DE INSTALAÇÃO */}
                     <td className="py-2 px-3 align-middle min-w-0">
                       <div className="flex items-center gap-1.5 leading-tight truncate">
                         <span className="px-1.5 py-0.5 bg-[#F5A623]/10 text-[#F5A623] border border-[#F5A623]/30 rounded font-bold text-[10px] shrink-0">
-                          UG {eq.ug_codigo}
+                          UG {eq.ug_codigo || '—'}
                         </span>
-                        <span className="text-[12px] font-medium text-white truncate">
-                          {[eq.centro_trabalho_sap || (eq as any).codigo_sap, eq.centro_trabalho_nome || (eq as any).maquina].filter(Boolean).join(' - ') || eq.linha_nome || eq.area_nome}
-                        </span>
+                        {localInstalacao ? (
+                          <span className="text-[12px] font-medium text-white truncate">
+                            · {localInstalacao}
+                          </span>
+                        ) : null}
                       </div>
                       {eq.tag_sap && (
-                        <div className="text-[11px] text-cyan-400/80 mt-0.5 truncate leading-tight">
+                        <div className="text-[10px] text-cyan-400/70 mt-0.5 truncate leading-tight font-mono">
                           {eq.tag_sap}
                         </div>
                       )}
                     </td>
 
-                    {/* CAPACIDADE / GÁS */}
-                    <td className="py-2 px-3 align-middle w-[150px] min-w-0 ">
-                      <div className="text-[11px]  truncate leading-tight">
-                        {eq.capacidade || '-'}
-                      </div>
-                      <div className="text-[10px]  truncate leading-tight">
-                        {eq.gas_refrigerante || '-'}
+                    {/* CAPACIDADE */}
+                    <td className="py-2 px-3 align-middle w-[120px] min-w-0">
+                      <div className="text-[11px] text-gray-200 truncate leading-tight font-mono">
+                        {eq.capacidade || '—'}
                       </div>
                     </td>
 
@@ -427,7 +431,7 @@ export const Equipamentos: React.FC = () => {
                       )}
 
                       {!isParado && !isRestricao && !isOk && (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gray-500/15  border border-gray-500/30 whitespace-nowrap">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gray-500/15 text-gray-400 border border-gray-500/30 whitespace-nowrap">
                           <span className="w-1.5 h-1.5 rounded-full bg-gray-400 shrink-0" />
                           <span>{eq.status}</span>
                         </span>
