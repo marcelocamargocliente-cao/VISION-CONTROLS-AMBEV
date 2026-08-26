@@ -204,421 +204,433 @@ export const NovaOcorrencia: React.FC = () => {
   };
 
   return (
-    <div className="p-4 md:p-6 max-w-4xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-3 border-b border-[#2C343E] pb-4">
-        <button
-          onClick={() => navigate(-1)}
-          className="p-2 rounded-[4px] bg-[#1C222A] hover:bg-[#232B35] text-[#94A3B8] hover:text-[#ECEFF1] border border-[#2C343E]"
-        >
-          <ArrowLeft className="w-4 h-4" />
-        </button>
-        <div>
-          <div className="flex items-center gap-2 mb-0.5">
-            <span className="text-[10px] font-mono tracking-widest text-[#E5484D] bg-[#E5484D]/15 px-2 py-0.5 rounded-[2px] border border-[#E5484D]/30 uppercase font-bold">
-              Registro de Campo (Mobile-First)
-            </span>
-          </div>
-          <h2 className="text-xl font-condensed font-bold text-[#ECEFF1] tracking-wide uppercase">
-            Abertura de Ocorrência Corretiva
-          </h2>
-        </div>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-6 text-xs">
-        {/* STEP 1: EQUIPAMENTO */}
-        <div className="bg-[#1C222A] border border-[#2C343E] rounded-[4px] p-4 space-y-3">
-          <div className="flex items-center justify-between border-b border-[#2C343E] pb-2">
-            <div className="flex items-center gap-2">
-              <span className="w-5 h-5 rounded-full bg-[#F5A623] text-[#14181D] font-bold text-xs flex items-center justify-center">
-                1
-              </span>
-              <h3 className="font-condensed font-bold text-sm text-[#ECEFF1] uppercase">
-                Equipamento & Localização
-              </h3>
-            </div>
-            {selectedEquip && (
-              <button
-                type="button"
-                onClick={() => setSelectedEquip(null)}
-                className="text-[11px] text-[#F5A623] hover:underline"
-              >
-                Trocar Equipamento
-              </button>
-            )}
-          </div>
-
-          {!selectedEquip ? (
-            <div className="space-y-2">
-              <label className="block text-[10px] font-mono uppercase text-[#94A3B8]">
-                Digite a TAG, Patrimônio ou Máquina para buscar:
-              </label>
-              <div className="relative">
-                <Search className="w-4 h-4 text-[#94A3B8] absolute left-3 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  value={equipSearch}
-                  onChange={(e) => setEquipSearch(e.target.value)}
-                  placeholder="Ex: 361, Blue e+, L101..."
-                  className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#F5A623] text-[#ECEFF1] text-xs rounded-[3px] pl-9 pr-3 py-2.5 outline-none font-mono"
-                />
-              </div>
-
-              {equipSearch && filteredEquips.length > 0 && (
-                <div className="bg-[#14181D] border border-[#2C343E] rounded-[3px] max-h-48 overflow-y-auto divide-y divide-[#2C343E]">
-                  {filteredEquips.map((eq) => (
-                    <button
-                      key={eq.id}
-                      type="button"
-                      onClick={() => handleSelectEquip(eq)}
-                      className="w-full p-2 text-left hover:bg-[#232B35] flex items-center justify-between transition-colors"
-                    >
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <IndustrialTag tag={eq.tag} size="sm" />
-                          <span className="font-semibold text-[#ECEFF1]">{eq.tipo} ({eq.marca} {eq.modelo})</span>
-                        </div>
-                        <div className="text-[10px] text-[#94A3B8] font-mono mt-0.5">
-                          {eq.ug_codigo} • {eq.linha_nome} • {eq.centro_trabalho_nome}
-                        </div>
-                      </div>
-                      <span className="text-[10px] text-[#38BDF8] font-mono">{eq.tag_sap || ''}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="p-3 bg-[#14181D] border border-[#2C343E] rounded-[3px] grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div>
-                <span className="text-[10px] font-mono uppercase text-[#94A3B8] block">Ativo Selecionado</span>
-                <div className="flex items-center gap-2 mt-1">
-                  <IndustrialTag tag={selectedEquip.tag} size="md" />
-                  <span className="font-bold text-[#ECEFF1]">{selectedEquip.tipo}</span>
-                </div>
-                <p className="text-[11px] text-[#94A3B8] mt-0.5">{selectedEquip.marca} {selectedEquip.modelo}</p>
-              </div>
-
-              <div>
-                <span className="text-[10px] font-mono uppercase text-[#94A3B8] block">Localização na Cervejaria</span>
-                <p className="font-semibold text-[#ECEFF1] mt-1">{selectedEquip.linha_nome}</p>
-                <p className="text-[11px] text-[#94A3B8]">{selectedEquip.ug_codigo} • {selectedEquip.centro_trabalho_nome}</p>
-              </div>
-
-              <div>
-                <span className="text-[10px] font-mono uppercase text-[#94A3B8] block">Dados SAP / Elétrico</span>
-                <p className="font-mono text-[#38BDF8] mt-1">{selectedEquip.tag_sap || 'Sem Tag SAP'}</p>
-                <p className="text-[11px] text-[#94A3B8] font-mono">{selectedEquip.tensao} • {selectedEquip.gas_refrigerante}</p>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* STEP 2: GRAVIDADE & DATAS */}
-        <div className="bg-[#1C222A] border border-[#2C343E] rounded-[4px] p-4 space-y-4">
-          <div className="flex items-center gap-2 border-b border-[#2C343E] pb-2">
-            <span className="w-5 h-5 rounded-full bg-[#F5A623] text-[#14181D] font-bold text-xs flex items-center justify-center">
-              2
-            </span>
-            <h3 className="font-condensed font-bold text-sm text-[#ECEFF1] uppercase">
-              Parâmetros Operacionais & Criticidade
-            </h3>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
-            {/* Tipo de Serviço */}
-            <div>
-              <label className="block text-[10px] font-mono uppercase text-[#94A3B8] mb-1">Tipo de Serviço</label>
-              <select
-                value={tipoServico}
-                onChange={(e) => setTipoServico(e.target.value as any)}
-                className="w-full bg-[#14181D] border border-[#2C343E] text-[#ECEFF1] p-2.5 rounded-[3px] outline-none"
-              >
-                <option value="CORRETIVA">Corretiva</option>
-                <option value="PREVENTIVA">Preventiva</option>
-                <option value="MELHORIA">Melhoria</option>
-                <option value="EMERGENCIAL">Emergencial</option>
-              </select>
-            </div>
-
-            {/* Criticidade */}
-            <div>
-              <label className="block text-[10px] font-mono uppercase text-[#94A3B8] mb-1">Criticidade</label>
-              <select
-                value={criticidade}
-                onChange={(e) => setCriticidade(e.target.value as Criticidade)}
-                className="w-full bg-[#14181D] border border-[#2C343E] text-[#ECEFF1] p-2.5 rounded-[3px] outline-none font-bold"
-              >
-                <option value="CRITICA">🔴 Crítica (Impacto em Linha)</option>
-                <option value="ALTA">🟠 Alta</option>
-                <option value="MEDIA">🟡 Média</option>
-                <option value="BAIXA">🟢 Baixa</option>
-              </select>
-            </div>
-
-            {/* Data da Avaria */}
-            <div>
-              <label className="block text-[10px] font-mono uppercase text-[#94A3B8] mb-1">Data da Avaria*</label>
-              <input
-                type="date"
-                required
-                value={dataAvaria}
-                onChange={(e) => setDataAvaria(e.target.value)}
-                className="w-full bg-[#14181D] border border-[#2C343E] text-[#ECEFF1] p-2.5 rounded-[3px] outline-none font-mono"
-              />
-            </div>
-
-            {/* Previsão Retorno */}
-            <div>
-              <label className="block text-[10px] font-mono uppercase text-[#94A3B8] mb-1">Previsão Retorno</label>
-              <input
-                type="date"
-                value={previsaoRetorno}
-                onChange={(e) => setPrevisaoRetorno(e.target.value)}
-                className="w-full bg-[#14181D] border border-[#2C343E] text-[#ECEFF1] p-2.5 rounded-[3px] outline-none font-mono"
-              />
-            </div>
-          </div>
-
-          {/* Impactos Imediatos */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-            <label className="flex items-center gap-3 p-3 rounded-[3px] bg-[#14181D] border border-[#2C343E] cursor-pointer hover:border-[#E5484D]/60 transition-colors">
-              <input
-                type="checkbox"
-                checked={equipamentoParado}
-                onChange={(e) => setEquipamentoParado(e.target.checked)}
-                className="w-4 h-4 rounded border-[#2C343E] text-[#E5484D] focus:ring-0"
-              />
-              <div>
-                <p className="text-xs font-bold text-[#FF6B6B]">Equipamento Está Parado Agora</p>
-                <p className="text-[10px] text-[#94A3B8]">Atualiza o status do ativo no banco para PARADO e entra no aging.</p>
-              </div>
-            </label>
-
-            <label className="flex items-center gap-3 p-3 rounded-[3px] bg-[#14181D] border border-[#2C343E] cursor-pointer hover:border-[#E5484D]/60 transition-colors">
-              <input
-                type="checkbox"
-                checked={parouLinha}
-                onChange={(e) => setParouLinha(e.target.checked)}
-                className="w-4 h-4 rounded border-[#2C343E] text-[#E5484D] focus:ring-0"
-              />
-              <div>
-                <p className="text-xs font-bold text-[#FF8787]">Parou a Linha de Produção (AMBEV)</p>
-                <p className="text-[10px] text-[#94A3B8]">Sinaliza parada de envasamento / processo industrial.</p>
-              </div>
-            </label>
-          </div>
-        </div>
-
-        {/* STEP 3: DIAGNÓSTICO & SAP */}
-        <div className="bg-[#1C222A] border border-[#2C343E] rounded-[4px] p-4 space-y-4">
-          <div className="flex items-center gap-2 border-b border-[#2C343E] pb-2">
-            <span className="w-5 h-5 rounded-full bg-[#F5A623] text-[#14181D] font-bold text-xs flex items-center justify-center">
-              3
-            </span>
-            <h3 className="font-condensed font-bold text-sm text-[#ECEFF1] uppercase">
-              Diagnóstico de Campo & Códigos SAP
-            </h3>
-          </div>
-
-          <div>
-            <label className="block text-[10px] font-mono uppercase text-[#94A3B8] mb-1">
-              Descrição da Anomalia / Sintoma Observado*
-            </label>
-            <textarea
-              required
-              rows={3}
-              value={descricaoAnomalia}
-              onChange={(e) => setDescricaoAnomalia(e.target.value)}
-              placeholder="Ex: Alarme de alta pressão no display; compressor desarmando por sobrecorrente; ventilador do condensador travado..."
-              className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#F5A623] text-[#ECEFF1] p-3 rounded-[3px] outline-none leading-relaxed"
-            />
-          </div>
-
-          <div>
-            <label className="block text-[10px] font-mono uppercase text-[#94A3B8] mb-1">
-              Causa Provável / Diagnóstico Técnico
-            </label>
-            <input
-              type="text"
-              value={causaProvavel}
-              onChange={(e) => setCausaProvavel(e.target.value)}
-              placeholder="Ex: Queima da bobina do ventilador ou vazamento na válvula Schrader"
-              className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#F5A623] text-[#ECEFF1] p-2.5 rounded-[3px] outline-none"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div>
-              <label className="block text-[10px] font-mono uppercase text-[#94A3B8] mb-1">Nota SAP AMBEV</label>
-              <input
-                type="text"
-                value={notaSap}
-                onChange={(e) => setNotaSap(e.target.value)}
-                placeholder="Ex: 10045892"
-                className="w-full bg-[#14181D] border border-[#2C343E] text-[#ECEFF1] p-2 rounded-[3px] font-mono"
-              />
-            </div>
-
-            <div>
-              <label className="block text-[10px] font-mono uppercase text-[#94A3B8] mb-1">Ordem SAP AMBEV</label>
-              <input
-                type="text"
-                value={ordemSap}
-                onChange={(e) => setOrdemSap(e.target.value)}
-                placeholder="Ex: 40019283"
-                className="w-full bg-[#14181D] border border-[#2C343E] text-[#ECEFF1] p-2 rounded-[3px] font-mono"
-              />
-            </div>
-
-            <div>
-              <label className="block text-[10px] font-mono uppercase text-[#94A3B8] mb-1">Ordem Interna Vision</label>
-              <input
-                type="text"
-                value={ordemVision}
-                onChange={(e) => setOrdemVision(e.target.value)}
-                className="w-full bg-[#14181D] border border-[#2C343E] text-[#ECEFF1] p-2 rounded-[3px] font-mono"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* STEP 4: PEÇAS NECESSÁRIAS */}
-        <div className="bg-[#1C222A] border border-[#2C343E] rounded-[4px] p-4 space-y-3">
-          <div className="flex items-center justify-between border-b border-[#2C343E] pb-2">
-            <div className="flex items-center gap-2">
-              <span className="w-5 h-5 rounded-full bg-[#F5A623] text-[#14181D] font-bold text-xs flex items-center justify-center">
-                4
-              </span>
-              <h3 className="font-condensed font-bold text-sm text-[#ECEFF1] uppercase">
-                Peças & Componentes Necessários ({pecas.length})
-              </h3>
-            </div>
-            <button
-              type="button"
-              onClick={handleAddPeca}
-              className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-[3px] bg-[#14181D] hover:bg-[#232B35] text-[#F5A623] border border-[#F5A623]/40"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              <span>+ Adicionar Peça</span>
-            </button>
-          </div>
-
-          {pecas.length === 0 ? (
-            <p className="text-[11px] text-[#6B7683] italic">
-              Nenhuma peça pendente de compra adicionada. Clique em "+ Adicionar Peça" caso o reparo exija componentes novos.
-            </p>
-          ) : (
-            <div className="space-y-3">
-              {pecas.map((peca, idx) => (
-                <div key={idx} className="p-3 bg-[#14181D] border border-[#2C343E] rounded-[3px] space-y-2 relative">
-                  <button
-                    type="button"
-                    onClick={() => handleRemovePeca(idx)}
-                    className="absolute top-2 right-2 text-[#94A3B8] hover:text-[#E5484D]"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pr-6">
-                    <div>
-                      <label className="block text-[9px] font-mono uppercase text-[#94A3B8]">Descrição da Peça*</label>
-                      <input
-                        type="text"
-                        required
-                        value={peca.descricao || ''}
-                        onChange={(e) => handlePecaChange(idx, 'descricao', e.target.value)}
-                        placeholder="Ex: Motoventilador Condensador"
-                        className="w-full bg-[#1C222A] border border-[#2C343E] text-[#ECEFF1] p-1.5 rounded-[2px]"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-[9px] font-mono uppercase text-[#94A3B8]">Part Number / Código</label>
-                      <input
-                        type="text"
-                        value={peca.part_number || ''}
-                        onChange={(e) => handlePecaChange(idx, 'part_number', e.target.value)}
-                        placeholder="SK 3396.282"
-                        className="w-full bg-[#1C222A] border border-[#2C343E] text-[#ECEFF1] p-1.5 rounded-[2px] font-mono"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-[9px] font-mono uppercase text-[#94A3B8]">Fabricante / Qtd</label>
-                      <div className="grid grid-cols-2 gap-1">
-                        <input
-                          type="text"
-                          value={peca.fabricante || ''}
-                          onChange={(e) => handlePecaChange(idx, 'fabricante', e.target.value)}
-                          placeholder="RITTAL"
-                          className="bg-[#1C222A] border border-[#2C343E] text-[#ECEFF1] p-1.5 rounded-[2px]"
-                        />
-                        <input
-                          type="number"
-                          min={1}
-                          value={peca.quantidade || 1}
-                          onChange={(e) => handlePecaChange(idx, 'quantidade', Number(e.target.value))}
-                          className="bg-[#1C222A] border border-[#2C343E] text-[#ECEFF1] p-1.5 rounded-[2px] font-mono"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* STEP 5: FOTOS */}
-        <div className="bg-[#1C222A] border border-[#2C343E] rounded-[4px] p-4 space-y-3">
-          <div className="flex items-center justify-between border-b border-[#2C343E] pb-2">
-            <div className="flex items-center gap-2">
-              <span className="w-5 h-5 rounded-full bg-[#F5A623] text-[#14181D] font-bold text-xs flex items-center justify-center">
-                5
-              </span>
-              <h3 className="font-condensed font-bold text-sm text-[#ECEFF1] uppercase">
-                Fotos de Evidência ({fotos.length})
-              </h3>
-            </div>
-            <label className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-[3px] bg-[#14181D] hover:bg-[#232B35] text-[#F5A623] border border-[#F5A623]/40 cursor-pointer">
-              <Camera className="w-3.5 h-3.5" />
-              <span>+ Tirar / Anexar Foto</span>
-              <input
-                type="file"
-                multiple
-                accept="image/*"
-                capture="environment"
-                onChange={handlePhotoUpload}
-                className="hidden"
-              />
-            </label>
-          </div>
-
-          {fotos.length > 0 && (
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-              {fotos.map((foto, i) => (
-                <div key={i} className="aspect-video bg-[#14181D] border border-[#2C343E] rounded-[3px] overflow-hidden relative group">
-                  <img src={foto.url} alt={foto.name} className="w-full h-full object-cover" />
-                  <button
-                    type="button"
-                    onClick={() => setFotos(fotos.filter((_, idx) => idx !== i))}
-                    className="absolute top-1 right-1 bg-black/70 text-white p-1 rounded hover:bg-[#E5484D]"
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* SUBMIT BUTTON */}
-        <div className="pt-4 border-t border-[#2C343E] flex items-center justify-end gap-3">
+    <div className="nova-ocorrencia-page w-full h-full flex flex-col overflow-hidden bg-[#0D1117] font-body text-[#E6EDF3]">
+      {/* Header Fixo */}
+      <div className="nova-ocorrencia-header flex items-center justify-between gap-3 border-b border-[#30363D] bg-[#0D1117] shrink-0">
+        <div className="flex items-center gap-3 min-w-0">
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="px-4 py-2.5 rounded-[4px] bg-[#1C222A] border border-[#2C343E] text-[#94A3B8] hover:text-[#ECEFF1]"
+            className="p-1.5 rounded-lg bg-[#161B22] hover:bg-[#21262D] text-[#8B949E] hover:text-[#E6EDF3] border border-[#30363D] transition-colors cursor-pointer shrink-0"
+            title="Voltar"
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </button>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 mb-0.5">
+              <span className="text-[10px] font-mono tracking-widest text-[#F85149] bg-[#F85149]/15 px-2 py-0.5 rounded-full border border-[#F85149]/30 uppercase font-bold">
+                Registro de Campo (Mobile-First)
+              </span>
+            </div>
+            <h2 className="text-sm sm:text-base font-display font-bold text-[#E6EDF3] tracking-tight uppercase truncate">
+              Abertura de Ocorrência Corretiva
+            </h2>
+          </div>
+        </div>
+      </div>
+
+      {/* Form Container (Flex column with scrollable body + fixed footer) */}
+      <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-0 overflow-hidden text-xs">
+        {/* Corpo com Scroll */}
+        <div className="nova-ocorrencia-body flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-4 md:p-6 space-y-4 max-w-4xl w-full mx-auto">
+          {/* STEP 1: EQUIPAMENTO & LOCALIZAÇÃO */}
+          <div className="card space-y-3">
+            <div className="flex items-center justify-between border-b border-[#30363D] pb-2">
+              <div className="flex items-center gap-2">
+                <span className="w-5 h-5 rounded-full bg-[#2F81F7] text-white font-display font-bold text-xs flex items-center justify-center">
+                  1
+                </span>
+                <h3 className="card-title text-xs sm:text-sm uppercase text-[#E6EDF3]">
+                  Equipamento & Localização
+                </h3>
+              </div>
+              {selectedEquip && (
+                <button
+                  type="button"
+                  onClick={() => setSelectedEquip(null)}
+                  className="text-[11px] font-semibold text-[#58A6FF] hover:underline cursor-pointer"
+                >
+                  Trocar Equipamento
+                </button>
+              )}
+            </div>
+
+            {!selectedEquip ? (
+              <div className="space-y-2">
+                <label className="block eyebrow text-[#8B949E]">
+                  Digite a TAG, Patrimônio ou Máquina para buscar:
+                </label>
+                <div className="relative">
+                  <Search className="w-4 h-4 text-[#8B949E] absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={equipSearch}
+                    onChange={(e) => setEquipSearch(e.target.value)}
+                    placeholder="Ex: 361, Blue e+, L101..."
+                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#E6EDF3] text-xs rounded-lg pl-9 pr-3 py-2.5 outline-none font-mono transition-colors"
+                  />
+                </div>
+
+                {equipSearch && filteredEquips.length > 0 && (
+                  <div className="bg-[#0D1117] border border-[#30363D] rounded-lg max-h-48 overflow-y-auto divide-y divide-[#30363D]">
+                    {filteredEquips.map((eq) => (
+                      <button
+                        key={eq.id}
+                        type="button"
+                        onClick={() => handleSelectEquip(eq)}
+                        className="w-full p-2.5 text-left hover:bg-[#1C2128] flex items-center justify-between transition-colors cursor-pointer"
+                      >
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <IndustrialTag tag={eq.tag} size="sm" />
+                            <span className="font-semibold text-[#E6EDF3]">{eq.tipo} ({eq.marca} {eq.modelo})</span>
+                          </div>
+                          <div className="text-[10px] text-[#8B949E] font-mono mt-0.5">
+                            {eq.ug_codigo} • {eq.linha_nome} • {eq.centro_trabalho_nome}
+                          </div>
+                        </div>
+                        <span className="text-[10px] text-[#58A6FF] font-mono">{eq.tag_sap || ''}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="p-3 bg-[#0D1117] border border-[#30363D] rounded-lg grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <span className="eyebrow text-[#8B949E] block">Ativo Selecionado</span>
+                  <div className="flex items-center gap-2 mt-1">
+                    <IndustrialTag tag={selectedEquip.tag} size="md" />
+                    <span className="font-bold text-[#E6EDF3]">{selectedEquip.tipo}</span>
+                  </div>
+                  <p className="text-[11px] text-[#8B949E] mt-0.5">{selectedEquip.marca} {selectedEquip.modelo}</p>
+                </div>
+
+                <div>
+                  <span className="eyebrow text-[#8B949E] block">Localização na Cervejaria</span>
+                  <p className="font-semibold text-[#E6EDF3] mt-1">{selectedEquip.linha_nome}</p>
+                  <p className="text-[11px] text-[#8B949E]">{selectedEquip.ug_codigo} • {selectedEquip.centro_trabalho_nome}</p>
+                </div>
+
+                <div>
+                  <span className="eyebrow text-[#8B949E] block">Dados SAP / Elétrico</span>
+                  <p className="font-mono text-[#58A6FF] mt-1">{selectedEquip.tag_sap || 'Sem Tag SAP'}</p>
+                  <p className="text-[11px] text-[#8B949E] font-mono">{selectedEquip.tensao} • {selectedEquip.gas_refrigerante}</p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* STEP 2: PARÂMETROS OPERACIONAIS & CRITICIDADE */}
+          <div className="card space-y-4">
+            <div className="flex items-center gap-2 border-b border-[#30363D] pb-2">
+              <span className="w-5 h-5 rounded-full bg-[#2F81F7] text-white font-display font-bold text-xs flex items-center justify-center">
+                2
+              </span>
+              <h3 className="card-title text-xs sm:text-sm uppercase text-[#E6EDF3]">
+                Parâmetros Operacionais & Criticidade
+              </h3>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+              {/* Tipo de Serviço */}
+              <div>
+                <label className="block eyebrow text-[#8B949E] mb-1">Tipo de Serviço</label>
+                <select
+                  value={tipoServico}
+                  onChange={(e) => setTipoServico(e.target.value as any)}
+                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#E6EDF3] p-2.5 rounded-lg outline-none"
+                >
+                  <option value="CORRETIVA">Corretiva</option>
+                  <option value="PREVENTIVA">Preventiva</option>
+                  <option value="MELHORIA">Melhoria</option>
+                  <option value="EMERGENCIAL">Emergencial</option>
+                </select>
+              </div>
+
+              {/* Criticidade */}
+              <div>
+                <label className="block eyebrow text-[#8B949E] mb-1">Criticidade</label>
+                <select
+                  value={criticidade}
+                  onChange={(e) => setCriticidade(e.target.value as Criticidade)}
+                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#E6EDF3] p-2.5 rounded-lg outline-none font-bold"
+                >
+                  <option value="CRITICA">🔴 Crítica (Impacto em Linha)</option>
+                  <option value="ALTA">🟠 Alta</option>
+                  <option value="MEDIA">🟡 Média</option>
+                  <option value="BAIXA">🟢 Baixa</option>
+                </select>
+              </div>
+
+              {/* Data da Avaria */}
+              <div>
+                <label className="block eyebrow text-[#8B949E] mb-1">Data da Avaria*</label>
+                <input
+                  type="date"
+                  required
+                  value={dataAvaria}
+                  onChange={(e) => setDataAvaria(e.target.value)}
+                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#E6EDF3] p-2.5 rounded-lg outline-none font-mono"
+                />
+              </div>
+
+              {/* Previsão Retorno */}
+              <div>
+                <label className="block eyebrow text-[#8B949E] mb-1">Previsão Retorno</label>
+                <input
+                  type="date"
+                  value={previsaoRetorno}
+                  onChange={(e) => setPrevisaoRetorno(e.target.value)}
+                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#E6EDF3] p-2.5 rounded-lg outline-none font-mono"
+                />
+              </div>
+            </div>
+
+            {/* Impactos Imediatos */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              <label className="flex items-center gap-3 p-3 rounded-lg bg-[#0D1117] border border-[#30363D] cursor-pointer hover:border-[#F85149]/60 transition-colors">
+                <input
+                  type="checkbox"
+                  checked={equipamentoParado}
+                  onChange={(e) => setEquipamentoParado(e.target.checked)}
+                  className="w-4 h-4 rounded border-[#30363D] text-[#F85149] focus:ring-0 cursor-pointer"
+                />
+                <div>
+                  <p className="text-xs font-bold text-[#F85149]">Equipamento Está Parado Agora</p>
+                  <p className="text-[10px] text-[#8B949E]">Atualiza o status do ativo no banco para PARADO e entra no aging.</p>
+                </div>
+              </label>
+
+              <label className="flex items-center gap-3 p-3 rounded-lg bg-[#0D1117] border border-[#30363D] cursor-pointer hover:border-[#F85149]/60 transition-colors">
+                <input
+                  type="checkbox"
+                  checked={parouLinha}
+                  onChange={(e) => setParouLinha(e.target.checked)}
+                  className="w-4 h-4 rounded border-[#30363D] text-[#F85149] focus:ring-0 cursor-pointer"
+                />
+                <div>
+                  <p className="text-xs font-bold text-[#F85149]">Parou a Linha de Produção (AMBEV)</p>
+                  <p className="text-[10px] text-[#8B949E]">Sinaliza parada de envasamento / processo industrial.</p>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          {/* STEP 3: DIAGNÓSTICO DE CAMPO & CÓDIGOS SAP */}
+          <div className="card space-y-4">
+            <div className="flex items-center gap-2 border-b border-[#30363D] pb-2">
+              <span className="w-5 h-5 rounded-full bg-[#2F81F7] text-white font-display font-bold text-xs flex items-center justify-center">
+                3
+              </span>
+              <h3 className="card-title text-xs sm:text-sm uppercase text-[#E6EDF3]">
+                Diagnóstico de Campo & Códigos SAP
+              </h3>
+            </div>
+
+            <div>
+              <label className="block eyebrow text-[#8B949E] mb-1">
+                Descrição da Anomalia / Sintoma Observado*
+              </label>
+              <textarea
+                required
+                rows={3}
+                value={descricaoAnomalia}
+                onChange={(e) => setDescricaoAnomalia(e.target.value)}
+                placeholder="Ex: Alarme de alta pressão no display; compressor desarmando por sobrecorrente; ventilador do condensador travado..."
+                className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#E6EDF3] p-3 rounded-lg outline-none leading-relaxed font-body"
+              />
+            </div>
+
+            <div>
+              <label className="block eyebrow text-[#8B949E] mb-1">
+                Causa Provável / Diagnóstico Técnico
+              </label>
+              <input
+                type="text"
+                value={causaProvavel}
+                onChange={(e) => setCausaProvavel(e.target.value)}
+                placeholder="Ex: Queima da bobina do ventilador ou vazamento na válvula Schrader"
+                className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#E6EDF3] p-2.5 rounded-lg outline-none font-body"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label className="block eyebrow text-[#8B949E] mb-1">Nota SAP AMBEV</label>
+                <input
+                  type="text"
+                  value={notaSap}
+                  onChange={(e) => setNotaSap(e.target.value)}
+                  placeholder="Ex: 10045892"
+                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#58A6FF] p-2.5 rounded-lg outline-none font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block eyebrow text-[#8B949E] mb-1">Ordem SAP AMBEV</label>
+                <input
+                  type="text"
+                  value={ordemSap}
+                  onChange={(e) => setOrdemSap(e.target.value)}
+                  placeholder="Ex: 40019283"
+                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#58A6FF] p-2.5 rounded-lg outline-none font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block eyebrow text-[#8B949E] mb-1">Ordem Interna Vision</label>
+                <input
+                  type="text"
+                  value={ordemVision}
+                  onChange={(e) => setOrdemVision(e.target.value)}
+                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#D29922] p-2.5 rounded-lg outline-none font-mono"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* STEP 4: PEÇAS & COMPONENTES NECESSÁRIOS */}
+          <div className="card space-y-3">
+            <div className="flex items-center justify-between border-b border-[#30363D] pb-2">
+              <div className="flex items-center gap-2">
+                <span className="w-5 h-5 rounded-full bg-[#2F81F7] text-white font-display font-bold text-xs flex items-center justify-center">
+                  4
+                </span>
+                <h3 className="card-title text-xs sm:text-sm uppercase text-[#E6EDF3]">
+                  Peças & Componentes Necessários ({pecas.length})
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={handleAddPeca}
+                className="btn-primary !py-1 !px-2.5 !text-[11px] gap-1 cursor-pointer"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>+ Adicionar Peça</span>
+              </button>
+            </div>
+
+            {pecas.length === 0 ? (
+              <p className="text-xs text-[#8B949E] italic py-1">
+                Nenhuma peça pendente de compra adicionada. Clique em "+ Adicionar Peça" caso o reparo exija componentes novos.
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {pecas.map((peca, idx) => (
+                  <div key={idx} className="p-3 bg-[#0D1117] border border-[#30363D] rounded-lg space-y-2 relative">
+                    <button
+                      type="button"
+                      onClick={() => handleRemovePeca(idx)}
+                      className="absolute top-2.5 right-2.5 text-[#8B949E] hover:text-[#F85149] transition-colors cursor-pointer"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pr-6">
+                      <div>
+                        <label className="block eyebrow text-[#8B949E] mb-1">Descrição da Peça*</label>
+                        <input
+                          type="text"
+                          required
+                          value={peca.descricao || ''}
+                          onChange={(e) => handlePecaChange(idx, 'descricao', e.target.value)}
+                          placeholder="Ex: Motoventilador Condensador"
+                          className="w-full bg-[#161B22] border border-[#30363D] focus:border-[#2F81F7] text-[#E6EDF3] p-2 rounded-lg outline-none font-body text-xs"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block eyebrow text-[#8B949E] mb-1">Part Number / Código</label>
+                        <input
+                          type="text"
+                          value={peca.part_number || ''}
+                          onChange={(e) => handlePecaChange(idx, 'part_number', e.target.value)}
+                          placeholder="SK 3396.282"
+                          className="w-full bg-[#161B22] border border-[#30363D] focus:border-[#2F81F7] text-[#58A6FF] p-2 rounded-lg outline-none font-mono text-xs"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block eyebrow text-[#8B949E] mb-1">Fabricante / Qtd</label>
+                        <div className="grid grid-cols-2 gap-1.5">
+                          <input
+                            type="text"
+                            value={peca.fabricante || ''}
+                            onChange={(e) => handlePecaChange(idx, 'fabricante', e.target.value)}
+                            placeholder="RITTAL"
+                            className="bg-[#161B22] border border-[#30363D] focus:border-[#2F81F7] text-[#E6EDF3] p-2 rounded-lg outline-none text-xs font-body"
+                          />
+                          <input
+                            type="number"
+                            min={1}
+                            value={peca.quantidade || 1}
+                            onChange={(e) => handlePecaChange(idx, 'quantidade', Number(e.target.value))}
+                            className="bg-[#161B22] border border-[#30363D] focus:border-[#2F81F7] text-[#58A6FF] p-2 rounded-lg outline-none font-mono text-xs font-bold"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* STEP 5: FOTOS DE EVIDÊNCIA */}
+          <div className="card space-y-3">
+            <div className="flex items-center justify-between border-b border-[#30363D] pb-2">
+              <div className="flex items-center gap-2">
+                <span className="w-5 h-5 rounded-full bg-[#2F81F7] text-white font-display font-bold text-xs flex items-center justify-center">
+                  5
+                </span>
+                <h3 className="card-title text-xs sm:text-sm uppercase text-[#E6EDF3]">
+                  Fotos de Evidência ({fotos.length})
+                </h3>
+              </div>
+              <label className="btn-secondary !py-1 !px-2.5 !text-[11px] gap-1 cursor-pointer">
+                <Camera className="w-3.5 h-3.5" />
+                <span>+ Tirar / Anexar Foto</span>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  capture="environment"
+                  onChange={handlePhotoUpload}
+                  className="hidden"
+                />
+              </label>
+            </div>
+
+            {fotos.length === 0 ? (
+              <p className="text-xs text-[#8B949E] italic py-1">
+                Nenhuma foto anexada. Use fotos para agilizar a cotação das peças e alinhamento com a AMBEV.
+              </p>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                {fotos.map((foto, i) => (
+                  <div key={i} className="aspect-video bg-[#0D1117] border border-[#30363D] rounded-lg overflow-hidden relative group">
+                    <img src={foto.url} alt={foto.name} className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setFotos(fotos.filter((_, idx) => idx !== i))}
+                      className="absolute top-1.5 right-1.5 bg-black/80 text-white p-1 rounded-md hover:bg-[#F85149] transition-colors cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Rodapé Fixo com Ações */}
+        <div className="nova-ocorrencia-footer shrink-0">
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="btn-secondary !py-2 !px-4 text-xs font-body font-medium cursor-pointer"
           >
             Cancelar
           </button>
@@ -627,9 +639,9 @@ export const NovaOcorrencia: React.FC = () => {
             id="btn-submit-nova-ocorrencia"
             type="submit"
             disabled={loading || !selectedEquip}
-            className="px-6 py-3 rounded-[4px] bg-[#E5484D] hover:bg-[#C93B40] text-white font-condensed text-sm font-bold tracking-wider uppercase transition-colors shadow-lg disabled:opacity-50 flex items-center gap-2"
+            className="btn-primary !py-2 !px-5 text-xs font-display font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
           >
-            <CheckCircle2 className="w-5 h-5" />
+            <CheckCircle2 className="w-4 h-4" />
             <span>{loading ? 'Registrando Chamado...' : 'Gravar Ocorrência e Gerar Protocolo'}</span>
           </button>
         </div>

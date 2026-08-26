@@ -32,35 +32,46 @@ export const KpiCard: React.FC<KpiCardProps> = ({
   variant = 'default',
   onClick,
 }) => {
-  const isDanger = variant === 'danger';
+  const getVariantClass = () => {
+    switch (variant) {
+      case 'danger':
+        return 'kpi-card red';
+      case 'warning':
+        return 'kpi-card amber';
+      case 'success':
+        return 'kpi-card green';
+      default:
+        return 'kpi-card';
+    }
+  };
 
   return (
     <div
       id={id}
       onClick={onClick}
-      className={`h-full rounded-lg p-3 flex flex-col justify-between relative overflow-hidden transition-all duration-150 select-none ${
+      className={`h-full rounded-xl p-3 flex flex-col justify-between relative overflow-hidden transition-all duration-200 select-none ${getVariantClass()} ${
         onClick ? 'cursor-pointer' : ''
-      } ${isDanger ? 'kpi-card-danger' : 'kpi-card-gradient'}`}
+      }`}
     >
       {/* Top row: Icon + Title & Variation badge */}
       <div className="flex items-center justify-between gap-1.5 leading-none shrink-0">
         <div className="flex items-center gap-2 min-w-0">
-          <div className={`w-6 h-6 rounded-md flex items-center justify-center shrink-0 ${iconBg}`}>
+          <div className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 ${iconBg}`}>
             <Icon className="w-3.5 h-3.5" />
           </div>
-          <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider truncate">
+          <span className="eyebrow text-[#8B949E] truncate">
             {title}
           </span>
         </div>
 
         {variation && (
           <div
-            className={`flex items-center gap-1 text-[9px] font-semibold px-1.5 py-0.5 rounded-full shrink-0 ${
+            className={`flex items-center gap-1 text-[10px] font-body font-semibold px-2 py-0.5 rounded-full shrink-0 ${
               variation.type === 'positive'
-                ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20'
+                ? 'bg-[#3FB950]/15 text-[#3FB950] border border-[#3FB950]/30'
                 : variation.type === 'negative'
-                ? 'bg-red-500/15 text-red-400 border border-red-500/20'
-                : 'bg-blue-500/15 text-blue-400 border border-blue-500/20'
+                ? 'bg-[#F85149]/15 text-[#F85149] border border-[#F85149]/30'
+                : 'bg-[#2F81F7]/15 text-[#58A6FF] border border-[#2F81F7]/30'
             }`}
           >
             {variation.type === 'positive' ? (
@@ -76,10 +87,10 @@ export const KpiCard: React.FC<KpiCardProps> = ({
       {/* Middle row: Big Number + Subtitle + Sparkline in grid */}
       <div className="flex items-end justify-between gap-2 mt-1">
         <div className="min-w-0">
-          <h3 className="text-[26px] xl:text-[28px] font-bold tracking-tight text-[#F9FAFB] font-sans leading-none">
+          <h3 className="kpi-number text-[28px] xl:text-[32px] text-[#E6EDF3]">
             {value}
           </h3>
-          <p className="text-[10px] text-gray-400 mt-1 font-normal truncate leading-none">
+          <p className="text-[11px] font-body text-[#8B949E] mt-1 font-normal truncate leading-none">
             {subtitle}
           </p>
         </div>

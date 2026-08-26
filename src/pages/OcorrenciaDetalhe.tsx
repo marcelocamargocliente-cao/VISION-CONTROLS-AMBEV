@@ -272,42 +272,46 @@ export const OcorrenciaDetalhe: React.FC = () => {
   const totalOrcamentos = orcamentos.reduce((acc, o) => acc + o.valor_total, 0);
 
   return (
-    <div className="p-4 md:p-6 space-y-6 max-w-6xl mx-auto">
-      {/* Top Controls & Navigation */}
-      <div className="no-print flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#2C343E] pb-4">
-        <div className="flex items-center gap-3">
+    <div
+      id="ocorrencia-detalhe-page"
+      className="ocorrencia-detalhe-page h-full w-full flex flex-col overflow-hidden bg-[#0D1117] font-body text-[#E6EDF3]"
+    >
+      {/* HEADER FIXO (shrink-0) — número da ocorrência, criticidade, fase e ações */}
+      <header className="ocorrencia-header no-print shrink-0 px-4 py-2.5 border-b border-[#30363D] bg-[#0D1117] sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
           <button
             onClick={() => navigate('/ocorrencias')}
-            className="p-2 rounded-[4px] bg-[#1C222A] hover:bg-[#232B35] text-[#94A3B8] hover:text-[#ECEFF1] border border-[#2C343E]"
+            className="p-1.5 rounded-lg bg-[#161B22] hover:bg-[#21262D] text-[#8B949E] hover:text-[#E6EDF3] border border-[#30363D] transition-colors cursor-pointer shrink-0"
+            title="Voltar para ocorrências"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="font-mono font-bold text-lg text-[#F5A623]">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-display font-extrabold text-[15px] sm:text-base text-[#58A6FF] tracking-tight">
                 OCORRÊNCIA #{ocorrencia.numero}
               </span>
-              <span className={`px-2 py-0.5 rounded-[2px] text-[10px] font-mono border ${critConfig.badgeBg}`}>
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold border ${critConfig.badgeBg}`}>
                 {critConfig.label}
               </span>
             </div>
-            <p className="text-xs text-[#94A3B8] font-mono">
-              Registrada em {formatDate(ocorrencia.data_avaria)} por {ocorrencia.relatante_nome}
+            <p className="text-[11px] text-[#8B949E] font-body truncate">
+              Registrada em {formatDate(ocorrencia.data_avaria)} por <strong className="text-[#E6EDF3] font-medium">{ocorrencia.relatante_nome}</strong>
             </p>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           {/* Status Dropdown Controller */}
           {canEdit && (
             <div className="relative inline-block text-left">
               <select
                 value={ocorrencia.status}
                 onChange={(e) => handleStatusChange(e.target.value as OcorrenciaStatus)}
-                className="bg-[#14181D] border-2 border-[#F5A623] text-[#F5A623] font-bold text-xs rounded-[4px] px-3 py-2 outline-none cursor-pointer uppercase font-condensed tracking-wider"
+                className="bg-[#161B22] border border-[#2F81F7]/60 text-[#58A6FF] font-display font-bold text-xs rounded-lg px-3 py-1.5 outline-none cursor-pointer tracking-wide hover:border-[#2F81F7] transition-colors"
               >
                 {STATUS_FLOW.map((st) => (
-                  <option key={st} value={st}>
+                  <option key={st} value={st} className="bg-[#161B22] text-[#E6EDF3]">
                     Fase: {getOcorrenciaStatusConfig(st).label}
                   </option>
                 ))}
@@ -340,294 +344,305 @@ export const OcorrenciaDetalhe: React.FC = () => {
           {/* Print Button */}
           <button
             onClick={() => window.print()}
-            className="p-2 rounded-[4px] bg-[#1C222A] hover:bg-[#232B35] text-[#ECEFF1] border border-[#2C343E]"
+            className="p-1.5 rounded-lg bg-[#161B22] hover:bg-[#21262D] text-[#8B949E] hover:text-[#E6EDF3] border border-[#30363D] transition-colors cursor-pointer shrink-0"
             title="Imprimir Relatório Técnico"
           >
             <Printer className="w-4 h-4" />
           </button>
         </div>
-      </div>
+      </header>
 
-      {/* BANNER: ATIVO & LOCALIZAÇÃO */}
-      <div className="bg-[#1C222A] border border-[#2C343E] rounded-[4px] p-4 shadow-lg grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-        <div>
-          <span className="block text-[10px] font-mono uppercase text-[#94A3B8] mb-1">Equipamento Ativo</span>
-          <div className="flex items-center gap-2">
-            {equipamento && <IndustrialTag tag={equipamento.tag} size="lg" />}
-            <div>
-              <p className="font-bold text-[#ECEFF1] text-sm">{equipamento?.tipo}</p>
-              <p className="text-[11px] text-[#94A3B8] font-mono">{equipamento?.marca} {equipamento?.modelo}</p>
+      {/* CARD RESUMO DO EQUIPAMENTO FIXO (shrink-0) */}
+      <div className="ocorrencia-equipamento-card shrink-0 px-4 pt-3">
+        <div className="bg-[#161B22] border border-[#30363D] rounded-xl p-3.5 shadow-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-center">
+          <div>
+            <span className="eyebrow text-[#8B949E] block mb-1">Equipamento Ativo</span>
+            <div className="flex items-center gap-2.5">
+              {equipamento && <IndustrialTag tag={equipamento.tag} size="lg" />}
+              <div className="min-w-0">
+                <p className="font-display font-bold text-[#E6EDF3] text-xs sm:text-sm truncate">{equipamento?.tipo || 'Equipamento'}</p>
+                <p className="text-[11px] text-[#8B949E] font-mono truncate">{equipamento?.marca} {equipamento?.modelo}</p>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <span className="eyebrow text-[#8B949E] block mb-1">Localização na Fábrica</span>
+            <p className="font-semibold text-[#E6EDF3] text-xs truncate">{equipamento?.linha_nome || 'Área Fabril'}</p>
+            <p className="text-[11px] text-[#8B949E] truncate">{equipamento?.ug_codigo || 'UG'} • {equipamento?.centro_trabalho_nome || 'Centro'}</p>
+          </div>
+
+          <div>
+            <span className="eyebrow text-[#8B949E] block mb-1">Status Operacional</span>
+            {ocorrencia.equipamento_parado ? (
+              <div className="flex items-center gap-2">
+                <span className="led-dot led-alert animate-led-pulse" />
+                <span className="font-mono font-bold text-xs text-[#F85149]">
+                  PARADO HÁ {diasParado} DIAS
+                </span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <span className="led-dot led-ok" />
+                <span className="font-mono font-bold text-xs text-[#3FB950]">
+                  EM OPERAÇÃO
+                </span>
+              </div>
+            )}
+            {ocorrencia.parou_linha && (
+              <p className="text-[10px] font-mono text-[#F85149] mt-0.5">⚠️ Impactou Linha de Produção</p>
+            )}
+          </div>
+
+          <div>
+            <span className="eyebrow text-[#8B949E] block mb-1">Controle SAP / Vision</span>
+            <div className="text-[11px] font-mono space-y-0.5">
+              <div className="truncate">Nota SAP: <strong className="text-[#58A6FF]">{ocorrencia.nota_sap || '-'}</strong></div>
+              <div className="truncate">Ordem SAP: <strong className="text-[#58A6FF]">{ocorrencia.ordem_sap || '-'}</strong></div>
+              <div className="truncate">OS Vision: <strong className="text-[#D29922]">{ocorrencia.ordem_vision || '-'}</strong></div>
             </div>
           </div>
         </div>
-
-        <div>
-          <span className="block text-[10px] font-mono uppercase text-[#94A3B8] mb-1">Localização na Fábrica</span>
-          <p className="font-semibold text-[#ECEFF1] text-xs">{equipamento?.linha_nome}</p>
-          <p className="text-[11px] text-[#94A3B8]">{equipamento?.ug_codigo} • {equipamento?.centro_trabalho_nome}</p>
-        </div>
-
-        <div>
-          <span className="block text-[10px] font-mono uppercase text-[#94A3B8] mb-1">Status Operacional</span>
-          {ocorrencia.equipamento_parado ? (
-            <div className="flex items-center gap-2">
-              <span className="led-dot led-alert animate-led-pulse" />
-              <span className="font-mono font-bold text-xs text-[#FF6B6B]">
-                PARADO HÁ {diasParado} DIAS
-              </span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <span className="led-dot led-ok" />
-              <span className="font-mono font-bold text-xs text-[#2ECC71]">
-                EM OPERAÇÃO
-              </span>
-            </div>
-          )}
-          {ocorrencia.parou_linha && (
-            <p className="text-[10px] font-mono text-[#FF8787] mt-0.5">⚠️ Impactou Linha de Produção</p>
-          )}
-        </div>
-
-        <div>
-          <span className="block text-[10px] font-mono uppercase text-[#94A3B8] mb-1">Controle SAP / Vision</span>
-          <div className="text-[11px] font-mono space-y-0.5">
-            <div>Nota SAP: <strong className="text-[#38BDF8]">{ocorrencia.nota_sap || '-'}</strong></div>
-            <div>Ordem SAP: <strong className="text-[#38BDF8]">{ocorrencia.ordem_sap || '-'}</strong></div>
-            <div>OS Vision: <strong className="text-[#F5A623]">{ocorrencia.ordem_vision || '-'}</strong></div>
-          </div>
-        </div>
       </div>
 
-      {/* GRID: DIAGNÓSTICO + TIMELINE */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Coluna Esquerda (2 cols): Diagnóstico, Peças, Orçamentos, Fotos */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Anomalia & Diagnóstico */}
-          <div className="bg-[#1C222A] border border-[#2C343E] rounded-[4px] p-4 space-y-3">
-            <h3 className="text-xs font-mono font-bold text-[#F5A623] uppercase tracking-wider border-b border-[#2C343E] pb-1">
-              Diagnóstico de Engenharia & Avaria
-            </h3>
-            <div>
-              <span className="text-[10px] font-mono uppercase text-[#94A3B8] block mb-1">Descrição do Problema</span>
-              <p className="text-xs text-[#ECEFF1] bg-[#14181D] p-3 rounded-[3px] border border-[#2C343E] leading-relaxed">
-                {ocorrencia.descricao_anomalia}
-              </p>
-            </div>
-            {ocorrencia.causa_provavel && (
+      {/* ÁREA DE CONTEÚDO PRINCIPAL (ROLA COM SCROLL DEDICADO) */}
+      <div className="ocorrencia-content flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-4 pb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-3.5 items-start max-w-7xl mx-auto">
+          {/* Coluna Principal (Esquerda) */}
+          <div className="space-y-3.5 min-w-0">
+            {/* Card: Diagnóstico de Engenharia & Avaria */}
+            <div className="card space-y-3">
+              <div className="flex items-center gap-2 border-b border-[#30363D] pb-2">
+                <Cpu className="w-4 h-4 text-[#58A6FF]" />
+                <h3 className="card-title text-xs uppercase text-[#E6EDF3]">
+                  Diagnóstico de Engenharia & Avaria
+                </h3>
+              </div>
               <div>
-                <span className="text-[10px] font-mono uppercase text-[#94A3B8] block mb-1">Causa Raiz Provável</span>
-                <p className="text-xs text-[#ECEFF1] bg-[#14181D] p-2.5 rounded-[3px] border border-[#2C343E]">
-                  {ocorrencia.causa_provavel}
+                <span className="eyebrow text-[#8B949E] block mb-1.5">Descrição do Problema</span>
+                <p className="text-xs text-[#E6EDF3] bg-[#0D1117] p-3 rounded-lg border border-[#30363D] leading-relaxed">
+                  {ocorrencia.descricao_anomalia}
                 </p>
               </div>
-            )}
-          </div>
-
-          {/* Peças Pendentes */}
-          <div className="bg-[#1C222A] border border-[#2C343E] rounded-[4px] p-4 space-y-3">
-            <div className="flex items-center justify-between border-b border-[#2C343E] pb-2">
-              <div className="flex items-center gap-2">
-                <Package className="w-4 h-4 text-[#F5A623]" />
-                <h3 className="text-xs font-mono font-bold text-[#ECEFF1] uppercase">
-                  Peças & Componentes ({pecas.length})
-                </h3>
-              </div>
-              {canEdit && (
-                <button
-                  onClick={() => setShowAddPecaModal(true)}
-                  className="px-2.5 py-1 rounded-[3px] bg-[#14181D] hover:bg-[#232B35] text-[#F5A623] border border-[#F5A623]/40 text-xs font-semibold flex items-center gap-1"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Adicionar Peça</span>
-                </button>
-              )}
-            </div>
-
-            {pecas.length === 0 ? (
-              <p className="text-xs text-[#6B7683] italic py-2">
-                Nenhuma peça cadastrada para este reparo.
-              </p>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
-                  <thead>
-                    <tr className="bg-[#14181D] text-[#94A3B8] font-mono uppercase text-[9px]">
-                      <th className="p-2">Qtd</th>
-                      <th className="p-2">Descrição & Fabricante</th>
-                      <th className="p-2">Part Number</th>
-                      <th className="p-2">Status</th>
-                      <th className="p-2 text-right">Valor Unit.</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#2C343E]/60 text-[#ECEFF1]">
-                    {pecas.map((p) => (
-                      <tr key={p.id} className="hover:bg-[#232B35]">
-                        <td className="p-2 font-mono font-bold text-[#F5A623]">{p.quantidade}x</td>
-                        <td className="p-2">
-                          <span className="font-semibold">{p.descricao}</span>
-                          <span className="text-[10px] text-[#94A3B8] ml-2 font-mono">({p.fabricante})</span>
-                        </td>
-                        <td className="p-2 font-mono text-[#38BDF8]">{p.part_number || '-'}</td>
-                        <td className="p-2">
-                          <span className="px-2 py-0.5 rounded-[2px] text-[10px] font-mono bg-[#232B35] text-[#F5A623] border border-[#3E4A59]">
-                            {p.status}
-                          </span>
-                        </td>
-                        <td className="p-2 text-right font-mono">
-                          {p.valor_unitario ? formatCurrency(p.valor_unitario) : '-'}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-
-          {/* Orçamentos Vinculados */}
-          <div className="bg-[#1C222A] border border-[#2C343E] rounded-[4px] p-4 space-y-3">
-            <div className="flex items-center justify-between border-b border-[#2C343E] pb-2">
-              <div className="flex items-center gap-2">
-                <DollarSign className="w-4 h-4 text-[#38BDF8]" />
-                <h3 className="text-xs font-mono font-bold text-[#ECEFF1] uppercase">
-                  Orçamentos AMBEV ({orcamentos.length})
-                </h3>
-              </div>
-              {canEdit && (
-                <button
-                  onClick={handleOpenAddOrcModal}
-                  className="px-2.5 py-1 rounded-[3px] bg-[#14181D] hover:bg-[#232B35] text-[#38BDF8] border border-[#38BDF8]/40 text-xs font-semibold flex items-center gap-1"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Cadastrar Proposta</span>
-                </button>
-              )}
-            </div>
-
-            {orcamentos.length === 0 ? (
-              <p className="text-xs text-[#6B7683] italic py-2">
-                Nenhum orçamento emitido para aprovação ainda.
-              </p>
-            ) : (
-              <div className="space-y-2">
-                {orcamentos.map((orc) => (
-                  <div
-                    key={orc.id}
-                    onClick={() => {
-                      setSelectedOrcamento(orc);
-                      setIsOrcDetailOpen(true);
-                    }}
-                    className="p-3 bg-[#14181D] hover:bg-[#232B35] border border-[#2C343E] hover:border-[#38BDF8]/50 rounded-[3px] flex items-center justify-between text-xs cursor-pointer transition-colors group"
-                  >
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono font-bold text-[#38BDF8] group-hover:underline">
-                          {orc.numero}
-                        </span>
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#232B35] text-[#ECEFF1] border border-[#2C343E]">
-                          {orc.status}
-                        </span>
-                      </div>
-                      <p className="text-[#ECEFF1] mt-1">{orc.fornecedor}</p>
-                      <p className="text-[10px] text-[#94A3B8] font-mono">
-                        Enviado em {formatDate(orc.data_envio)} • {calculateDaysDiff(orc.data_envio)} dias aguardando
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-sm font-mono font-bold text-[#38BDF8]">
-                        {formatCurrency(orc.valor_total)}
-                      </span>
-                      <span className="block text-[10px] text-[#94A3B8] font-mono">Clique para detalhes</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Fotos da Ocorrência */}
-          <div className="bg-[#1C222A] border border-[#2C343E] rounded-[4px] p-4 space-y-3">
-            <div className="flex items-center justify-between border-b border-[#2C343E] pb-2">
-              <div className="flex items-center gap-2">
-                <Camera className="w-4 h-4 text-[#F5A623]" />
-                <h3 className="text-xs font-mono font-bold text-[#ECEFF1] uppercase">
-                  Galeria de Fotos da Avaria ({fotos.length})
-                </h3>
-              </div>
-              {canEdit && (
-                <label className="px-2.5 py-1 rounded-[3px] bg-[#14181D] hover:bg-[#232B35] text-[#F5A623] border border-[#F5A623]/40 text-xs font-semibold flex items-center gap-1 cursor-pointer">
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Anexar Foto</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    capture="environment"
-                    onChange={handleUploadPhoto}
-                    className="hidden"
-                  />
-                </label>
-              )}
-            </div>
-
-            {fotos.length === 0 ? (
-              <p className="text-xs text-[#6B7683] italic py-2">
-                Nenhuma foto anexada a este chamado.
-              </p>
-            ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {fotos.map((f) => (
-                  <div key={f.id} className="aspect-video bg-[#14181D] border border-[#2C343E] rounded-[3px] overflow-hidden group">
-                    <img src={f.url} alt={f.nome_arquivo} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Coluna Direita (1 col): Timeline & Comentários */}
-        <div className="space-y-4">
-          <div className="bg-[#1C222A] border border-[#2C343E] rounded-[4px] p-4 flex flex-col h-full">
-            <div className="flex items-center gap-2 border-b border-[#2C343E] pb-2 mb-3">
-              <MessageSquare className="w-4 h-4 text-[#F5A623]" />
-              <h3 className="text-xs font-mono font-bold text-[#ECEFF1] uppercase">
-                Histórico & Timeline ({eventos.length})
-              </h3>
-            </div>
-
-            {/* Timeline Stream */}
-            <div className="space-y-3 flex-1 overflow-y-auto max-h-[500px] pr-1">
-              {eventos.map((evt) => (
-                <div key={evt.id} className="p-2.5 bg-[#14181D] border border-[#2C343E] rounded-[3px] text-xs space-y-1">
-                  <div className="flex items-center justify-between text-[10px] font-mono">
-                    <span className="font-bold text-[#F5A623]">{evt.autor_nome}</span>
-                    <span className="text-[#6B7683]">{formatDateTime(evt.created_at)}</span>
-                  </div>
-                  <p className="text-[#ECEFF1] leading-relaxed">{evt.descricao}</p>
+              {ocorrencia.causa_provavel && (
+                <div>
+                  <span className="eyebrow text-[#8B949E] block mb-1.5">Causa Raiz Provável</span>
+                  <p className="text-xs text-[#E6EDF3] bg-[#0D1117] p-2.5 rounded-lg border border-[#30363D]">
+                    {ocorrencia.causa_provavel}
+                  </p>
                 </div>
-              ))}
+              )}
             </div>
 
-            {/* Add Event / Comment Form */}
-            <form onSubmit={handleAddComment} className="pt-3 border-t border-[#2C343E] mt-3 space-y-2">
-              <textarea
-                rows={2}
-                required
-                value={novoComentario}
-                onChange={(e) => setNovoComentario(e.target.value)}
-                placeholder="Adicionar nota de campo, avanço no conserto ou alinhamento..."
-                className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#F5A623] text-[#ECEFF1] text-xs p-2 rounded-[3px] outline-none"
-              />
-              <button
-                type="submit"
-                disabled={sendingEvent || !novoComentario.trim()}
-                className="w-full py-2 px-3 rounded-[3px] bg-[#F5A623] hover:bg-[#D98E1A] text-[#14181D] font-condensed text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors disabled:opacity-40"
-              >
-                <Send className="w-3.5 h-3.5" />
-                <span>{sendingEvent ? 'Gravando...' : 'Publicar Nota'}</span>
-              </button>
-            </form>
+            {/* Card: Peças & Componentes */}
+            <div className="card space-y-3">
+              <div className="flex items-center justify-between border-b border-[#30363D] pb-2">
+                <div className="flex items-center gap-2">
+                  <Package className="w-4 h-4 text-[#D29922]" />
+                  <h3 className="card-title text-xs uppercase text-[#E6EDF3]">
+                    Peças & Componentes ({pecas.length})
+                  </h3>
+                </div>
+                {canEdit && (
+                  <button
+                    onClick={() => setShowAddPecaModal(true)}
+                    className="btn-primary !py-1 !px-2.5 !text-[11px] gap-1 cursor-pointer"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Adicionar Peça</span>
+                  </button>
+                )}
+              </div>
+
+              {pecas.length === 0 ? (
+                <p className="text-xs text-[#8B949E] italic py-2">
+                  Nenhuma peça cadastrada para este reparo.
+                </p>
+              ) : (
+                <div className="overflow-x-auto rounded-lg border border-[#30363D]">
+                  <table className="w-full text-left text-xs">
+                    <thead>
+                      <tr className="bg-[#0D1117] text-[#8B949E] table-header">
+                        <th className="p-2.5">Qtd</th>
+                        <th className="p-2.5">Descrição & Fabricante</th>
+                        <th className="p-2.5">Part Number</th>
+                        <th className="p-2.5">Status</th>
+                        <th className="p-2.5 text-right">Valor Unit.</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#30363D] text-[#E6EDF3]">
+                      {pecas.map((p) => (
+                        <tr key={p.id} className="hover:bg-[#1C2128] transition-colors">
+                          <td className="p-2.5 font-mono font-bold text-[#58A6FF]">{p.quantidade}x</td>
+                          <td className="p-2.5">
+                            <span className="font-semibold text-[#E6EDF3]">{p.descricao}</span>
+                            <span className="text-[10px] text-[#8B949E] ml-2 font-mono">({p.fabricante})</span>
+                          </td>
+                          <td className="p-2.5 font-mono text-[#58A6FF]">{p.part_number || '-'}</td>
+                          <td className="p-2.5">
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-[#21262D] text-[#D29922] border border-[#30363D]">
+                              {p.status}
+                            </span>
+                          </td>
+                          <td className="p-2.5 text-right font-mono text-[#E6EDF3]">
+                            {p.valor_unitario ? formatCurrency(p.valor_unitario) : '-'}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+            {/* Card: Orçamentos AMBEV */}
+            <div className="card space-y-3">
+              <div className="flex items-center justify-between border-b border-[#30363D] pb-2">
+                <div className="flex items-center gap-2">
+                  <DollarSign className="w-4 h-4 text-[#3FB950]" />
+                  <h3 className="card-title text-xs uppercase text-[#E6EDF3]">
+                    Orçamentos AMBEV ({orcamentos.length})
+                  </h3>
+                </div>
+                {canEdit && (
+                  <button
+                    onClick={handleOpenAddOrcModal}
+                    className="btn-primary !py-1 !px-2.5 !text-[11px] gap-1 cursor-pointer"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Cadastrar Proposta</span>
+                  </button>
+                )}
+              </div>
+
+              {orcamentos.length === 0 ? (
+                <p className="text-xs text-[#8B949E] italic py-2">
+                  Nenhum orçamento emitido para aprovação ainda.
+                </p>
+              ) : (
+                <div className="space-y-2">
+                  {orcamentos.map((orc) => (
+                    <div
+                      key={orc.id}
+                      onClick={() => {
+                        setSelectedOrcamento(orc);
+                        setIsOrcDetailOpen(true);
+                      }}
+                      className="p-3 bg-[#0D1117] hover:bg-[#1C2128] border border-[#30363D] hover:border-[#2F81F7]/50 rounded-lg flex items-center justify-between text-xs cursor-pointer transition-all group"
+                    >
+                      <div className="min-w-0 pr-3">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-mono font-bold text-[#58A6FF] group-hover:underline">
+                            {orc.numero}
+                          </span>
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#21262D] text-[#E6EDF3] border border-[#30363D]">
+                            {orc.status}
+                          </span>
+                        </div>
+                        <p className="text-[#E6EDF3] mt-1 font-medium truncate">{orc.fornecedor}</p>
+                        <p className="text-[10px] text-[#8B949E] font-mono">
+                          Enviado em {formatDate(orc.data_envio)} • {calculateDaysDiff(orc.data_envio)} dias aguardando
+                        </p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <span className="text-sm font-mono font-bold text-[#3FB950]">
+                          {formatCurrency(orc.valor_total)}
+                        </span>
+                        <span className="block text-[10px] text-[#8B949E] font-mono">Clique para detalhes</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Card: Fotos da Ocorrência */}
+            <div className="card space-y-3">
+              <div className="flex items-center justify-between border-b border-[#30363D] pb-2">
+                <div className="flex items-center gap-2">
+                  <Camera className="w-4 h-4 text-[#58A6FF]" />
+                  <h3 className="card-title text-xs uppercase text-[#E6EDF3]">
+                    Galeria de Fotos da Avaria ({fotos.length})
+                  </h3>
+                </div>
+                {canEdit && (
+                  <label className="btn-secondary !py-1 !px-2.5 !text-[11px] gap-1 cursor-pointer">
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Anexar Foto</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      onChange={handleUploadPhoto}
+                      className="hidden"
+                    />
+                  </label>
+                )}
+              </div>
+
+              {fotos.length === 0 ? (
+                <p className="text-xs text-[#8B949E] italic py-2">
+                  Nenhuma foto anexada a este chamado.
+                </p>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                  {fotos.map((f) => (
+                    <div key={f.id} className="aspect-video bg-[#0D1117] border border-[#30363D] rounded-lg overflow-hidden group">
+                      <img src={f.url} alt={f.nome_arquivo} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Coluna Lateral (Direita, 320px) — Histórico & Timeline Sticky */}
+          <div className="lg:sticky lg:top-0 space-y-3.5">
+            <div className="card flex flex-col max-h-[calc(100vh-210px)] lg:max-h-[calc(100vh-190px)] overflow-hidden">
+              <div className="flex items-center gap-2 border-b border-[#30363D] pb-2 mb-3 shrink-0">
+                <MessageSquare className="w-4 h-4 text-[#58A6FF]" />
+                <h3 className="card-title text-xs uppercase text-[#E6EDF3]">
+                  Histórico & Timeline ({eventos.length})
+                </h3>
+              </div>
+
+              {/* Timeline Stream Scrollable */}
+              <div className="space-y-2.5 flex-1 min-h-0 overflow-y-auto pr-1">
+                {eventos.length === 0 ? (
+                  <p className="text-xs text-[#8B949E] italic py-2">Nenhum registro no histórico.</p>
+                ) : (
+                  eventos.map((evt) => (
+                    <div key={evt.id} className="p-2.5 bg-[#0D1117] border border-[#30363D] rounded-lg text-xs space-y-1">
+                      <div className="flex items-center justify-between text-[10px] font-mono">
+                        <span className="font-bold text-[#58A6FF]">{evt.autor_nome}</span>
+                        <span className="text-[#8B949E]">{formatDateTime(evt.created_at)}</span>
+                      </div>
+                      <p className="text-[#E6EDF3] leading-relaxed font-body text-[12px]">{evt.descricao}</p>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* Add Event / Comment Form */}
+              <form onSubmit={handleAddComment} className="pt-3 border-t border-[#30363D] mt-3 space-y-2 shrink-0">
+                <textarea
+                  rows={2}
+                  required
+                  value={novoComentario}
+                  onChange={(e) => setNovoComentario(e.target.value)}
+                  placeholder="Adicionar nota de campo, avanço no conserto ou alinhamento..."
+                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#E6EDF3] text-xs p-2 rounded-lg outline-none resize-none font-body"
+                />
+                <button
+                  type="submit"
+                  disabled={sendingEvent || !novoComentario.trim()}
+                  className="btn-primary w-full !py-2 text-xs font-display font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-40"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  <span>{sendingEvent ? 'Gravando...' : 'Publicar Nota'}</span>
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       </div>
@@ -635,64 +650,64 @@ export const OcorrenciaDetalhe: React.FC = () => {
       {/* MODAL: ADICIONAR PEÇA */}
       {showAddPecaModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#1C222A] border border-[#2C343E] rounded-[4px] w-full max-w-md p-4 space-y-3">
-            <h3 className="text-sm font-condensed font-bold text-[#ECEFF1] uppercase">
+          <div className="bg-[#161B22] border border-[#30363D] rounded-xl w-full max-w-md p-5 space-y-4 shadow-2xl">
+            <h3 className="text-sm font-display font-bold text-[#E6EDF3] uppercase">
               Adicionar Peça / Componente
             </h3>
-            <form onSubmit={handleSaveNewPeca} className="space-y-3 text-xs">
+            <form onSubmit={handleSaveNewPeca} className="space-y-3.5 text-xs font-body">
               <div>
-                <label className="block text-[10px] font-mono uppercase text-[#94A3B8] mb-1">Descrição</label>
+                <label className="block eyebrow text-[#8B949E] mb-1">Descrição</label>
                 <input
                   type="text"
                   required
                   value={newPeca.descricao || ''}
                   onChange={(e) => setNewPeca({ ...newPeca, descricao: e.target.value })}
                   placeholder="Ex: Compressor Scroll Copeland"
-                  className="w-full bg-[#14181D] border border-[#2C343E] text-[#ECEFF1] p-2 rounded-[3px]"
+                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#E6EDF3] p-2.5 rounded-lg outline-none"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-2.5">
                 <div>
-                  <label className="block text-[10px] font-mono uppercase text-[#94A3B8] mb-1">Part Number</label>
+                  <label className="block eyebrow text-[#8B949E] mb-1">Part Number</label>
                   <input
                     type="text"
                     value={newPeca.part_number || ''}
                     onChange={(e) => setNewPeca({ ...newPeca, part_number: e.target.value })}
                     placeholder="ZR61K3E-TFD"
-                    className="w-full bg-[#14181D] border border-[#2C343E] text-[#ECEFF1] p-2 rounded-[3px] font-mono"
+                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#58A6FF] p-2.5 rounded-lg outline-none font-mono"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-mono uppercase text-[#94A3B8] mb-1">Quantidade</label>
+                  <label className="block eyebrow text-[#8B949E] mb-1">Quantidade</label>
                   <input
                     type="number"
                     min={1}
                     value={newPeca.quantidade || 1}
                     onChange={(e) => setNewPeca({ ...newPeca, quantidade: Number(e.target.value) })}
-                    className="w-full bg-[#14181D] border border-[#2C343E] text-[#ECEFF1] p-2 rounded-[3px] font-mono"
+                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#E6EDF3] p-2.5 rounded-lg outline-none font-mono"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-2.5">
                 <div>
-                  <label className="block text-[10px] font-mono uppercase text-[#94A3B8] mb-1">Fabricante</label>
+                  <label className="block eyebrow text-[#8B949E] mb-1">Fabricante</label>
                   <input
                     type="text"
                     value={newPeca.fabricante || ''}
                     onChange={(e) => setNewPeca({ ...newPeca, fabricante: e.target.value })}
                     placeholder="Copeland"
-                    className="w-full bg-[#14181D] border border-[#2C343E] text-[#ECEFF1] p-2 rounded-[3px]"
+                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#E6EDF3] p-2.5 rounded-lg outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-mono uppercase text-[#94A3B8] mb-1">Valor Estimado (R$)</label>
+                  <label className="block eyebrow text-[#8B949E] mb-1">Valor Estimado (R$)</label>
                   <input
                     type="number"
                     value={newPeca.valor_unitario || 0}
                     onChange={(e) => setNewPeca({ ...newPeca, valor_unitario: Number(e.target.value) })}
-                    className="w-full bg-[#14181D] border border-[#2C343E] text-[#ECEFF1] p-2 rounded-[3px] font-mono"
+                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#E6EDF3] p-2.5 rounded-lg outline-none font-mono"
                   />
                 </div>
               </div>
@@ -701,13 +716,13 @@ export const OcorrenciaDetalhe: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowAddPecaModal(false)}
-                  className="px-3 py-1.5 rounded-[3px] bg-[#14181D] border border-[#2C343E] text-[#94A3B8]"
+                  className="btn-secondary !py-1.5 !px-3 text-xs cursor-pointer"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 rounded-[3px] bg-[#F5A623] text-[#14181D] font-bold"
+                  className="btn-primary !py-1.5 !px-4 text-xs font-display font-bold cursor-pointer"
                 >
                   Salvar Peça
                 </button>
@@ -720,41 +735,41 @@ export const OcorrenciaDetalhe: React.FC = () => {
       {/* MODAL: ADICIONAR ORÇAMENTO */}
       {showAddOrcModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#1C222A] border border-[#2C343E] rounded-[4px] w-full max-w-md p-4 space-y-3">
-            <h3 className="text-sm font-condensed font-bold text-[#ECEFF1] uppercase">
+          <div className="bg-[#161B22] border border-[#30363D] rounded-xl w-full max-w-md p-5 space-y-4 shadow-2xl">
+            <h3 className="text-sm font-display font-bold text-[#E6EDF3] uppercase">
               Cadastrar Orçamento / Proposta Comercial
             </h3>
-            <form onSubmit={handleSaveNewOrcamento} className="space-y-3 text-xs">
-              <div className="grid grid-cols-2 gap-2">
+            <form onSubmit={handleSaveNewOrcamento} className="space-y-3.5 text-xs font-body">
+              <div className="grid grid-cols-2 gap-2.5">
                 <div>
-                  <label className="block text-[10px] font-mono uppercase text-[#94A3B8] mb-1">Nº Proposta</label>
+                  <label className="block eyebrow text-[#8B949E] mb-1">Nº Proposta</label>
                   <input
                     type="text"
                     required
                     value={newOrc.numero || ''}
                     onChange={(e) => setNewOrc({ ...newOrc, numero: e.target.value })}
-                    className="w-full bg-[#14181D] border border-[#2C343E] text-[#ECEFF1] p-2 rounded-[3px] font-mono"
+                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#58A6FF] p-2.5 rounded-lg outline-none font-mono font-bold"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-mono uppercase text-[#94A3B8] mb-1">Valor Total (R$)</label>
+                  <label className="block eyebrow text-[#8B949E] mb-1">Valor Total (R$)</label>
                   <input
                     type="number"
                     required
                     value={newOrc.valor_total || 0}
                     onChange={(e) => setNewOrc({ ...newOrc, valor_total: Number(e.target.value) })}
-                    className="w-full bg-[#14181D] border border-[#2C343E] text-[#38BDF8] p-2 rounded-[3px] font-mono font-bold"
+                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#3FB950] p-2.5 rounded-lg outline-none font-mono font-bold"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-mono uppercase text-[#94A3B8] mb-1">Fornecedor</label>
+                <label className="block eyebrow text-[#8B949E] mb-1">Fornecedor</label>
                 <input
                   type="text"
                   value={newOrc.fornecedor || ''}
                   onChange={(e) => setNewOrc({ ...newOrc, fornecedor: e.target.value })}
-                  className="w-full bg-[#14181D] border border-[#2C343E] text-[#ECEFF1] p-2 rounded-[3px]"
+                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#E6EDF3] p-2.5 rounded-lg outline-none"
                 />
               </div>
 
@@ -762,13 +777,13 @@ export const OcorrenciaDetalhe: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowAddOrcModal(false)}
-                  className="px-3 py-1.5 rounded-[3px] bg-[#14181D] border border-[#2C343E] text-[#94A3B8]"
+                  className="btn-secondary !py-1.5 !px-3 text-xs cursor-pointer"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 rounded-[3px] bg-[#38BDF8] text-[#14181D] font-bold"
+                  className="btn-primary !py-1.5 !px-4 text-xs font-display font-bold cursor-pointer"
                 >
                   Salvar Orçamento
                 </button>

@@ -61,40 +61,40 @@ export function getEquipStatusConfig(status: EquipStatus) {
         label: 'Operando (OK)',
         shortLabel: 'OK',
         ledClass: 'led-ok',
-        badgeBg: 'bg-[#2ECC71]/15 text-[#2ECC71] border-[#2ECC71]/40',
-        textColor: 'text-[#2ECC71]',
+        badgeBg: 'bg-[#3FB950]/15 text-[#3FB950] border-[#3FB950]/30',
+        textColor: 'text-[#3FB950]',
       };
     case 'RESTRICAO':
       return {
         label: 'Restrição Operacional',
         shortLabel: 'Restrição',
         ledClass: 'led-warn',
-        badgeBg: 'bg-[#F5A623]/15 text-[#F5A623] border-[#F5A623]/40',
-        textColor: 'text-[#F5A623]',
+        badgeBg: 'bg-[#D29922]/15 text-[#D29922] border-[#D29922]/30',
+        textColor: 'text-[#D29922]',
       };
     case 'PARADO':
       return {
         label: 'Parado (Crítico)',
         shortLabel: 'Parado',
         ledClass: 'led-alert',
-        badgeBg: 'bg-[#E5484D]/15 text-[#E5484D] border-[#E5484D]/40',
-        textColor: 'text-[#E5484D]',
+        badgeBg: 'bg-[#F85149]/15 text-[#F85149] border-[#F85149]/30',
+        textColor: 'text-[#F85149]',
       };
     case 'DESATIVADO':
       return {
         label: 'Desativado',
         shortLabel: 'Desativado',
         ledClass: 'led-off',
-        badgeBg: 'bg-[#6B7683]/15 text-[#94A3B8] border-[#6B7683]/40',
-        textColor: 'text-[#94A3B8]',
+        badgeBg: 'bg-[#30363D]/40 text-[#8B949E] border-[#30363D]',
+        textColor: 'text-[#8B949E]',
       };
     default:
       return {
         label: status,
         shortLabel: status,
         ledClass: 'led-off',
-        badgeBg: 'bg-[#6B7683]/15 text-[#94A3B8] border-[#6B7683]/40',
-        textColor: 'text-[#94A3B8]',
+        badgeBg: 'bg-[#30363D]/40 text-[#8B949E] border-[#30363D]',
+        textColor: 'text-[#8B949E]',
       };
   }
 }
@@ -106,70 +106,70 @@ export function getOcorrenciaStatusConfig(status: OcorrenciaStatus) {
         label: 'Aberta',
         step: 1,
         ledClass: 'led-warn',
-        badgeBg: 'bg-[#F5A623]/15 text-[#F5A623] border-[#F5A623]/40',
+        badgeBg: 'bg-[#D29922]/15 text-[#D29922] border-[#D29922]/30',
       };
     case 'AGUARDANDO_ORCAMENTO':
       return {
         label: 'Aguardando Orçamento',
         step: 2,
         ledClass: 'led-warn',
-        badgeBg: 'bg-[#EAB308]/15 text-[#EAB308] border-[#EAB308]/40',
+        badgeBg: 'bg-[#D29922]/15 text-[#D29922] border-[#D29922]/30',
       };
     case 'ORCAMENTO_ENVIADO':
       return {
         label: 'Orçamento Enviado',
         step: 3,
         ledClass: 'led-warn',
-        badgeBg: 'bg-[#38BDF8]/15 text-[#38BDF8] border-[#38BDF8]/40',
+        badgeBg: 'bg-[#2F81F7]/15 text-[#58A6FF] border-[#2F81F7]/30',
       };
     case 'AGUARDANDO_APROVACAO_AMBEV':
       return {
         label: 'Aguard. Aprovação AMBEV',
         step: 4,
         ledClass: 'led-warn',
-        badgeBg: 'bg-[#FB923C]/15 text-[#FB923C] border-[#FB923C]/40',
+        badgeBg: 'bg-[#D29922]/15 text-[#D29922] border-[#D29922]/30',
       };
     case 'APROVADA':
       return {
         label: 'Aprovada AMBEV',
         step: 5,
         ledClass: 'led-ok',
-        badgeBg: 'bg-[#4ADE80]/15 text-[#4ADE80] border-[#4ADE80]/40',
+        badgeBg: 'bg-[#3FB950]/15 text-[#3FB950] border-[#3FB950]/30',
       };
     case 'AGUARDANDO_PECA':
       return {
         label: 'Aguardando Peça',
         step: 6,
         ledClass: 'led-alert',
-        badgeBg: 'bg-[#F43F5E]/15 text-[#F43F5E] border-[#F43F5E]/40',
+        badgeBg: 'bg-[#F85149]/15 text-[#F85149] border-[#F85149]/30',
       };
     case 'EM_EXECUCAO':
       return {
         label: 'Em Execução de Campo',
         step: 7,
         ledClass: 'led-warn',
-        badgeBg: 'bg-[#60A5FA]/15 text-[#60A5FA] border-[#60A5FA]/40',
+        badgeBg: 'bg-[#2F81F7]/15 text-[#58A6FF] border-[#2F81F7]/30',
       };
     case 'CONCLUIDA':
       return {
         label: 'Concluída / OK',
         step: 8,
         ledClass: 'led-ok',
-        badgeBg: 'bg-[#2ECC71]/15 text-[#2ECC71] border-[#2ECC71]/40',
+        badgeBg: 'bg-[#3FB950]/15 text-[#3FB950] border-[#3FB950]/30',
       };
     case 'CANCELADA':
       return {
         label: 'Cancelada',
         step: 0,
         ledClass: 'led-off',
-        badgeBg: 'bg-[#6B7683]/15 text-[#94A3B8] border-[#6B7683]/40',
+        badgeBg: 'bg-[#30363D]/40 text-[#8B949E] border-[#30363D]',
       };
     default:
       return {
         label: status,
         step: 1,
         ledClass: 'led-off',
-        badgeBg: 'bg-[#6B7683]/15 text-[#94A3B8] border-[#6B7683]/40',
+        badgeBg: 'bg-[#30363D]/40 text-[#8B949E] border-[#30363D]',
       };
   }
 }
@@ -179,27 +179,27 @@ export function getCriticidadeConfig(crit: Criticidade) {
     case 'CRITICA':
       return {
         label: 'Crítica (Linha)',
-        badgeBg: 'bg-[#E5484D]/20 text-[#FF6B6B] border-[#E5484D]/50 font-bold',
+        badgeBg: 'bg-[#F85149]/15 text-[#F85149] border-[#F85149]/40 font-bold',
       };
     case 'ALTA':
       return {
         label: 'Alta',
-        badgeBg: 'bg-[#F97316]/20 text-[#FB923C] border-[#F97316]/50',
+        badgeBg: 'bg-[#F85149]/15 text-[#F85149] border-[#F85149]/30',
       };
     case 'MEDIA':
       return {
         label: 'Média',
-        badgeBg: 'bg-[#F5A623]/20 text-[#FCD34D] border-[#F5A623]/50',
+        badgeBg: 'bg-[#D29922]/15 text-[#D29922] border-[#D29922]/30',
       };
     case 'BAIXA':
       return {
         label: 'Baixa',
-        badgeBg: 'bg-[#38BDF8]/20 text-[#7DD3FC] border-[#38BDF8]/50',
+        badgeBg: 'bg-[#2F81F7]/15 text-[#58A6FF] border-[#2F81F7]/30',
       };
     default:
       return {
         label: crit,
-        badgeBg: 'bg-[#6B7683]/20 text-[#CBD5E1] border-[#6B7683]/50',
+        badgeBg: 'bg-[#30363D]/40 text-[#8B949E] border-[#30363D]',
       };
   }
 }
@@ -207,15 +207,15 @@ export function getCriticidadeConfig(crit: Criticidade) {
 export function getRoleBadge(role: UserRole) {
   switch (role) {
     case 'ADMIN':
-      return { label: 'ADMINISTRADOR', badgeClass: 'bg-[#E5484D]/15 text-[#FF6B6B] border-[#E5484D]/40' };
+      return { label: 'ADMINISTRADOR', badgeClass: 'bg-[#F85149]/15 text-[#F85149] border-[#F85149]/30' };
     case 'GESTOR':
-      return { label: 'GESTOR', badgeClass: 'bg-[#F5A623]/15 text-[#F5A623] border-[#F5A623]/40' };
+      return { label: 'GESTOR', badgeClass: 'bg-[#D29922]/15 text-[#D29922] border-[#D29922]/30' };
     case 'ENCARREGADO':
-      return { label: 'ENCARREGADO', badgeClass: 'bg-[#FCD34D]/15 text-[#FCD34D] border-[#FCD34D]/40' };
+      return { label: 'ENCARREGADO', badgeClass: 'bg-[#D29922]/15 text-[#D29922] border-[#D29922]/30' };
     case 'TECNICO':
-      return { label: 'TÉCNICO', badgeClass: 'bg-[#38BDF8]/15 text-[#38BDF8] border-[#38BDF8]/40' };
+      return { label: 'TÉCNICO', badgeClass: 'bg-[#2F81F7]/15 text-[#58A6FF] border-[#2F81F7]/30' };
     default:
-      return { label: 'VISUALIZADOR', badgeClass: 'bg-[#94A3B8]/15 text-[#94A3B8] border-[#94A3B8]/40' };
+      return { label: 'VISUALIZADOR', badgeClass: 'bg-[#30363D]/40 text-[#8B949E] border-[#30363D]' };
   }
 }
 
@@ -225,71 +225,71 @@ export function getOrcamentoStatusConfig(status: OrcamentoStatus) {
     case 'ELABORACAO':
       return {
         label: 'Rascunho',
-        badgeBg: 'bg-[#94A3B8]/20 text-[#CBD5E1] border-[#94A3B8]/40',
-        textColor: 'text-[#CBD5E1]',
-        color: '#94A3B8',
-        borderTopColor: '#94A3B8',
+        badgeBg: 'bg-[#30363D]/40 text-[#8B949E] border-[#30363D]',
+        textColor: 'text-[#8B949E]',
+        color: '#8B949E',
+        borderTopColor: '#8B949E',
       };
     case 'ENVIADO':
       return {
         label: 'Enviado',
-        badgeBg: 'bg-[#38BDF8]/20 text-[#38BDF8] border-[#38BDF8]/40',
-        textColor: 'text-[#38BDF8]',
-        color: '#38BDF8',
-        borderTopColor: '#38BDF8',
+        badgeBg: 'bg-[#2F81F7]/15 text-[#58A6FF] border-[#2F81F7]/30',
+        textColor: 'text-[#58A6FF]',
+        color: '#2F81F7',
+        borderTopColor: '#2F81F7',
       };
     case 'EM_ANALISE':
     case 'EM_ANALISE_AMBEV':
       return {
         label: 'Em Análise AMBEV',
-        badgeBg: 'bg-[#F5A623]/20 text-[#F5A623] border-[#F5A623]/40',
-        textColor: 'text-[#F5A623]',
-        color: '#F5A623',
-        borderTopColor: '#F5A623',
+        badgeBg: 'bg-[#D29922]/15 text-[#D29922] border-[#D29922]/30',
+        textColor: 'text-[#D29922]',
+        color: '#D29922',
+        borderTopColor: '#D29922',
       };
     case 'APROVADO':
     case 'APROVADO_AMBEV':
     case 'FATURADO':
       return {
         label: 'Aprovado AMBEV',
-        badgeBg: 'bg-[#2ECC71]/20 text-[#2ECC71] border-[#2ECC71]/40',
-        textColor: 'text-[#2ECC71]',
-        color: '#2ECC71',
-        borderTopColor: '#2ECC71',
+        badgeBg: 'bg-[#3FB950]/15 text-[#3FB950] border-[#3FB950]/30',
+        textColor: 'text-[#3FB950]',
+        color: '#3FB950',
+        borderTopColor: '#3FB950',
       };
     case 'REPROVADO':
     case 'REJEITADO':
     case 'REJEITADO_AMBEV':
       return {
         label: 'Reprovado AMBEV',
-        badgeBg: 'bg-[#E5484D]/20 text-[#FF6B6B] border-[#E5484D]/40',
-        textColor: 'text-[#FF6B6B]',
-        color: '#E5484D',
-        borderTopColor: '#E5484D',
+        badgeBg: 'bg-[#F85149]/15 text-[#F85149] border-[#F85149]/30',
+        textColor: 'text-[#F85149]',
+        color: '#F85149',
+        borderTopColor: '#F85149',
       };
     case 'EXPIRADO':
       return {
         label: 'Expirado',
-        badgeBg: 'bg-[#64748B]/20 text-[#94A3B8] border-[#64748B]/40',
-        textColor: 'text-[#94A3B8]',
-        color: '#64748B',
-        borderTopColor: '#64748B',
+        badgeBg: 'bg-[#30363D]/40 text-[#8B949E] border-[#30363D]',
+        textColor: 'text-[#8B949E]',
+        color: '#484F58',
+        borderTopColor: '#484F58',
       };
     case 'CANCELADO':
       return {
         label: 'Cancelado',
-        badgeBg: 'bg-[#6B7683]/20 text-[#94A3B8] border-[#6B7683]/40',
-        textColor: 'text-[#94A3B8]',
-        color: '#6B7683',
-        borderTopColor: '#6B7683',
+        badgeBg: 'bg-[#30363D]/40 text-[#8B949E] border-[#30363D]',
+        textColor: 'text-[#8B949E]',
+        color: '#484F58',
+        borderTopColor: '#484F58',
       };
     default:
       return {
         label: status,
-        badgeBg: 'bg-[#94A3B8]/20 text-[#CBD5E1] border-[#94A3B8]/40',
-        textColor: 'text-[#CBD5E1]',
-        color: '#94A3B8',
-        borderTopColor: '#94A3B8',
+        badgeBg: 'bg-[#30363D]/40 text-[#8B949E] border-[#30363D]',
+        textColor: 'text-[#8B949E]',
+        color: '#8B949E',
+        borderTopColor: '#8B949E',
       };
   }
 }
