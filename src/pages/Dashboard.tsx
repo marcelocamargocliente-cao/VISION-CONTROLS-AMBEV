@@ -132,7 +132,7 @@ export const Dashboard: React.FC = () => {
       'Modelo',
       'UG',
       'Linha',
-      'Centro de Trabalho',
+      'Local de Instalação',
       'Data Avaria',
       'Dias Parado',
       'Status Ocorrência',
@@ -173,7 +173,7 @@ export const Dashboard: React.FC = () => {
   return (
     <div
       id="dashboard-container"
-      className="w-full h-screen overflow-hidden p-3 box-border flex flex-col gap-2.5 bg-[#0D1117] select-none font-body text-[#E6EDF3]"
+      className="w-full h-screen overflow-hidden p-3 box-border flex flex-col gap-2.5 bg-[#0D1117] select-none font-body "
     >
       {/* HEADER DO CONTEÚDO (Máximo 40px, shrink-0, linha única compacta) */}
       <header
@@ -182,11 +182,11 @@ export const Dashboard: React.FC = () => {
       >
         {/* Título inline com subtítulo separado por · */}
         <div className="flex items-center gap-2 min-w-0">
-          <h1 className="text-[14px] font-display font-bold text-[#E6EDF3] tracking-tight truncate leading-none">
+          <h1 className="text-[14px] font-display font-bold  tracking-tight truncate leading-none">
             Bom dia, {firstName}.
           </h1>
-          <span className="text-[#8B949E] text-[11px]">·</span>
-          <p className="text-[12px] font-body text-[#8B949E] truncate leading-none hidden sm:inline">
+          <span className=" text-[11px]">·</span>
+          <p className="text-[12px] font-body  truncate leading-none hidden sm:inline">
             181 climatizadores industriais monitorados
           </p>
         </div>
@@ -195,13 +195,13 @@ export const Dashboard: React.FC = () => {
         <div className="flex items-center gap-2 shrink-0">
           {/* Global Search Compact */}
           <form onSubmit={handleSearchSubmit} className="relative w-[180px] md:w-[220px]">
-            <Search className="w-3.5 h-3.5 text-[#8B949E] absolute left-2.5 top-1/2 -translate-y-1/2" />
+            <Search className="w-3.5 h-3.5  absolute left-2.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Buscar TAG, OS..."
-              className="w-full h-[28px] bg-[#21262D] border border-[#30363D] rounded-lg pl-8 pr-2.5 text-[12px] font-body text-[#E6EDF3] placeholder-[#484F58] focus:outline-none focus:border-[#2F81F7] transition-all leading-none"
+              className="w-full h-[28px] bg-[#21262D] border border-[#30363D] rounded-lg pl-8 pr-2.5 text-[12px] font-body  placeholder-[#484F58] focus:outline-none focus:border-[#2F81F7] transition-all leading-none"
             />
           </form>
 
@@ -210,8 +210,8 @@ export const Dashboard: React.FC = () => {
             onClick={() => setShowFilters(!showFilters)}
             className={`h-[28px] flex items-center gap-1.5 px-2.5 rounded-lg text-[11px] font-body font-semibold border transition-all cursor-pointer leading-none ${
               showFilters || Object.keys(filters).length > 0
-                ? 'bg-[#2F81F7]/20 text-[#58A6FF] border-[#2F81F7]/40'
-                : 'bg-[#21262D] text-[#E6EDF3] border-[#30363D] hover:border-[#2F81F7]/40'
+                ? 'bg-[#2F81F7]/20  border-[#2F81F7]/40'
+                : 'bg-[#21262D]  border-[#30363D] hover:border-[#2F81F7]/40'
             }`}
           >
             <Filter className="w-3 h-3" />
@@ -225,27 +225,27 @@ export const Dashboard: React.FC = () => {
           <button
             onClick={loadData}
             title="Atualizar dados"
-            className="h-[28px] w-[28px] flex items-center justify-center rounded-lg bg-[#21262D] border border-[#30363D] text-[#8B949E] hover:text-[#E6EDF3] hover:border-[#2F81F7]/40 transition-colors cursor-pointer"
+            className="h-[28px] w-[28px] flex items-center justify-center rounded-lg bg-[#21262D] border border-[#30363D]  hover: hover:border-[#2F81F7]/40 transition-colors cursor-pointer"
           >
-            <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin text-[#58A6FF]' : ''}`} />
+            <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin ' : ''}`} />
           </button>
 
           {/* CSV Export */}
           <button
             onClick={handleExportCsv}
             title="Exportar dados em CSV"
-            className="h-[28px] w-[28px] flex items-center justify-center rounded-lg bg-[#21262D] border border-[#30363D] text-[#8B949E] hover:text-[#E6EDF3] hover:border-[#2F81F7]/40 transition-colors cursor-pointer"
+            className="h-[28px] w-[28px] flex items-center justify-center rounded-lg bg-[#21262D] border border-[#30363D]  hover: hover:border-[#2F81F7]/40 transition-colors cursor-pointer"
           >
             <Download className="w-3 h-3" />
           </button>
 
           {/* Live Clock & Badge Online */}
           <div className="hidden lg:flex items-center gap-2 border-l border-[#30363D] pl-2.5">
-            <div className="flex items-center gap-1 text-[11px] font-mono text-[#8B949E] leading-none">
-              <Clock className="w-3 h-3 text-[#58A6FF]" />
+            <div className="flex items-center gap-1 text-[11px]   leading-none">
+              <Clock className="w-3 h-3 " />
               <span>{currentTime}</span>
             </div>
-            <span className="text-[10px] bg-[#3FB950]/15 text-[#3FB950] px-2 py-0.5 rounded-full border border-[#3FB950]/30 font-mono font-bold flex items-center gap-1 leading-none">
+            <span className="text-[10px] bg-[#3FB950]/15  px-2 py-0.5 rounded-full border border-[#3FB950]/30  font-bold flex items-center gap-1 leading-none">
               <span className="w-1.5 h-1.5 rounded-full bg-[#3FB950] animate-pulse" />
               ONLINE
             </span>
@@ -265,7 +265,7 @@ export const Dashboard: React.FC = () => {
           value={kpis.total_equipamentos}
           subtitle="ativos na fábrica"
           icon={Cpu}
-          iconBg="bg-[#2F81F7]/15 text-[#58A6FF]"
+          iconBg="bg-[#2F81F7]/15 "
           sparklineColor="#2F81F7"
           sparklineData={[170, 172, 175, 178, 179, 181, 181, 181]}
           variation={{ text: '+3 novos', type: 'positive' }}
@@ -279,7 +279,7 @@ export const Dashboard: React.FC = () => {
           value={kpis.operando_ok}
           subtitle={`${kpis.disponibilidade_pct}% disponibilidade`}
           icon={CheckCircle2}
-          iconBg="bg-[#3FB950]/15 text-[#3FB950]"
+          iconBg="bg-[#3FB950]/15 "
           sparklineColor="#3FB950"
           sparklineData={[168, 170, 174, 176, 178, 179, 178, 179]}
           variant="success"
@@ -294,7 +294,7 @@ export const Dashboard: React.FC = () => {
           value={kpis.parados}
           subtitle="aguardando peça/retorno"
           icon={AlertCircle}
-          iconBg="bg-[#F85149]/15 text-[#F85149]"
+          iconBg="bg-[#F85149]/15 "
           sparklineColor="#F85149"
           sparklineData={[5, 4, 3, 2, 4, 3, 2, 2]}
           variant={kpis.parados > 0 ? 'danger' : 'default'}
@@ -313,7 +313,7 @@ export const Dashboard: React.FC = () => {
           value={`R$ ${kpis.valor_orcamentos_pendentes.toLocaleString('pt-BR')}`}
           subtitle={`${kpis.aguardando_orcamento_aprovacao} aguardando aprovação`}
           icon={DollarSign}
-          iconBg="bg-[#D29922]/15 text-[#D29922]"
+          iconBg="bg-[#D29922]/15 "
           sparklineColor="#D29922"
           sparklineData={[8000, 12000, 15000, 13500, 16000, 14850]}
           variant="warning"
@@ -350,12 +350,12 @@ export const Dashboard: React.FC = () => {
         <div className="fixed inset-x-0 top-16 z-50 px-6 max-w-4xl mx-auto drop-shadow-2xl">
           <div className="bg-[#111827] border border-blue-500/40 rounded-xl p-3 shadow-2xl backdrop-blur-xl">
             <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/[0.06]">
-              <span className="text-xs font-bold text-white uppercase tracking-wider">
+              <span className="text-xs font-bold  uppercase tracking-wider">
                 Filtragem Global
               </span>
               <button
                 onClick={() => setShowFilters(false)}
-                className="text-xs text-gray-400 hover:text-white px-2 py-0.5 rounded bg-[#0A0E1A]"
+                className="text-xs  hover: px-2 py-0.5 rounded bg-[#0A0E1A]"
               >
                 Fechar
               </button>

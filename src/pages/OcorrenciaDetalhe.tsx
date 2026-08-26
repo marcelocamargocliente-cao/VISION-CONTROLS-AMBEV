@@ -247,7 +247,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="p-8 text-center text-[#94A3B8] font-mono text-xs">
+      <div className="p-8 text-center   text-xs">
         Carregando detalhes da ocorrência...
       </div>
     );
@@ -274,29 +274,29 @@ export const OcorrenciaDetalhe: React.FC = () => {
   return (
     <div
       id="ocorrencia-detalhe-page"
-      className="ocorrencia-detalhe-page h-full w-full flex flex-col overflow-hidden bg-[#0D1117] font-body text-[#E6EDF3]"
+      className="ocorrencia-detalhe-page h-full w-full flex flex-col overflow-hidden bg-[#0D1117] font-body "
     >
       {/* HEADER FIXO (shrink-0) — número da ocorrência, criticidade, fase e ações */}
       <header className="ocorrencia-header no-print shrink-0 px-4 py-2.5 border-b border-[#30363D] bg-[#0D1117] sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
           <button
             onClick={() => navigate('/ocorrencias')}
-            className="p-1.5 rounded-lg bg-[#161B22] hover:bg-[#21262D] text-[#8B949E] hover:text-[#E6EDF3] border border-[#30363D] transition-colors cursor-pointer shrink-0"
+            className="p-1.5 rounded-lg bg-[#161B22] hover:bg-[#21262D]  hover: border border-[#30363D] transition-colors cursor-pointer shrink-0"
             title="Voltar para ocorrências"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="font-display font-extrabold text-[15px] sm:text-base text-[#58A6FF] tracking-tight">
+              <span className="font-display font-extrabold text-[15px] sm:text-base  tracking-tight">
                 OCORRÊNCIA #{ocorrencia.numero}
               </span>
-              <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold border ${critConfig.badgeBg}`}>
+              <span className={`px-2 py-0.5 rounded-full text-[10px]  font-semibold border ${critConfig.badgeBg}`}>
                 {critConfig.label}
               </span>
             </div>
-            <p className="text-[11px] text-[#8B949E] font-body truncate">
-              Registrada em {formatDate(ocorrencia.data_avaria)} por <strong className="text-[#E6EDF3] font-medium">{ocorrencia.relatante_nome}</strong>
+            <p className="text-[11px]  font-body truncate">
+              Registrada em {formatDate(ocorrencia.data_avaria)} por <strong className=" font-medium">{ocorrencia.relatante_nome}</strong>
             </p>
           </div>
         </div>
@@ -308,10 +308,10 @@ export const OcorrenciaDetalhe: React.FC = () => {
               <select
                 value={ocorrencia.status}
                 onChange={(e) => handleStatusChange(e.target.value as OcorrenciaStatus)}
-                className="bg-[#161B22] border border-[#2F81F7]/60 text-[#58A6FF] font-display font-bold text-xs rounded-lg px-3 py-1.5 outline-none cursor-pointer tracking-wide hover:border-[#2F81F7] transition-colors"
+                className="bg-[#161B22] border border-[#2F81F7]/60  font-display font-bold text-xs rounded-lg px-3 py-1.5 outline-none cursor-pointer tracking-wide hover:border-[#2F81F7] transition-colors"
               >
                 {STATUS_FLOW.map((st) => (
-                  <option key={st} value={st} className="bg-[#161B22] text-[#E6EDF3]">
+                  <option key={st} value={st} className="bg-[#161B22] ">
                     Fase: {getOcorrenciaStatusConfig(st).label}
                   </option>
                 ))}
@@ -344,7 +344,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
           {/* Print Button */}
           <button
             onClick={() => window.print()}
-            className="p-1.5 rounded-lg bg-[#161B22] hover:bg-[#21262D] text-[#8B949E] hover:text-[#E6EDF3] border border-[#30363D] transition-colors cursor-pointer shrink-0"
+            className="p-1.5 rounded-lg bg-[#161B22] hover:bg-[#21262D]  hover: border border-[#30363D] transition-colors cursor-pointer shrink-0"
             title="Imprimir Relatório Técnico"
           >
             <Printer className="w-4 h-4" />
@@ -356,50 +356,54 @@ export const OcorrenciaDetalhe: React.FC = () => {
       <div className="ocorrencia-equipamento-card shrink-0 px-4 pt-3">
         <div className="bg-[#161B22] border border-[#30363D] rounded-xl p-3.5 shadow-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-center">
           <div>
-            <span className="eyebrow text-[#8B949E] block mb-1">Equipamento Ativo</span>
+            <span className="eyebrow  block mb-1">Equipamento Ativo</span>
             <div className="flex items-center gap-2.5">
               {equipamento && <IndustrialTag tag={equipamento.tag} size="lg" />}
               <div className="min-w-0">
-                <p className="font-display font-bold text-[#E6EDF3] text-xs sm:text-sm truncate">{equipamento?.tipo || 'Equipamento'}</p>
-                <p className="text-[11px] text-[#8B949E] font-mono truncate">{equipamento?.marca} {equipamento?.modelo}</p>
+                <p className="font-display font-bold  text-xs sm:text-sm truncate">{equipamento?.tipo || 'Equipamento'}</p>
+                <p className="text-[11px]   truncate">{equipamento?.marca} {equipamento?.modelo}</p>
               </div>
             </div>
           </div>
 
           <div>
-            <span className="eyebrow text-[#8B949E] block mb-1">Localização na Fábrica</span>
-            <p className="font-semibold text-[#E6EDF3] text-xs truncate">{equipamento?.linha_nome || 'Área Fabril'}</p>
-            <p className="text-[11px] text-[#8B949E] truncate">{equipamento?.ug_codigo || 'UG'} • {equipamento?.centro_trabalho_nome || 'Centro'}</p>
+            <span className="eyebrow  block mb-1">Localização na Fábrica</span>
+            <p className="font-semibold text-xs truncate">
+              {[equipamento?.centro_trabalho_sap, equipamento?.centro_trabalho_nome].filter(Boolean).join(' - ') || equipamento?.linha_nome || 'Área Fabril'}
+            </p>
+            <p className="text-[11px] text-gray-400 truncate">
+              UG {equipamento?.ug_codigo || 'N/D'} {equipamento?.tag_sap ? `• ${equipamento.tag_sap}` : ''}
+            </p>
           </div>
 
           <div>
-            <span className="eyebrow text-[#8B949E] block mb-1">Status Operacional</span>
+            <span className="eyebrow  block mb-1">Status Operacional</span>
             {ocorrencia.equipamento_parado ? (
               <div className="flex items-center gap-2">
                 <span className="led-dot led-alert animate-led-pulse" />
-                <span className="font-mono font-bold text-xs text-[#F85149]">
+                <span className=" font-bold text-xs ">
                   PARADO HÁ {diasParado} DIAS
                 </span>
               </div>
             ) : (
               <div className="flex items-center gap-2">
                 <span className="led-dot led-ok" />
-                <span className="font-mono font-bold text-xs text-[#3FB950]">
+                <span className=" font-bold text-xs ">
                   EM OPERAÇÃO
                 </span>
               </div>
             )}
             {ocorrencia.parou_linha && (
-              <p className="text-[10px] font-mono text-[#F85149] mt-0.5">⚠️ Impactou Linha de Produção</p>
+              <p className="text-[10px]   mt-0.5">⚠️ Impactou Linha de Produção</p>
             )}
           </div>
 
           <div>
-            <span className="eyebrow text-[#8B949E] block mb-1">Controle SAP / Vision</span>
-            <div className="text-[11px] font-mono space-y-0.5">
-              <div className="truncate">Nota SAP: <strong className="text-[#58A6FF]">{ocorrencia.nota_sap || '-'}</strong></div>
-              <div className="truncate">Ordem SAP: <strong className="text-[#58A6FF]">{ocorrencia.ordem_sap || '-'}</strong></div>
-              <div className="truncate">OS Vision: <strong className="text-[#D29922]">{ocorrencia.ordem_vision || '-'}</strong></div>
+            <span className="eyebrow  block mb-1">Controle SAP / Vision</span>
+            <div className="text-[11px]  space-y-0.5">
+              <div className="truncate">Nota SAP: <strong className="">{ocorrencia.nota_sap || '-'}</strong></div>
+              <div className="truncate">Ordem SAP: <strong className="">{ocorrencia.ordem_sap || '-'}</strong></div>
+              <div className="truncate">OS Vision: <strong className="">{ocorrencia.ordem_vision || '-'}</strong></div>
             </div>
           </div>
         </div>
@@ -413,21 +417,21 @@ export const OcorrenciaDetalhe: React.FC = () => {
             {/* Card: Diagnóstico de Engenharia & Avaria */}
             <div className="card space-y-3">
               <div className="flex items-center gap-2 border-b border-[#30363D] pb-2">
-                <Cpu className="w-4 h-4 text-[#58A6FF]" />
-                <h3 className="card-title text-xs uppercase text-[#E6EDF3]">
+                <Cpu className="w-4 h-4 " />
+                <h3 className="card-title text-xs uppercase ">
                   Diagnóstico de Engenharia & Avaria
                 </h3>
               </div>
               <div>
-                <span className="eyebrow text-[#8B949E] block mb-1.5">Descrição do Problema</span>
-                <p className="text-xs text-[#E6EDF3] bg-[#0D1117] p-3 rounded-lg border border-[#30363D] leading-relaxed">
+                <span className="eyebrow  block mb-1.5">Descrição do Problema</span>
+                <p className="text-xs  bg-[#0D1117] p-3 rounded-lg border border-[#30363D] leading-relaxed">
                   {ocorrencia.descricao_anomalia}
                 </p>
               </div>
               {ocorrencia.causa_provavel && (
                 <div>
-                  <span className="eyebrow text-[#8B949E] block mb-1.5">Causa Raiz Provável</span>
-                  <p className="text-xs text-[#E6EDF3] bg-[#0D1117] p-2.5 rounded-lg border border-[#30363D]">
+                  <span className="eyebrow  block mb-1.5">Causa Raiz Provável</span>
+                  <p className="text-xs  bg-[#0D1117] p-2.5 rounded-lg border border-[#30363D]">
                     {ocorrencia.causa_provavel}
                   </p>
                 </div>
@@ -438,8 +442,8 @@ export const OcorrenciaDetalhe: React.FC = () => {
             <div className="card space-y-3">
               <div className="flex items-center justify-between border-b border-[#30363D] pb-2">
                 <div className="flex items-center gap-2">
-                  <Package className="w-4 h-4 text-[#D29922]" />
-                  <h3 className="card-title text-xs uppercase text-[#E6EDF3]">
+                  <Package className="w-4 h-4 " />
+                  <h3 className="card-title text-xs uppercase ">
                     Peças & Componentes ({pecas.length})
                   </h3>
                 </div>
@@ -455,14 +459,14 @@ export const OcorrenciaDetalhe: React.FC = () => {
               </div>
 
               {pecas.length === 0 ? (
-                <p className="text-xs text-[#8B949E] italic py-2">
+                <p className="text-xs  italic py-2">
                   Nenhuma peça cadastrada para este reparo.
                 </p>
               ) : (
                 <div className="overflow-x-auto rounded-lg border border-[#30363D]">
                   <table className="w-full text-left text-xs">
                     <thead>
-                      <tr className="bg-[#0D1117] text-[#8B949E] table-header">
+                      <tr className="bg-[#0D1117]  table-header">
                         <th className="p-2.5">Qtd</th>
                         <th className="p-2.5">Descrição & Fabricante</th>
                         <th className="p-2.5">Part Number</th>
@@ -470,21 +474,21 @@ export const OcorrenciaDetalhe: React.FC = () => {
                         <th className="p-2.5 text-right">Valor Unit.</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#30363D] text-[#E6EDF3]">
+                    <tbody className="divide-y divide-[#30363D] ">
                       {pecas.map((p) => (
                         <tr key={p.id} className="hover:bg-[#1C2128] transition-colors">
-                          <td className="p-2.5 font-mono font-bold text-[#58A6FF]">{p.quantidade}x</td>
+                          <td className="p-2.5  font-bold ">{p.quantidade}x</td>
                           <td className="p-2.5">
-                            <span className="font-semibold text-[#E6EDF3]">{p.descricao}</span>
-                            <span className="text-[10px] text-[#8B949E] ml-2 font-mono">({p.fabricante})</span>
+                            <span className="font-semibold ">{p.descricao}</span>
+                            <span className="text-[10px]  ml-2 ">({p.fabricante})</span>
                           </td>
-                          <td className="p-2.5 font-mono text-[#58A6FF]">{p.part_number || '-'}</td>
+                          <td className="p-2.5  ">{p.part_number || '-'}</td>
                           <td className="p-2.5">
-                            <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-[#21262D] text-[#D29922] border border-[#30363D]">
+                            <span className="px-2 py-0.5 rounded-full text-[10px]  bg-[#21262D]  border border-[#30363D]">
                               {p.status}
                             </span>
                           </td>
-                          <td className="p-2.5 text-right font-mono text-[#E6EDF3]">
+                          <td className="p-2.5 text-right  ">
                             {p.valor_unitario ? formatCurrency(p.valor_unitario) : '-'}
                           </td>
                         </tr>
@@ -499,8 +503,8 @@ export const OcorrenciaDetalhe: React.FC = () => {
             <div className="card space-y-3">
               <div className="flex items-center justify-between border-b border-[#30363D] pb-2">
                 <div className="flex items-center gap-2">
-                  <DollarSign className="w-4 h-4 text-[#3FB950]" />
-                  <h3 className="card-title text-xs uppercase text-[#E6EDF3]">
+                  <DollarSign className="w-4 h-4 " />
+                  <h3 className="card-title text-xs uppercase ">
                     Orçamentos AMBEV ({orcamentos.length})
                   </h3>
                 </div>
@@ -516,7 +520,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
               </div>
 
               {orcamentos.length === 0 ? (
-                <p className="text-xs text-[#8B949E] italic py-2">
+                <p className="text-xs  italic py-2">
                   Nenhum orçamento emitido para aprovação ainda.
                 </p>
               ) : (
@@ -532,23 +536,23 @@ export const OcorrenciaDetalhe: React.FC = () => {
                     >
                       <div className="min-w-0 pr-3">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-mono font-bold text-[#58A6FF] group-hover:underline">
+                          <span className=" font-bold  group-hover:underline">
                             {orc.numero}
                           </span>
-                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#21262D] text-[#E6EDF3] border border-[#30363D]">
+                          <span className="text-[10px]  px-2 py-0.5 rounded-full bg-[#21262D]  border border-[#30363D]">
                             {orc.status}
                           </span>
                         </div>
-                        <p className="text-[#E6EDF3] mt-1 font-medium truncate">{orc.fornecedor}</p>
-                        <p className="text-[10px] text-[#8B949E] font-mono">
+                        <p className=" mt-1 font-medium truncate">{orc.fornecedor}</p>
+                        <p className="text-[10px]  ">
                           Enviado em {formatDate(orc.data_envio)} • {calculateDaysDiff(orc.data_envio)} dias aguardando
                         </p>
                       </div>
                       <div className="text-right shrink-0">
-                        <span className="text-sm font-mono font-bold text-[#3FB950]">
+                        <span className="text-sm  font-bold ">
                           {formatCurrency(orc.valor_total)}
                         </span>
-                        <span className="block text-[10px] text-[#8B949E] font-mono">Clique para detalhes</span>
+                        <span className="block text-[10px]  ">Clique para detalhes</span>
                       </div>
                     </div>
                   ))}
@@ -560,8 +564,8 @@ export const OcorrenciaDetalhe: React.FC = () => {
             <div className="card space-y-3">
               <div className="flex items-center justify-between border-b border-[#30363D] pb-2">
                 <div className="flex items-center gap-2">
-                  <Camera className="w-4 h-4 text-[#58A6FF]" />
-                  <h3 className="card-title text-xs uppercase text-[#E6EDF3]">
+                  <Camera className="w-4 h-4 " />
+                  <h3 className="card-title text-xs uppercase ">
                     Galeria de Fotos da Avaria ({fotos.length})
                   </h3>
                 </div>
@@ -581,7 +585,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
               </div>
 
               {fotos.length === 0 ? (
-                <p className="text-xs text-[#8B949E] italic py-2">
+                <p className="text-xs  italic py-2">
                   Nenhuma foto anexada a este chamado.
                 </p>
               ) : (
@@ -600,8 +604,8 @@ export const OcorrenciaDetalhe: React.FC = () => {
           <div className="lg:sticky lg:top-0 space-y-3.5">
             <div className="card flex flex-col max-h-[calc(100vh-210px)] lg:max-h-[calc(100vh-190px)] overflow-hidden">
               <div className="flex items-center gap-2 border-b border-[#30363D] pb-2 mb-3 shrink-0">
-                <MessageSquare className="w-4 h-4 text-[#58A6FF]" />
-                <h3 className="card-title text-xs uppercase text-[#E6EDF3]">
+                <MessageSquare className="w-4 h-4 " />
+                <h3 className="card-title text-xs uppercase ">
                   Histórico & Timeline ({eventos.length})
                 </h3>
               </div>
@@ -609,15 +613,15 @@ export const OcorrenciaDetalhe: React.FC = () => {
               {/* Timeline Stream Scrollable */}
               <div className="space-y-2.5 flex-1 min-h-0 overflow-y-auto pr-1">
                 {eventos.length === 0 ? (
-                  <p className="text-xs text-[#8B949E] italic py-2">Nenhum registro no histórico.</p>
+                  <p className="text-xs  italic py-2">Nenhum registro no histórico.</p>
                 ) : (
                   eventos.map((evt) => (
                     <div key={evt.id} className="p-2.5 bg-[#0D1117] border border-[#30363D] rounded-lg text-xs space-y-1">
-                      <div className="flex items-center justify-between text-[10px] font-mono">
-                        <span className="font-bold text-[#58A6FF]">{evt.autor_nome}</span>
-                        <span className="text-[#8B949E]">{formatDateTime(evt.created_at)}</span>
+                      <div className="flex items-center justify-between text-[10px] ">
+                        <span className="font-bold ">{evt.autor_nome}</span>
+                        <span className="">{formatDateTime(evt.created_at)}</span>
                       </div>
-                      <p className="text-[#E6EDF3] leading-relaxed font-body text-[12px]">{evt.descricao}</p>
+                      <p className=" leading-relaxed font-body text-[12px]">{evt.descricao}</p>
                     </div>
                   ))
                 )}
@@ -631,7 +635,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
                   value={novoComentario}
                   onChange={(e) => setNovoComentario(e.target.value)}
                   placeholder="Adicionar nota de campo, avanço no conserto ou alinhamento..."
-                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#E6EDF3] text-xs p-2 rounded-lg outline-none resize-none font-body"
+                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  text-xs p-2 rounded-lg outline-none resize-none font-body"
                 />
                 <button
                   type="submit"
@@ -651,63 +655,63 @@ export const OcorrenciaDetalhe: React.FC = () => {
       {showAddPecaModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-[#161B22] border border-[#30363D] rounded-xl w-full max-w-md p-5 space-y-4 shadow-2xl">
-            <h3 className="text-sm font-display font-bold text-[#E6EDF3] uppercase">
+            <h3 className="text-sm font-display font-bold  uppercase">
               Adicionar Peça / Componente
             </h3>
             <form onSubmit={handleSaveNewPeca} className="space-y-3.5 text-xs font-body">
               <div>
-                <label className="block eyebrow text-[#8B949E] mb-1">Descrição</label>
+                <label className="block eyebrow  mb-1">Descrição</label>
                 <input
                   type="text"
                   required
                   value={newPeca.descricao || ''}
                   onChange={(e) => setNewPeca({ ...newPeca, descricao: e.target.value })}
                   placeholder="Ex: Compressor Scroll Copeland"
-                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#E6EDF3] p-2.5 rounded-lg outline-none"
+                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-2.5">
                 <div>
-                  <label className="block eyebrow text-[#8B949E] mb-1">Part Number</label>
+                  <label className="block eyebrow  mb-1">Part Number</label>
                   <input
                     type="text"
                     value={newPeca.part_number || ''}
                     onChange={(e) => setNewPeca({ ...newPeca, part_number: e.target.value })}
                     placeholder="ZR61K3E-TFD"
-                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#58A6FF] p-2.5 rounded-lg outline-none font-mono"
+                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none "
                   />
                 </div>
                 <div>
-                  <label className="block eyebrow text-[#8B949E] mb-1">Quantidade</label>
+                  <label className="block eyebrow  mb-1">Quantidade</label>
                   <input
                     type="number"
                     min={1}
                     value={newPeca.quantidade || 1}
                     onChange={(e) => setNewPeca({ ...newPeca, quantidade: Number(e.target.value) })}
-                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#E6EDF3] p-2.5 rounded-lg outline-none font-mono"
+                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none "
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-2.5">
                 <div>
-                  <label className="block eyebrow text-[#8B949E] mb-1">Fabricante</label>
+                  <label className="block eyebrow  mb-1">Fabricante</label>
                   <input
                     type="text"
                     value={newPeca.fabricante || ''}
                     onChange={(e) => setNewPeca({ ...newPeca, fabricante: e.target.value })}
                     placeholder="Copeland"
-                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#E6EDF3] p-2.5 rounded-lg outline-none"
+                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block eyebrow text-[#8B949E] mb-1">Valor Estimado (R$)</label>
+                  <label className="block eyebrow  mb-1">Valor Estimado (R$)</label>
                   <input
                     type="number"
                     value={newPeca.valor_unitario || 0}
                     onChange={(e) => setNewPeca({ ...newPeca, valor_unitario: Number(e.target.value) })}
-                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#E6EDF3] p-2.5 rounded-lg outline-none font-mono"
+                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none "
                   />
                 </div>
               </div>
@@ -736,40 +740,40 @@ export const OcorrenciaDetalhe: React.FC = () => {
       {showAddOrcModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-[#161B22] border border-[#30363D] rounded-xl w-full max-w-md p-5 space-y-4 shadow-2xl">
-            <h3 className="text-sm font-display font-bold text-[#E6EDF3] uppercase">
+            <h3 className="text-sm font-display font-bold  uppercase">
               Cadastrar Orçamento / Proposta Comercial
             </h3>
             <form onSubmit={handleSaveNewOrcamento} className="space-y-3.5 text-xs font-body">
               <div className="grid grid-cols-2 gap-2.5">
                 <div>
-                  <label className="block eyebrow text-[#8B949E] mb-1">Nº Proposta</label>
+                  <label className="block eyebrow  mb-1">Nº Proposta</label>
                   <input
                     type="text"
                     required
                     value={newOrc.numero || ''}
                     onChange={(e) => setNewOrc({ ...newOrc, numero: e.target.value })}
-                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#58A6FF] p-2.5 rounded-lg outline-none font-mono font-bold"
+                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none  font-bold"
                   />
                 </div>
                 <div>
-                  <label className="block eyebrow text-[#8B949E] mb-1">Valor Total (R$)</label>
+                  <label className="block eyebrow  mb-1">Valor Total (R$)</label>
                   <input
                     type="number"
                     required
                     value={newOrc.valor_total || 0}
                     onChange={(e) => setNewOrc({ ...newOrc, valor_total: Number(e.target.value) })}
-                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#3FB950] p-2.5 rounded-lg outline-none font-mono font-bold"
+                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none  font-bold"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block eyebrow text-[#8B949E] mb-1">Fornecedor</label>
+                <label className="block eyebrow  mb-1">Fornecedor</label>
                 <input
                   type="text"
                   value={newOrc.fornecedor || ''}
                   onChange={(e) => setNewOrc({ ...newOrc, fornecedor: e.target.value })}
-                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#E6EDF3] p-2.5 rounded-lg outline-none"
+                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none"
                 />
               </div>
 

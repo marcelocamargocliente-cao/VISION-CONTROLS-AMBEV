@@ -8,12 +8,12 @@ export interface KpiCardProps {
   value: string | number;
   subtitle: string;
   icon: LucideIcon;
-  iconBg: string; // e.g. "bg-blue-500/15 text-[#3B82F6]"
-  sparklineColor: string; // e.g. "#3B82F6"
+  iconBg?: string;
+  sparklineColor: string;
   sparklineData: number[];
   variation?: {
     text: string;
-    type: 'positive' | 'negative' | 'neutral';
+    type: 'positive' | 'negative' | 'neutral' | 'warning';
   };
   variant?: 'default' | 'danger' | 'warning' | 'success';
   onClick?: () => void;
@@ -25,7 +25,6 @@ export const KpiCard: React.FC<KpiCardProps> = ({
   value,
   subtitle,
   icon: Icon,
-  iconBg,
   sparklineColor,
   sparklineData,
   variation,
@@ -45,36 +44,46 @@ export const KpiCard: React.FC<KpiCardProps> = ({
     }
   };
 
+  const getBadgeClass = () => {
+    if (!variation) return '';
+    switch (variation.type) {
+      case 'positive':
+        if (variant === 'success') {
+          return 'bg-[#3FB950]/10 text-[#3FB950] border-emerald-500/20';
+        }
+        return 'bg-[#1A1F28] text-[#8B949E] border-[#21262D]';
+      case 'negative':
+        return 'bg-[#F85149]/10 text-[#F85149] border-red-500/20';
+      case 'warning':
+        return 'bg-[#D29922]/10 text-[#D29922] border-amber-500/20';
+      case 'neutral':
+      default:
+        return 'bg-[#1A1F28] text-[#8B949E] border-[#21262D]';
+    }
+  };
+
   return (
     <div
       id={id}
       onClick={onClick}
       className={`h-full rounded-xl p-3 flex flex-col justify-between relative overflow-hidden transition-all duration-200 select-none ${getVariantClass()} ${
-        onClick ? 'cursor-pointer' : ''
+        onClick ? 'cursor-pointer hover:border-[#30363D]' : ''
       }`}
     >
       {/* Top row: Icon + Title & Variation badge */}
       <div className="flex items-center justify-between gap-1.5 leading-none shrink-0">
-        <div className="flex items-center gap-2 min-w-0">
-          <div className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 ${iconBg}`}>
-            <Icon className="w-3.5 h-3.5" />
-          </div>
-          <span className="eyebrow text-[#8B949E] truncate">
+        <div className="flex items-center gap-1.5 min-w-0">
+          <Icon className="w-4 h-4 kpi-icon shrink-0" />
+          <span className="text-[10px] font-body font-bold text-[#8B949E] uppercase tracking-wider truncate">
             {title}
           </span>
         </div>
 
         {variation && (
           <div
-            className={`flex items-center gap-1 text-[10px] font-body font-semibold px-2 py-0.5 rounded-full shrink-0 ${
-              variation.type === 'positive'
-                ? 'bg-[#3FB950]/15 text-[#3FB950] border border-[#3FB950]/30'
-                : variation.type === 'negative'
-                ? 'bg-[#F85149]/15 text-[#F85149] border border-[#F85149]/30'
-                : 'bg-[#2F81F7]/15 text-[#58A6FF] border border-[#2F81F7]/30'
-            }`}
+            className={`flex items-center gap-1 text-[10px] font-body font-semibold px-2 py-0.5 rounded border leading-none shrink-0 ${getBadgeClass()}`}
           >
-            {variation.type === 'positive' ? (
+            {variation.type === 'positive' && variant === 'success' ? (
               <TrendingUp className="w-2.5 h-2.5" />
             ) : variation.type === 'negative' ? (
               <TrendingDown className="w-2.5 h-2.5" />
@@ -87,10 +96,10 @@ export const KpiCard: React.FC<KpiCardProps> = ({
       {/* Middle row: Big Number + Subtitle + Sparkline in grid */}
       <div className="flex items-end justify-between gap-2 mt-1">
         <div className="min-w-0">
-          <h3 className="kpi-number text-[28px] xl:text-[32px] text-[#E6EDF3]">
+          <h3 className="kpi-number text-[28px] xl:text-[32px] font-extrabold text-[#E6EDF3] leading-none">
             {value}
           </h3>
-          <p className="text-[11px] font-body text-[#8B949E] mt-1 font-normal truncate leading-none">
+          <p className="text-[11px] font-body text-[#8B949E] mt-1.5 font-normal truncate leading-none">
             {subtitle}
           </p>
         </div>

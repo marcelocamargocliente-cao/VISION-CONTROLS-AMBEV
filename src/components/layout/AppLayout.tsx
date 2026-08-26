@@ -47,10 +47,9 @@ export const AppLayout: React.FC = () => {
       icon: AlertTriangle,
       badge: paradosCount > 0 ? `${paradosCount}` : undefined,
     },
-    { to: '/pecas-pendentes', label: 'Peças', num: '04', icon: Package },
-    { to: '/orcamentos', label: 'Orçamentos', num: '05', icon: FileText },
+    { to: '/orcamentos', label: 'Orçamentos', num: '04', icon: FileText },
     ...(canManageCadastros
-      ? [{ to: '/cadastros', label: 'Cadastros', num: '06', icon: Settings2 }]
+      ? [{ to: '/cadastros', label: 'Cadastros', num: '05', icon: Settings2 }]
       : []),
   ];
 
@@ -331,7 +330,7 @@ export const AppLayout: React.FC = () => {
         )}
 
         {/* SCROLLABLE VIEWPORT (overflow-hidden by default for 100vh fit) */}
-        <main className="flex-1 overflow-hidden min-w-0 bg-[#0D1117] flex flex-col">
+        <main className="flex-1 overflow-hidden min-w-0 min-h-0 bg-[var(--bg-app)] flex flex-col">
           <Outlet />
         </main>
       </div>

@@ -256,20 +256,20 @@ export const Orcamentos: React.FC = () => {
       {/* Toast Notification */}
       {toast && (
         <div
-          className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-[4px] shadow-xl text-xs font-mono font-medium flex items-center gap-2 border animate-in slide-in-from-top-3 duration-200 ${
+          className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-[4px] shadow-xl text-xs  font-medium flex items-center gap-2 border animate-in slide-in-from-top-3 duration-200 ${
             toast.type === 'success'
-              ? 'bg-[#1C222A] text-[#2ECC71] border-[#2ECC71]'
+              ? 'card  border-[#2ECC71]'
               : toast.type === 'error'
-              ? 'bg-[#1C222A] text-[#FF6B6B] border-[#E5484D]'
-              : 'bg-[#1C222A] text-[#38BDF8] border-[#38BDF8]'
+              ? 'card  border-[#E5484D]'
+              : 'card  border-[#38BDF8]'
           }`}
         >
           {toast.type === 'success' ? (
-            <CheckCircle2 className="w-4 h-4 text-[#2ECC71]" />
+            <CheckCircle2 className="w-4 h-4 " />
           ) : toast.type === 'error' ? (
-            <AlertTriangle className="w-4 h-4 text-[#FF6B6B]" />
+            <AlertTriangle className="w-4 h-4 " />
           ) : (
-            <FileText className="w-4 h-4 text-[#38BDF8]" />
+            <FileText className="w-4 h-4 " />
           )}
           <span>{toast.message}</span>
         </div>
@@ -279,13 +279,13 @@ export const Orcamentos: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-[11px] font-mono tracking-widest text-[#38BDF8] bg-[#38BDF8]/10 px-2 py-0.5 rounded-[2px] border border-[#38BDF8]/30 uppercase font-bold">
+            <span className="text-[11px]  tracking-widest  bg-[#38BDF8]/10 px-2 py-0.5 rounded-[2px] border border-[#38BDF8]/30 uppercase font-bold">
               Gestão Comercial & Faturamento
             </span>
-            <span className="text-[11px] font-mono text-[#6B7683]">•</span>
-            <span className="text-[11px] font-mono text-[#94A3B8]">CONTRATO AMBEV CERVEJARIA RJ</span>
+            <span className="text-[11px]  ">•</span>
+            <span className="text-[11px]  ">CONTRATO AMBEV CERVEJARIA RJ</span>
           </div>
-          <h2 className="text-2xl font-condensed font-bold text-[#ECEFF1] tracking-wide uppercase">
+          <h2 className="text-2xl font-condensed font-bold  tracking-wide uppercase">
             Orçamentos e Propostas de Manutenção
           </h2>
         </div>
@@ -294,7 +294,7 @@ export const Orcamentos: React.FC = () => {
           <button
             id="btn-emitir-novo-orcamento"
             onClick={() => setIsNovoOpen(true)}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-[4px] bg-[#38BDF8] hover:bg-[#0284C7] text-[#14181D] font-bold text-xs uppercase tracking-wider transition-all shadow-md active:scale-95 shrink-0"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-[4px] bg-[#38BDF8] hover:bg-[#0284C7]  font-bold text-xs uppercase tracking-wider transition-all shadow-md active:scale-95 shrink-0"
           >
             <Plus className="w-4 h-4 stroke-[2.5]" />
             <span>Emitir Novo Orçamento</span>
@@ -305,106 +305,106 @@ export const Orcamentos: React.FC = () => {
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {/* Total Orçado */}
-        <div className="bg-[#1C222A] border border-[#2C343E] rounded-[4px] p-3.5 flex flex-col justify-between">
+        <div className="card border border-[#2C343E] rounded-[4px] p-3.5 flex flex-col justify-between">
           <div>
-            <span className="text-[10px] font-mono uppercase text-[#94A3B8] block mb-1">
+            <span className="text-[10px]  uppercase  block mb-1">
               Total Orçado
             </span>
-            <div className="text-2xl font-condensed font-bold text-[#ECEFF1]">
+            <div className="text-2xl font-condensed font-bold ">
               {formatCurrency(totalValor)}
             </div>
           </div>
-          <p className="text-[10px] text-[#6B7683] font-mono mt-2">
+          <p className="text-[10px]   mt-2">
             {orcamentos.length} proposta(s) emitida(s)
           </p>
         </div>
 
         {/* Aguardando Aprovação AMBEV com Alerta de 15 dias */}
-        <div className="bg-[#1C222A] border border-[#2C343E] rounded-[4px] p-3.5 relative overflow-hidden flex flex-col justify-between">
+        <div className="card border border-[#2C343E] rounded-[4px] p-3.5 relative overflow-hidden flex flex-col justify-between">
           {orcamentosEmAlerta.length > 0 && (
-            <div className="absolute top-2 right-2 flex items-center gap-1 bg-[#E5484D]/20 text-[#FF6B6B] border border-[#E5484D]/50 px-2 py-0.5 rounded text-[10px] font-mono font-bold animate-pulse">
-              <Bell className="w-3 h-3 text-[#FF6B6B]" />
+            <div className="absolute top-2 right-2 flex items-center gap-1 bg-[#E5484D]/20  border border-[#E5484D]/50 px-2 py-0.5 rounded text-[10px]  font-bold animate-pulse">
+              <Bell className="w-3 h-3 " />
               <span>{orcamentosEmAlerta.length} em alerta (&gt;15d)</span>
             </div>
           )}
           <div>
-            <span className="text-[10px] font-mono uppercase text-[#F5A623] block mb-1 font-bold">
+            <span className="text-[10px]  uppercase  block mb-1 font-bold">
               Aguardando Aprovação AMBEV
             </span>
-            <div className="text-2xl font-condensed font-bold text-[#F5A623]">
+            <div className="text-2xl font-condensed font-bold ">
               {formatCurrency(totalPendente)}
             </div>
           </div>
 
-          <div className="mt-2 flex items-center justify-between text-[10px] font-mono">
-            <span className="text-[#94A3B8]">{orcamentosAguardando.length} proposta(s) na fila</span>
+          <div className="mt-2 flex items-center justify-between text-[10px] ">
+            <span className="">{orcamentosAguardando.length} proposta(s) na fila</span>
             {orcamentosEmAlerta.length > 0 ? (
-              <span className="text-[#FF6B6B] font-bold">
+              <span className=" font-bold">
                 ⚠️ {orcamentosEmAlerta.length} sem resposta há +15d
               </span>
             ) : (
-              <span className="text-[#2ECC71]">Prazos em dia</span>
+              <span className="">Prazos em dia</span>
             )}
           </div>
         </div>
 
         {/* Aprovados AMBEV */}
-        <div className="bg-[#1C222A] border border-[#2C343E] rounded-[4px] p-3.5 flex flex-col justify-between">
+        <div className="card border border-[#2C343E] rounded-[4px] p-3.5 flex flex-col justify-between">
           <div>
-            <span className="text-[10px] font-mono uppercase text-[#2ECC71] block mb-1">
+            <span className="text-[10px]  uppercase  block mb-1">
               Aprovados pela AMBEV
             </span>
-            <div className="text-2xl font-condensed font-bold text-[#2ECC71]">
+            <div className="text-2xl font-condensed font-bold ">
               {formatCurrency(totalAprovado)}
             </div>
           </div>
-          <p className="text-[10px] text-[#6B7683] font-mono mt-2">
+          <p className="text-[10px]   mt-2">
             Liberados para compra e execução em campo
           </p>
         </div>
 
         {/* Reprovados / Expirados */}
-        <div className="bg-[#1C222A] border border-[#2C343E] rounded-[4px] p-3.5 flex flex-col justify-between">
+        <div className="card border border-[#2C343E] rounded-[4px] p-3.5 flex flex-col justify-between">
           <div>
-            <span className="text-[10px] font-mono uppercase text-[#94A3B8] block mb-1">
+            <span className="text-[10px]  uppercase  block mb-1">
               Reprovados / Expirados
             </span>
-            <div className="text-2xl font-condensed font-bold text-[#94A3B8]">
+            <div className="text-2xl font-condensed font-bold ">
               {formatCurrency(totalReprovado)}
             </div>
           </div>
-          <p className="text-[10px] text-[#6B7683] font-mono mt-2">
+          <p className="text-[10px]   mt-2">
             Candidatos a revisão e reenvio
           </p>
         </div>
       </div>
 
       {/* Filter Bar */}
-      <div className="bg-[#1C222A] border border-[#2C343E] rounded-[4px] p-3 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 shadow-md">
+      <div className="card border border-[#2C343E] rounded-[4px] p-3 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 shadow-md">
         <div className="flex flex-wrap items-center gap-3 flex-1">
           {/* Search */}
           <div className="relative flex-1 min-w-[220px]">
-            <Search className="w-3.5 h-3.5 text-[#94A3B8] absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-3.5 h-3.5  absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               id="input-busca-orcamentos"
               type="text"
               placeholder="Buscar por Nº, TAG, Fornecedor ou Contato..."
               value={searchFilter}
               onChange={(e) => setSearchFilter(e.target.value)}
-              className="w-full bg-[#14181D] border border-[#2C343E] rounded-[3px] pl-8 pr-3 py-1.5 text-xs text-[#ECEFF1] placeholder-[#6B7683] focus:border-[#38BDF8] focus:outline-none"
+              className="w-full bg-[var(--bg-input)] border border-[#2C343E] rounded-[3px] pl-8 pr-3 py-1.5 text-xs  placeholder-[#6B7683] focus:border-[#38BDF8] focus:outline-none"
             />
           </div>
 
           {/* Status Filter */}
           <div className="flex items-center gap-2">
-            <label className="text-[11px] font-mono uppercase text-[#94A3B8] shrink-0">
+            <label className="text-[11px]  uppercase  shrink-0">
               Status:
             </label>
             <select
               id="select-status-orcamentos"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-[#14181D] border border-[#2C343E] text-[#ECEFF1] text-xs rounded-[3px] px-2.5 py-1.5 outline-none font-mono"
+              className="bg-[var(--bg-input)] border border-[#2C343E]  text-xs rounded-[3px] px-2.5 py-1.5 outline-none "
             >
               <option value="">Todos os Status</option>
               <option value="AGUARDANDO">Aguardando Aprovação (Geral)</option>
@@ -422,25 +422,25 @@ export const Orcamentos: React.FC = () => {
             id="btn-toggle-alerta-15d"
             type="button"
             onClick={() => setOnlyAlerts(!onlyAlerts)}
-            className={`px-3 py-1.5 rounded-[3px] text-xs font-mono font-bold flex items-center gap-1.5 transition-colors border ${
+            className={`px-3 py-1.5 rounded-[3px] text-xs  font-bold flex items-center gap-1.5 transition-colors border ${
               onlyAlerts
-                ? 'bg-[#E5484D]/25 text-[#FF6B6B] border-[#E5484D]/60'
-                : 'bg-[#14181D] text-[#94A3B8] border-[#2C343E] hover:text-[#ECEFF1]'
+                ? 'bg-[#E5484D]/25  border-[#E5484D]/60'
+                : 'bg-[var(--bg-input)]  border-[#2C343E] hover:'
             }`}
           >
-            <Bell className={`w-3.5 h-3.5 ${onlyAlerts ? 'text-[#FF6B6B]' : 'text-[#94A3B8]'}`} />
+            <Bell className={`w-3.5 h-3.5 ${onlyAlerts ? '' : ''}`} />
             <span>Alerta &gt;15 dias ({orcamentosEmAlerta.length})</span>
           </button>
         </div>
 
-        <div className="text-right text-[11px] font-mono text-[#94A3B8]">
-          Exibindo <span className="text-[#38BDF8] font-bold">{filteredOrcamentos.length}</span> de{' '}
+        <div className="text-right text-[11px]  ">
+          Exibindo <span className=" font-bold">{filteredOrcamentos.length}</span> de{' '}
           {orcamentos.length} proposta(s)
         </div>
       </div>
 
       {/* Table */}
-      <div className="bg-[#1C222A] border border-[#2C343E] rounded-[4px] overflow-hidden shadow-lg">
+      <div className="card border border-[#2C343E] rounded-[4px] overflow-hidden shadow-lg">
         {filteredOrcamentos.length === 0 ? (
           <EmptyState
             icon={FileText}
@@ -451,7 +451,7 @@ export const Orcamentos: React.FC = () => {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="bg-[#14181D] text-[#94A3B8] font-mono text-[10px] uppercase tracking-wider border-b border-[#2C343E]">
+                <tr className="bg-[var(--bg-input)]   text-[10px] uppercase tracking-wider border-b border-[#2C343E]">
                   <th className="py-3 px-3">Nº Proposta</th>
                   <th className="py-3 px-3">Fornecedor / Emitente</th>
                   <th className="py-3 px-3">Ocorrência & TAG</th>
@@ -462,7 +462,7 @@ export const Orcamentos: React.FC = () => {
                   <th className="py-3 px-3 text-right">Ações</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#2C343E]/60 text-[#ECEFF1]">
+              <tbody className="divide-y divide-[#2C343E]/60 ">
                 {filteredOrcamentos.map((orc) => {
                   const occ = occsMap.get(orc.ocorrencia_id);
                   const eq = occ ? equipsMap.get(occ.equipamento_id) : null;
@@ -484,15 +484,15 @@ export const Orcamentos: React.FC = () => {
                       {/* Nº Proposta */}
                       <td className="py-3 px-3">
                         <div className="flex items-center gap-1.5">
-                          <span className="font-mono font-bold text-sm text-[#38BDF8] group-hover:underline">
+                          <span className=" font-bold text-sm  group-hover:underline">
                             {orc.numero}
                           </span>
                           {(orc.arquivo_pdf_url || orc.arquivo_url) && (
-                            <Paperclip className="w-3 h-3 text-[#94A3B8]" title="Possui PDF anexado" />
+                            <Paperclip className="w-3 h-3 " title="Possui PDF anexado" />
                           )}
                         </div>
                         {orc.enviado_para && (
-                          <div className="text-[10px] text-[#94A3B8] truncate max-w-[180px]">
+                          <div className="text-[10px]  truncate max-w-[180px]">
                             {orc.enviado_para}
                           </div>
                         )}
@@ -500,8 +500,8 @@ export const Orcamentos: React.FC = () => {
 
                       {/* Fornecedor */}
                       <td className="py-3 px-3">
-                        <div className="font-semibold text-[#ECEFF1]">{orc.fornecedor}</div>
-                        <div className="text-[10px] text-[#94A3B8] font-mono">
+                        <div className="font-semibold ">{orc.fornecedor}</div>
+                        <div className="text-[10px]  ">
                           Validade: {orc.validade ? formatDate(orc.validade) : '30 dias'}
                         </div>
                       </td>
@@ -512,7 +512,7 @@ export const Orcamentos: React.FC = () => {
                           <div onClick={(e) => e.stopPropagation()}>
                             <button
                               onClick={() => navigate(`/ocorrencias/${occ.id}`)}
-                              className="font-mono font-bold text-xs text-[#F5A623] hover:underline"
+                              className=" font-bold text-xs  hover:underline"
                             >
                               OS #{occ.numero}
                             </button>
@@ -523,44 +523,44 @@ export const Orcamentos: React.FC = () => {
                             )}
                           </div>
                         ) : (
-                          <span className="text-[#6B7683] font-mono">-</span>
+                          <span className=" ">-</span>
                         )}
                       </td>
 
                       {/* Data de Envio */}
-                      <td className="py-3 px-3 font-mono text-[11px]">
+                      <td className="py-3 px-3  text-[11px]">
                         {formatDate(orc.data_envio)}
                       </td>
 
                       {/* Dias na AMBEV (Alerta 15 dias) */}
                       <td className="py-3 px-3 text-center">
                         <span
-                          className={`inline-flex items-center px-2 py-0.5 rounded-[2px] font-mono text-xs font-bold border ${
+                          className={`inline-flex items-center px-2 py-0.5 rounded-[2px]  text-xs font-bold border ${
                             isLate
-                              ? 'bg-[#E5484D]/25 text-[#FF6B6B] border-[#E5484D]/60 animate-pulse'
+                              ? 'bg-[#E5484D]/25  border-[#E5484D]/60 animate-pulse'
                               : isMedium
-                              ? 'bg-[#F5A623]/25 text-[#F5A623] border-[#F5A623]/60'
-                              : 'bg-[#232B35] text-[#94A3B8] border-[#2C343E]'
+                              ? 'bg-[#F5A623]/25  border-[#F5A623]/60'
+                              : 'bg-[#232B35]  border-[#2C343E]'
                           }`}
                         >
                           {dias} dias
                         </span>
                         {isLate && (
-                          <div className="text-[9px] text-[#FF6B6B] font-mono font-bold mt-0.5">
+                          <div className="text-[9px]   font-bold mt-0.5">
                             🚨 Alerta &gt;15d
                           </div>
                         )}
                       </td>
 
                       {/* Valor Total */}
-                      <td className="py-3 px-3 font-mono font-bold text-sm text-[#38BDF8]">
+                      <td className="py-3 px-3  font-bold text-sm ">
                         {formatCurrency(orc.valor_total)}
                       </td>
 
                       {/* Status */}
                       <td className="py-3 px-3">
                         <span
-                          className={`px-2 py-0.5 rounded-[2px] text-[10px] font-mono font-bold border uppercase ${statusConf.badgeBg}`}
+                          className={`px-2 py-0.5 rounded-[2px] text-[10px]  font-bold border uppercase ${statusConf.badgeBg}`}
                         >
                           {statusConf.label}
                         </span>
@@ -574,7 +574,7 @@ export const Orcamentos: React.FC = () => {
                             id={`btn-ver-orc-${orc.id}`}
                             onClick={() => handleOpenDetail(orc)}
                             title="Ver detalhes da proposta"
-                            className="p-1.5 bg-[#14181D] hover:bg-[#38BDF8]/20 text-[#94A3B8] hover:text-[#38BDF8] border border-[#2C343E] rounded transition-colors"
+                            className="p-1.5 bg-[var(--bg-input)] hover:bg-[#38BDF8]/20  hover: border border-[#2C343E] rounded transition-colors"
                           >
                             <Eye className="w-3.5 h-3.5" />
                           </button>
@@ -587,7 +587,7 @@ export const Orcamentos: React.FC = () => {
                                 id={`btn-aprovar-orc-${orc.id}`}
                                 onClick={(e) => handleDirectApprove(e, orc)}
                                 title="Aprovar proposta comercial"
-                                className="px-2 py-1 bg-[#2ECC71]/20 hover:bg-[#2ECC71] text-[#2ECC71] hover:text-[#14181D] border border-[#2ECC71]/40 rounded text-[10px] font-bold uppercase transition-colors flex items-center gap-1"
+                                className="px-2 py-1 bg-[#2ECC71]/20 hover:bg-[#2ECC71]  hover: border border-[#2ECC71]/40 rounded text-[10px] font-bold uppercase transition-colors flex items-center gap-1"
                               >
                                 <Check className="w-3 h-3" />
                                 <span>Aprovar</span>

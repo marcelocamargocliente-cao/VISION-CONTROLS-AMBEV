@@ -1,3 +1,23 @@
+/**
+ * HIERARQUIA DE LOCALIZAÇÃO AMBEV
+ *
+ * Exemplo completo: N1 - 01310 - SUBCONJ COMUNS - VP131004
+ *
+ * UG (1º nível)
+ *   N1, N2, N3, N4 — o prédio/bloco
+ *   SEMPRE presente | banco: ugs.codigo
+ *
+ * LOCAL DE INSTALAÇÃO (2º + 3º nível juntos)
+ *   código numérico (01310) + nome descritivo (SUBCONJ COMUNS)
+ *   exibir sempre juntos separados por " - "
+ *   o código numérico também é chamado de "Linha" para fins de filtro
+ *   NEM SEMPRE presente | banco: codigo_sap + maquina
+ *
+ * TAG AMBEV (4º nível)
+ *   VP131004, ACO501001 — ponto exato no SAP
+ *   NEM SEMPRE presente | banco: tag_sap
+ */
+
 export type EquipStatus = 'OK' | 'RESTRICAO' | 'PARADO' | 'DESATIVADO';
 
 export type OcorrenciaStatus = 

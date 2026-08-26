@@ -38,37 +38,37 @@ export const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#14181D] flex flex-col justify-center items-center p-4 selection:bg-[#F5A623]/30">
+    <div className="min-h-screen bg-[var(--bg-input)] flex flex-col justify-center items-center p-4 selection:bg-[#F5A623]/30">
       <div className="w-full max-w-md">
         {/* Brand Card Header */}
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-[4px] bg-[#1C222A] border border-[#2C343E] text-[#F5A623] font-mono font-bold text-2xl shadow-xl mb-3">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-[4px] card border border-[#2C343E]   font-bold text-2xl shadow-xl mb-3">
             VC
           </div>
 
           <div className="flex items-center justify-center gap-2 mb-1">
-            <span className="text-xs font-mono font-bold tracking-widest text-[#F5A623] bg-[#F5A623]/10 px-2 py-0.5 rounded-[2px] border border-[#F5A623]/30">
+            <span className="text-xs  font-bold tracking-widest  bg-[#F5A623]/10 px-2 py-0.5 rounded-[2px] border border-[#F5A623]/30">
               IVCA
             </span>
-            <span className="text-xs font-mono text-[#6B7683]">•</span>
-            <span className="text-xs font-mono tracking-wider text-[#94A3B8]">
+            <span className="text-xs  ">•</span>
+            <span className="text-xs  tracking-wider ">
               AMBEV — CERVEJARIA RJ
             </span>
           </div>
 
-          <h1 className="text-2xl text-[#ECEFF1] tracking-tight">
-            <span className="font-light text-[#94A3B8]">Integração</span>{' '}
-            <strong className="font-bold text-[#F5A623]">Vision Controls AmBev</strong>
+          <h1 className="text-2xl  tracking-tight">
+            <span className="font-light ">Integração</span>{' '}
+            <strong className="font-bold ">Vision Controls AmBev</strong>
           </h1>
-          <p className="text-xs text-[#94A3B8] mt-1.5 max-w-xs mx-auto">
+          <p className="text-xs  mt-1.5 max-w-xs mx-auto">
             Gestão de manutenção e confiabilidade do parque de ar-condicionado industrial
           </p>
         </div>
 
         {/* Login Container */}
-        <div className="bg-[#1C222A] border border-[#2C343E] rounded-[4px] p-6 shadow-2xl">
+        <div className="card border border-[#2C343E] rounded-[4px] p-6 shadow-2xl">
           {error && (
-            <div className="mb-4 p-3 rounded-[3px] bg-[#E5484D]/15 border border-[#E5484D]/40 flex items-start gap-2.5 text-xs text-[#FF8787]">
+            <div className="mb-4 p-3 rounded-[3px] bg-[#E5484D]/15 border border-[#E5484D]/40 flex items-start gap-2.5 text-xs ">
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
@@ -76,7 +76,7 @@ export const Login: React.FC = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-[11px] font-mono uppercase tracking-wider text-[#94A3B8] mb-1.5">
+              <label className="block text-[11px]  uppercase tracking-wider  mb-1.5">
                 E-mail Corporativo
               </label>
               <input
@@ -86,16 +86,16 @@ export const Login: React.FC = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="nome.sobrenome@visioncontrols.com.br"
-                className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#F5A623] text-[#ECEFF1] text-xs rounded-[3px] px-3 py-2.5 outline-none transition-colors"
+                className="w-full bg-[var(--bg-input)] border border-[#2C343E] focus:border-[#F5A623]  text-xs rounded-[3px] px-3 py-2.5 outline-none transition-colors"
               />
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-[11px] font-mono uppercase tracking-wider text-[#94A3B8]">
+                <label className="block text-[11px]  uppercase tracking-wider ">
                   Senha
                 </label>
-                <span className="text-[10px] text-[#6B7683]">Supabase Auth</span>
+                <span className="text-[10px] ">Supabase Auth</span>
               </div>
               <input
                 id="input-login-password"
@@ -103,7 +103,7 @@ export const Login: React.FC = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#F5A623] text-[#ECEFF1] text-xs rounded-[3px] px-3 py-2.5 outline-none transition-colors font-mono"
+                className="w-full bg-[var(--bg-input)] border border-[#2C343E] focus:border-[#F5A623]  text-xs rounded-[3px] px-3 py-2.5 outline-none transition-colors "
               />
             </div>
 
@@ -111,7 +111,7 @@ export const Login: React.FC = () => {
               id="btn-submit-login"
               type="submit"
               disabled={isLoading}
-              className="w-full py-2.5 px-4 rounded-[3px] bg-[#F5A623] hover:bg-[#D98E1A] text-[#14181D] font-condensed text-sm font-bold tracking-wider uppercase transition-colors flex items-center justify-center gap-2 shadow-md disabled:opacity-50"
+              className="w-full py-2.5 px-4 rounded-[3px] bg-[#F5A623] hover:bg-[#D98E1A]  font-condensed text-sm font-bold tracking-wider uppercase transition-colors flex items-center justify-center gap-2 shadow-md disabled:opacity-50"
             >
               <span>{isLoading ? 'Autenticando...' : 'Acessar Painel IVCA'}</span>
               <ArrowRight className="w-4 h-4" />
@@ -120,7 +120,7 @@ export const Login: React.FC = () => {
 
           {/* Quick Access Profiles (Field & Management Demo) */}
           <div className="mt-6 pt-5 border-t border-[#2C343E]">
-            <p className="text-[10px] font-mono uppercase tracking-wider text-[#94A3B8] mb-2.5 text-center">
+            <p className="text-[10px]  uppercase tracking-wider  mb-2.5 text-center">
               Acesso Rápido — Equipe Designada
             </p>
             <div className="space-y-1.5">
@@ -132,16 +132,16 @@ export const Login: React.FC = () => {
                     id={`btn-quick-login-${prof.id}`}
                     type="button"
                     onClick={() => handleQuickLogin(prof.email)}
-                    className="w-full p-2 rounded-[3px] bg-[#14181D] hover:bg-[#232B35] border border-[#2C343E] hover:border-[#3E4A59] text-left flex items-center justify-between transition-colors group"
+                    className="w-full p-2 rounded-[3px] bg-[var(--bg-input)] hover:bg-[#232B35] border border-[#2C343E] hover:border-[#3E4A59] text-left flex items-center justify-between transition-colors group"
                   >
                     <div className="min-w-0">
-                      <p className="text-xs font-medium text-[#ECEFF1] group-hover:text-[#F5A623] truncate">
+                      <p className="text-xs font-medium  group-hover: truncate">
                         {prof.nome}
                       </p>
-                      <p className="text-[10px] font-mono text-[#6B7683] truncate">{prof.email}</p>
+                      <p className="text-[10px]   truncate">{prof.email}</p>
                     </div>
                     <span
-                      className={`text-[9px] font-mono px-2 py-0.5 rounded-[2px] border ${badge.badgeClass} shrink-0 ml-2`}
+                      className={`text-[9px]  px-2 py-0.5 rounded-[2px] border ${badge.badgeClass} shrink-0 ml-2`}
                     >
                       {prof.role}
                     </span>
@@ -152,7 +152,7 @@ export const Login: React.FC = () => {
           </div>
 
           <div className="mt-4 pt-3 text-center border-t border-[#2C343E]/50">
-            <p className="text-[11px] text-[#6B7683]">
+            <p className="text-[11px] ">
               Sistema restrito Vision Controls. Usuários são provisionados pela administração.
             </p>
           </div>

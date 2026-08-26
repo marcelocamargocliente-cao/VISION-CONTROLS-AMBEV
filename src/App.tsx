@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { AppLayout } from './components/layout/AppLayout';
 import { Login } from './pages/Login';
@@ -9,7 +10,6 @@ import { EquipamentoDetalhe } from './pages/EquipamentoDetalhe';
 import { Ocorrencias } from './pages/Ocorrencias';
 import { NovaOcorrencia } from './pages/NovaOcorrencia';
 import { OcorrenciaDetalhe } from './pages/OcorrenciaDetalhe';
-import { PecasPendentes } from './pages/PecasPendentes';
 import { Orcamentos } from './pages/Orcamentos';
 import { Cadastros } from './pages/Cadastros';
 
@@ -37,6 +37,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 export const App: React.FC = () => {
   return (
     <AuthProvider>
+      <Toaster position="top-right" toastOptions={{ style: { background: '#1A1F28', color: '#E6EDF3', border: '1px solid #30363D' } }} />
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
@@ -55,7 +56,6 @@ export const App: React.FC = () => {
             <Route path="ocorrencias" element={<Ocorrencias />} />
             <Route path="ocorrencias/nova" element={<NovaOcorrencia />} />
             <Route path="ocorrencias/:id" element={<OcorrenciaDetalhe />} />
-            <Route path="pecas-pendentes" element={<PecasPendentes />} />
             <Route path="orcamentos" element={<Orcamentos />} />
             <Route path="cadastros" element={<Cadastros />} />
           </Route>

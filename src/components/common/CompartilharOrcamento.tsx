@@ -1,13 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Share2,
-  MessageSquare,
+  MessageCircle,
   Mail,
   Copy,
   Download,
   Printer,
   Check,
   ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import {
   ShareOrcamentoData,
@@ -32,21 +34,32 @@ export const CompartilharOrcamento: React.FC<CompartilharOrcamentoProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+
+  const abrirDropdown = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (btnRef.current) {
+      const rect = btnRef.current.getBoundingClientRect();
+      setPos({
+        top: rect.top - 8,
+        left: rect.left,
+      });
+    }
+    setIsOpen(!isOpen);
+  };
 
   // Close dropdown on outside click
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+    if (!isOpen) return;
+    const fechar = (e: MouseEvent) => {
+      const target = e.target as Element;
+      if (!target.closest('.compartilhar-portal') && !btnRef.current?.contains(target)) {
         setIsOpen(false);
       }
     };
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    document.addEventListener('mousedown', fechar);
+    return () => document.removeEventListener('mousedown', fechar);
   }, [isOpen]);
 
   const handleWhatsApp = (e: React.MouseEvent) => {
@@ -74,7 +87,7 @@ export const CompartilharOrcamento: React.FC<CompartilharOrcamentoProps> = ({
       await navigator.clipboard.writeText(text);
       setCopied(true);
       if (onToast) {
-        onToast('Copiado!', 'success');
+        onToast('Texto copiado!', 'success');
       }
       setTimeout(() => setCopied(false), 2000);
       setIsOpen(false);
@@ -88,14 +101,7 @@ export const CompartilharOrcamento: React.FC<CompartilharOrcamentoProps> = ({
     e.stopPropagation();
     setIsOpen(false);
     if (data.link_pdf) {
-      const link = document.createElement('a');
-      link.href = data.link_pdf;
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      link.download = `Proposta_${data.numero}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      window.open(data.link_pdf, '_blank', 'noopener,noreferrer');
       if (onToast) onToast('Abrindo arquivo PDF da proposta...', 'success');
     } else {
       if (onToast) onToast('Gerando visualização de impressão/PDF da proposta...', 'info');
@@ -114,7 +120,7 @@ export const CompartilharOrcamento: React.FC<CompartilharOrcamentoProps> = ({
           onClick={handleWhatsApp}
           className="inline-flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-[4px] bg-[#25D366]/15 hover:bg-[#25D366]/25 text-[#25D366] border border-[#25D366]/40 transition-colors shadow-sm"
         >
-          <MessageSquare className="w-4 h-4" />
+          <MessageCircle className="w-4 h-4" color="#25D366" />
           <span>WhatsApp</span>
         </button>
 
@@ -135,7 +141,7 @@ export const CompartilharOrcamento: React.FC<CompartilharOrcamentoProps> = ({
           className="inline-flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-[4px] bg-[#1C222A] hover:bg-[#2C343E] text-[#ECEFF1] border border-[#2C343E] transition-colors shadow-sm"
         >
           {copied ? <Check className="w-4 h-4 text-[#2ECC71]" /> : <Copy className="w-4 h-4 text-[#F5A623]" />}
-          <span>{copied ? 'Copiado!' : 'Copiar Texto'}</span>
+          <span>{copied ? 'Copiado!' : 'Copiar resumo'}</span>
         </button>
 
         <button
@@ -156,88 +162,82 @@ export const CompartilharOrcamento: React.FC<CompartilharOrcamentoProps> = ({
   }
 
   return (
-    <div className={`relative inline-block text-left ${className}`} ref={dropdownRef}>
+    <div className={`relative inline-block text-left ${className}`}>
       <button
+        ref={btnRef}
         id={`${idPrefix}-dropdown-trigger`}
         type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          setIsOpen(!isOpen);
-        }}
+        onClick={abrirDropdown}
         className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-[4px] bg-[#1C222A] hover:bg-[#2C343E] text-[#ECEFF1] border border-[#2C343E] hover:border-[#38BDF8]/50 transition-all shadow-sm focus:outline-none"
       >
         <Share2 className="w-4 h-4 text-[#38BDF8]" />
         <span>Compartilhar</span>
-        <ChevronDown className={`w-3.5 h-3.5 text-[#94A3B8] transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        {isOpen ? <ChevronUp className="w-3.5 h-3.5 text-[#94A3B8]" /> : <ChevronDown className="w-3.5 h-3.5 text-[#94A3B8]" />}
       </button>
 
-      {isOpen && (
+      {isOpen && createPortal(
         <div
           id={`${idPrefix}-dropdown-menu`}
-          className="absolute right-0 bottom-full mb-1 sm:bottom-auto sm:top-full sm:mt-1 w-56 rounded-[4px] bg-[#14181D] border border-[#2C343E] shadow-2xl z-50 overflow-hidden py-1 divide-y divide-[#2C343E]/50"
+          className="compartilhar-portal"
+          style={{
+            position: 'fixed',
+            top: pos.top,
+            left: Math.max(10, Math.min(pos.left, window.innerWidth - 220)),
+            transform: 'translateY(-100%)',
+            zIndex: 99999,
+            background: '#1A1F28',
+            border: '1px solid #30363D',
+            borderRadius: 10,
+            padding: 6,
+            minWidth: 200,
+            boxShadow: '0 -8px 32px rgba(0,0,0,0.5)',
+          }}
         >
-          <div className="py-1">
-            <button
-              id={`${idPrefix}-opt-whatsapp`}
-              type="button"
-              onClick={handleWhatsApp}
-              className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs text-[#ECEFF1] hover:bg-[#25D366]/15 hover:text-[#25D366] transition-colors text-left font-medium"
-            >
-              <MessageSquare className="w-4 h-4 text-[#25D366]" />
-              <div>
-                <div className="font-semibold">WhatsApp</div>
-                <div className="text-[10px] text-[#94A3B8]">Enviar proposta via mensagem</div>
-              </div>
-            </button>
+          {/* WhatsApp */}
+          <button
+            id={`${idPrefix}-opt-whatsapp`}
+            type="button"
+            className="compartilhar-item flex items-center gap-[10px] w-full py-[9px] px-[12px] rounded-[7px] border-0 bg-transparent text-[#E6EDF3] text-[13px] font-medium text-left cursor-pointer transition-colors whitespace-nowrap hover:bg-white/[0.06]"
+            onClick={handleWhatsApp}
+          >
+            <MessageCircle className="w-4 h-4 text-[#25D366] shrink-0" color="#25D366" />
+            <span>WhatsApp</span>
+          </button>
 
-            <button
-              id={`${idPrefix}-opt-email`}
-              type="button"
-              onClick={handleEmail}
-              className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs text-[#ECEFF1] hover:bg-[#38BDF8]/15 hover:text-[#38BDF8] transition-colors text-left font-medium"
-            >
-              <Mail className="w-4 h-4 text-[#38BDF8]" />
-              <div>
-                <div className="font-semibold">E-mail AMBEV</div>
-                <div className="text-[10px] text-[#94A3B8]">Abrir cliente de e-mail</div>
-              </div>
-            </button>
-          </div>
+          {/* E-mail */}
+          <button
+            id={`${idPrefix}-opt-email`}
+            type="button"
+            className="compartilhar-item flex items-center gap-[10px] w-full py-[9px] px-[12px] rounded-[7px] border-0 bg-transparent text-[#E6EDF3] text-[13px] font-medium text-left cursor-pointer transition-colors whitespace-nowrap hover:bg-white/[0.06]"
+            onClick={handleEmail}
+          >
+            <Mail className="w-4 h-4 shrink-0 text-[#38BDF8]" />
+            <span>E-mail</span>
+          </button>
 
-          <div className="py-1">
-            <button
-              id={`${idPrefix}-opt-copy`}
-              type="button"
-              onClick={handleCopy}
-              className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs text-[#ECEFF1] hover:bg-[#F5A623]/15 hover:text-[#F5A623] transition-colors text-left font-medium"
-            >
-              {copied ? <Check className="w-4 h-4 text-[#2ECC71]" /> : <Copy className="w-4 h-4 text-[#F5A623]" />}
-              <div>
-                <div className="font-semibold">{copied ? 'Copiado!' : 'Copiar Texto'}</div>
-                <div className="text-[10px] text-[#94A3B8]">Copiar resumo formatado</div>
-              </div>
-            </button>
+          {/* Copiar */}
+          <button
+            id={`${idPrefix}-opt-copy`}
+            type="button"
+            className="compartilhar-item flex items-center gap-[10px] w-full py-[9px] px-[12px] rounded-[7px] border-0 bg-transparent text-[#E6EDF3] text-[13px] font-medium text-left cursor-pointer transition-colors whitespace-nowrap hover:bg-white/[0.06]"
+            onClick={handleCopy}
+          >
+            {copied ? <Check className="w-4 h-4 text-[#2ECC71] shrink-0" /> : <Copy className="w-4 h-4 text-[#F5A623] shrink-0" />}
+            <span>{copied ? 'Copiado!' : 'Copiar resumo'}</span>
+          </button>
 
-            <button
-              id={`${idPrefix}-opt-pdf`}
-              type="button"
-              onClick={handleDownloadOrPrint}
-              className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs text-[#ECEFF1] hover:bg-[#38BDF8]/15 hover:text-[#38BDF8] transition-colors text-left font-medium"
-            >
-              {data.link_pdf ? (
-                <Download className="w-4 h-4 text-[#38BDF8]" />
-              ) : (
-                <Printer className="w-4 h-4 text-[#94A3B8]" />
-              )}
-              <div>
-                <div className="font-semibold">{data.link_pdf ? 'Baixar PDF' : 'Imprimir Proposta'}</div>
-                <div className="text-[10px] text-[#94A3B8]">
-                  {data.link_pdf ? 'Download direto do arquivo' : 'Gerar folha timbrada VC'}
-                </div>
-              </div>
-            </button>
-          </div>
-        </div>
+          {/* Baixar PDF */}
+          <button
+            id={`${idPrefix}-opt-pdf`}
+            type="button"
+            className="compartilhar-item flex items-center gap-[10px] w-full py-[9px] px-[12px] rounded-[7px] border-0 bg-transparent text-[#E6EDF3] text-[13px] font-medium text-left cursor-pointer transition-colors whitespace-nowrap hover:bg-white/[0.06]"
+            onClick={handleDownloadOrPrint}
+          >
+            <Download className="w-4 h-4 text-[#38BDF8] shrink-0" />
+            <span>{data.link_pdf ? 'Baixar PDF' : 'Imprimir / PDF'}</span>
+          </button>
+        </div>,
+        document.body
       )}
     </div>
   );

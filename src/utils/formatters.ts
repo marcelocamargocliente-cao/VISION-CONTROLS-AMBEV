@@ -10,6 +10,53 @@ import {
   TipoServico 
 } from '../types/database';
 
+/**
+ * HIERARQUIA DE LOCALIZAÇÃO AMBEV
+ *
+ * Exemplo completo: N1 - 01310 - SUBCONJ COMUNS - VP131004
+ *
+ * UG (1º nível)
+ *   N1, N2, N3, N4 — o prédio/bloco
+ *   SEMPRE presente | banco: ugs.codigo
+ *
+ * LOCAL DE INSTALAÇÃO (2º + 3º nível juntos)
+ *   código numérico (01310) + nome descritivo (SUBCONJ COMUNS)
+ *   exibir sempre juntos separados por " - "
+ *   o código numérico também é chamado de "Linha" para fins de filtro
+ *   NEM SEMPRE presente | banco: codigo_sap + maquina
+ *
+ * TAG AMBEV (4º nível)
+ *   VP131004, ACO501001 — ponto exato no SAP
+ *   NEM SEMPRE presente | banco: tag_sap
+ */
+export function montarLocalizacao(equip: any): string {
+  if (!equip) return '';
+  const partes: string[] = [];
+
+  // 1º nível — UG sempre
+  if (equip.ug_codigo || equip.ug) {
+    partes.push(`UG ${equip.ug_codigo || equip.ug}`);
+  }
+
+  // 2º+3º nível — Local de Instalação (código + nome juntos)
+  const codigo = equip.codigo_sap || equip.centro_trabalho_sap;
+  const maquina = equip.maquina || equip.centro_trabalho_nome;
+  const localInstalacao = [codigo, maquina].filter(Boolean).join(' - ');
+
+  if (localInstalacao) {
+    partes.push(localInstalacao);
+  } else if (equip.linha_nome || equip.linha) {
+    partes.push(equip.linha_nome || equip.linha);
+  }
+
+  // 4º nível — Tag AMBEV só se existir
+  if (equip.tag_sap) {
+    partes.push(equip.tag_sap);
+  }
+
+  return partes.join(' · ');
+}
+
 export function formatCurrency(value?: number | null): string {
   if (value === undefined || value === null || isNaN(value)) {
     return 'R$ 0,00';
@@ -334,34 +381,40 @@ export interface ShareOrcamentoData {
   link_pdf?: string;
 }
 
-export function buildOrcamentoShareText(data: ShareOrcamentoData): string {
-  const parts: string[] = [];
-  parts.push('*INTEGRAÇÃO VISION CONTROLS AMBEV*');
-  parts.push(`*Proposta de Manutenção — ${data.numero}*`);
-  parts.push('');
-  parts.push(`Equipamento: TAG ${data.tag} — ${data.tipo} ${data.marca || ''} ${data.modelo || ''}`.trim());
-  parts.push(`Local: ${data.ug || 'N/D'} / ${data.area || 'N/D'} / ${data.linha || 'N/D'} / ${data.centro_trabalho || 'N/D'}`);
-  parts.push(`Parado há: ${data.dias_parado ?? 0} dias`);
-  parts.push('');
-  parts.push(`*Fornecedor:* ${data.fornecedor || 'Vision Controls / Parceiro'}`);
-  parts.push(`*Valor:* ${formatCurrency(data.valor_total)}`);
-  parts.push(`*Validade:* ${data.validade ? formatDate(data.validade) : '30 dias'}`);
-  parts.push(`*Status:* ${data.status}`);
-  parts.push(`*Enviado para:* ${data.enviado_para || 'Engenharia AMBEV RJ'}`);
-  parts.push('');
-  parts.push(`Ocorrência OS #${data.numero_ocorrencia || 'N/D'}`);
-  if (data.link_pdf) {
-    parts.push(data.link_pdf);
-  }
-  parts.push('');
-  parts.push('_Vision Controls — HVAC Industrial_');
+export function buildOrcamentoShareText(data: ShareOrcamentoData & { data_envio?: string, dias_aguardando?: number, descricao_ocorrencia?: string, maquina?: string }): string {
+  const equipDesc = [data.tipo, data.marca, data.modelo].filter(Boolean).join(' ');
+  const locParts = [
+    data.ug ? (data.ug.startsWith('UG') ? data.ug : `UG ${data.ug}`) : '',
+    data.linha,
+    data.centro_trabalho || data.maquina
+  ].filter(Boolean).join(' · ');
 
-  return parts.join('\n');
+  const valorFormated = Number(data.valor_total ?? 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const desc = data.descricao_ocorrencia ? ` — ${data.descricao_ocorrencia.substring(0, 80)}` : '';
+
+  const pdfStr = data.link_pdf ? `\n📎 PDF: ${data.link_pdf}` : '';
+
+  return `*INTEGRAÇÃO VISION CONTROLS AMBEV*
+*Proposta ${data.numero}* — ${data.status}
+
+Equipamento: TAG ${data.tag || 'N/D'} — ${equipDesc}
+${locParts}
+Parado há: ${data.dias_parado ?? '—'} dias
+
+*Fornecedor:* ${data.fornecedor ?? '—'}
+*Valor Total:* R$ ${valorFormated}
+*Data de Envio:* ${data.data_envio ?? '—'}
+*Validade:* ${data.validade ?? '—'}
+*Enviado para:* ${data.enviado_para ?? '—'}
+
+OS #${data.numero_ocorrencia ?? '—'}${desc}${pdfStr}
+
+_Vision Controls — HVAC Industrial AMBEV RJ_`.trim();
 }
 
 export function buildOrcamentoEmailContent(data: ShareOrcamentoData) {
-  const subject = `[IVCA] Proposta ${data.numero} — TAG ${data.tag} — ${data.linha || 'AMBEV RJ'}`;
-  const body = buildOrcamentoShareText(data).replace(/\*/g, '').replace(/_/g, '');
+  const subject = `[IVCA] Proposta ${data.numero} — TAG ${data.tag}`;
+  const body = buildOrcamentoShareText(data);
   return { subject, body };
 }
 

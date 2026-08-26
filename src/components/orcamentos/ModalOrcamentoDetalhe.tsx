@@ -163,7 +163,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
       orcamento.status === 'EXPIRADO');
 
   // Prepare share data
-  const shareData: ShareOrcamentoData = {
+  const shareData: any = {
     numero: orcamento.numero,
     tag: equipamento?.tag || 'N/D',
     tipo: equipamento?.tipo || 'Equipamento HVAC',
@@ -181,6 +181,9 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
     enviado_para: orcamento.enviado_para,
     numero_ocorrencia: ocorrencia?.numero,
     link_pdf: orcamento.arquivo_pdf_url || orcamento.arquivo_url,
+    data_envio: orcamento.data_envio ? formatDate(orcamento.data_envio) : undefined,
+    dias_aguardando: diasEnvio,
+    descricao_ocorrencia: ocorrencia?.descricao,
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {

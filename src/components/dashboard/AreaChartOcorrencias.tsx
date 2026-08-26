@@ -8,7 +8,7 @@ import {
   CartesianGrid,
   Tooltip,
 } from 'recharts';
-import { TrendingUp, Info } from 'lucide-react';
+import { Info } from 'lucide-react';
 import { VwEvolucaoMensal } from '../../types/database';
 
 interface AreaChartOcorrenciasProps {
@@ -40,60 +40,60 @@ export const AreaChartOcorrencias: React.FC<AreaChartOcorrenciasProps> = ({
   const minAbertas = [...chartData].sort((a, b) => a.abertas - b.abertas)[0];
 
   return (
-    <div className="bg-[#111827] border border-blue-500/15 rounded-lg p-3 flex flex-col justify-between shadow-lg h-full w-full overflow-hidden">
+    <div className="bg-[#13181F] border border-[#21262D] rounded-xl p-3 flex flex-col justify-between h-full w-full overflow-hidden select-none">
       {/* Header (shrink-0: título, número e seletores) */}
       <div className="flex items-center justify-between gap-2 shrink-0 h-[36px]">
         <div className="flex items-center gap-3 min-w-0">
           <div className="flex items-center gap-1.5">
-            <h2 className="text-[13px] font-bold text-[#F9FAFB] truncate">Análise de Ocorrências</h2>
+            <h2 className="text-[13px] font-bold text-[#E6EDF3] tracking-tight truncate">
+              Análise de Ocorrências
+            </h2>
             <div className="group relative">
-              <Info className="w-3 h-3 text-gray-500 cursor-help" />
-              <div className="absolute left-0 bottom-full mb-1.5 hidden group-hover:block bg-slate-900 border border-slate-700 text-[10px] text-gray-300 p-1.5 rounded shadow-lg w-44 z-30">
-                Histórico temporal de ordens de serviço abertas e concluídas.
+              <Info className="w-3.5 h-3.5 text-[#484F58] hover:text-[#8B949E] transition-colors cursor-help" />
+              <div className="absolute left-0 bottom-full mb-1.5 hidden group-hover:block bg-[#1A1F28] border border-[#21262D] text-[10px] text-[#8B949E] p-2 rounded-lg shadow-lg w-48 z-30">
+                Histórico temporal de ordens de serviço e taxa de abertura de ocorrências.
               </div>
             </div>
           </div>
 
-          <div className="flex items-baseline gap-1.5 border-l border-white/[0.08] pl-3">
-            <span className="text-[26px] xl:text-[28px] font-bold text-[#F9FAFB] tracking-tight leading-none font-sans">
+          <div className="flex items-baseline gap-1.5 border-l border-[#21262D] pl-3">
+            <span className="text-[26px] xl:text-[28px] font-extrabold text-[#E6EDF3] tracking-tight leading-none font-sans">
               {totalAbertas}
             </span>
-            <div className="hidden sm:flex items-center gap-0.5 text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 leading-none">
-              <TrendingUp className="w-2.5 h-2.5" />
-              <span>+12.5%</span>
-            </div>
-            <span className="hidden md:inline text-[10px] text-gray-400">total no período</span>
+            <span className="hidden md:inline text-[10px] font-body text-[#8B949E]">
+              total no período
+            </span>
           </div>
         </div>
 
-        {/* Seletores 24px altura, fonte 11px */}
-        <div className="flex items-center bg-[#0A0E1A] p-0.5 rounded-md border border-blue-500/20 shrink-0">
+        {/* Seletores discretos */}
+        <div className="flex items-center bg-[#1A1F28] p-0.5 rounded-lg border border-[#21262D] shrink-0">
           <button
             onClick={() => setPeriodo('mes')}
-            className={`h-[24px] px-2 text-[11px] font-medium rounded transition-all leading-none ${
+            className={`h-[24px] px-2.5 text-[11px] font-medium rounded-md transition-all leading-none ${
               periodo === 'mes'
-                ? 'bg-blue-600 text-white shadow-sm font-semibold'
-                : 'text-gray-400 hover:text-gray-200'
+                ? 'bg-[#21262D] text-[#E6EDF3] font-semibold shadow-xs'
+                : 'text-[#8B949E] hover:text-[#E6EDF3]'
             }`}
           >
             Este Mês
           </button>
           <button
             onClick={() => setPeriodo('6m')}
-            className={`h-[24px] px-2 text-[11px] font-medium rounded transition-all leading-none ${
+            className={`h-[24px] px-2.5 text-[11px] font-medium rounded-md transition-all leading-none ${
               periodo === '6m'
-                ? 'bg-blue-600 text-white shadow-sm font-semibold'
-                : 'text-gray-400 hover:text-gray-200'
+                ? 'bg-[#21262D] text-[#E6EDF3] font-semibold shadow-xs'
+                : 'text-[#8B949E] hover:text-[#E6EDF3]'
             }`}
           >
             6 Meses
           </button>
           <button
             onClick={() => setPeriodo('ano')}
-            className={`h-[24px] px-2 text-[11px] font-medium rounded transition-all leading-none ${
+            className={`h-[24px] px-2.5 text-[11px] font-medium rounded-md transition-all leading-none ${
               periodo === 'ano'
-                ? 'bg-blue-600 text-white shadow-sm font-semibold'
-                : 'text-gray-400 hover:text-gray-200'
+                ? 'bg-[#21262D] text-[#E6EDF3] font-semibold shadow-xs'
+                : 'text-[#8B949E] hover:text-[#E6EDF3]'
             }`}
           >
             Este Ano
@@ -101,47 +101,45 @@ export const AreaChartOcorrencias: React.FC<AreaChartOcorrenciasProps> = ({
         </div>
       </div>
 
-      {/* Area Chart: flex-1 min-h-0 para crescer e preencher o espaço vertical perfeitamente */}
+      {/* Area Chart: flex-1 min-h-0 */}
       <div className="w-full flex-1 min-h-0 my-1">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={chartData} margin={{ top: 8, right: 10, left: -25, bottom: 0 }}>
             <defs>
-              <linearGradient id="areaGradientBlueCompact" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#3B82F6" stopOpacity={0.35} />
-                <stop offset="100%" stopColor="#3B82F6" stopOpacity={0.0} />
+              <linearGradient id="gradOcorrenciasClean" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#2F81F7" stopOpacity={0.15} />
+                <stop offset="95%" stopColor="#2F81F7" stopOpacity={0} />
               </linearGradient>
             </defs>
 
-            <CartesianGrid strokeDasharray="2 2" vertical={false} stroke="rgba(255, 255, 255, 0.05)" />
+            <CartesianGrid
+              strokeDasharray="0"
+              stroke="rgba(255, 255, 255, 0.04)"
+              vertical={false}
+            />
 
             <XAxis
               dataKey="mes_label"
               tickLine={false}
-              axisLine={{ stroke: 'rgba(255, 255, 255, 0.08)' }}
-              tick={{ fill: '#9CA3AF', fontSize: 10 }}
+              axisLine={{ stroke: '#21262D' }}
+              tick={{ fill: '#8B949E', fontSize: 10 }}
               height={18}
             />
             <YAxis
               tickLine={false}
-              axisLine={{ stroke: 'rgba(255, 255, 255, 0.08)' }}
-              tick={{ fill: '#9CA3AF', fontSize: 10 }}
+              axisLine={{ stroke: '#21262D' }}
+              tick={{ fill: '#8B949E', fontSize: 10 }}
             />
 
             <Tooltip
               content={({ active, payload, label }) => {
                 if (active && payload && payload.length) {
                   return (
-                    <div className="bg-[#0A0E1A] border border-blue-500/30 rounded p-2 shadow-xl backdrop-blur-md text-[11px]">
-                      <p className="font-bold text-gray-200 mb-1">{label}</p>
-                      <div className="space-y-1">
-                        <div className="flex items-center justify-between gap-3 text-blue-400">
-                          <span>Abertas:</span>
-                          <span className="font-mono font-bold text-white">{payload[0]?.value}</span>
-                        </div>
-                        <div className="flex items-center justify-between gap-3 text-emerald-400">
-                          <span>Concluídas:</span>
-                          <span className="font-mono font-bold text-white">{payload[1]?.value}</span>
-                        </div>
+                    <div className="bg-[#1A1F28] border border-[#21262D] rounded-lg p-2 shadow-xl text-[11px]">
+                      <p className="font-semibold text-[#8B949E] mb-1">{label}</p>
+                      <div className="flex items-center justify-between gap-3 text-[#58A6FF]">
+                        <span>Abertas:</span>
+                        <span className="font-mono font-bold text-[#E6EDF3]">{payload[0]?.value}</span>
                       </div>
                     </div>
                   );
@@ -154,48 +152,40 @@ export const AreaChartOcorrencias: React.FC<AreaChartOcorrenciasProps> = ({
               type="monotone"
               dataKey="abertas"
               name="Abertas"
-              stroke="#3B82F6"
-              strokeWidth={2}
-              fill="url(#areaGradientBlueCompact)"
-              dot={{ r: 2.5, fill: '#3B82F6', strokeWidth: 1, stroke: '#FFFFFF' }}
-              activeDot={{ r: 5, fill: '#3B82F6', stroke: '#FFFFFF', strokeWidth: 1.5 }}
-            />
-
-            <Area
-              type="monotone"
-              dataKey="concluidas"
-              name="Concluídas"
-              stroke="#10B981"
+              stroke="#2F81F7"
               strokeWidth={1.5}
-              strokeDasharray="3 3"
-              fill="none"
-              dot={{ r: 2, fill: '#10B981' }}
+              fill="url(#gradOcorrenciasClean)"
+              dot={false}
+              activeDot={{ r: 3, fill: '#2F81F7', strokeWidth: 0 }}
             />
           </AreaChart>
         </ResponsiveContainer>
       </div>
 
-      {/* Footer (shrink-0, h-[32px]): 4 Stats inline numa única linha sem card separado, fonte 11px */}
-      <div className="h-[32px] pt-1 border-t border-white/[0.06] flex items-center justify-between text-[11px] text-gray-400 shrink-0">
+      {/* Footer: Estatísticas inline separadas por · */}
+      <div className="h-[28px] pt-1.5 border-t border-[#21262D] flex items-center justify-between text-[11px] text-[#8B949E] shrink-0 font-body">
         <div className="flex items-center gap-1.5">
-          <span className="text-[10px] uppercase text-gray-500 font-medium">Média:</span>
-          <span className="font-bold font-mono text-gray-200">{mediaMensal} OS/mês</span>
+          <span className="text-[10px] uppercase text-[#8B949E] font-medium tracking-wider">Média:</span>
+          <span className="font-bold font-mono text-[#E6EDF3]">{mediaMensal} OS/mês</span>
         </div>
+        <span className="text-[#484F58]">·</span>
         <div className="flex items-center gap-1.5">
-          <span className="text-[10px] uppercase text-gray-500 font-medium">Pior Mês:</span>
-          <span className="font-bold font-mono text-red-400">
+          <span className="text-[10px] uppercase text-[#8B949E] font-medium tracking-wider">Pior Mês:</span>
+          <span className="font-bold font-mono text-[#E6EDF3]">
             {maxAbertas?.mes_label || 'Jun'} ({maxAbertas?.abertas || 14})
           </span>
         </div>
+        <span className="text-[#484F58]">·</span>
         <div className="flex items-center gap-1.5">
-          <span className="text-[10px] uppercase text-gray-500 font-medium">Melhor Mês:</span>
-          <span className="font-bold font-mono text-emerald-400">
+          <span className="text-[10px] uppercase text-[#8B949E] font-medium tracking-wider">Melhor Mês:</span>
+          <span className="font-bold font-mono text-[#E6EDF3]">
             {minAbertas?.mes_label || 'Ago'} ({minAbertas?.abertas || 4})
           </span>
         </div>
+        <span className="text-[#484F58]">·</span>
         <div className="flex items-center gap-1.5">
-          <span className="text-[10px] uppercase text-gray-500 font-medium">MTTR Médio:</span>
-          <span className="font-bold font-mono text-blue-400">{mttrMedio} dias</span>
+          <span className="text-[10px] uppercase text-[#8B949E] font-medium tracking-wider">MTTR Médio:</span>
+          <span className="font-bold font-mono text-[#E6EDF3]">{mttrMedio} dias</span>
         </div>
       </div>
     </div>

@@ -109,26 +109,26 @@ export const Ocorrencias: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-[11px] font-mono tracking-widest text-[#F5A623] bg-[#F5A623]/10 px-2 py-0.5 rounded-[2px] border border-[#F5A623]/30 uppercase font-bold">
+            <span className="text-[11px]  tracking-widest  bg-[#F5A623]/10 px-2 py-0.5 rounded-[2px] border border-[#F5A623]/30 uppercase font-bold">
               Gestão de Chamados & Avarias
             </span>
-            <span className="text-[11px] font-mono text-[#6B7683]">•</span>
-            <span className="text-[11px] font-mono text-[#FF6B6B]">
+            <span className="text-[11px]  ">•</span>
+            <span className="text-[11px]  ">
               {paradosCount} EQUIPAMENTOS PARADOS
             </span>
           </div>
-          <h2 className="text-2xl font-condensed font-bold text-[#ECEFF1] tracking-wide uppercase">
+          <h2 className="text-2xl font-condensed font-bold  tracking-wide uppercase">
             Fluxo de Ocorrências e Corretivas
           </h2>
         </div>
 
         <div className="flex items-center gap-2">
           {/* View Toggle */}
-          <div className="bg-[#1C222A] border border-[#2C343E] rounded-[4px] p-0.5 flex items-center">
+          <div className="card border border-[#2C343E] rounded-[4px] p-0.5 flex items-center">
             <button
               onClick={() => setViewMode('lista')}
               className={`p-1.5 rounded-[3px] text-xs font-medium flex items-center gap-1.5 transition-colors ${
-                viewMode === 'lista' ? 'bg-[#232B35] text-[#F5A623] shadow-sm' : 'text-[#94A3B8] hover:text-[#ECEFF1]'
+                viewMode === 'lista' ? 'bg-[#232B35]  shadow-sm' : ' hover:'
               }`}
             >
               <List className="w-4 h-4" />
@@ -137,7 +137,7 @@ export const Ocorrencias: React.FC = () => {
             <button
               onClick={() => setViewMode('kanban')}
               className={`p-1.5 rounded-[3px] text-xs font-medium flex items-center gap-1.5 transition-colors ${
-                viewMode === 'kanban' ? 'bg-[#232B35] text-[#F5A623] shadow-sm' : 'text-[#94A3B8] hover:text-[#ECEFF1]'
+                viewMode === 'kanban' ? 'bg-[#232B35]  shadow-sm' : ' hover:'
               }`}
             >
               <Kanban className="w-4 h-4" />
@@ -150,7 +150,7 @@ export const Ocorrencias: React.FC = () => {
             <button
               id="btn-nova-ocorrencia-main"
               onClick={() => navigate('/ocorrencias/nova')}
-              className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-[4px] bg-[#E5484D] hover:bg-[#C93B40] text-white font-condensed tracking-wider uppercase transition-colors shadow-md font-bold"
+              className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-[4px] bg-[#E5484D] hover:bg-[#C93B40]  font-condensed tracking-wider uppercase transition-colors shadow-md font-bold"
             >
               <Plus className="w-4 h-4" />
               <span>+ Nova Ocorrência</span>
@@ -160,16 +160,16 @@ export const Ocorrencias: React.FC = () => {
       </div>
 
       {/* Filter Bar */}
-      <div className="bg-[#1C222A] border border-[#2C343E] rounded-[4px] p-3 space-y-3 shadow-md">
+      <div className="card border border-[#2C343E] rounded-[4px] p-3 space-y-3 shadow-md">
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="flex-1 relative">
-            <Search className="w-4 h-4 text-[#94A3B8] absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4  absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Buscar por # número, TAG, linha, nota SAP, ordem SAP ou sintoma..."
-              className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#F5A623] text-[#ECEFF1] text-xs rounded-[3px] pl-9 pr-3 py-2 outline-none"
+              className="w-full bg-[var(--bg-input)] border border-[#2C343E] focus:border-[#F5A623]  text-xs rounded-[3px] pl-9 pr-3 py-2 outline-none"
             />
           </div>
 
@@ -177,7 +177,7 @@ export const Ocorrencias: React.FC = () => {
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="bg-[#14181D] border border-[#2C343E] text-[#ECEFF1] text-xs rounded-[3px] px-2.5 py-2 outline-none"
+              className="bg-[var(--bg-input)] border border-[#2C343E]  text-xs rounded-[3px] px-2.5 py-2 outline-none"
             >
               <option value="">Todos os Status</option>
               {KANBAN_COLUMNS.map((st) => (
@@ -190,7 +190,7 @@ export const Ocorrencias: React.FC = () => {
             <select
               value={selectedCriticidade}
               onChange={(e) => setSelectedCriticidade(e.target.value)}
-              className="bg-[#14181D] border border-[#2C343E] text-[#ECEFF1] text-xs rounded-[3px] px-2.5 py-2 outline-none"
+              className="bg-[var(--bg-input)] border border-[#2C343E]  text-xs rounded-[3px] px-2.5 py-2 outline-none"
             >
               <option value="">Todas Criticidades</option>
               <option value="CRITICA">Crítica (Linha)</option>
@@ -203,8 +203,8 @@ export const Ocorrencias: React.FC = () => {
               onClick={() => setOnlyParados(!onlyParados)}
               className={`px-3 py-2 text-xs font-semibold rounded-[3px] border transition-colors flex items-center gap-1.5 ${
                 onlyParados
-                  ? 'bg-[#E5484D]/20 text-[#FF6B6B] border-[#E5484D]'
-                  : 'bg-[#14181D] text-[#94A3B8] border-[#2C343E] hover:text-[#ECEFF1]'
+                  ? 'bg-[#E5484D]/20  border-[#E5484D]'
+                  : 'bg-[var(--bg-input)]  border-[#2C343E] hover:'
               }`}
             >
               <span className={`led-dot ${onlyParados ? 'led-alert animate-led-pulse' : 'led-off'}`} />
@@ -216,7 +216,7 @@ export const Ocorrencias: React.FC = () => {
 
       {/* VIEW: LISTA */}
       {viewMode === 'lista' && (
-        <div className="bg-[#1C222A] border border-[#2C343E] rounded-[4px] overflow-hidden shadow-lg">
+        <div className="card border border-[#2C343E] rounded-[4px] overflow-hidden shadow-lg">
           {filteredOcorrencias.length === 0 ? (
             <EmptyState
               icon={AlertTriangle}
@@ -229,7 +229,7 @@ export const Ocorrencias: React.FC = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="bg-[#14181D] text-[#94A3B8] font-mono text-[10px] uppercase tracking-wider border-b border-[#2C343E]">
+                  <tr className="bg-[var(--bg-input)]   text-[10px] uppercase tracking-wider border-b border-[#2C343E]">
                     <th className="py-2.5 px-3">Nº / Data</th>
                     <th className="py-2.5 px-3">TAG & Equipamento</th>
                     <th className="py-2.5 px-3">Localização</th>
@@ -239,7 +239,7 @@ export const Ocorrencias: React.FC = () => {
                     <th className="py-2.5 px-3 text-right">Ações</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#2C343E]/60 text-[#ECEFF1]">
+                <tbody className="divide-y divide-[#2C343E]/60 ">
                   {filteredOcorrencias.map((occ) => {
                     const eq = equipamentosMap.get(occ.equipamento_id);
                     const crit = getCriticidadeConfig(occ.criticidade);
@@ -253,27 +253,38 @@ export const Ocorrencias: React.FC = () => {
                       >
                         {/* Nº / Data */}
                         <td className="py-3 px-3">
-                          <div className="font-mono font-bold text-sm text-[#F5A623]">#{occ.numero}</div>
-                          <div className="text-[10px] text-[#94A3B8] font-mono">{formatDate(occ.data_avaria)}</div>
+                          <div className=" font-bold text-sm ">#{occ.numero}</div>
+                          <div className="text-[10px]  ">{formatDate(occ.data_avaria)}</div>
                         </td>
 
                         {/* TAG & Equipamento */}
                         <td className="py-3 px-3">
-                          {eq ? <IndustrialTag tag={eq.tag} size="sm" /> : <span className="font-mono text-xs">TAG -</span>}
-                          <div className="text-xs font-semibold text-[#ECEFF1] mt-1">
+                          {eq ? <IndustrialTag tag={eq.tag} size="sm" /> : <span className=" text-xs">TAG -</span>}
+                          <div className="text-xs font-semibold  mt-1">
                             {eq ? `${eq.tipo} ${eq.marca}` : 'Equipamento'}
                           </div>
                         </td>
 
                         {/* Localização */}
                         <td className="py-3 px-3">
-                          <div className="text-[#ECEFF1]">{eq?.linha_nome || '-'}</div>
-                          <div className="text-[10px] text-[#94A3B8]">{eq?.centro_trabalho_nome}</div>
+                          <div className="flex items-center gap-1.5 leading-tight">
+                            {eq?.ug_codigo && (
+                              <span className="px-1.5 py-0.5 bg-[#F5A623]/10 text-[#F5A623] border border-[#F5A623]/30 rounded font-bold text-[9px] shrink-0">
+                                UG {eq.ug_codigo}
+                              </span>
+                            )}
+                            <span className="font-medium text-xs">
+                              {[eq?.centro_trabalho_sap, eq?.centro_trabalho_nome].filter(Boolean).join(' - ') || eq?.linha_nome || '-'}
+                            </span>
+                          </div>
+                          {eq?.tag_sap && (
+                            <div className="text-[10px] text-cyan-400/80 mt-0.5">{eq.tag_sap}</div>
+                          )}
                         </td>
 
                         {/* Criticidade */}
                         <td className="py-3 px-3">
-                          <span className={`px-2 py-0.5 rounded-[2px] text-[10px] font-mono border ${crit.badgeBg}`}>
+                          <span className={`px-2 py-0.5 rounded-[2px] text-[10px]  border ${crit.badgeBg}`}>
                             {crit.label}
                           </span>
                         </td>
@@ -284,15 +295,15 @@ export const Ocorrencias: React.FC = () => {
                         </td>
 
                         {/* Parada / SAP */}
-                        <td className="py-3 px-3 font-mono text-[11px]">
+                        <td className="py-3 px-3  text-[11px]">
                           {occ.equipamento_parado ? (
-                            <span className="text-[#FF6B6B] font-bold">
+                            <span className=" font-bold">
                               PARADO ({dias}d)
                             </span>
                           ) : (
-                            <span className="text-[#2ECC71]">Em Operação</span>
+                            <span className="">Em Operação</span>
                           )}
-                          <div className="text-[10px] text-[#94A3B8]">Nota: {occ.nota_sap || '-'}</div>
+                          <div className="text-[10px] ">Nota: {occ.nota_sap || '-'}</div>
                         </td>
 
                         {/* Ações */}
@@ -319,7 +330,7 @@ export const Ocorrencias: React.FC = () => {
                             />
                             <button
                               onClick={() => navigate(`/ocorrencias/${occ.id}`)}
-                              className="p-1.5 rounded-[4px] bg-[#232B35] text-[#ECEFF1] hover:bg-[#2C343E]"
+                              className="p-1.5 rounded-[4px] bg-[#232B35]  hover:bg-[#2C343E]"
                             >
                               <ChevronRight className="w-4 h-4" />
                             </button>
@@ -346,17 +357,17 @@ export const Ocorrencias: React.FC = () => {
               return (
                 <div
                   key={colStatus}
-                  className="w-72 bg-[#1C222A] border border-[#2C343E] rounded-[4px] flex flex-col max-h-[75vh] shrink-0"
+                  className="w-72 card border border-[#2C343E] rounded-[4px] flex flex-col max-h-[75vh] shrink-0"
                 >
                   {/* Column Header */}
-                  <div className="p-3 border-b border-[#2C343E] flex items-center justify-between bg-[#14181D]">
+                  <div className="p-3 border-b border-[#2C343E] flex items-center justify-between bg-[var(--bg-input)]">
                     <div className="flex items-center gap-2">
                       <span className={`led-dot ${colConfig.ledClass}`} />
-                      <span className="text-xs font-condensed font-bold text-[#ECEFF1] uppercase">
+                      <span className="text-xs font-condensed font-bold  uppercase">
                         {colConfig.label}
                       </span>
                     </div>
-                    <span className="text-xs font-mono font-bold text-[#F5A623] bg-[#232B35] px-1.5 py-0.5 rounded">
+                    <span className="text-xs  font-bold  bg-[#232B35] px-1.5 py-0.5 rounded">
                       {colOccs.length}
                     </span>
                   </div>
@@ -364,7 +375,7 @@ export const Ocorrencias: React.FC = () => {
                   {/* Cards Body */}
                   <div className="p-2 space-y-2 overflow-y-auto flex-1">
                     {colOccs.length === 0 ? (
-                      <div className="py-8 text-center text-[11px] text-[#6B7683] font-mono">
+                      <div className="py-8 text-center text-[11px]  ">
                         Nenhum chamado
                       </div>
                     ) : (
@@ -377,11 +388,11 @@ export const Ocorrencias: React.FC = () => {
                           <div
                             key={occ.id}
                             onClick={() => navigate(`/ocorrencias/${occ.id}`)}
-                            className="p-3 bg-[#14181D] hover:bg-[#232B35] border border-[#2C343E] hover:border-[#F5A623] rounded-[3px] cursor-pointer transition-colors space-y-2 group"
+                            className="p-3 bg-[var(--bg-input)] hover:bg-[#232B35] border border-[#2C343E] hover:border-[#F5A623] rounded-[3px] cursor-pointer transition-colors space-y-2 group"
                           >
                             <div className="flex items-center justify-between">
-                              <span className="font-mono font-bold text-xs text-[#F5A623]">#{occ.numero}</span>
-                              <span className={`text-[9px] font-mono px-1.5 py-0.2 rounded border ${crit.badgeBg}`}>
+                              <span className=" font-bold text-xs ">#{occ.numero}</span>
+                              <span className={`text-[9px]  px-1.5 py-0.2 rounded border ${crit.badgeBg}`}>
                                 {crit.label}
                               </span>
                             </div>
@@ -390,23 +401,23 @@ export const Ocorrencias: React.FC = () => {
                               <div className="flex items-center gap-1.5 mb-1">
                                 {eq && <IndustrialTag tag={eq.tag} size="sm" />}
                               </div>
-                              <p className="text-xs font-semibold text-[#ECEFF1] line-clamp-1">
+                              <p className="text-xs font-semibold  line-clamp-1">
                                 {eq?.tipo} {eq?.marca}
                               </p>
-                              <p className="text-[10px] text-[#94A3B8] line-clamp-1">{eq?.linha_nome}</p>
+                              <p className="text-[10px]  line-clamp-1">{eq?.linha_nome}</p>
                             </div>
 
-                            <p className="text-[11px] text-[#ECEFF1]/90 line-clamp-2 leading-relaxed">
+                            <p className="text-[11px] /90 line-clamp-2 leading-relaxed">
                               {occ.descricao_anomalia}
                             </p>
 
-                            <div className="pt-2 border-t border-[#2C343E] flex items-center justify-between text-[10px] font-mono">
+                            <div className="pt-2 border-t border-[#2C343E] flex items-center justify-between text-[10px] ">
                               {occ.equipamento_parado ? (
-                                <span className="text-[#FF6B6B] font-bold">PARADO ({dias}d)</span>
+                                <span className=" font-bold">PARADO ({dias}d)</span>
                               ) : (
-                                <span className="text-[#2ECC71]">Operando</span>
+                                <span className="">Operando</span>
                               )}
-                              <span className="text-[#94A3B8]">{formatDate(occ.data_avaria)}</span>
+                              <span className="">{formatDate(occ.data_avaria)}</span>
                             </div>
                           </div>
                         );

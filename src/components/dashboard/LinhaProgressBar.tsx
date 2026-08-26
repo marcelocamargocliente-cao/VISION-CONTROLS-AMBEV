@@ -22,18 +22,16 @@ export const LinhaProgressBar: React.FC<LinhaProgressBarProps> = ({ linhas }) =>
         ];
 
   return (
-    <div className="bg-[#111827] border border-blue-500/15 rounded-lg p-3 flex flex-col justify-between shadow-lg h-full w-full overflow-hidden">
+    <div className="bg-[#13181F] border border-[#21262D] rounded-xl p-3 flex flex-col justify-between h-full w-full overflow-hidden select-none">
       {/* Título: 32px shrink-0 */}
       <div className="flex items-center justify-between gap-2 shrink-0 h-[32px] mb-0.5">
         <div className="flex items-center gap-1.5 min-w-0">
-          <div className="w-6 h-6 rounded-md bg-blue-500/15 text-blue-400 flex items-center justify-center shrink-0">
-            <Activity className="w-3.5 h-3.5" />
-          </div>
+          <Activity className="w-4 h-4 text-[#8B949E] shrink-0" />
           <div className="min-w-0">
-            <h3 className="text-[12px] font-bold text-[#F9FAFB] truncate leading-tight">
+            <h3 className="text-[12px] font-bold text-[#E6EDF3] tracking-tight truncate leading-tight">
               Status por Linha
             </h3>
-            <p className="text-[10px] text-gray-400 truncate leading-none">
+            <p className="text-[10px] text-[#8B949E] truncate leading-none">
               Disponibilidade operacional
             </p>
           </div>
@@ -41,48 +39,38 @@ export const LinhaProgressBar: React.FC<LinhaProgressBarProps> = ({ linhas }) =>
       </div>
 
       {/* List of lines distributed evenly: flex-1 min-h-0 */}
-      <div className="flex-1 min-h-0 flex flex-col justify-around py-0.5 space-y-1">
+      <div className="flex-1 min-h-0 flex flex-col justify-around py-0.5 space-y-1.5">
         {displayLinhas.map((l) => {
           const pct = l.total > 0 ? Math.round(((l.ok + (l.restricao || 0)) / l.total) * 100) : 100;
           const is100 = pct >= 100;
-          const isWarn = pct >= 80 && pct < 100;
-
-          const barColor = is100
-            ? 'bg-emerald-500'
-            : isWarn
-            ? 'bg-amber-500'
-            : 'bg-red-500';
-
-          const badgeBg = is100
-            ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
-            : isWarn
-            ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
-            : 'bg-red-500/15 text-red-400 border-red-500/30';
+          const hasParado = (l.parado || 0) > 0;
 
           return (
             <div key={l.linha_id} className="group">
-              <div className="flex items-center justify-between text-[11px] mb-0.5 leading-none">
-                <span className="font-medium text-gray-300 group-hover:text-blue-400 transition-colors truncate">
+              <div className="flex items-center justify-between text-[11px] mb-1 leading-none font-body">
+                <span className="font-medium text-[#E6EDF3] group-hover:text-[#58A6FF] transition-colors truncate">
                   {l.linha_nome}
                 </span>
-                <div className="flex items-center gap-1.5 shrink-0 ml-1">
-                  {l.parado > 0 && (
-                    <span className="text-[9px] font-mono px-1 py-0.5 rounded bg-red-500/20 text-red-400 font-bold leading-none">
-                      {l.parado}p
+                <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                  {hasParado && (
+                    <span className="linha-badge-parado">
+                      {l.parado} parado{l.parado > 1 ? 's' : ''}
                     </span>
                   )}
                   <span
-                    className={`text-[10px] font-mono font-bold px-1 py-0.5 rounded border leading-none ${badgeBg}`}
+                    className={`linha-pct ${is100 ? 'full' : ''}`}
                   >
-                    {pct}% OK
+                    {pct}%
                   </span>
                 </div>
               </div>
 
-              {/* Progress bar: 6px height */}
-              <div className="w-full h-[6px] rounded-full bg-[#0A0E1A] overflow-hidden border border-white/[0.04]">
+              {/* Progress bar: 3px height */}
+              <div className="w-full h-[3px] rounded-[2px] bg-[#1A1F28] overflow-hidden">
                 <div
-                  className={`h-full rounded-full transition-all duration-300 ${barColor}`}
+                  className={`h-full rounded-[2px] transition-all duration-500 ${
+                    is100 ? 'bg-[#3FB950]' : hasParado ? 'bg-[#D29922]' : 'bg-[#484F58]'
+                  }`}
                   style={{ width: `${pct}%` }}
                 />
               </div>
@@ -92,13 +80,13 @@ export const LinhaProgressBar: React.FC<LinhaProgressBarProps> = ({ linhas }) =>
       </div>
 
       {/* Botão "Ver todos": 28px fixo no bottom (shrink-0) */}
-      <div className="pt-1 border-t border-white/[0.06] shrink-0 h-[28px] flex items-center">
+      <div className="pt-1.5 border-t border-[#21262D] shrink-0 h-[28px] flex items-center">
         <button
           onClick={() => navigate('/equipamentos')}
-          className="w-full flex items-center justify-center gap-1 text-[11px] font-semibold text-blue-400 hover:text-blue-300 py-0.5 rounded hover:bg-blue-500/10 transition-all cursor-pointer leading-none"
+          className="w-full flex items-center justify-center gap-1.5 text-[11px] font-semibold text-[#8B949E] hover:text-[#58A6FF] py-0.5 rounded transition-all cursor-pointer leading-none"
         >
           <span>Ver todos os equipamentos</span>
-          <ArrowRight className="w-3 h-3" />
+          <ArrowRight className="w-3 h-3 text-[#484F58] hover:text-[#58A6FF]" />
         </button>
       </div>
     </div>

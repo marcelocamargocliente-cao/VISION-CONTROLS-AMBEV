@@ -204,25 +204,25 @@ export const NovaOcorrencia: React.FC = () => {
   };
 
   return (
-    <div className="nova-ocorrencia-page w-full h-full flex flex-col overflow-hidden bg-[#0D1117] font-body text-[#E6EDF3]">
+    <div className="nova-ocorrencia-page w-full h-full flex flex-col overflow-hidden bg-[#0D1117] font-body ">
       {/* Header Fixo */}
       <div className="nova-ocorrencia-header flex items-center justify-between gap-3 border-b border-[#30363D] bg-[#0D1117] shrink-0">
         <div className="flex items-center gap-3 min-w-0">
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="p-1.5 rounded-lg bg-[#161B22] hover:bg-[#21262D] text-[#8B949E] hover:text-[#E6EDF3] border border-[#30363D] transition-colors cursor-pointer shrink-0"
+            className="p-1.5 rounded-lg bg-[#161B22] hover:bg-[#21262D]  hover: border border-[#30363D] transition-colors cursor-pointer shrink-0"
             title="Voltar"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
           <div className="min-w-0">
             <div className="flex items-center gap-2 mb-0.5">
-              <span className="text-[10px] font-mono tracking-widest text-[#F85149] bg-[#F85149]/15 px-2 py-0.5 rounded-full border border-[#F85149]/30 uppercase font-bold">
+              <span className="text-[10px]  tracking-widest  bg-[#F85149]/15 px-2 py-0.5 rounded-full border border-[#F85149]/30 uppercase font-bold">
                 Registro de Campo (Mobile-First)
               </span>
             </div>
-            <h2 className="text-sm sm:text-base font-display font-bold text-[#E6EDF3] tracking-tight uppercase truncate">
+            <h2 className="text-sm sm:text-base font-display font-bold  tracking-tight uppercase truncate">
               Abertura de Ocorrência Corretiva
             </h2>
           </div>
@@ -237,10 +237,10 @@ export const NovaOcorrencia: React.FC = () => {
           <div className="card space-y-3">
             <div className="flex items-center justify-between border-b border-[#30363D] pb-2">
               <div className="flex items-center gap-2">
-                <span className="w-5 h-5 rounded-full bg-[#2F81F7] text-white font-display font-bold text-xs flex items-center justify-center">
+                <span className="w-5 h-5 rounded-full bg-[#2F81F7]  font-display font-bold text-xs flex items-center justify-center">
                   1
                 </span>
-                <h3 className="card-title text-xs sm:text-sm uppercase text-[#E6EDF3]">
+                <h3 className="card-title text-xs sm:text-sm uppercase ">
                   Equipamento & Localização
                 </h3>
               </div>
@@ -248,7 +248,7 @@ export const NovaOcorrencia: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setSelectedEquip(null)}
-                  className="text-[11px] font-semibold text-[#58A6FF] hover:underline cursor-pointer"
+                  className="text-[11px] font-semibold  hover:underline cursor-pointer"
                 >
                   Trocar Equipamento
                 </button>
@@ -257,17 +257,17 @@ export const NovaOcorrencia: React.FC = () => {
 
             {!selectedEquip ? (
               <div className="space-y-2">
-                <label className="block eyebrow text-[#8B949E]">
-                  Digite a TAG, Patrimônio ou Máquina para buscar:
+                <label className="block eyebrow ">
+                  Digite a TAG, Tag Vision, Tag AMBEV ou Local de Instalação para buscar:
                 </label>
                 <div className="relative">
-                  <Search className="w-4 h-4 text-[#8B949E] absolute left-3 top-1/2 -translate-y-1/2" />
+                  <Search className="w-4 h-4  absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
                     value={equipSearch}
                     onChange={(e) => setEquipSearch(e.target.value)}
                     placeholder="Ex: 361, Blue e+, L101..."
-                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#E6EDF3] text-xs rounded-lg pl-9 pr-3 py-2.5 outline-none font-mono transition-colors"
+                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  text-xs rounded-lg pl-9 pr-3 py-2.5 outline-none  transition-colors"
                   />
                 </div>
 
@@ -283,13 +283,13 @@ export const NovaOcorrencia: React.FC = () => {
                         <div>
                           <div className="flex items-center gap-2">
                             <IndustrialTag tag={eq.tag} size="sm" />
-                            <span className="font-semibold text-[#E6EDF3]">{eq.tipo} ({eq.marca} {eq.modelo})</span>
+                            <span className="font-semibold ">{eq.tipo} ({eq.marca} {eq.modelo})</span>
                           </div>
-                          <div className="text-[10px] text-[#8B949E] font-mono mt-0.5">
-                            {eq.ug_codigo} • {eq.linha_nome} • {eq.centro_trabalho_nome}
+                          <div className="text-[10px] text-gray-400 mt-0.5">
+                            UG {eq.ug_codigo} • {[eq.centro_trabalho_sap, eq.centro_trabalho_nome].filter(Boolean).join(' - ') || eq.linha_nome}
                           </div>
                         </div>
-                        <span className="text-[10px] text-[#58A6FF] font-mono">{eq.tag_sap || ''}</span>
+                        <span className="text-[10px] text-cyan-400">{eq.tag_sap || ''}</span>
                       </button>
                     ))}
                   </div>
@@ -298,24 +298,26 @@ export const NovaOcorrencia: React.FC = () => {
             ) : (
               <div className="p-3 bg-[#0D1117] border border-[#30363D] rounded-lg grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <span className="eyebrow text-[#8B949E] block">Ativo Selecionado</span>
+                  <span className="eyebrow  block">Ativo Selecionado</span>
                   <div className="flex items-center gap-2 mt-1">
                     <IndustrialTag tag={selectedEquip.tag} size="md" />
-                    <span className="font-bold text-[#E6EDF3]">{selectedEquip.tipo}</span>
+                    <span className="font-bold ">{selectedEquip.tipo}</span>
                   </div>
-                  <p className="text-[11px] text-[#8B949E] mt-0.5">{selectedEquip.marca} {selectedEquip.modelo}</p>
+                  <p className="text-[11px]  mt-0.5">{selectedEquip.marca} {selectedEquip.modelo}</p>
                 </div>
 
                 <div>
-                  <span className="eyebrow text-[#8B949E] block">Localização na Cervejaria</span>
-                  <p className="font-semibold text-[#E6EDF3] mt-1">{selectedEquip.linha_nome}</p>
-                  <p className="text-[11px] text-[#8B949E]">{selectedEquip.ug_codigo} • {selectedEquip.centro_trabalho_nome}</p>
+                  <span className="eyebrow  block">Localização na Cervejaria</span>
+                  <p className="font-semibold text-xs mt-1">
+                    {[selectedEquip.centro_trabalho_sap, selectedEquip.centro_trabalho_nome].filter(Boolean).join(' - ') || selectedEquip.linha_nome}
+                  </p>
+                  <p className="text-[11px] text-gray-400">UG {selectedEquip.ug_codigo}</p>
                 </div>
 
                 <div>
-                  <span className="eyebrow text-[#8B949E] block">Dados SAP / Elétrico</span>
-                  <p className="font-mono text-[#58A6FF] mt-1">{selectedEquip.tag_sap || 'Sem Tag SAP'}</p>
-                  <p className="text-[11px] text-[#8B949E] font-mono">{selectedEquip.tensao} • {selectedEquip.gas_refrigerante}</p>
+                  <span className="eyebrow  block">Tag AMBEV / Elétrico</span>
+                  <p className="font-semibold text-cyan-400 text-xs mt-1">{selectedEquip.tag_sap || 'Sem Tag AMBEV'}</p>
+                  <p className="text-[11px] text-gray-400">{selectedEquip.tensao} • {selectedEquip.gas_refrigerante}</p>
                 </div>
               </div>
             )}
@@ -324,10 +326,10 @@ export const NovaOcorrencia: React.FC = () => {
           {/* STEP 2: PARÂMETROS OPERACIONAIS & CRITICIDADE */}
           <div className="card space-y-4">
             <div className="flex items-center gap-2 border-b border-[#30363D] pb-2">
-              <span className="w-5 h-5 rounded-full bg-[#2F81F7] text-white font-display font-bold text-xs flex items-center justify-center">
+              <span className="w-5 h-5 rounded-full bg-[#2F81F7]  font-display font-bold text-xs flex items-center justify-center">
                 2
               </span>
-              <h3 className="card-title text-xs sm:text-sm uppercase text-[#E6EDF3]">
+              <h3 className="card-title text-xs sm:text-sm uppercase ">
                 Parâmetros Operacionais & Criticidade
               </h3>
             </div>
@@ -335,11 +337,11 @@ export const NovaOcorrencia: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
               {/* Tipo de Serviço */}
               <div>
-                <label className="block eyebrow text-[#8B949E] mb-1">Tipo de Serviço</label>
+                <label className="block eyebrow  mb-1">Tipo de Serviço</label>
                 <select
                   value={tipoServico}
                   onChange={(e) => setTipoServico(e.target.value as any)}
-                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#E6EDF3] p-2.5 rounded-lg outline-none"
+                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none"
                 >
                   <option value="CORRETIVA">Corretiva</option>
                   <option value="PREVENTIVA">Preventiva</option>
@@ -350,11 +352,11 @@ export const NovaOcorrencia: React.FC = () => {
 
               {/* Criticidade */}
               <div>
-                <label className="block eyebrow text-[#8B949E] mb-1">Criticidade</label>
+                <label className="block eyebrow  mb-1">Criticidade</label>
                 <select
                   value={criticidade}
                   onChange={(e) => setCriticidade(e.target.value as Criticidade)}
-                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#E6EDF3] p-2.5 rounded-lg outline-none font-bold"
+                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none font-bold"
                 >
                   <option value="CRITICA">🔴 Crítica (Impacto em Linha)</option>
                   <option value="ALTA">🟠 Alta</option>
@@ -365,71 +367,95 @@ export const NovaOcorrencia: React.FC = () => {
 
               {/* Data da Avaria */}
               <div>
-                <label className="block eyebrow text-[#8B949E] mb-1">Data da Avaria*</label>
+                <label className="block eyebrow  mb-1">Data da Avaria*</label>
                 <input
                   type="date"
                   required
                   value={dataAvaria}
                   onChange={(e) => setDataAvaria(e.target.value)}
-                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#E6EDF3] p-2.5 rounded-lg outline-none font-mono"
+                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none "
                 />
               </div>
 
               {/* Previsão Retorno */}
               <div>
-                <label className="block eyebrow text-[#8B949E] mb-1">Previsão Retorno</label>
+                <label className="block eyebrow  mb-1">Previsão Retorno</label>
                 <input
                   type="date"
                   value={previsaoRetorno}
                   onChange={(e) => setPrevisaoRetorno(e.target.value)}
-                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#E6EDF3] p-2.5 rounded-lg outline-none font-mono"
+                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none "
                 />
               </div>
             </div>
 
             {/* Impactos Imediatos */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-              <label className="flex items-center gap-3 p-3 rounded-lg bg-[#0D1117] border border-[#30363D] cursor-pointer hover:border-[#F85149]/60 transition-colors">
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 12 }}>
+
+              <label style={{
+                display: 'flex', alignItems: 'center', gap: 10,
+                padding: '10px 14px',
+                border: equipamentoParado ? '1px solid #2F81F7' : '1px solid #21262D',
+                borderRadius: 8,
+                background: equipamentoParado ? 'rgba(47,129,247,0.08)' : '#1A1F28',
+                cursor: 'pointer'
+              }}>
                 <input
                   type="checkbox"
                   checked={equipamentoParado}
-                  onChange={(e) => setEquipamentoParado(e.target.checked)}
-                  className="w-4 h-4 rounded border-[#30363D] text-[#F85149] focus:ring-0 cursor-pointer"
+                  onChange={e => setEquipamentoParado(e.target.checked)}
+                  style={{ width: 16, height: 16, flexShrink: 0, cursor: 'pointer' }}
                 />
                 <div>
-                  <p className="text-xs font-bold text-[#F85149]">Equipamento Está Parado Agora</p>
-                  <p className="text-[10px] text-[#8B949E]">Atualiza o status do ativo no banco para PARADO e entra no aging.</p>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#E6EDF3' }}>
+                    Equipamento Parado
+                  </div>
+                  <div style={{ fontSize: 11, color: '#8B949E', marginTop: 2 }}>
+                    Registra como fora de operação
+                  </div>
                 </div>
               </label>
 
-              <label className="flex items-center gap-3 p-3 rounded-lg bg-[#0D1117] border border-[#30363D] cursor-pointer hover:border-[#F85149]/60 transition-colors">
+              <label style={{
+                display: 'flex', alignItems: 'center', gap: 10,
+                padding: '10px 14px',
+                border: parouLinha ? '1px solid #2F81F7' : '1px solid #21262D',
+                borderRadius: 8,
+                background: parouLinha ? 'rgba(47,129,247,0.08)' : '#1A1F28',
+                cursor: 'pointer'
+              }}>
                 <input
                   type="checkbox"
                   checked={parouLinha}
-                  onChange={(e) => setParouLinha(e.target.checked)}
-                  className="w-4 h-4 rounded border-[#30363D] text-[#F85149] focus:ring-0 cursor-pointer"
+                  onChange={e => setParouLinha(e.target.checked)}
+                  style={{ width: 16, height: 16, flexShrink: 0, cursor: 'pointer' }}
                 />
                 <div>
-                  <p className="text-xs font-bold text-[#F85149]">Parou a Linha de Produção (AMBEV)</p>
-                  <p className="text-[10px] text-[#8B949E]">Sinaliza parada de envasamento / processo industrial.</p>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#E6EDF3' }}>
+                    Parou a Linha de Produção
+                  </div>
+                  <div style={{ fontSize: 11, color: '#8B949E', marginTop: 2 }}>
+                    Impacto na produção AMBEV
+                  </div>
                 </div>
               </label>
+
             </div>
           </div>
 
           {/* STEP 3: DIAGNÓSTICO DE CAMPO & CÓDIGOS SAP */}
           <div className="card space-y-4">
             <div className="flex items-center gap-2 border-b border-[#30363D] pb-2">
-              <span className="w-5 h-5 rounded-full bg-[#2F81F7] text-white font-display font-bold text-xs flex items-center justify-center">
+              <span className="w-5 h-5 rounded-full bg-[#2F81F7]  font-display font-bold text-xs flex items-center justify-center">
                 3
               </span>
-              <h3 className="card-title text-xs sm:text-sm uppercase text-[#E6EDF3]">
+              <h3 className="card-title text-xs sm:text-sm uppercase ">
                 Diagnóstico de Campo & Códigos SAP
               </h3>
             </div>
 
             <div>
-              <label className="block eyebrow text-[#8B949E] mb-1">
+              <label className="block eyebrow  mb-1">
                 Descrição da Anomalia / Sintoma Observado*
               </label>
               <textarea
@@ -438,12 +464,12 @@ export const NovaOcorrencia: React.FC = () => {
                 value={descricaoAnomalia}
                 onChange={(e) => setDescricaoAnomalia(e.target.value)}
                 placeholder="Ex: Alarme de alta pressão no display; compressor desarmando por sobrecorrente; ventilador do condensador travado..."
-                className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#E6EDF3] p-3 rounded-lg outline-none leading-relaxed font-body"
+                className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  p-3 rounded-lg outline-none leading-relaxed font-body"
               />
             </div>
 
             <div>
-              <label className="block eyebrow text-[#8B949E] mb-1">
+              <label className="block eyebrow  mb-1">
                 Causa Provável / Diagnóstico Técnico
               </label>
               <input
@@ -451,40 +477,40 @@ export const NovaOcorrencia: React.FC = () => {
                 value={causaProvavel}
                 onChange={(e) => setCausaProvavel(e.target.value)}
                 placeholder="Ex: Queima da bobina do ventilador ou vazamento na válvula Schrader"
-                className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#E6EDF3] p-2.5 rounded-lg outline-none font-body"
+                className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none font-body"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label className="block eyebrow text-[#8B949E] mb-1">Nota SAP AMBEV</label>
+                <label className="block eyebrow  mb-1">Nota SAP AMBEV</label>
                 <input
                   type="text"
                   value={notaSap}
                   onChange={(e) => setNotaSap(e.target.value)}
                   placeholder="Ex: 10045892"
-                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#58A6FF] p-2.5 rounded-lg outline-none font-mono"
+                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none "
                 />
               </div>
 
               <div>
-                <label className="block eyebrow text-[#8B949E] mb-1">Ordem SAP AMBEV</label>
+                <label className="block eyebrow  mb-1">Ordem SAP AMBEV</label>
                 <input
                   type="text"
                   value={ordemSap}
                   onChange={(e) => setOrdemSap(e.target.value)}
                   placeholder="Ex: 40019283"
-                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#58A6FF] p-2.5 rounded-lg outline-none font-mono"
+                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none "
                 />
               </div>
 
               <div>
-                <label className="block eyebrow text-[#8B949E] mb-1">Ordem Interna Vision</label>
+                <label className="block eyebrow  mb-1">Ordem Interna Vision</label>
                 <input
                   type="text"
                   value={ordemVision}
                   onChange={(e) => setOrdemVision(e.target.value)}
-                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] text-[#D29922] p-2.5 rounded-lg outline-none font-mono"
+                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none "
                 />
               </div>
             </div>
@@ -494,10 +520,10 @@ export const NovaOcorrencia: React.FC = () => {
           <div className="card space-y-3">
             <div className="flex items-center justify-between border-b border-[#30363D] pb-2">
               <div className="flex items-center gap-2">
-                <span className="w-5 h-5 rounded-full bg-[#2F81F7] text-white font-display font-bold text-xs flex items-center justify-center">
+                <span className="w-5 h-5 rounded-full bg-[#2F81F7]  font-display font-bold text-xs flex items-center justify-center">
                   4
                 </span>
-                <h3 className="card-title text-xs sm:text-sm uppercase text-[#E6EDF3]">
+                <h3 className="card-title text-xs sm:text-sm uppercase ">
                   Peças & Componentes Necessários ({pecas.length})
                 </h3>
               </div>
@@ -512,7 +538,7 @@ export const NovaOcorrencia: React.FC = () => {
             </div>
 
             {pecas.length === 0 ? (
-              <p className="text-xs text-[#8B949E] italic py-1">
+              <p className="text-xs  italic py-1">
                 Nenhuma peça pendente de compra adicionada. Clique em "+ Adicionar Peça" caso o reparo exija componentes novos.
               </p>
             ) : (
@@ -522,51 +548,51 @@ export const NovaOcorrencia: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => handleRemovePeca(idx)}
-                      className="absolute top-2.5 right-2.5 text-[#8B949E] hover:text-[#F85149] transition-colors cursor-pointer"
+                      className="absolute top-2.5 right-2.5  hover: transition-colors cursor-pointer"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pr-6">
                       <div>
-                        <label className="block eyebrow text-[#8B949E] mb-1">Descrição da Peça*</label>
+                        <label className="block eyebrow  mb-1">Descrição da Peça*</label>
                         <input
                           type="text"
                           required
                           value={peca.descricao || ''}
                           onChange={(e) => handlePecaChange(idx, 'descricao', e.target.value)}
                           placeholder="Ex: Motoventilador Condensador"
-                          className="w-full bg-[#161B22] border border-[#30363D] focus:border-[#2F81F7] text-[#E6EDF3] p-2 rounded-lg outline-none font-body text-xs"
+                          className="w-full bg-[#161B22] border border-[#30363D] focus:border-[#2F81F7]  p-2 rounded-lg outline-none font-body text-xs"
                         />
                       </div>
 
                       <div>
-                        <label className="block eyebrow text-[#8B949E] mb-1">Part Number / Código</label>
+                        <label className="block eyebrow  mb-1">Part Number / Código</label>
                         <input
                           type="text"
                           value={peca.part_number || ''}
                           onChange={(e) => handlePecaChange(idx, 'part_number', e.target.value)}
                           placeholder="SK 3396.282"
-                          className="w-full bg-[#161B22] border border-[#30363D] focus:border-[#2F81F7] text-[#58A6FF] p-2 rounded-lg outline-none font-mono text-xs"
+                          className="w-full bg-[#161B22] border border-[#30363D] focus:border-[#2F81F7]  p-2 rounded-lg outline-none  text-xs"
                         />
                       </div>
 
                       <div>
-                        <label className="block eyebrow text-[#8B949E] mb-1">Fabricante / Qtd</label>
+                        <label className="block eyebrow  mb-1">Fabricante / Qtd</label>
                         <div className="grid grid-cols-2 gap-1.5">
                           <input
                             type="text"
                             value={peca.fabricante || ''}
                             onChange={(e) => handlePecaChange(idx, 'fabricante', e.target.value)}
                             placeholder="RITTAL"
-                            className="bg-[#161B22] border border-[#30363D] focus:border-[#2F81F7] text-[#E6EDF3] p-2 rounded-lg outline-none text-xs font-body"
+                            className="bg-[#161B22] border border-[#30363D] focus:border-[#2F81F7]  p-2 rounded-lg outline-none text-xs font-body"
                           />
                           <input
                             type="number"
                             min={1}
                             value={peca.quantidade || 1}
                             onChange={(e) => handlePecaChange(idx, 'quantidade', Number(e.target.value))}
-                            className="bg-[#161B22] border border-[#30363D] focus:border-[#2F81F7] text-[#58A6FF] p-2 rounded-lg outline-none font-mono text-xs font-bold"
+                            className="bg-[#161B22] border border-[#30363D] focus:border-[#2F81F7]  p-2 rounded-lg outline-none  text-xs font-bold"
                           />
                         </div>
                       </div>
@@ -581,10 +607,10 @@ export const NovaOcorrencia: React.FC = () => {
           <div className="card space-y-3">
             <div className="flex items-center justify-between border-b border-[#30363D] pb-2">
               <div className="flex items-center gap-2">
-                <span className="w-5 h-5 rounded-full bg-[#2F81F7] text-white font-display font-bold text-xs flex items-center justify-center">
+                <span className="w-5 h-5 rounded-full bg-[#2F81F7]  font-display font-bold text-xs flex items-center justify-center">
                   5
                 </span>
-                <h3 className="card-title text-xs sm:text-sm uppercase text-[#E6EDF3]">
+                <h3 className="card-title text-xs sm:text-sm uppercase ">
                   Fotos de Evidência ({fotos.length})
                 </h3>
               </div>
@@ -603,7 +629,7 @@ export const NovaOcorrencia: React.FC = () => {
             </div>
 
             {fotos.length === 0 ? (
-              <p className="text-xs text-[#8B949E] italic py-1">
+              <p className="text-xs  italic py-1">
                 Nenhuma foto anexada. Use fotos para agilizar a cotação das peças e alinhamento com a AMBEV.
               </p>
             ) : (
@@ -614,7 +640,7 @@ export const NovaOcorrencia: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setFotos(fotos.filter((_, idx) => idx !== i))}
-                      className="absolute top-1.5 right-1.5 bg-black/80 text-white p-1 rounded-md hover:bg-[#F85149] transition-colors cursor-pointer"
+                      className="absolute top-1.5 right-1.5 bg-black/80  p-1 rounded-md hover:bg-[#F85149] transition-colors cursor-pointer"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
