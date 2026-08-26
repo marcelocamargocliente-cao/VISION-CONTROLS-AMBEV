@@ -162,25 +162,51 @@ export const DataStore = {
 
   // 2. View: Equipamentos
   async getEquipamentos(): Promise<Equipamento[]> {
+    // 1. Tentar endpoint do servidor backend conectado ao PostgreSQL com usuário ai_studio
+    try {
+      const res = await fetch('/api/equipamentos');
+      if (res.ok) {
+        const json = await res.json();
+        if (json.data && Array.isArray(json.data) && json.data.length > 0) {
+          const list: Equipamento[] = json.data.map((item: any) => ({
+            id: item.id || `equip-${item.tag}`,
+            tag: String(item.tag || ''),
+            ug_ref: item.ug_ref || 'N2',
+            area_ref: item.area_ref || 'NÃO CLASSIFICADO',
+            localizacao_ref: item.localizacao_ref || '',
+            patrimonio_ref: item.patrimonio_ref != null ? String(item.patrimonio_ref) : undefined,
+            tipo_equipamento: item.tipo_equipamento || '',
+            marca: item.marca || undefined,
+            modelo: item.modelo || undefined,
+            capacidade: item.capacidade || undefined,
+            aplicacao: item.aplicacao || 'INDUSTRIAL',
+            status: (item.status as EquipStatus) || 'OK',
+            local_instalacao: item.local_instalacao || (item.ug_ref ? `${item.ug_ref} · ${item.localizacao_ref || ''}` : ''),
+            tipo: item.tipo_equipamento || '',
+            patrimonio: item.patrimonio_ref != null ? String(item.patrimonio_ref) : undefined,
+            qr_slug: item.qr_slug || `ivca-eq-${item.tag}`,
+            ug_id: item.ug_ref ? `ug-${item.ug_ref.toLowerCase()}` : 'ug-n2',
+            ug_codigo: item.ug_ref || 'N2',
+            centro_trabalho: item.local_instalacao || 'CIV1-GER',
+          }));
+          return list;
+        }
+      }
+    } catch {
+      // continua para supabase
+    }
+
+    // 2. Tentar consulta direta Supabase
     if (isSupabaseConfigured) {
       try {
         const { data, error } = await supabase
           .from('equipamentos')
-          .select(`
-            tag,
-            tipo_equipamento,
-            marca,
-            modelo,
-            capacidade,
-            aplicacao,
-            status,
-            ug_ref,
-            area_ref,
-            patrimonio_ref,
-            localizacao_ref,
-            local_instalacao
-          `)
+          .select('tag, tipo_equipamento, marca, modelo, capacidade, status, ug_ref, area_ref, patrimonio_ref, localizacao_ref, local_instalacao')
           .order('tag', { ascending: true });
+
+        if (error) {
+          console.error('Supabase query error:', error);
+        }
 
         if (!error && data && data.length > 0) {
           return data.map((item: any) => ({
@@ -189,16 +215,16 @@ export const DataStore = {
             ug_ref: item.ug_ref || '',
             area_ref: item.area_ref || '',
             localizacao_ref: item.localizacao_ref || '',
-            patrimonio_ref: item.patrimonio_ref != null ? String(item.patrimonio_ref) : '',
+            patrimonio_ref: item.patrimonio_ref != null ? String(item.patrimonio_ref) : undefined,
             tipo_equipamento: item.tipo_equipamento || '',
-            marca: item.marca || '',
-            modelo: item.modelo || '',
-            capacidade: item.capacidade || '',
-            aplicacao: item.aplicacao || 'INDUSTRIAL',
+            marca: item.marca || undefined,
+            modelo: item.modelo || undefined,
+            capacidade: item.capacidade || undefined,
+            aplicacao: 'INDUSTRIAL',
             status: (item.status as EquipStatus) || 'OK',
             local_instalacao: item.local_instalacao || (item.ug_ref ? `${item.ug_ref} · ${item.localizacao_ref || ''}` : ''),
             tipo: item.tipo_equipamento || '',
-            patrimonio: item.patrimonio_ref != null ? String(item.patrimonio_ref) : '',
+            patrimonio: item.patrimonio_ref != null ? String(item.patrimonio_ref) : undefined,
           })) as Equipamento[];
         }
       } catch (err) {
