@@ -54,7 +54,20 @@ export const Equipamentos: React.FC = () => {
       if (isSupabaseConfigured) {
         const { data, error } = await supabase
           .from('equipamentos')
-          .select('tag, ug_ref, area_ref, localizacao_ref, patrimonio_ref, tipo_equipamento, marca, modelo, capacidade, status, local_instalacao')
+          .select(`
+            tag,
+            tipo_equipamento,
+            marca,
+            modelo,
+            capacidade,
+            aplicacao,
+            status,
+            ug_ref,
+            area_ref,
+            patrimonio_ref,
+            localizacao_ref,
+            local_instalacao
+          `)
           .order('tag', { ascending: true });
 
         if (!error && data && data.length > 0) {
