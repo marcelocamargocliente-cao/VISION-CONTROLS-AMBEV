@@ -325,11 +325,12 @@ export const DataStore = {
     const map = new Map<string, { total: number; ok: number; parado: number }>();
 
     equips.forEach((e) => {
-      const cur = map.get(e.tipo) || { total: 0, ok: 0, parado: 0 };
+      const tipoNome = (e.tipo && e.tipo.trim()) || 'Outros';
+      const cur = map.get(tipoNome) || { total: 0, ok: 0, parado: 0 };
       cur.total += 1;
       if (e.status === 'OK') cur.ok += 1;
       if (e.status === 'PARADO') cur.parado += 1;
-      map.set(e.tipo, cur);
+      map.set(tipoNome, cur);
     });
 
     return Array.from(map.entries()).map(([tipo, data]) => ({
@@ -344,11 +345,12 @@ export const DataStore = {
     const map = new Map<string, { total: number; ok: number; parado: number }>();
 
     equips.forEach((e) => {
-      const cur = map.get(e.marca) || { total: 0, ok: 0, parado: 0 };
+      const marcaNome = (e.marca && e.marca.trim()) || 'Outros';
+      const cur = map.get(marcaNome) || { total: 0, ok: 0, parado: 0 };
       cur.total += 1;
       if (e.status === 'OK') cur.ok += 1;
       if (e.status === 'PARADO') cur.parado += 1;
-      map.set(e.marca, cur);
+      map.set(marcaNome, cur);
     });
 
     return Array.from(map.entries())

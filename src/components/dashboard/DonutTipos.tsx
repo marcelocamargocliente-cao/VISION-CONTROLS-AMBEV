@@ -110,7 +110,7 @@ export const DonutTipos: React.FC<DonutTiposProps> = ({ tipos, marcas }) => {
           {normalizedData.map((item, idx) => {
             const pct = totalGeral > 0 ? Math.round((item.value / totalGeral) * 100) : 0;
             return (
-              <div key={idx} className="flex items-center justify-between leading-none">
+              <div key={`legend-${item.name || idx}-${idx}`} className="flex items-center justify-between leading-none">
                 <div className="flex items-center gap-1.5 min-w-0">
                   <span className="w-2.5 h-[2px] rounded-full shrink-0" style={{ backgroundColor: item.color }} />
                   <span className="text-[#8B949E] truncate text-[10px]">{item.name}</span>
@@ -128,10 +128,10 @@ export const DonutTipos: React.FC<DonutTiposProps> = ({ tipos, marcas }) => {
           <span>Top Fabricantes</span>
         </div>
         <div className="grid grid-cols-3 gap-2">
-          {topMarcas.map((m) => {
+          {topMarcas.map((m, idx) => {
             const pct = m.total > 0 ? Math.round((m.ok / m.total) * 100) : 100;
             return (
-              <div key={m.marca} className="text-[10px] leading-tight">
+              <div key={`top-marca-${m.marca || idx}-${idx}`} className="text-[10px] leading-tight">
                 <div className="flex items-center justify-between mb-1">
                   <span className="font-medium text-[#8B949E] truncate">{m.marca}</span>
                   <span className="font-mono text-[10px] font-semibold text-[#E6EDF3] ml-0.5">{pct}%</span>
