@@ -22,7 +22,11 @@ import {
   Layers,
   Paperclip,
   Check,
+  Pencil,
+  Trash2,
 } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { supabase } from '../lib/supabase';
 import { DataStore } from '../lib/dataStore';
 import { Orcamento, OrcamentoStatus, Ocorrencia, VwEquipamento } from '../types/database';
 import { IndustrialTag } from '../components/common/IndustrialTag';
@@ -49,6 +53,8 @@ export const Orcamentos: React.FC = () => {
     profile?.role === 'GESTOR' ||
     profile?.role === 'ENCARREGADO';
 
+  const podeDeletar = profile?.role === 'ADMIN' || profile?.role === 'GESTOR';
+
   const [orcamentos, setOrcamentos] = useState<Orcamento[]>([]);
   const [ocorrencias, setOcorrencias] = useState<Ocorrencia[]>([]);
   const [occsMap, setOccsMap] = useState<Map<string, Ocorrencia>>(new Map());
@@ -68,6 +74,13 @@ export const Orcamentos: React.FC = () => {
   const [isRevisaoOpen, setIsRevisaoOpen] = useState(false);
 
   const [isNovoOpen, setIsNovoOpen] = useState(false);
+  const [orcamentoToEdit, setOrcamentoToEdit] = useState<Orcamento | null>(null);
+  const [confirmandoDelete, setConfirmandoDelete] = useState<Orcamento | null>(null);
+
+  const abrirEdicao = (orcamento: Orcamento) => {
+    setOrcamentoToEdit(orcamento);
+    setIsNovoOpen(true);
+  };
 
   // Toast
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(
@@ -573,6 +586,28 @@ export const Orcamentos: React.FC = () => {
                             <Eye className="w-3.5 h-3.5" />
                           </button>
 
+                          {/* Editar */}
+                          {isAuthorizedToEdit && (
+                            <button
+                              onClick={() => abrirEdicao(orc)}
+                              title="Editar orçamento"
+                              className="p-1.5 bg-[var(--bg-input)] hover:bg-[var(--blue)]/20 hover:border-blue-500 rounded transition-colors text-blue-400"
+                            >
+                              <Pencil className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+
+                          {/* Deletar */}
+                          {podeDeletar && (
+                            <button
+                              onClick={() => setConfirmandoDelete(orc)}
+                              title="Excluir orçamento"
+                              className="p-1.5 bg-[var(--bg-input)] hover:bg-[var(--red)]/20 hover:border-red-500 rounded transition-colors text-red-500"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+
                           {/* Aprovar Direto (if authorized) */}
                           {isAuthorizedToEdit &&
                             orc.status !== 'APROVADO' &&
@@ -623,11 +658,85 @@ export const Orcamentos: React.FC = () => {
       {/* Modal 3: Emitir Novo Orçamento */}
       <ModalNovoOrcamento
         isOpen={isNovoOpen}
-        onClose={() => setIsNovoOpen(false)}
+        onClose={() => {
+          setIsNovoOpen(false);
+          setOrcamentoToEdit(null);
+        }}
         onCreated={handleNovoCreated}
+        onUpdated={(atualizado) => {
+          setOrcamentos((prev) => prev.map((o) => (o.id === atualizado.id ? atualizado : o)));
+        }}
         ocorrencias={ocorrencias}
         equipamentosMap={equipsMap}
+        orcamentoToEdit={orcamentoToEdit}
       />
+
+      {/* Modal de Confirmação de Delete */}
+      {confirmandoDelete && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 9999,
+          background: 'rgba(0,0,0,0.6)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center'
+        }}>
+          <div style={{
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border)',
+            borderRadius: 12, padding: 24, width: 360,
+            textAlign: 'center'
+          }}>
+            <div style={{
+              width: 44, height: 44, borderRadius: '50%',
+              background: 'var(--red-bg)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              margin: '0 auto 12px'
+            }}>
+              <Trash2 size={20} color="var(--red)" />
+            </div>
+            <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-1)', marginBottom: 8 }}>
+              Excluir orçamento?
+            </h3>
+            <p style={{ fontSize: 12, color: 'var(--text-2)', marginBottom: 6 }}>
+              <strong>{confirmandoDelete.numero}</strong>
+            </p>
+            <p style={{ fontSize: 12, color: 'var(--text-2)', marginBottom: 20 }}>
+              Esta ação não pode ser desfeita.
+            </p>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button
+                onClick={() => setConfirmandoDelete(null)}
+                className="btn-secondary"
+                style={{ flex: 1 }}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={async () => {
+                  const { error } = await supabase
+                    .from('orcamentos')
+                    .delete()
+                    .eq('id', confirmandoDelete.id);
+                  
+                  if (error) {
+                    toast.error('Erro ao excluir orçamento');
+                    return;
+                  }
+                  toast.success('Orçamento excluído');
+                  setOrcamentos((prev) => prev.filter((o) => o.id !== confirmandoDelete.id));
+                  setConfirmandoDelete(null);
+                }}
+                style={{
+                  flex: 1, background: 'var(--red)',
+                  color: '#fff', border: 'none',
+                  borderRadius: 8, padding: '8px 0',
+                  fontSize: 12, fontWeight: 600, cursor: 'pointer'
+                }}
+              >
+                Sim, excluir
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

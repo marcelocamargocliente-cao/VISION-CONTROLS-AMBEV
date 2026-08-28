@@ -13,6 +13,8 @@ import {
   CheckCircle2,
   Package,
 } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { supabase } from '../../lib/supabase';
 import { Ocorrencia, Orcamento, VwEquipamento, OrcamentoStatus } from '../../types/database';
 import { DataStore } from '../../lib/dataStore';
 import { formatCurrency } from '../../utils/formatters';
@@ -21,9 +23,11 @@ interface ModalNovoOrcamentoProps {
   isOpen: boolean;
   onClose: () => void;
   onCreated: (novoOrcamento: Orcamento) => void;
+  onUpdated?: (orcamentoAtualizado: Orcamento) => void;
   ocorrencias?: Ocorrencia[];
   defaultOcorrenciaId?: string;
   equipamentosMap?: Map<string, VwEquipamento>;
+  orcamentoToEdit?: Orcamento | null;
 }
 
 interface PecaItem {
@@ -37,9 +41,11 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
   isOpen,
   onClose,
   onCreated,
+  onUpdated,
   ocorrencias = [],
   defaultOcorrenciaId,
   equipamentosMap = new Map(),
+  orcamentoToEdit,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -88,41 +94,69 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
 
   useEffect(() => {
     if (isOpen) {
-      // Deixar número em branco conforme solicitado
-      setNumero('');
-      // Status começa como Rascunho
-      setStatus('RASCUNHO');
-      setFornecedor('TermoService RJ & Automação Ltda');
-      setValorTotal('');
-      const todayStr = new Date().toISOString().split('T')[0];
-      setDataEnvio(todayStr);
+      if (orcamentoToEdit) {
+        setNumero(orcamentoToEdit.numero || '');
+        setStatus(orcamentoToEdit.status || 'RASCUNHO');
+        setFornecedor(orcamentoToEdit.fornecedor || '');
+        setValorTotal(orcamentoToEdit.valor_total || '');
+        setDataEnvio(orcamentoToEdit.data_envio ? new Date(orcamentoToEdit.data_envio).toISOString().split('T')[0] : '');
+        setValidade(orcamentoToEdit.validade ? new Date(orcamentoToEdit.validade).toISOString().split('T')[0] : '');
+        setEnviadoPara(orcamentoToEdit.enviado_para || '');
+        setDescricaoAnomalia(orcamentoToEdit.descricao_anomalia || '');
+        
+        if (orcamentoToEdit.pecas && orcamentoToEdit.pecas.length > 0) {
+          setPecas(orcamentoToEdit.pecas.map(p => ({
+            descricao: p.descricao || '',
+            part_number: p.part_number || '',
+            quantidade: p.quantidade || 1,
+            valor_unitario: String(p.valor_unitario || ''),
+          })));
+        } else {
+          setPecas([{ descricao: '', part_number: '', quantidade: 1, valor_unitario: '' }]);
+        }
+        
+        setObservacoes(orcamentoToEdit.observacoes || '');
+        setPdfFile(null);
+        setPdfUrl(orcamentoToEdit.arquivo_pdf_url || orcamentoToEdit.arquivo_url || '');
+        setOcorrenciaId(orcamentoToEdit.ocorrencia_id || '');
+        setErrorMsg('');
+      } else {
+        // Deixar número em branco conforme solicitado
+        setNumero('');
+        // Status começa como Rascunho
+        setStatus('RASCUNHO');
+        setFornecedor('TermoService RJ & Automação Ltda');
+        setValorTotal('');
+        const todayStr = new Date().toISOString().split('T')[0];
+        setDataEnvio(todayStr);
 
-      const valDate = new Date();
-      valDate.setDate(valDate.getDate() + 30);
-      setValidade(valDate.toISOString().split('T')[0]);
+        const valDate = new Date();
+        valDate.setDate(valDate.getDate() + 30);
+        setValidade(valDate.toISOString().split('T')[0]);
 
-      setEnviadoPara('Engenharia de Utilidades AMBEV');
-      setDescricaoAnomalia('');
-      setPecas([{ descricao: '', part_number: '', quantidade: 1, valor_unitario: '' }]);
-      setObservacoes('');
-      setPdfFile(null);
-      setPdfUrl('');
-      setErrorMsg('');
+        setEnviadoPara('Engenharia de Utilidades AMBEV');
+        setDescricaoAnomalia('');
+        setPecas([{ descricao: '', part_number: '', quantidade: 1, valor_unitario: '' }]);
+        setObservacoes('');
+        setPdfFile(null);
+        setPdfUrl('');
+        setErrorMsg('');
 
-      const targetOccId = defaultOcorrenciaId || (ocorrencias.length > 0 ? ocorrencias[0].id : '');
-      setOcorrenciaId(targetOccId);
+        const targetOccId = defaultOcorrenciaId || (ocorrencias.length > 0 ? ocorrencias[0].id : '');
+        setOcorrenciaId(targetOccId);
 
-      // Pre-fill anomaly if target occurrence is found and has anomaly description
-      if (targetOccId) {
-        const occ = ocorrencias.find((o) => o.id === targetOccId);
-        if (occ?.descricao_anomalia) {
-          setDescricaoAnomalia(occ.descricao_anomalia);
-        } else if (occ?.descricao) {
-          setDescricaoAnomalia(occ.descricao);
+        // Pre-fill anomaly if target occurrence is found and has anomaly description
+        if (targetOccId) {
+          const occ = ocorrencias.find((o) => o.id === targetOccId);
+          if (occ?.descricao_anomalia) {
+            setDescricaoAnomalia(occ.descricao_anomalia);
+          } else if (occ?.descricao) {
+            setDescricaoAnomalia(occ.descricao);
+          }
         }
       }
     }
-  }, [isOpen, defaultOcorrenciaId, ocorrencias]);
+  }, [isOpen, defaultOcorrenciaId, ocorrencias, orcamentoToEdit]);
 
   if (!isOpen) return null;
 
@@ -178,7 +212,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
     try {
       const pecasValidas = pecas.filter((p) => p.descricao.trim());
 
-      const novoOrc = await DataStore.saveOrcamento({
+      const payload = {
         ocorrencia_id: ocorrenciaId,
         numero: numero.trim(),
         fornecedor: fornecedor.trim(),
@@ -192,36 +226,61 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
         pecas: pecasValidas,
         arquivo_pdf_url: pdfUrl || `https://visioncontrols.com.br/docs/orcamentos/${numero.trim()}.pdf`,
         arquivo_url: pdfUrl || `https://visioncontrols.com.br/docs/orcamentos/${numero.trim()}.pdf`,
-      });
+      };
 
-      // Cadastrar as peças vinculadas à ocorrência no DataStore
-      for (const p of pecasValidas) {
-        const unitVal =
-          typeof p.valor_unitario === 'string'
-            ? parseFloat(p.valor_unitario.replace(/[^\d.,]/g, '').replace(',', '.')) || 0
-            : Number(p.valor_unitario) || 0;
+      let resultingOrc: Orcamento;
 
-        await DataStore.savePeca({
-          ocorrencia_id: ocorrenciaId,
-          descricao: p.descricao.trim(),
-          part_number: p.part_number.trim() || undefined,
-          quantidade: Number(p.quantidade) || 1,
-          valor_unitario: unitVal,
-          fornecedor: fornecedor.trim(),
-          status: 'COTADA',
+      if (orcamentoToEdit) {
+        // Atualiza no Supabase
+        const { error } = await supabase
+          .from('orcamentos')
+          .update(payload)
+          .eq('id', orcamentoToEdit.id);
+        
+        if (error) {
+          console.warn('Erro ao atualizar no Supabase:', error);
+        }
+
+        resultingOrc = await DataStore.saveOrcamento({
+          id: orcamentoToEdit.id,
+          ...payload
         });
+
+        toast.success('Orçamento atualizado com sucesso!');
+        if (onUpdated) onUpdated(resultingOrc);
+      } else {
+        resultingOrc = await DataStore.saveOrcamento(payload);
+        
+        // Cadastrar as peças vinculadas à ocorrência no DataStore
+        for (const p of pecasValidas) {
+          const unitVal =
+            typeof p.valor_unitario === 'string'
+              ? parseFloat(p.valor_unitario.replace(/[^\d.,]/g, '').replace(',', '.')) || 0
+              : Number(p.valor_unitario) || 0;
+
+          await DataStore.savePeca({
+            ocorrencia_id: ocorrenciaId,
+            descricao: p.descricao.trim(),
+            part_number: p.part_number.trim() || undefined,
+            quantidade: Number(p.quantidade) || 1,
+            valor_unitario: unitVal,
+            fornecedor: fornecedor.trim(),
+            status: 'COTADA',
+          });
+        }
+
+        // Adicionar evento na timeline da ocorrência
+        await DataStore.addEvento({
+          ocorrencia_id: ocorrenciaId,
+          tipo_evento: 'ORCAMENTO_ENVIADO',
+          descricao: `Proposta orçamentária ${resultingOrc.numero} (${formatCurrency(
+            resultingOrc.valor_total
+          )}) cadastrada com status ${status}`,
+        });
+
+        onCreated(resultingOrc);
       }
 
-      // Adicionar evento na timeline da ocorrência
-      await DataStore.addEvento({
-        ocorrencia_id: ocorrenciaId,
-        tipo_evento: 'ORCAMENTO_ENVIADO',
-        descricao: `Proposta orçamentária ${novoOrc.numero} (${formatCurrency(
-          novoOrc.valor_total
-        )}) cadastrada com status ${status}`,
-      });
-
-      onCreated(novoOrc);
       onClose();
     } catch (err) {
       console.error(err);
@@ -252,10 +311,10 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
             </div>
             <div>
               <h3 className="text-base font-mono font-bold text-[#ECEFF1]">
-                Emitir Nova Proposta / Orçamento
+                {orcamentoToEdit ? 'Editar Proposta / Orçamento' : 'Emitir Nova Proposta / Orçamento'}
               </h3>
               <p className="text-[10px] text-[#94A3B8] font-mono">
-                Cadastro e envio de proposta de manutenção para aprovação AMBEV
+                {orcamentoToEdit ? 'Atualização de dados da proposta existente' : 'Cadastro e envio de proposta de manutenção para aprovação AMBEV'}
               </p>
             </div>
           </div>
