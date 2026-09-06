@@ -265,7 +265,7 @@ export const Orcamentos: React.FC = () => {
   const selectedEq = selectedOcc ? equipsMap.get(selectedOcc.equipamento_id) : null;
 
   return (
-    <div className="p-4 md:p-6 space-y-6 max-w-7xl mx-auto">
+    <div className="p-4 md:p-6 space-y-6 max-w-7xl mx-auto pb-20">
       {/* Toast Notification */}
       {toast && (
         <div
