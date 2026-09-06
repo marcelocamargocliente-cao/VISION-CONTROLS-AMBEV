@@ -84,7 +84,9 @@ export const OcorrenciaDetalhe: React.FC = () => {
 
   // New Peca Modal
   const [showAddPecaModal, setShowAddPecaModal] = useState(false);
+  const [valorPecaDisplay, setValorPecaDisplay] = useState<string>('');
   const [newPeca, setNewPeca] = useState<Partial<PecaPendente>>({
+
     descricao: '',
     part_number: '',
     fabricante: 'RITTAL',
@@ -192,6 +194,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
         equipamento_id: ocorrencia.equipamento_id,
       });
       setShowAddPecaModal(false);
+      setValorPecaDisplay('');
       setNewPeca({
         descricao: '',
         part_number: '',
@@ -775,10 +778,23 @@ export const OcorrenciaDetalhe: React.FC = () => {
                 <div>
                   <label className="block eyebrow  mb-1">Valor Estimado (R$)</label>
                   <input
-                    type="number"
-                    value={newPeca.valor_unitario || 0}
-                    onChange={(e) => setNewPeca({ ...newPeca, valor_unitario: Number(e.target.value) })}
-                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none "
+                    type="text"
+                    inputMode="numeric"
+                    value={valorPecaDisplay}
+                    onChange={(e) => {
+                      const raw = e.target.value.replace(/\D/g, '');
+                      if (raw === '') {
+                        setValorPecaDisplay('');
+                        setNewPeca({ ...newPeca, valor_unitario: 0 });
+                        return;
+                      }
+                      const cents = parseInt(raw, 10);
+                      const fmt = (cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                      setValorPecaDisplay(fmt);
+                      setNewPeca({ ...newPeca, valor_unitario: cents / 100 });
+                    }}
+                    placeholder="0,00"
+                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] p-2.5 rounded-lg outline-none font-mono text-right"
                   />
                 </div>
               </div>
