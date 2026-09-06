@@ -678,8 +678,21 @@ export const EquipamentoDetalhe: React.FC = () => {
                 level="H"
                 includeMargin={true}
               />
-              <div className="mt-2 text-center text-black font-bold text-sm tracking-widest border-t border-gray-300 pt-1 font-mono">
-                TAG {equipamento.tag}
+              <div className="mt-2 text-center border-t border-gray-300 pt-1">
+                {(equipamento.patrimonio_ref || equipamento.tag_sap) ? (
+                  <>
+                    <div className="text-black font-bold text-sm tracking-widest font-mono">
+                      TAG AMBEV: {equipamento.patrimonio_ref || equipamento.tag_sap}
+                    </div>
+                    <div className="text-[10px] text-gray-500 font-mono">
+                      TAG VISION: {equipamento.tag}
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-black font-bold text-sm tracking-widest font-mono">
+                    TAG {equipamento.tag}
+                  </div>
+                )}
               </div>
               <div className="text-[10px] text-gray-700 font-mono font-semibold">
                 UG {ugNome} · {equipamento.localizacao_ref || equipamento.local_instalacao || 'AMBEV'}

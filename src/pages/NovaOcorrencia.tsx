@@ -48,7 +48,7 @@ export const NovaOcorrencia: React.FC = () => {
   const [causaProvavel, setCausaProvavel] = useState<string>('');
   const [notaSap, setNotaSap] = useState<string>('');
   const [ordemSap, setOrdemSap] = useState<string>('');
-  const [ordemVision, setOrdemVision] = useState<string>('OS-VC-' + Math.floor(1000 + Math.random() * 9000));
+  const [ordemVision, setOrdemVision] = useState<string>('');
   const [ppac, setPpac] = useState<string>('');
   const [equipamentoParado, setEquipamentoParado] = useState<boolean>(true);
   const [parouLinha, setParouLinha] = useState<boolean>(false);
@@ -264,7 +264,7 @@ export const NovaOcorrencia: React.FC = () => {
                   DIGITE A TAG, TAG VISION, TAG AMBEV OU LOCAL DE INSTALAÇÃO PARA BUSCAR:
                 </label>
                 <div className="relative">
-                  <Search className="w-4 h-4  absolute left-3 top-1/2 -translate-y-1/2" />
+                  <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
                     value={equipSearch}
@@ -283,16 +283,20 @@ export const NovaOcorrencia: React.FC = () => {
                         onClick={() => handleSelectEquip(eq)}
                         className="w-full p-2.5 text-left hover:bg-[#1C2128] flex items-center justify-between transition-colors cursor-pointer"
                       >
-                        <div>
+                        <div className="flex-1">
                           <div className="flex items-center gap-2">
+                            {(eq.patrimonio_ref || eq.tag_sap) && (
+                              <span className="bg-[#1E3A5F] text-cyan-400 font-bold text-[11px] rounded px-2 py-0.5 border border-cyan-500/30 font-mono">
+                                AMBEV {eq.patrimonio_ref || eq.tag_sap}
+                              </span>
+                            )}
                             <IndustrialTag tag={eq.tag} size="sm" />
-                            <span className="font-semibold ">{eq.tipo} ({eq.marca} {eq.modelo})</span>
+                            <span className="font-semibold text-xs">{eq.tipo} ({eq.marca} {eq.modelo})</span>
                           </div>
                           <div className="text-[10px] text-gray-400 mt-0.5">
                             UG {eq.ug_codigo} • {[eq.centro_trabalho_sap, eq.centro_trabalho_nome].filter(Boolean).join(' - ') || eq.linha_nome}
                           </div>
                         </div>
-                        <span className="text-[10px] text-cyan-400">{eq.tag_sap || ''}</span>
                       </button>
                     ))}
                   </div>
