@@ -13,6 +13,7 @@ import {
   FileText,
   ChevronRight,
   ShieldAlert,
+  Trash2,
 } from 'lucide-react';
 import { DataStore } from '../lib/dataStore';
 import {
@@ -58,6 +59,7 @@ export const Ocorrencias: React.FC = () => {
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [selectedCriticidade, setSelectedCriticidade] = useState<string>('');
   const [onlyParados, setOnlyParados] = useState(false);
+  const [confirmDeleteOcc, setConfirmDeleteOcc] = useState(null);
 
   const loadData = async () => {
     setLoading(true);
@@ -78,6 +80,17 @@ export const Ocorrencias: React.FC = () => {
   useEffect(() => {
     loadData();
   }, []);
+
+  const handleDeleteOcorrencia = async (occ) => {
+    try {
+      await DataStore.deleteOcorrencia(occ.id);
+      setOcorrencias((prev) => prev.filter((o) => o.id !== occ.id));
+      setConfirmDeleteOcc(null);
+    } catch (e) {
+      console.error(e);
+      alert('Erro ao deletar. Tente novamente.');
+    }
+  };
 
   const filteredOcorrencias = ocorrencias.filter((occ) => {
     const eq = equipamentosMap.get(occ.equipamento_id);
@@ -329,6 +342,13 @@ export const Ocorrencias: React.FC = () => {
                               }}
                             />
                             <button
+                              onClick={() => setConfirmDeleteOcc(occ)}
+                              title="Deletar ocorrência"
+                              className="p-1.5 rounded-[4px] bg-[#232B35] hover:bg-red-400/20 text-red-400 hover:text-red-300 transition-colors"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                            <button
                               onClick={() => navigate(`/ocorrencias/${occ.id}`)}
                               className="p-1.5 rounded-[4px] bg-[#232B35]  hover:bg-[#2C343E]"
                             >
@@ -431,5 +451,19 @@ export const Ocorrencias: React.FC = () => {
         </div>
       )}
     </div>
+
+      {confirmDeleteOcc && (
+        <div style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.65)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+          <div style={{ background:'#13181F', border:'1px solid #30363D', borderRadius:12, padding:24, width:340, textAlign:'center' }}>
+            <p style={{ fontSize:14, fontWeight:700, color:'#E6EDF3', marginBottom:8 }}>Deletar Ocorrência?</p>
+            <p style={{ fontSize:12, color:'#8B949E', marginBottom:4 }}>OS #{'{'}confirmDeleteOcc.numero{'}'}</p>
+            <p style={{ fontSize:11, color:'#8B949E', marginBottom:20 }}>Esta ação não pode ser desfeita.</p>
+            <div style={{ display:'flex', gap:8 }}>
+              <button onClick={() => setConfirmDeleteOcc(null)} style={{ flex:1, padding:'8px 0', borderRadius:8, border:'1px solid #30363D', background:'#21262D', color:'#E6EDF3', fontSize:12, cursor:'pointer' }}>Cancelar</button>
+              <button onClick={() => handleDeleteOcorrencia(confirmDeleteOcc)} style={{ flex:1, padding:'8px 0', borderRadius:8, border:'none', background:'#E5484D', color:'#fff', fontSize:12, fontWeight:600, cursor:'pointer' }}>Sim, deletar</button>
+            </div>
+          </div>
+        </div>
+      )}
   );
 };
