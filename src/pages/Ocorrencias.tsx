@@ -117,6 +117,7 @@ export const Ocorrencias: React.FC = () => {
   const paradosCount = ocorrencias.filter((o) => o.equipamento_parado && o.status !== 'CONCLUIDA' && o.status !== 'CANCELADA').length;
 
   return (
+    <>
     <div className="p-4 md:p-6 space-y-6 max-w-7xl mx-auto">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -465,5 +466,6 @@ export const Ocorrencias: React.FC = () => {
           </div>
         </div>
       )}
+    </>
   );
 };

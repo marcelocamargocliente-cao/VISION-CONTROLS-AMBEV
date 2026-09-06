@@ -329,8 +329,8 @@ export const AppLayout: React.FC = () => {
           </div>
         )}
 
-        {/* SCROLLABLE VIEWPORT (overflow-hidden by default for 100vh fit) */}
-        <main className="flex-1 overflow-hidden min-w-0 min-h-0 bg-[var(--bg-app)] flex flex-col">
+        {/* SCROLLABLE VIEWPORT */}
+        <main className="flex-1 overflow-y-auto min-w-0 min-h-0 bg-[var(--bg-app)] flex flex-col">
           <Outlet />
         </main>
       </div>
