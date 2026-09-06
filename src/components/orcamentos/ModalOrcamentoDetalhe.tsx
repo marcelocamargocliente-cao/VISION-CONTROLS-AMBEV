@@ -95,6 +95,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
     status: OrcamentoStatus;
     observacoes: string;
     arquivo_pdf_url: string;
+    descricao_anomalia: string;
   }>({
     numero: '',
     fornecedor: '',
@@ -105,6 +106,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
     status: 'ENVIADO',
     observacoes: '',
     arquivo_pdf_url: '',
+    descricao_anomalia: '',
   });
 
   // Local Toast feedback
@@ -133,6 +135,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
         status: (orcamento.status as OrcamentoStatus) || 'ENVIADO',
         observacoes: orcamento.observacoes || '',
         arquivo_pdf_url: orcamento.arquivo_pdf_url || orcamento.arquivo_url || '',
+        descricao_anomalia: orcamento.descricao_anomalia || ocorrencia?.descricao_anomalia || '',
       });
       setIsEditing(initialEditMode);
 
@@ -224,6 +227,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
         observacoes: formData.observacoes.trim(),
         arquivo_pdf_url: formData.arquivo_pdf_url,
         arquivo_url: formData.arquivo_pdf_url,
+        descricao_anomalia: formData.descricao_anomalia.trim(),
       });
 
       // Special handling when approved
@@ -284,7 +288,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                 </span>
                 {ocorrencia?.numero && (
                   <span className="px-2 py-0.5 rounded-[2px] font-mono text-[10px] font-bold bg-[#F5A623]/15 text-[#F5A623] border border-[#F5A623]/30">
-                    OS #{ocorrencia.numero}
+                    {ocorrencia.ordem_sap ? `SAP ${ocorrencia.ordem_sap}` : `OS #${ocorrencia.numero}`}
                   </span>
                 )}
                 <span
@@ -650,7 +654,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                     }}
                     className="text-[11px] font-mono text-[#F5A623] hover:underline flex items-center gap-1 font-bold"
                   >
-                    OS {ocorrencia.numero} — {equipamento?.patrimonio_ref || equipamento?.tag_sap || equipamento?.tag || 'TAG N/D'}
+                    OS {ocorrencia.ordem_sap || ocorrencia.numero} — TAG AMBEV {equipamento?.patrimonio_ref || equipamento?.tag_sap || equipamento?.tag || 'N/D'}
                     <ExternalLink className="w-3 h-3" />
                   </button>
                 )}
@@ -665,13 +669,18 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                     </span>
                     {ocorrencia ? (
                       <div className="flex items-center gap-2 mt-0.5">
-                        <div>
-                          <span className="font-mono font-bold text-sm text-[#F5A623]">
-                            OS {ocorrencia.numero}
-                          </span>
-                          <span className="font-mono text-[10px] text-[#94A3B8] ml-2">
-                            TAG AMBEV: {equipamento?.patrimonio_ref || equipamento?.tag_sap || equipamento?.tag || 'N/D'}
-                          </span>
+                        <div className="space-y-0.5">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-mono font-bold text-sm text-[#F5A623]">
+                              {ocorrencia.ordem_sap ? `Ordem SAP: ${ocorrencia.ordem_sap}` : `OS #${ocorrencia.numero}`}
+                            </span>
+                          </div>
+                          {ocorrencia.nota_sap && (
+                            <div className="text-[10px] text-[#94A3B8] font-mono">Nota SAP: {ocorrencia.nota_sap}</div>
+                          )}
+                          {ocorrencia.ordem_vision && (
+                            <div className="text-[10px] text-[#94A3B8] font-mono">OS Vision: {ocorrencia.ordem_vision}</div>
+                          )}
                         </div>
                         <span
                           className={`px-2 py-0.5 rounded-[2px] font-mono text-[10px] font-bold border uppercase ${
@@ -808,17 +817,25 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                 )}
               </div>
 
-              {/* Anomalia description summary */}
-              {ocorrencia?.descricao_anomalia && (
-                <div className="p-3 bg-[#1C222A] border border-[#2C343E] rounded-[4px]">
-                  <span className="text-[10px] font-mono uppercase text-[#94A3B8] block mb-1">
-                    Descrição da Avaria (Ocorrência)
-                  </span>
-                  <p className="text-xs text-[#ECEFF1] line-clamp-3">
-                    {ocorrencia.descricao_anomalia}
+              {/* Anomalia description — editable in edit mode */}
+              <div className="p-3 bg-[#1C222A] border border-[#2C343E] rounded-[4px]">
+                <span className="text-[10px] font-mono uppercase text-[#94A3B8] block mb-1">
+                  Descrição da Avaria / Problema
+                </span>
+                {isEditing ? (
+                  <textarea
+                    rows={3}
+                    value={formData.descricao_anomalia}
+                    onChange={(e) => setFormData({ ...formData, descricao_anomalia: e.target.value })}
+                    className="w-full bg-[#14181D] border border-[#38BDF8]/40 focus:border-[#38BDF8] rounded px-2.5 py-1.5 text-xs text-[#ECEFF1] focus:outline-none resize-y"
+                    placeholder="Descreva o problema / avaria..."
+                  />
+                ) : (
+                  <p className="text-xs text-[#ECEFF1]">
+                    {formData.descricao_anomalia || ocorrencia?.descricao_anomalia || '—'}
                   </p>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
         </div>
