@@ -831,6 +831,13 @@ export const OcorrenciaDetalhe: React.FC = () => {
         defaultOcorrenciaId={ocorrencia?.id}
         ocorrencias={ocorrencia ? [ocorrencia] : []}
         equipamentosMap={equipamento ? new Map([[equipamento.id, equipamento]]) : new Map()}
+        pecasVinculadas={pecas.map(p => ({
+          descricao: p.descricao,
+          part_number: p.part_number,
+          fabricante: p.fabricante,
+          quantidade: p.quantidade,
+          valor_unitario: p.valor_unitario,
+        }))}
       />
 
       {/* Modal Detalhe do Orçamento */}

@@ -208,7 +208,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
     try {
       const numValue =
         typeof formData.valor_total === 'string'
-          ? parseFloat(formData.valor_total.replace(/[^\d.,]/g, '').replace(',', '.')) || 0
+          ? parseFloat(formData.valor_total.replace(/\./g, '').replace(',', '.')) || 0
           : Number(formData.valor_total);
 
       const updatedOrc = await DataStore.saveOrcamento({
@@ -397,10 +397,17 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                     <div className="flex items-center gap-1.5 mt-1">
                       <span className="text-sm font-mono text-[#38BDF8] font-bold">R$</span>
                       <input
-                        type="number"
-                        step="0.01"
+                        type="text"
+                        inputMode="numeric"
                         value={formData.valor_total}
-                        onChange={(e) => setFormData({ ...formData, valor_total: e.target.value })}
+                        onChange={(e) => {
+                          const raw = e.target.value.replace(/\D/g, '');
+                          if (raw === '') { setFormData({ ...formData, valor_total: '' }); return; }
+                          const cents = parseInt(raw, 10);
+                          const fmt = (cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                          setFormData({ ...formData, valor_total: fmt });
+                        }}
+                        placeholder="0,00"
                         className="bg-[#14181D] border border-[#38BDF8]/50 text-[#38BDF8] px-2 py-1 rounded text-xl font-bold font-mono w-44 focus:outline-none focus:ring-1 focus:ring-[#38BDF8]"
                       />
                     </div>

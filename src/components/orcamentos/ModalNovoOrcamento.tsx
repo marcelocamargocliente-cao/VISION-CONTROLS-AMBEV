@@ -12,6 +12,7 @@ import {
   AlertCircle,
   CheckCircle2,
   Package,
+  Download,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { supabase } from '../../lib/supabase';
@@ -28,6 +29,7 @@ interface ModalNovoOrcamentoProps {
   defaultOcorrenciaId?: string;
   equipamentosMap?: Map<string, VwEquipamento>;
   orcamentoToEdit?: Orcamento | null;
+  pecasVinculadas?: Array<{ descricao: string; part_number?: string; fabricante?: string; quantidade: number; valor_unitario?: number }>;
 }
 
 interface PecaItem {
@@ -46,6 +48,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
   defaultOcorrenciaId,
   equipamentosMap = new Map(),
   orcamentoToEdit,
+  pecasVinculadas = [],
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -56,7 +59,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
   const [status, setStatus] = useState<OrcamentoStatus>('RASCUNHO');
 
   // 3. Fornecedor / Emitente
-  const [fornecedor, setFornecedor] = useState('TermoService RJ & Automação Ltda');
+  const [fornecedor, setFornecedor] = useState('Vision Controls');
 
   // 4. Valor Total da Proposta
   const [valorTotal, setValorTotal] = useState<string | number>('');
@@ -69,7 +72,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
   const [validade, setValidade] = useState('');
 
   // 7. Enviado para (contato AMBEV)
-  const [enviadoPara, setEnviadoPara] = useState('Engenharia de Utilidades AMBEV');
+  const [enviadoPara, setEnviadoPara] = useState('AMBEV RJ');
 
   // 8. Descrição da Anomalia / Problema
   const [descricaoAnomalia, setDescricaoAnomalia] = useState('');
@@ -125,7 +128,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
         setNumero('');
         // Status começa como Rascunho
         setStatus('RASCUNHO');
-        setFornecedor('TermoService RJ & Automação Ltda');
+        setFornecedor('Vision Controls');
         setValorTotal('');
         const todayStr = new Date().toISOString().split('T')[0];
         setDataEnvio(todayStr);
@@ -134,7 +137,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
         valDate.setDate(valDate.getDate() + 30);
         setValidade(valDate.toISOString().split('T')[0]);
 
-        setEnviadoPara('Engenharia de Utilidades AMBEV');
+        setEnviadoPara('AMBEV RJ');
         setDescricaoAnomalia('');
         setPecas([{ descricao: '', part_number: '', quantidade: 1, valor_unitario: '' }]);
         setObservacoes('');
@@ -295,8 +298,16 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
     <div
       id="modal-novo-orc-overlay"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-xs p-3 overflow-y-auto"
-      onClick={(e) => {
-        if (e.target === e.currentTarget && !submitting) onClose();
+onMouseDown={(e) => {
+        // Only close if a clean click (not a text-selection drag) directly on overlay
+        if (e.target === e.currentTarget && !submitting) {
+          const startTarget = e.target;
+          const handler = (upEvt: MouseEvent) => {
+            if (upEvt.target === startTarget) onClose();
+            document.removeEventListener('mouseup', handler);
+          };
+          document.addEventListener('mouseup', handler);
+        }
       }}
     >
       <div
@@ -490,7 +501,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
               type="text"
               value={enviadoPara}
               onChange={(e) => setEnviadoPara(e.target.value)}
-              placeholder="Ex: Engenharia de Utilidades AMBEV (Eng. Marcos Silveira)"
+              placeholder="Ex: AMBEV RJ / Engenharia de Utilidades"
               className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#38BDF8] rounded-[6px] px-3 py-2 text-xs text-[#ECEFF1] focus:outline-none"
             />
           </div>
@@ -517,14 +528,40 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
                 <Package className="w-3.5 h-3.5 text-[#38BDF8]" />
                 Peças / Itens Incluídos no Orçamento
               </label>
-              <button
-                type="button"
-                onClick={adicionarPeca}
-                className="px-2.5 py-1 text-[11px] font-semibold rounded-[4px] bg-[#2C343E] hover:bg-[#38BDF8]/20 text-[#ECEFF1] hover:text-[#38BDF8] border border-[#38BDF8]/30 transition-colors flex items-center gap-1 cursor-pointer"
-              >
-                <Plus className="w-3 h-3" />
-                <span>Adicionar Item</span>
-              </button>
+<div className="flex items-center gap-2">
+                {pecasVinculadas.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const importadas = pecasVinculadas.map(p => ({
+                        descricao: p.descricao || '',
+                        part_number: [p.fabricante, p.part_number].filter(Boolean).join(' — '),
+                        quantidade: p.quantidade || 1,
+                        valor_unitario: p.valor_unitario
+                          ? (p.valor_unitario).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                          : '',
+                      }));
+                      setPecas(prev => {
+                        const filtered = prev.filter(p => p.descricao.trim() !== '');
+                        return [...filtered, ...importadas];
+                      });
+                    }}
+                    className="px-2.5 py-1 text-[11px] font-semibold rounded-[4px] bg-[#F5A623]/15 hover:bg-[#F5A623]/25 text-[#F5A623] border border-[#F5A623]/40 transition-colors flex items-center gap-1 cursor-pointer"
+                    title={`Importar ${pecasVinculadas.length} peça(s) da ocorrência`}
+                  >
+                    <Download className="w-3 h-3" />
+                    <span>Importar {pecasVinculadas.length} peça(s) da OS</span>
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={adicionarPeca}
+                  className="px-2.5 py-1 text-[11px] font-semibold rounded-[4px] bg-[#2C343E] hover:bg-[#38BDF8]/20 text-[#ECEFF1] hover:text-[#38BDF8] border border-[#38BDF8]/30 transition-colors flex items-center gap-1 cursor-pointer"
+                >
+                  <Plus className="w-3 h-3" />
+                  <span>Adicionar Item</span>
+                </button>
+              </div>
             </div>
 
             {pecas.length === 0 ? (
@@ -576,10 +613,18 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
                       <div className="flex items-center gap-1.5 flex-1">
                         <label className="text-[10px] text-[#8B949E] shrink-0">R$ unit.</label>
                         <input
+                          type="text"
+                          inputMode="numeric"
                           placeholder="0,00"
                           value={peca.valor_unitario}
-                          onChange={(e) => atualizarPeca(i, 'valor_unitario', e.target.value)}
-                          className="flex-1 bg-[#14181D] border border-[#2C343E] focus:border-[#38BDF8] rounded-[4px] px-2.5 py-1.5 text-xs font-mono text-[#ECEFF1] focus:outline-none"
+                          onChange={(e) => {
+                            const raw = e.target.value.replace(/\D/g, '');
+                            if (raw === '') { atualizarPeca(i, 'valor_unitario', ''); return; }
+                            const cents = parseInt(raw, 10);
+                            const fmt = (cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                            atualizarPeca(i, 'valor_unitario', fmt);
+                          }}
+                          className="flex-1 bg-[#14181D] border border-[#2C343E] focus:border-[#38BDF8] rounded-[4px] px-2.5 py-1.5 text-xs font-mono text-[#ECEFF1] focus:outline-none text-right"
                         />
                       </div>
                     </div>
