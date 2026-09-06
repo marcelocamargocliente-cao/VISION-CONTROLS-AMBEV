@@ -298,12 +298,10 @@ export const NovaOcorrencia: React.FC = () => {
             ) : (
               <div className="p-3 bg-[#0D1117] border border-[#30363D] rounded-lg grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <span className="eyebrow  block">TAG VISION</span>
-                  <div className="flex items-center gap-2 mt-1">
-                    <IndustrialTag tag={selectedEquip.tag} size="md" />
-                    <span className="font-bold ">{selectedEquip.tipo}</span>
-                  </div>
-                  <p className="text-[11px]  mt-0.5">{selectedEquip.marca} {selectedEquip.modelo}</p>
+                  <span className="eyebrow  block">Tag AMBEV</span>
+                  <p className="font-semibold text-cyan-400 text-xs mt-1">{selectedEquip.tag_sap || selectedEquip.patrimonio_ref || 'Sem Tag AMBEV'}</p>
+                  <p className="text-[11px]  mt-0.5">{selectedEquip.tipo}</p>
+                  <p className="text-[11px] text-gray-400">{selectedEquip.marca} {selectedEquip.modelo}</p>
                 </div>
 
                 <div>
@@ -315,8 +313,10 @@ export const NovaOcorrencia: React.FC = () => {
                 </div>
 
                 <div>
-                  <span className="eyebrow  block">Tag AMBEV</span>
-                  <p className="font-semibold text-cyan-400 text-xs mt-1">{selectedEquip.tag_sap || 'Sem Tag AMBEV'}</p>
+                  <span className="eyebrow  block">TAG VISION</span>
+                  <div className="flex items-center gap-2 mt-1">
+                    <IndustrialTag tag={selectedEquip.tag} size="md" />
+                  </div>
                   <p className="text-[11px] text-gray-400">{selectedEquip.tensao} • {selectedEquip.gas_refrigerante}</p>
                 </div>
               </div>

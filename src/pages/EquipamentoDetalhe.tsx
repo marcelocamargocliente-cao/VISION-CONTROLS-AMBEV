@@ -180,7 +180,7 @@ export const EquipamentoDetalhe: React.FC = () => {
           </button>
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <IndustrialTag tag={equipamento.tag} size="lg" />
+              <IndustrialTag tag={equipamento.patrimonio_ref || equipamento.tag_sap || equipamento.tag} size="lg" />
               <span className="px-2 py-0.5 rounded font-mono font-bold text-xs bg-blue-500/10 text-blue-300 border border-blue-500/20">
                 UG {ugNome}
               </span>
@@ -190,7 +190,7 @@ export const EquipamentoDetalhe: React.FC = () => {
               {tipoNome} · {equipamento.marca || 'EQUIPAMENTO'} {equipamento.modelo ? `(${equipamento.modelo})` : ''}
             </h2>
             <div className="text-xs text-cyan-400 font-mono mt-0.5">
-              {equipamento.localizacao_ref || equipamento.local_instalacao || 'Fábrica AMBEV'} {equipamento.area_ref ? `· Área: ${equipamento.area_ref}` : ''}
+              {equipamento.localizacao_ref || equipamento.local_instalacao || 'Fábrica AMBEV'} {equipamento.area_ref ? `· Local: ${equipamento.area_ref}` : ''}
             </div>
           </div>
         </div>

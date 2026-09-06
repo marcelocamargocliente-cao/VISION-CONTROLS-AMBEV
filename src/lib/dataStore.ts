@@ -191,6 +191,7 @@ export const DataStore = {
             local_instalacao: item.local_instalacao || (item.ug_ref ? `${item.ug_ref} · ${item.localizacao_ref || ''}` : ''),
             tipo: item.tipo_equipamento || '',
             patrimonio: item.patrimonio_ref != null ? String(item.patrimonio_ref) : undefined,
+            tag_sap: item.patrimonio_ref != null ? String(item.patrimonio_ref) : undefined,
           })) as Equipamento[];
         }
       } catch (err) {
@@ -234,6 +235,7 @@ export const DataStore = {
         area_ref: eq.area_ref || area?.nome || 'Geral',
         localizacao_ref: eq.localizacao_ref || ctTexto,
         patrimonio_ref: eq.patrimonio_ref || eq.patrimonio,
+        tag_sap: eq.patrimonio_ref || eq.patrimonio || eq.tag_sap,
         tipo_equipamento: eq.tipo_equipamento || eq.tipo || 'Climatizador',
         aplicacao: eq.aplicacao || 'INDUSTRIAL',
         ug_codigo: ugCodigo,
@@ -553,6 +555,7 @@ export const DataStore = {
             area_ref: item.area_ref,
             localizacao_ref: item.localizacao_ref,
             patrimonio_ref: item.patrimonio_ref != null ? String(item.patrimonio_ref) : undefined,
+            tag_sap: item.patrimonio_ref != null ? String(item.patrimonio_ref) : undefined,
             tipo_equipamento: item.tipo_equipamento,
             marca: item.marca,
             modelo: item.modelo,
