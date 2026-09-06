@@ -326,15 +326,15 @@ export const Equipamentos: React.FC = () => {
             </select>
           </div>
 
-          {/* Filtro 3: Área (Valores únicos de area_ref) */}
+          {/* Filtro 3: Local (Valores únicos de area_ref) */}
           <div className="filter-group">
-            <label className="block text-[10px] uppercase font-bold text-gray-400 mb-1">Área</label>
+            <label className="block text-[10px] uppercase font-bold text-gray-400 mb-1">Local</label>
             <select
               value={selectedArea}
               onChange={(e) => setSelectedArea(e.target.value)}
               className="w-full h-[30px] bg-[#0A0E1A] border border-blue-500/20 text-white text-[11px] rounded px-2 outline-none cursor-pointer truncate"
             >
-              <option value="">Todas as Áreas</option>
+              <option value="">Todos os Locais</option>
               {distinctAreas.map((area) => (
                 <option key={area} value={area}>
                   {area}
@@ -384,8 +384,8 @@ export const Equipamentos: React.FC = () => {
               <tr className="text-[10px] uppercase tracking-wider h-[36px]">
                 <th className="py-2 px-3 w-[70px]">TAG</th>
                 <th className="py-2 px-3 w-[60px] text-center">UG</th>
-                <th className="py-2 px-3 w-[150px]">ÁREA</th>
-                <th className="py-2 px-3 min-w-[180px]">LOCALIZAÇÃO</th>
+                <th className="py-2 px-3 w-[150px]">LOCAL</th>
+                <th className="py-2 px-3 min-w-[180px]">LOCAL DE INSTALAÇÃO</th>
                 <th className="py-2 px-3 w-[150px]">TIPO</th>
                 <th className="py-2 px-3 w-[110px]">MARCA</th>
                 <th className="py-2 px-3 w-[120px]">MODELO</th>
@@ -424,14 +424,14 @@ export const Equipamentos: React.FC = () => {
                       </span>
                     </td>
 
-                    {/* 3. ÁREA */}
+                    {/* 3. LOCAL */}
                     <td className="py-2 px-3 align-middle w-[150px]">
                       <div className="text-gray-300 text-[11px] font-medium truncate leading-tight" title={eq.area_ref}>
                         {eq.area_ref || '—'}
                       </div>
                     </td>
 
-                    {/* 4. LOCALIZAÇÃO */}
+                    {/* 4. LOCAL DE INSTALAÇÃO */}
                     <td className="py-2 px-3 align-middle min-w-[180px]">
                       <div className="text-cyan-400 font-mono text-[11px] font-medium truncate leading-tight" title={eq.localizacao_ref || eq.local_instalacao}>
                         {eq.localizacao_ref || eq.local_instalacao || '—'}
@@ -578,9 +578,9 @@ export const Equipamentos: React.FC = () => {
                   </select>
                 </div>
 
-                {/* Patrimônio AMBEV */}
+                {/* Tag AMBEV */}
                 <div>
-                  <label className="block text-gray-400 mb-1 uppercase text-[9px] font-bold">Patrimônio AMBEV</label>
+                  <label className="block text-gray-400 mb-1 uppercase text-[9px] font-bold">Tag AMBEV</label>
                   <input
                     type="text"
                     value={newEquip.patrimonio_ref || ''}
@@ -592,9 +592,9 @@ export const Equipamentos: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {/* Área */}
+                {/* Local */}
                 <div>
-                  <label className="block text-gray-400 mb-1 uppercase text-[9px] font-bold">Área</label>
+                  <label className="block text-gray-400 mb-1 uppercase text-[9px] font-bold">Local</label>
                   <input
                     type="text"
                     value={newEquip.area_ref}
@@ -604,9 +604,9 @@ export const Equipamentos: React.FC = () => {
                   />
                 </div>
 
-                {/* Localização */}
+                {/* Local de Instalação */}
                 <div>
-                  <label className="block text-gray-400 mb-1 uppercase text-[9px] font-bold">Localização</label>
+                  <label className="block text-gray-400 mb-1 uppercase text-[9px] font-bold">Local de Instalação</label>
                   <input
                     type="text"
                     value={newEquip.localizacao_ref}

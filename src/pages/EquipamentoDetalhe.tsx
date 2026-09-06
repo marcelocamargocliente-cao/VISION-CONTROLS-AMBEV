@@ -312,9 +312,9 @@ export const EquipamentoDetalhe: React.FC = () => {
                   </select>
                 </div>
 
-                {/* 3. Área */}
+                {/* 3. Local */}
                 <div className="space-y-1">
-                  <label className="block text-[10px] uppercase font-bold text-gray-400">Área</label>
+                  <label className="block text-[10px] uppercase font-bold text-gray-400">Local</label>
                   <input
                     type="text"
                     value={formData.area_ref || ''}
@@ -324,9 +324,9 @@ export const EquipamentoDetalhe: React.FC = () => {
                   />
                 </div>
 
-                {/* 4. Localização */}
+                {/* 4. Local de Instalação */}
                 <div className="space-y-1 md:col-span-2">
-                  <label className="block text-[10px] uppercase font-bold text-gray-400">Localização</label>
+                  <label className="block text-[10px] uppercase font-bold text-gray-400">Local de Instalação</label>
                   <input
                     type="text"
                     value={formData.localizacao_ref || ''}
@@ -336,9 +336,9 @@ export const EquipamentoDetalhe: React.FC = () => {
                   />
                 </div>
 
-                {/* 5. Patrimônio AMBEV */}
+                {/* 5. Tag AMBEV */}
                 <div className="space-y-1">
-                  <label className="block text-[10px] uppercase font-bold text-gray-400">Patrimônio AMBEV</label>
+                  <label className="block text-[10px] uppercase font-bold text-gray-400">Tag AMBEV</label>
                   <input
                     type="text"
                     value={formData.patrimonio_ref || ''}
@@ -438,25 +438,25 @@ export const EquipamentoDetalhe: React.FC = () => {
                   </p>
                 </div>
 
-                {/* 3. Área */}
+                {/* 3. Local */}
                 <div className="p-3.5 bg-[#0A0E1A] rounded-lg border border-blue-500/10">
-                  <span className="block text-[10px] uppercase text-gray-400 font-bold tracking-wider">Área</span>
+                  <span className="block text-[10px] uppercase text-gray-400 font-bold tracking-wider">Local</span>
                   <p className="text-sm font-semibold text-gray-200 mt-1">
                     {equipamento.area_ref || '—'}
                   </p>
                 </div>
 
-                {/* 4. Localização */}
+                {/* 4. Local de Instalação */}
                 <div className="p-3.5 bg-[#0A0E1A] rounded-lg border border-blue-500/10 sm:col-span-2 lg:col-span-1">
-                  <span className="block text-[10px] uppercase text-gray-400 font-bold tracking-wider">Localização</span>
+                  <span className="block text-[10px] uppercase text-gray-400 font-bold tracking-wider">Local de Instalação</span>
                   <p className="text-sm font-semibold text-cyan-400 font-mono mt-1">
                     {equipamento.localizacao_ref || equipamento.local_instalacao || '—'}
                   </p>
                 </div>
 
-                {/* 5. Patrimônio */}
+                {/* 5. Tag AMBEV */}
                 <div className="p-3.5 bg-[#0A0E1A] rounded-lg border border-blue-500/10">
-                  <span className="block text-[10px] uppercase text-gray-400 font-bold tracking-wider">Patrimônio</span>
+                  <span className="block text-[10px] uppercase text-gray-400 font-bold tracking-wider">Tag AMBEV</span>
                   <p className="text-sm font-mono text-gray-200 mt-1">
                     {equipamento.patrimonio_ref || '—'}
                   </p>

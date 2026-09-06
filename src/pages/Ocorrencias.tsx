@@ -246,7 +246,7 @@ export const Ocorrencias: React.FC = () => {
                   <tr className="bg-[var(--bg-input)]   text-[10px] uppercase tracking-wider border-b border-[#2C343E]">
                     <th className="py-2.5 px-3">Nº / Data</th>
                     <th className="py-2.5 px-3">TAG & Equipamento</th>
-                    <th className="py-2.5 px-3">Localização</th>
+                    <th className="py-2.5 px-3">Local de Instalação</th>
                     <th className="py-2.5 px-3">Criticidade</th>
                     <th className="py-2.5 px-3">Status Atual</th>
                     <th className="py-2.5 px-3">Parada / SAP</th>
