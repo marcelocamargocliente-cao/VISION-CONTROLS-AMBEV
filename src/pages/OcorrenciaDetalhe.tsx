@@ -467,50 +467,67 @@ export const OcorrenciaDetalhe: React.FC = () => {
                   Nenhuma peça cadastrada para este reparo.
                 </p>
               ) : (
-                <div className="overflow-x-auto rounded-lg border border-[#30363D]">
-                  <table className="w-full text-left text-xs">
-                    <thead>
-                      <tr className="bg-[#0D1117]  table-header">
-                        <th className="p-2.5">Qtd</th>
-                        <th className="p-2.5">Descrição & Fabricante</th>
-                        <th className="p-2.5">Part Number</th>
-                        <th className="p-2.5">Status</th>
-                        <th className="p-2.5 text-right">Valor Unit.</th>
-                        <th className="p-2.5 w-8"></th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[#30363D] ">
-                      {pecas.map((p) => (
-                        <tr key={p.id} className="hover:bg-[#1C2128] transition-colors">
-                          <td className="p-2.5  font-bold ">{p.quantidade}x</td>
-                          <td className="p-2.5">
-                            <span className="font-semibold ">{p.descricao}</span>
-                            <span className="text-[10px]  ml-2 ">({p.fabricante})</span>
-                          </td>
-                          <td className="p-2.5  ">{p.part_number || '-'}</td>
-                          <td className="p-2.5">
-                            <span className="px-2 py-0.5 rounded-full text-[10px]  bg-[#21262D]  border border-[#30363D]">
-                              {p.status}
-                            </span>
-                          </td>
-                          <td className="p-2.5 text-right  ">
-                            {p.valor_unitario ? formatCurrency(p.valor_unitario) : '-'}
-                          </td>
-                          <td className="p-2.5 text-center">
-                            <button
-                              onClick={() => handleDeletarPeca(p.id)}
-                              title="Excluir peça"
-                              style={{ background: 'none', border: 'none', padding: '4px', cursor: 'pointer', color: '#F87171', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', borderRadius: '4px' }}
-                              onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'rgba(248,113,113,0.12)')}
-                              onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
-                            >
-                              <Trash2 style={{ width: 14, height: 14 }} />
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                <div className="space-y-2">
+                  {pecas.map((p) => (
+                    <div
+                      key={p.id}
+                      className="flex items-start gap-3 p-3 rounded-lg border border-[#30363D] bg-[#0D1117] hover:bg-[#1C2128] transition-colors"
+                    >
+                      {/* Qtd badge */}
+                      <span style={{ minWidth: 32, textAlign: 'center', fontWeight: 700, fontSize: 12, color: '#E6EDF3', paddingTop: 2 }}>
+                        {p.quantidade}x
+                      </span>
+
+                      {/* Info block */}
+                      <div className="flex-1 min-w-0 space-y-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span style={{ fontWeight: 700, fontSize: 12, color: '#E6EDF3' }}>{p.descricao}</span>
+                          {p.fabricante && (
+                            <span style={{ fontSize: 10, color: '#8B949E' }}>({p.fabricante})</span>
+                          )}
+                          <span style={{
+                            fontSize: 10, fontWeight: 600, padding: '1px 8px',
+                            borderRadius: 999, border: '1px solid #30363D',
+                            background: '#21262D', color: '#8B949E'
+                          }}>
+                            {p.status}
+                          </span>
+                        </div>
+                        {p.part_number && (
+                          <div style={{ fontSize: 11, color: '#94A3B8', fontFamily: 'monospace' }}>
+                            {p.part_number}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Valor */}
+                      <span style={{ fontSize: 12, fontWeight: 600, color: '#38BDF8', whiteSpace: 'nowrap', paddingTop: 2 }}>
+                        {p.valor_unitario ? formatCurrency(p.valor_unitario) : '—'}
+                      </span>
+
+                      {/* Botão excluir — sempre visível */}
+                      <button
+                        onClick={() => handleDeletarPeca(p.id)}
+                        title="Excluir peça"
+                        style={{
+                          background: 'none', border: '1px solid rgba(248,113,113,0.3)',
+                          padding: '4px 6px', cursor: 'pointer', color: '#F87171',
+                          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                          borderRadius: '4px', flexShrink: 0
+                        }}
+                        onMouseEnter={e => {
+                          e.currentTarget.style.backgroundColor = 'rgba(248,113,113,0.15)';
+                          e.currentTarget.style.borderColor = '#F87171';
+                        }}
+                        onMouseLeave={e => {
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                          e.currentTarget.style.borderColor = 'rgba(248,113,113,0.3)';
+                        }}
+                      >
+                        <Trash2 style={{ width: 13, height: 13 }} />
+                      </button>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
