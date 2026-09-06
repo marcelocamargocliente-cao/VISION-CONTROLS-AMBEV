@@ -475,6 +475,7 @@ export interface ShareOccurrenceData {
   orcamento_numero?: string;
   orcamento_valor?: number;
   orcamento_link?: string;
+  anexos_links?: { nome: string; url: string }[];
 }
 
 export function buildWhatsAppShareText(data: ShareOccurrenceData): string {
@@ -496,6 +497,9 @@ export function buildWhatsAppShareText(data: ShareOccurrenceData): string {
   }
   if (data.orcamento_link) {
     parts.push(`PDF do Orçamento: ${data.orcamento_link}`);
+  }
+  if (data.anexos_links && data.anexos_links.length > 0) {
+    parts.push(`Anexos:\n${data.anexos_links.map((a) => `- ${a.nome}: ${a.url}`).join('\n')}`);
   }
 
   return parts.join('\n');
