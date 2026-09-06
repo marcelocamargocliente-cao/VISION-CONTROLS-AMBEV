@@ -55,6 +55,7 @@ export const NovaOcorrencia: React.FC = () => {
 
   // Dynamic Peças
   const [pecas, setPecas] = useState<Array<Partial<PecaPendente>>>([]);
+  const [valorDisplays, setValorDisplays] = useState<string[]>([]); // display-only formatted strings for valor_unitario mask
 
   // Dynamic Fotos
   const [fotos, setFotos] = useState<Array<{ name: string; url: string }>>([]);
@@ -95,6 +96,7 @@ export const NovaOcorrencia: React.FC = () => {
   };
 
   const handleAddPeca = () => {
+    setValorDisplays([...valorDisplays, '']);
     setPecas([
       ...pecas,
       {
@@ -110,6 +112,7 @@ export const NovaOcorrencia: React.FC = () => {
   };
 
   const handleRemovePeca = (index: number) => {
+    setValorDisplays(valorDisplays.filter((_, i) => i !== index));
     setPecas(pecas.filter((_, i) => i !== index));
   };
 
@@ -173,17 +176,6 @@ export const NovaOcorrencia: React.FC = () => {
         [],
         fotos.map((f) => f.url)
       );
-
-      // Save peças
-      for (const p of pecas) {
-        if (p.descricao) {
-          await DataStore.savePeca({
-            ...p,
-            ocorrencia_id: savedOcc.id,
-            equipamento_id: selectedEquip.id,
-          });
-        }
-      }
 
       // Save fotos
       for (const f of fotos) {
@@ -603,13 +595,22 @@ export const NovaOcorrencia: React.FC = () => {
                           <input
                             type="text"
                             inputMode="numeric"
-                            value={peca.valor_unitario || ''}
+                            value={valorDisplays[idx] || ''}
                             onChange={(e) => {
                               const raw = e.target.value.replace(/\D/g, '');
-                              if (raw === '') { handlePecaChange(idx, 'valor_unitario', ''); return; }
+                              const newDisplays = [...valorDisplays];
+                              if (raw === '') {
+                                newDisplays[idx] = '';
+                                setValorDisplays(newDisplays);
+                                handlePecaChange(idx, 'valor_unitario', 0);
+                                return;
+                              }
                               const cents = parseInt(raw, 10);
-                              const fmt = (cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                              handlePecaChange(idx, 'valor_unitario', fmt);
+                              const numericValue = cents / 100;
+                              const fmt = numericValue.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                              newDisplays[idx] = fmt;
+                              setValorDisplays(newDisplays);
+                              handlePecaChange(idx, 'valor_unitario', numericValue); // store as number
                             }}
                             placeholder="0,00"
                             className="w-full bg-[#161B22] border border-[#30363D] focus:border-[#2F81F7] p-2 rounded-lg outline-none text-xs font-mono text-right"
