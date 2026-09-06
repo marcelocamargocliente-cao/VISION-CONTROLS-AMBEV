@@ -77,11 +77,14 @@ export const NovaOcorrencia: React.FC = () => {
     if (!equipSearch) return false;
     const term = equipSearch.toLowerCase();
     return (
-      eq.tag.toLowerCase().includes(term) ||
-      (eq.patrimonio && eq.patrimonio.toLowerCase().includes(term)) ||
-      (eq.tag_sap && eq.tag_sap.toLowerCase().includes(term)) ||
-      eq.modelo.toLowerCase().includes(term) ||
-      eq.linha_nome.toLowerCase().includes(term)
+      (eq.tag?.toLowerCase().includes(term)) ||
+      (eq.patrimonio_ref?.toLowerCase().includes(term)) ||
+      (eq.patrimonio?.toLowerCase().includes(term)) ||
+      (eq.tag_sap?.toLowerCase().includes(term)) ||
+      (eq.modelo?.toLowerCase().includes(term)) ||
+      (eq.linha_nome?.toLowerCase().includes(term)) ||
+      (eq.localizacao_ref?.toLowerCase().includes(term)) ||
+      (eq.local_instalacao?.toLowerCase().includes(term))
     );
   });
 
@@ -258,7 +261,7 @@ export const NovaOcorrencia: React.FC = () => {
             {!selectedEquip ? (
               <div className="space-y-2">
                 <label className="block eyebrow ">
-                  Digite a TAG, Tag Vision, Tag AMBEV ou Local de Instalação para buscar:
+                  DIGITE A TAG, TAG VISION, TAG AMBEV OU LOCAL DE INSTALAÇÃO PARA BUSCAR:
                 </label>
                 <div className="relative">
                   <Search className="w-4 h-4  absolute left-3 top-1/2 -translate-y-1/2" />
@@ -298,14 +301,14 @@ export const NovaOcorrencia: React.FC = () => {
             ) : (
               <div className="p-3 bg-[#0D1117] border border-[#30363D] rounded-lg grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <span className="eyebrow  block">Tag AMBEV</span>
+                  <span className="eyebrow  block">TAG AMBEV</span>
                   <p className="font-semibold text-cyan-400 text-xs mt-1">{selectedEquip.tag_sap || selectedEquip.patrimonio_ref || 'Sem Tag AMBEV'}</p>
                   <p className="text-[11px]  mt-0.5">{selectedEquip.tipo}</p>
                   <p className="text-[11px] text-gray-400">{selectedEquip.marca} {selectedEquip.modelo}</p>
                 </div>
 
                 <div>
-                  <span className="eyebrow  block">Localização na Cervejaria</span>
+                  <span className="eyebrow  block">LOCAL DE INSTALAÇÃO</span>
                   <p className="font-semibold text-xs mt-1">
                     {[selectedEquip.centro_trabalho_sap, selectedEquip.centro_trabalho_nome].filter(Boolean).join(' - ') || selectedEquip.linha_nome}
                   </p>
