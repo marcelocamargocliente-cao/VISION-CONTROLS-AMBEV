@@ -788,11 +788,21 @@ export const OcorrenciaDetalhe: React.FC = () => {
                 <div>
                   <label className="block eyebrow  mb-1">Quantidade</label>
                   <input
-                    type="number"
-                    min={1}
-                    value={newPeca.quantidade || 1}
-                    onChange={(e) => setNewPeca({ ...newPeca, quantidade: Number(e.target.value) })}
-                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none "
+                    type="text"
+                    inputMode="numeric"
+                    value={newPeca.quantidade === undefined || newPeca.quantidade === null ? '' : String(newPeca.quantidade)}
+                    onChange={(e) => {
+                      const raw = e.target.value.replace(/\D/g, '');
+                      setNewPeca({ ...newPeca, quantidade: raw === '' ? undefined : Number(raw) });
+                    }}
+                    onBlur={(e) => {
+                      // On blur: if empty or 0, default to 1
+                      if (!newPeca.quantidade || newPeca.quantidade < 1) {
+                        setNewPeca({ ...newPeca, quantidade: 1 });
+                      }
+                    }}
+                    placeholder="1"
+                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none text-center"
                   />
                 </div>
               </div>
