@@ -255,24 +255,6 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
       } else {
         resultingOrc = await DataStore.saveOrcamento(payload);
         
-        // Cadastrar as peças vinculadas à ocorrência no DataStore
-        for (const p of pecasValidas) {
-          const unitVal =
-            typeof p.valor_unitario === 'string'
-              ? parseFloat(p.valor_unitario.replace(/[^\d.,]/g, '').replace(',', '.')) || 0
-              : Number(p.valor_unitario) || 0;
-
-          await DataStore.savePeca({
-            ocorrencia_id: ocorrenciaId,
-            descricao: p.descricao.trim(),
-            part_number: p.part_number.trim() || undefined,
-            quantidade: Number(p.quantidade) || 1,
-            valor_unitario: unitVal,
-            fornecedor: fornecedor.trim(),
-            status: 'COTADA',
-          });
-        }
-
         // Adicionar evento na timeline da ocorrência
         await DataStore.addEvento({
           ocorrencia_id: ocorrenciaId,
