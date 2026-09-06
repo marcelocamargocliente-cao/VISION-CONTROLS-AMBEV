@@ -497,8 +497,14 @@ export const OcorrenciaDetalhe: React.FC = () => {
                             {p.valor_unitario ? formatCurrency(p.valor_unitario) : '-'}
                           </td>
                           <td className="p-2.5 text-center">
-                            <button onClick={() => handleDeletarPeca(p.id)} title="Remover peça" className="text-red-400 hover:text-red-300 transition-colors cursor-pointer bg-transparent border-none p-0">
-                              <Trash2 className="w-3.5 h-3.5" />
+                            <button
+                              onClick={() => handleDeletarPeca(p.id)}
+                              title="Excluir peça"
+                              style={{ background: 'none', border: 'none', padding: '4px', cursor: 'pointer', color: '#F87171', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', borderRadius: '4px' }}
+                              onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'rgba(248,113,113,0.12)')}
+                              onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                            >
+                              <Trash2 style={{ width: 14, height: 14 }} />
                             </button>
                           </td>
                         </tr>
