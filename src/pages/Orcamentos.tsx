@@ -461,7 +461,7 @@ export const Orcamentos: React.FC = () => {
                 <tr className="bg-[var(--bg-input)]   text-[10px] uppercase tracking-wider border-b border-[#2C343E]">
                   <th className="py-3 px-3">Nº Proposta</th>
                   <th className="py-3 px-3">Fornecedor / Emitente</th>
-                  <th className="py-3 px-3">Ocorrência & TAG</th>
+                  <th className="py-3 px-3">OS AMBEV</th>
                   <th className="py-3 px-3">Data Envio</th>
                   <th className="py-3 px-3 text-center">Dias na AMBEV</th>
                   <th className="py-3 px-3">Valor Total</th>
@@ -513,24 +513,27 @@ export const Orcamentos: React.FC = () => {
                         </div>
                       </td>
 
-                      {/* Ocorrência & TAG */}
+                      {/* OS AMBEV */}
                       <td className="py-3 px-3">
                         {occ ? (
                           <div onClick={(e) => e.stopPropagation()}>
                             <button
                               onClick={() => navigate(`/ocorrencias/${occ.id}`)}
-                              className=" font-bold text-xs  hover:underline"
+                              className="font-bold text-xs text-[#F5A623] hover:underline block"
                             >
-                              OS #{occ.numero}
+                              {occ.ordem_sap ? `OS ${occ.ordem_sap}` : `OS #${occ.numero}`}
                             </button>
                             {eq && (
-                              <div className="mt-0.5">
-                                <IndustrialTag tag={eq.tag} size="sm" />
+                              <div className="mt-0.5 flex items-center gap-1">
+                                <span className="text-[9px] text-gray-500 uppercase">TAG</span>
+                                <span className="bg-[#1E3A5F] text-cyan-400 font-bold text-[10px] rounded px-1.5 py-0.5 border border-cyan-500/30 font-mono">
+                                  {eq.patrimonio_ref || eq.tag_sap || eq.tag}
+                                </span>
                               </div>
                             )}
                           </div>
                         ) : (
-                          <span className=" ">-</span>
+                          <span className="text-gray-500">-</span>
                         )}
                       </td>
 
