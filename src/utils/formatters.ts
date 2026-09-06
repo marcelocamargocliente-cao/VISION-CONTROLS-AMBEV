@@ -458,7 +458,7 @@ export function buildOrcamentoEmailContent(data: ShareOrcamentoData & {
   ug?: string;
   linha?: string;
   ordem_sap?: string;
-  pecas?: Array<{ descricao?: string; part_number?: string; quantidade?: number; valor_unitario?: string | number }>;
+  pecas?: Array<{ descricao?: string; part_number?: string; quantidade?: number; valor_unitario?: string | number; ncm?: string }>;
 }) {
   const formatValidade = (v?: string) => {
     if (!v) return '—';
@@ -483,7 +483,8 @@ export function buildOrcamentoEmailContent(data: ShareOrcamentoData & {
       const total = (unitario * qtd).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
       const unitFmt = unitario.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
       const descr = [p.descricao, p.part_number].filter(Boolean).join(' | ').substring(0, 52);
-      return `  ${String(i + 1).padEnd(3)} ${String(qtd).padEnd(4)} ${descr.padEnd(53)} R$ ${unitFmt.padStart(10)}   R$ ${total.padStart(10)}`;
+      const ncmStr = (p.ncm || '').padEnd(14);
+      return `  ${String(i + 1).padEnd(3)} ${String(qtd).padEnd(4)} ${descr.padEnd(37)} ${ncmStr} R$ ${unitFmt.padStart(10)}   R$ ${total.padStart(10)}`;
     }).join('\n');
   };
 
@@ -517,7 +518,7 @@ export function buildOrcamentoEmailContent(data: ShareOrcamentoData & {
     '1.0 ESCOPO DE FORNECIMENTO',
     sep2,
     nl,
-    '  Nº  QTD  DESCRIÇÃO / ESPECIFICAÇÃO                          VLR. UNIT.     VLR. TOTAL',
+    '  Nº  QTD  DESCRIÇÃO / ESPECIFICAÇÃO                   NCM            VLR. UNIT.     VLR. TOTAL',
     buildLinhas(),
     nl,
     `  VALOR TOTAL DA PROPOSTA:                                         R$ ${valorFmt}`,

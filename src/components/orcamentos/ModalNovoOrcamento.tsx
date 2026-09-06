@@ -37,6 +37,7 @@ interface PecaItem {
   part_number: string;
   quantidade: number;
   valor_unitario: string;
+  ncm: string;
 }
 
 export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
@@ -569,8 +570,8 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
                       rows={3}
                       className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#38BDF8] rounded-[4px] px-2.5 py-1.5 text-xs font-mono text-[#ECEFF1] placeholder:text-[#6B7683] focus:outline-none resize-y"
                     />
-                    {/* Row 3: Qtd + Valor unitário */}
-                    <div className="flex gap-2">
+                    {/* Row 3: Qtd + Valor unitário + NCM */}
+                    <div className="flex gap-2 flex-wrap">
                       <div className="flex items-center gap-1.5">
                         <label className="text-[10px] text-[#8B949E] shrink-0">Qtd</label>
                         <input
@@ -581,7 +582,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
                           className="w-16 bg-[#14181D] border border-[#2C343E] focus:border-[#38BDF8] rounded-[4px] px-2 py-1.5 text-xs font-mono text-[#ECEFF1] text-center focus:outline-none"
                         />
                       </div>
-                      <div className="flex items-center gap-1.5 flex-1">
+                      <div className="flex items-center gap-1.5 flex-1 min-w-[120px]">
                         <label className="text-[10px] text-[#8B949E] shrink-0">R$ unit.</label>
                         <input
                           type="text"
@@ -596,6 +597,16 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
                             atualizarPeca(i, 'valor_unitario', fmt);
                           }}
                           className="flex-1 bg-[#14181D] border border-[#2C343E] focus:border-[#38BDF8] rounded-[4px] px-2.5 py-1.5 text-xs font-mono text-[#ECEFF1] focus:outline-none text-right"
+                        />
+                      </div>
+                      <div className="flex items-center gap-1.5 min-w-[110px]">
+                        <label className="text-[10px] text-[#8B949E] shrink-0">NCM</label>
+                        <input
+                          type="text"
+                          placeholder="0000.00.00"
+                          value={peca.ncm || ''}
+                          onChange={(e) => atualizarPeca(i, 'ncm', e.target.value)}
+                          className="flex-1 bg-[#14181D] border border-[#2C343E] focus:border-[#38BDF8] rounded-[4px] px-2.5 py-1.5 text-xs font-mono text-[#ECEFF1] focus:outline-none"
                         />
                       </div>
                     </div>

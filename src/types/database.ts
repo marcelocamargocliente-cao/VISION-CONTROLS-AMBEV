@@ -172,6 +172,7 @@ export interface Peca {
   unidade?: string;
   fornecedor?: string;
   valor_unitario?: number;
+  ncm?: string;
   previsao_entrega?: string;
   status: PecaStatus;
   data_aplicacao?: string;
@@ -197,6 +198,7 @@ export interface Orcamento {
     part_number?: string;
     quantidade: number;
     valor_unitario?: number | string;
+    ncm?: string;
   }>;
   created_at: string;
 }

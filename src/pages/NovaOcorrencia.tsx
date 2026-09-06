@@ -610,10 +610,20 @@ export const NovaOcorrencia: React.FC = () => {
                               const fmt = numericValue.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                               newDisplays[idx] = fmt;
                               setValorDisplays(newDisplays);
-                              handlePecaChange(idx, 'valor_unitario', numericValue); // store as number
+                              handlePecaChange(idx, 'valor_unitario', numericValue);
                             }}
                             placeholder="0,00"
                             className="w-full bg-[#161B22] border border-[#30363D] focus:border-[#2F81F7] p-2 rounded-lg outline-none text-xs font-mono text-right"
+                          />
+                        </div>
+                        <div className="sm:col-span-2">
+                          <label className="block eyebrow mb-1">NCM</label>
+                          <input
+                            type="text"
+                            value={peca.ncm || ''}
+                            onChange={(e) => handlePecaChange(idx, 'ncm', e.target.value)}
+                            placeholder="Ex: 8415.10.11"
+                            className="w-full bg-[#161B22] border border-[#30363D] focus:border-[#2F81F7] p-2 rounded-lg outline-none text-xs font-mono"
                           />
                         </div>
                       </div>

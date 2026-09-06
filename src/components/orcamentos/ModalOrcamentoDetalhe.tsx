@@ -71,13 +71,14 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
   initialEditMode = false,
 }) => {
   const navigate = useNavigate();
-  const { profile } = useAuth();
+  const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isAuthorizedToEdit =
-    profile?.role === 'ADMIN' ||
-    profile?.role === 'GESTOR' ||
-    profile?.role === 'ENCARREGADO';
+    user?.role === 'ADMIN' ||
+    user?.role === 'GESTOR' ||
+    user?.role === 'ENCARREGADO' ||
+    user?.role === 'TECNICO';
 
   const [isEditing, setIsEditing] = useState(initialEditMode);
   const [pecas, setPecas] = useState<Peca[]>([]);

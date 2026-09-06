@@ -473,7 +473,9 @@ a:hover {
   justify-content: flex-end;
   align-items: center;
   gap: 10px;
-  z-index: 20;
+  position: sticky;
+  bottom: 0;
+  z-index: 30;
 }
 
 /* Barra de progresso por linha */
