@@ -650,7 +650,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                     }}
                     className="text-[11px] font-mono text-[#F5A623] hover:underline flex items-center gap-1 font-bold"
                   >
-                    OS #{ocorrencia.numero}
+                    OS {ocorrencia.numero} — {equipamento?.patrimonio_ref || equipamento?.tag_sap || equipamento?.tag || 'TAG N/D'}
                     <ExternalLink className="w-3 h-3" />
                   </button>
                 )}
@@ -665,9 +665,14 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                     </span>
                     {ocorrencia ? (
                       <div className="flex items-center gap-2 mt-0.5">
-                        <span className="font-mono font-bold text-sm text-[#F5A623]">
-                          OS #{ocorrencia.numero}
-                        </span>
+                        <div>
+                          <span className="font-mono font-bold text-sm text-[#F5A623]">
+                            OS {ocorrencia.numero}
+                          </span>
+                          <span className="font-mono text-[10px] text-[#94A3B8] ml-2">
+                            TAG AMBEV: {equipamento?.patrimonio_ref || equipamento?.tag_sap || equipamento?.tag || 'N/D'}
+                          </span>
+                        </div>
                         <span
                           className={`px-2 py-0.5 rounded-[2px] font-mono text-[10px] font-bold border uppercase ${
                             getOcorrenciaStatusConfig(ocorrencia.status).badgeBg
@@ -681,13 +686,15 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                     )}
                   </div>
 
-                  {/* Industrial TAG */}
+                  {/* TAG AMBEV do Ativo */}
                   <div>
                     <span className="text-[10px] font-mono uppercase text-[#94A3B8] block mb-0.5 text-right">
-                      TAG do Ativo
+                      TAG AMBEV
                     </span>
                     {equipamento ? (
-                      <IndustrialTag tag={equipamento.tag} size="md" />
+                      <span className="bg-[#1E3A5F] text-cyan-400 font-bold text-[11px] rounded px-2 py-0.5 border border-cyan-500/30 font-mono">
+                        {equipamento.patrimonio_ref || equipamento.tag_sap || equipamento.tag}
+                      </span>
                     ) : (
                       <span className="text-xs font-mono text-[#6B7683]">TAG N/D</span>
                     )}
@@ -704,15 +711,15 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                       </span>
                     </div>
                     <div>
-                      <span className="text-[#94A3B8] font-mono text-[10px] block">Linha / CT:</span>
+                      <span className="text-[#94A3B8] font-mono text-[10px] block">Local de Instalação:</span>
                       <span className="text-[#ECEFF1] font-medium">
-                        {equipamento.linha_nome} ({equipamento.centro_trabalho_nome})
+                        {equipamento.localizacao_ref || equipamento.local_instalacao || equipamento.linha_nome}
                       </span>
                     </div>
                     <div>
-                      <span className="text-[#94A3B8] font-mono text-[10px] block">Tipo & Modelo:</span>
+                      <span className="text-[#94A3B8] font-mono text-[10px] block">Equipamento:</span>
                       <span className="text-[#ECEFF1]">
-                        {equipamento.tipo} • {equipamento.marca} {equipamento.modelo}
+                        {equipamento.tipo_equipamento || equipamento.tipo} • {equipamento.marca} {equipamento.modelo}
                       </span>
                     </div>
                     <div>

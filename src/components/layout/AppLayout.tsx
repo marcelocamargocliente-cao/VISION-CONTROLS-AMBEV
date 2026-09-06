@@ -162,7 +162,7 @@ export const AppLayout: React.FC = () => {
                         <div className="flex items-center gap-1.5 min-w-0">
                           <span className="w-1.5 h-1.5 rounded-full bg-[#F85149] shrink-0 animate-pulse" />
                           <span className="font-mono font-medium text-[#E6EDF3] group-hover:text-[#58A6FF] truncate text-[11px]">
-                            OS #{item.ocorrencia_numero} · TAG {item.tag}
+                            OS {item.ocorrencia_numero} · AMBEV {item.patrimonio_ref || item.tag_sap || item.tag}
                           </span>
                         </div>
                         <span className="text-[10px] font-mono text-[#F85149] shrink-0 font-bold">

@@ -567,7 +567,7 @@ export const DataStore = {
             ug_nome: item.ug_ref ? `UG ${item.ug_ref}` : undefined,
             area_nome: item.area_ref,
             linha_nome: item.localizacao_ref,
-            centro_trabalho_nome: item.localizacao_ref,
+            centro_trabalho_nome: item.ug_ref ? `UG ${item.ug_ref}` : '',
             tipo: item.tipo_equipamento,
           } as VwEquipamento;
         }
