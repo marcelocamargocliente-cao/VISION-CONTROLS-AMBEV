@@ -59,7 +59,7 @@ export const Ocorrencias: React.FC = () => {
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [selectedCriticidade, setSelectedCriticidade] = useState<string>('');
   const [onlyParados, setOnlyParados] = useState(false);
-  const [confirmDeleteOcc, setConfirmDeleteOcc] = useState(null);
+  const [confirmDeleteOcc, setConfirmDeleteOcc] = useState<Ocorrencia | null>(null);
 
   const loadData = async () => {
     setLoading(true);
@@ -81,7 +81,7 @@ export const Ocorrencias: React.FC = () => {
     loadData();
   }, []);
 
-  const handleDeleteOcorrencia = async (occ) => {
+  const handleDeleteOcorrencia = async (occ: Ocorrencia) => {
     try {
       await DataStore.deleteOcorrencia(occ.id);
       setOcorrencias((prev) => prev.filter((o) => o.id !== occ.id));
@@ -456,7 +456,7 @@ export const Ocorrencias: React.FC = () => {
         <div style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.65)', display:'flex', alignItems:'center', justifyContent:'center' }}>
           <div style={{ background:'#13181F', border:'1px solid #30363D', borderRadius:12, padding:24, width:340, textAlign:'center' }}>
             <p style={{ fontSize:14, fontWeight:700, color:'#E6EDF3', marginBottom:8 }}>Deletar Ocorrência?</p>
-            <p style={{ fontSize:12, color:'#8B949E', marginBottom:4 }}>OS #{'{'}confirmDeleteOcc.numero{'}'}</p>
+            <p style={{ fontSize:12, color:'#8B949E', marginBottom:4 }}>OS #{confirmDeleteOcc.numero}</p>
             <p style={{ fontSize:11, color:'#8B949E', marginBottom:20 }}>Esta ação não pode ser desfeita.</p>
             <div style={{ display:'flex', gap:8 }}>
               <button onClick={() => setConfirmDeleteOcc(null)} style={{ flex:1, padding:'8px 0', borderRadius:8, border:'1px solid #30363D', background:'#21262D', color:'#E6EDF3', fontSize:12, cursor:'pointer' }}>Cancelar</button>
