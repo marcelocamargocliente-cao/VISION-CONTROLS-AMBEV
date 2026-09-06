@@ -298,17 +298,6 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
     <div
       id="modal-novo-orc-overlay"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-xs p-3 overflow-y-auto"
-onMouseDown={(e) => {
-        // Only close if a clean click (not a text-selection drag) directly on overlay
-        if (e.target === e.currentTarget && !submitting) {
-          const startTarget = e.target;
-          const handler = (upEvt: MouseEvent) => {
-            if (upEvt.target === startTarget) onClose();
-            document.removeEventListener('mouseup', handler);
-          };
-          document.addEventListener('mouseup', handler);
-        }
-      }}
     >
       <div
         id="modal-novo-orc-container"

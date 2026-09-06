@@ -142,9 +142,6 @@ export const ModalRevisaoOrcamento: React.FC<ModalRevisaoOrcamentoProps> = ({
     <div
       id="modal-revisao-overlay"
       className="fixed inset-0 z-60 flex items-center justify-center bg-black/85 backdrop-blur-xs p-3 overflow-y-auto"
-      onClick={(e) => {
-        if (e.target === e.currentTarget && !submitting) onClose();
-      }}
     >
       <div
         id="modal-revisao-container"
