@@ -185,7 +185,7 @@ export const Ocorrencias: React.FC = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Buscar por # número, TAG, linha, nota SAP, ordem SAP ou sintoma..."
-              className="w-full bg-[var(--bg-input)] border border-[#2C343E] focus:border-[#F5A623]  text-xs rounded-[3px] pl-9 pr-3 py-2 outline-none"
+              className="w-full bg-[var(--bg-input)] border border-[#2C343E] focus:border-[#F5A623]  text-xs rounded-[3px] has-icon-left pr-3 py-2 outline-none"
             />
           </div>
 

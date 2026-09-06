@@ -451,7 +451,32 @@ _Vision Controls — HVAC Industrial AMBEV RJ_`.trim();
 
 export function buildOrcamentoEmailContent(data: ShareOrcamentoData) {
   const subject = `[IVCA] Proposta ${data.numero} — TAG ${data.tag}`;
-  const body = buildOrcamentoShareText(data);
+  const valorFmt = Number(data.valor_total ?? 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const pdfSection = data.link_pdf
+    ? `\n\n📎 DOCUMENTO PDF DA PROPOSTA:\n${data.link_pdf}\n(Baixe e anexe este arquivo ao responder este e-mail)`
+    : '';
+
+  const body = `Prezados,
+
+Encaminhos abaixo a proposta orçamentária referente ao equipamento sob manutenção pela Vision Controls.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PROPOSTA Nº ${data.numero}
+TAG DO EQUIPAMENTO: ${data.tag || 'N/D'}
+Fornecedor: ${data.fornecedor ?? '—'}
+Valor Total: R$ ${valorFmt}
+Status: ${data.status}
+Enviado para: ${data.enviado_para ?? 'Engenharia de Utilidades AMBEV'}
+Validade: ${data.validade ?? '—'}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${pdfSection}
+
+Ficamos à disposição para esclarecimentos.
+
+Atenciosamente,
+Vision Controls — HVAC Industrial
+AMBEV Cervejaria RJ`;
+
   return { subject, body };
 }
 

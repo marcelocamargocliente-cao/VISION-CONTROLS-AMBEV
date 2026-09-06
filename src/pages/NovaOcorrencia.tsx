@@ -270,7 +270,7 @@ export const NovaOcorrencia: React.FC = () => {
                     value={equipSearch}
                     onChange={(e) => setEquipSearch(e.target.value)}
                     placeholder="Ex: 361, Blue e+, L101..."
-                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  text-xs rounded-lg pl-9 pr-3 py-2.5 outline-none  transition-colors"
+                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  text-xs rounded-lg has-icon-left pr-3 py-2.5 outline-none  transition-colors"
                   />
                 </div>
 
@@ -560,46 +560,59 @@ export const NovaOcorrencia: React.FC = () => {
                       <Trash2 className="w-4 h-4" />
                     </button>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pr-6">
+                    <div className="space-y-2 pr-6">
+                      {/* Linha 1: Nome/tipo da peça */}
                       <div>
-                        <label className="block eyebrow  mb-1">Descrição da Peça*</label>
+                        <label className="block eyebrow mb-1">PEÇA / COMPONENTE *</label>
                         <input
                           type="text"
                           required
                           value={peca.descricao || ''}
                           onChange={(e) => handlePecaChange(idx, 'descricao', e.target.value)}
-                          placeholder="Ex: Motoventilador Condensador"
-                          className="w-full bg-[#161B22] border border-[#30363D] focus:border-[#2F81F7]  p-2 rounded-lg outline-none font-body text-xs"
+                          placeholder="Ex: Motoventilador Condensador, Compressor, Placa..."
+                          className="w-full bg-[#161B22] border border-[#30363D] focus:border-[#2F81F7] p-2 rounded-lg outline-none font-body text-xs"
                         />
                       </div>
 
+                      {/* Linha 2: Descrição ampla (ex-Part Number) */}
                       <div>
-                        <label className="block eyebrow  mb-1">Part Number / Código</label>
-                        <input
-                          type="text"
+                        <label className="block eyebrow mb-1">DESCRIÇÃO DA PEÇA</label>
+                        <textarea
+                          rows={3}
                           value={peca.part_number || ''}
                           onChange={(e) => handlePecaChange(idx, 'part_number', e.target.value)}
-                          placeholder="SK 3396.282"
-                          className="w-full bg-[#161B22] border border-[#30363D] focus:border-[#2F81F7]  p-2 rounded-lg outline-none  text-xs"
+                          placeholder="Dados técnicos, referência, código SAP, fabricante, modelo, especificação..."
+                          className="w-full bg-[#161B22] border border-[#30363D] focus:border-[#2F81F7] p-2 rounded-lg outline-none text-xs resize-y"
                         />
                       </div>
 
-                      <div>
-                        <label className="block eyebrow  mb-1">Fabricante / Qtd</label>
-                        <div className="grid grid-cols-2 gap-1.5">
-                          <input
-                            type="text"
-                            value={peca.fabricante || ''}
-                            onChange={(e) => handlePecaChange(idx, 'fabricante', e.target.value)}
-                            placeholder="RITTAL"
-                            className="bg-[#161B22] border border-[#30363D] focus:border-[#2F81F7]  p-2 rounded-lg outline-none text-xs font-body"
-                          />
+                      {/* Linha 3: Qtd + Valor */}
+                      <div className="grid grid-cols-2 gap-2.5">
+                        <div>
+                          <label className="block eyebrow mb-1">QTD</label>
                           <input
                             type="number"
                             min={1}
                             value={peca.quantidade || 1}
                             onChange={(e) => handlePecaChange(idx, 'quantidade', Number(e.target.value))}
-                            className="bg-[#161B22] border border-[#30363D] focus:border-[#2F81F7]  p-2 rounded-lg outline-none  text-xs font-bold"
+                            className="w-full bg-[#161B22] border border-[#30363D] focus:border-[#2F81F7] p-2 rounded-lg outline-none text-xs font-bold text-center"
+                          />
+                        </div>
+                        <div>
+                          <label className="block eyebrow mb-1">VALOR UNIT. (R$)</label>
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            value={peca.valor_unitario || ''}
+                            onChange={(e) => {
+                              const raw = e.target.value.replace(/\D/g, '');
+                              if (raw === '') { handlePecaChange(idx, 'valor_unitario', ''); return; }
+                              const cents = parseInt(raw, 10);
+                              const fmt = (cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                              handlePecaChange(idx, 'valor_unitario', fmt);
+                            }}
+                            placeholder="0,00"
+                            className="w-full bg-[#161B22] border border-[#30363D] focus:border-[#2F81F7] p-2 rounded-lg outline-none text-xs font-mono text-right"
                           />
                         </div>
                       </div>

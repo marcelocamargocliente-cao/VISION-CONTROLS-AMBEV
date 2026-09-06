@@ -201,7 +201,7 @@ export const Dashboard: React.FC = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Buscar TAG, OS..."
-              className="w-full h-[28px] bg-[#21262D] border border-[#30363D] rounded-lg pl-8 pr-2.5 text-[12px] font-body  placeholder-[#484F58] focus:outline-none focus:border-[#2F81F7] transition-all leading-none"
+              className="w-full h-[28px] bg-[#21262D] border border-[#30363D] rounded-lg has-icon-left-sm pr-2.5 text-[12px] font-body  placeholder-[#484F58] focus:outline-none focus:border-[#2F81F7] transition-all leading-none"
             />
           </form>
 

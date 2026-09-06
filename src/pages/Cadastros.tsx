@@ -481,7 +481,7 @@ export const Cadastros: React.FC = () => {
                   placeholder="Buscar área, linha ou código SAP..."
                   value={searchEstrutura}
                   onChange={(e) => setSearchEstrutura(e.target.value)}
-                  className="w-full pl-8 pr-3 py-1 text-xs bg-black/40 border border-blue-500/20  rounded outline-none focus:border-cyan-400"
+                  className="w-full has-icon-left-sm pr-3 py-1 text-xs bg-black/40 border border-blue-500/20  rounded outline-none focus:border-cyan-400"
                 />
               </div>
 

@@ -275,7 +275,7 @@ export const Equipamentos: React.FC = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Busca por TAG AMBEV, TAG Vision, Marca, Modelo ou Local..."
-            className="w-full h-[36px] bg-[#111827] border border-blue-500/20 focus:border-blue-400 text-white text-[12px] placeholder-gray-500 rounded-md pl-9 pr-3 outline-none transition-colors"
+            className="w-full h-[36px] bg-[#111827] border border-blue-500/20 focus:border-blue-400 text-white text-[12px] placeholder-gray-500 rounded-md has-icon-left pr-3 outline-none transition-colors"
           />
         </div>
 

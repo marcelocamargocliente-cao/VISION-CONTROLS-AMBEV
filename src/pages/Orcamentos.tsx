@@ -398,7 +398,7 @@ export const Orcamentos: React.FC = () => {
               placeholder="Buscar por Nº, TAG, Fornecedor ou Contato..."
               value={searchFilter}
               onChange={(e) => setSearchFilter(e.target.value)}
-              className="w-full bg-[var(--bg-input)] border border-[#2C343E] rounded-[3px] pl-8 pr-3 py-1.5 text-xs  placeholder-[#6B7683] focus:border-[#38BDF8] focus:outline-none"
+              className="w-full bg-[var(--bg-input)] border border-[#2C343E] rounded-[3px] has-icon-left-sm pr-3 py-1.5 text-xs  placeholder-[#6B7683] focus:border-[#38BDF8] focus:outline-none"
             />
           </div>
 

@@ -150,6 +150,14 @@ textarea::placeholder {
   color: var(--text-3);
   font-weight: 400;
 }
+/* Allow icon-padded search inputs to override global padding */
+input.has-icon-left {
+  padding-left: 2.25rem; /* pl-9 = 36px */
+}
+input.has-icon-left-sm {
+  padding-left: 2rem; /* pl-8 = 32px */
+}
+
 
 select {
   cursor: pointer;
