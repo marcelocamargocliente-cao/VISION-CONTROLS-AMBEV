@@ -651,16 +651,26 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                   Vínculo com Ocorrência & Equipamento
                 </span>
                 {ocorrencia && (
-                  <button
-                    onClick={() => {
-                      onClose();
-                      navigate(`/ocorrencias/${ocorrencia.id}`);
-                    }}
-                    className="text-[11px] font-mono text-[#F5A623] hover:underline flex items-center gap-1 font-bold"
-                  >
-                    OS {ocorrencia.ordem_sap || ocorrencia.numero} — TAG AMBEV {equipamento?.patrimonio_ref || equipamento?.tag_sap || equipamento?.tag || 'N/D'}
-                    <ExternalLink className="w-3 h-3" />
-                  </button>
+                  <div className="flex items-center gap-2">
+                    {isEditing && (
+                      <button
+                        type="button"
+                        onClick={() => { onClose(); navigate(`/ocorrencias/${ocorrencia.id}`); }}
+                        className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-[3px] bg-[#F5A623]/15 hover:bg-[#F5A623]/30 text-[#F5A623] border border-[#F5A623]/40 transition-colors"
+                        title="Ir para a Ocorrência para editar dados SAP, equipamento e localização"
+                      >
+                        <Edit3 className="w-3 h-3" />
+                        EDITAR OS
+                      </button>
+                    )}
+                    <button
+                      onClick={() => { onClose(); navigate(`/ocorrencias/${ocorrencia.id}`); }}
+                      className="text-[11px] font-mono text-[#F5A623] hover:underline flex items-center gap-1 font-bold"
+                    >
+                      OS {ocorrencia.ordem_sap || ocorrencia.numero} — TAG AMBEV {equipamento?.patrimonio_ref || equipamento?.tag_sap || equipamento?.tag || 'N/D'}
+                      <ExternalLink className="w-3 h-3" />
+                    </button>
+                  </div>
                 )}
               </div>
 

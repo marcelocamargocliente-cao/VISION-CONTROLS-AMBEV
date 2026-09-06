@@ -932,10 +932,15 @@ export const DataStore = {
         : { ...orc, updated_at: new Date().toISOString() } as Orcamento;
       if (isSupabaseConfigured) {
         try {
-          await supabase.from('orcamentos').upsert({ ...updated }).eq('id', orc.id);
+          // Use update().eq() for existing records — upsert().eq() is not valid Supabase syntax
+          await supabase.from('orcamentos').update({ ...updated }).eq('id', orc.id);
         } catch (e) { console.warn('saveOrcamento update Supabase error:', e); }
       }
       if (idx >= 0) { dbState.orcamentos[idx] = updated; persistState(); return updated; }
+      // id provided but not in local state — add it
+      dbState.orcamentos.unshift(updated);
+      persistState();
+      return updated;
     }
 
     const newOrc: Orcamento = {
