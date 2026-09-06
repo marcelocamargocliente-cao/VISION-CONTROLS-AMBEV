@@ -508,6 +508,39 @@ export const OcorrenciaDetalhe: React.FC = () => {
                         {p.valor_unitario ? formatCurrency(p.valor_unitario) : '—'}
                       </span>
 
+                      {/* Botão editar */}
+                      <button
+                        onClick={() => {
+                          setValorPecaDisplay(p.valor_unitario ? String(p.valor_unitario).replace('.', ',') : '');
+                          setNewPeca({
+                            id: p.id,
+                            descricao: p.descricao,
+                            part_number: p.part_number,
+                            fabricante: p.fabricante,
+                            quantidade: p.quantidade,
+                            valor_unitario: p.valor_unitario,
+                            status: p.status,
+                          });
+                          setShowAddPecaModal(true);
+                        }}
+                        title="Editar peça"
+                        style={{
+                          background: 'none', border: '1px solid rgba(56,189,248,0.3)',
+                          padding: '4px 6px', cursor: 'pointer', color: '#38BDF8',
+                          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                          borderRadius: '4px', flexShrink: 0
+                        }}
+                        onMouseEnter={e => {
+                          e.currentTarget.style.backgroundColor = 'rgba(56,189,248,0.1)';
+                          e.currentTarget.style.borderColor = '#38BDF8';
+                        }}
+                        onMouseLeave={e => {
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                          e.currentTarget.style.borderColor = 'rgba(56,189,248,0.3)';
+                        }}
+                      >
+                        <Edit3 style={{ width: 13, height: 13 }} />
+                      </button>
                       {/* Botão excluir — sempre visível */}
                       <button
                         onClick={() => handleDeletarPeca(p.id)}
@@ -726,7 +759,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-[#161B22] border border-[#30363D] rounded-xl w-full max-w-md p-5 space-y-4 shadow-2xl">
             <h3 className="text-sm font-display font-bold  uppercase">
-              Adicionar Peça / Componente
+              {newPeca.id ? 'Editar Peça / Componente' : 'Adicionar Peça / Componente'}
             </h3>
             <form onSubmit={handleSaveNewPeca} className="space-y-3.5 text-xs font-body">
               <div>

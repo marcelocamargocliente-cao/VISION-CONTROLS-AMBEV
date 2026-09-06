@@ -458,6 +458,7 @@ export function buildOrcamentoEmailContent(data: ShareOrcamentoData & {
   ug?: string;
   linha?: string;
   ordem_sap?: string;
+  local_instalacao?: string;
   pecas?: Array<{ descricao?: string; part_number?: string; quantidade?: number; valor_unitario?: string | number; ncm?: string }>;
 }) {
   const formatValidade = (v?: string) => {
@@ -468,8 +469,18 @@ export function buildOrcamentoEmailContent(data: ShareOrcamentoData & {
   const today = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
   const equipDesc = [data.tipo, data.marca, data.modelo].filter(Boolean).join(' ');
   const tagAmbev = data.tag_ambev || data.tag || '';
-  const osRef = data.numero_ocorrencia ? `OS ${data.numero_ocorrencia} ` : '';
-  const subject = `${osRef}PROPOSTA ${equipDesc} — TAG AMBEV ${tagAmbev} — ${data.numero}`.trim();
+  const localInstalacao = data.local_instalacao || data.linha || '';
+  const ordemRef = data.ordem_sap || String(data.numero_ocorrencia || '');
+
+  // Assunto: OS XXXXXX ENVIO DE PROPOSTA COMERCIAL PARA O EQUIPAMENTO MODELO XXXXXX TAG AMBEV XXXX
+  const subject = [
+    ordemRef ? `OS ${ordemRef}` : '',
+    'ENVIO DE PROPOSTA COMERCIAL PARA O EQUIPAMENTO',
+    equipDesc || 'HVAC INDUSTRIAL',
+    localInstalacao ? `LOCAL DE INSTALAÇÃO ${localInstalacao}` : '',
+    tagAmbev ? `TAG AMBEV ${tagAmbev}` : '',
+  ].filter(Boolean).join(' — ');
+
   const valorFmt = Number(data.valor_total ?? 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   const buildLinhas = () => {
@@ -480,11 +491,10 @@ export function buildOrcamentoEmailContent(data: ShareOrcamentoData & {
         : String(p.valor_unitario ?? 0);
       const unitario = parseFloat(rawUnit) || 0;
       const qtd = Number(p.quantidade ?? 1);
-      const total = (unitario * qtd).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
       const unitFmt = unitario.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-      const descr = [p.descricao, p.part_number].filter(Boolean).join(' | ').substring(0, 52);
       const ncmStr = (p.ncm || '').padEnd(14);
-      return `  ${String(i + 1).padEnd(3)} ${String(qtd).padEnd(4)} ${descr.padEnd(37)} ${ncmStr} R$ ${unitFmt.padStart(10)}   R$ ${total.padStart(10)}`;
+      const descr = [p.descricao, p.part_number].filter(Boolean).join(' | ').substring(0, 45);
+      return `  ${String(i + 1).padEnd(3)} ${String(qtd).padEnd(4)} ${descr.padEnd(46)} ${ncmStr} R$ ${unitFmt.padStart(10)}`;
     }).join('\n');
   };
 
@@ -493,10 +503,8 @@ export function buildOrcamentoEmailContent(data: ShareOrcamentoData & {
   const nl = '\n';
 
   const lines: string[] = [
-    'VISION CONTROLS ASSOCIADOS LTDA',
-    'Rua Almirante Tamandaré, 515 — Alto da XV — Curitiba/PR',
-    'CNPJ: 10.823.200/0001-06 | Fone: (41) 3667-9835',
-    sep1,
+    // Abertura simples — sem cabeçalho com dados da empresa
+    'Olá Prezados,',
     nl,
     `PROPOSTA ORÇAMENTÁRIA Nº ${data.numero}`,
     today,
@@ -505,9 +513,9 @@ export function buildOrcamentoEmailContent(data: ShareOrcamentoData & {
     data.enviado_para || 'Ambev — Engenharia de Utilidades',
     nl,
     'Ref.: Fornecimento e Manutenção de Equipamento de Refrigeração Industrial',
-    data.numero_ocorrencia ? `Ordem SAP: ${data.ordem_sap || String(data.numero_ocorrencia)}` : '',
+    ordemRef ? `Ordem SAP: ${ordemRef}` : '',
     `Tag AMBEV: ${tagAmbev}  |  Equipamento: ${equipDesc}`,
-    data.ug ? `Setor / UG: ${data.ug}${data.linha ? ' / ' + data.linha : ''}` : '',
+    data.ug ? `Setor / UG: ${data.ug}${localInstalacao ? ' / ' + localInstalacao : ''}` : '',
     nl,
     'Prezado(a),',
     nl,
@@ -518,7 +526,7 @@ export function buildOrcamentoEmailContent(data: ShareOrcamentoData & {
     '1.0 ESCOPO DE FORNECIMENTO',
     sep2,
     nl,
-    '  Nº  QTD  DESCRIÇÃO / ESPECIFICAÇÃO                   NCM            VLR. UNIT.     VLR. TOTAL',
+    '  Nº  QTD  DESCRIÇÃO / ESPECIFICAÇÃO                              NCM            VLR. UNIT.',
     buildLinhas(),
     nl,
     `  VALOR TOTAL DA PROPOSTA:                                         R$ ${valorFmt}`,

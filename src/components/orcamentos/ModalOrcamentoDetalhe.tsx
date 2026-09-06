@@ -188,6 +188,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
     enviado_para: orcamento.enviado_para,
     numero_ocorrencia: ocorrencia?.numero,
     ordem_sap: ocorrencia?.ordem_sap,
+    local_instalacao: equipamento?.localizacao_ref || equipamento?.local_instalacao,
     link_pdf: undefined,
     data_envio: orcamento.data_envio ? formatDate(orcamento.data_envio) : undefined,
     dias_aguardando: diasEnvio,

@@ -512,6 +512,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
                         valor_unitario: p.valor_unitario
                           ? (p.valor_unitario).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
                           : '',
+                        ncm: (p as any).ncm || '',
                       }));
                       setPecas(prev => {
                         const filtered = prev.filter(p => p.descricao.trim() !== '');
