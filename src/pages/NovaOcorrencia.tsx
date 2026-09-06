@@ -432,10 +432,10 @@ export const NovaOcorrencia: React.FC = () => {
                 />
                 <div>
                   <div style={{ fontSize: 12, fontWeight: 600, color: '#E6EDF3' }}>
-                    Parou a Linha de Produção
+                    EQUIPAMENTO NÃO REFRIGERA
                   </div>
                   <div style={{ fontSize: 11, color: '#8B949E', marginTop: 2 }}>
-                    Impacto na produção AMBEV
+                    IMPACTO NA REFRIGERAÇÃO
                   </div>
                 </div>
               </label>
