@@ -849,6 +849,14 @@ export const DataStore = {
     persistState();
   },
 
+  async deleteOcorrencia(ocorrenciaId: string): Promise<void> {
+    dbState.pecas = dbState.pecas.filter((p) => p.ocorrencia_id !== ocorrenciaId);
+    dbState.orcamentos = dbState.orcamentos.filter((o) => o.ocorrencia_id !== ocorrenciaId);
+    dbState.eventos = dbState.eventos.filter((e) => e.ocorrencia_id !== ocorrenciaId);
+    dbState.ocorrencias = dbState.ocorrencias.filter((o) => o.id !== ocorrenciaId);
+    persistState();
+  },
+
   // 15. Orçamentos por Ocorrência
   async getOrcamentos(): Promise<Orcamento[]> {
     return [...dbState.orcamentos].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
