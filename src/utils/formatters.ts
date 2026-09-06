@@ -449,47 +449,125 @@ OS #${data.numero_ocorrencia ?? '—'}${desc}${pdfStr}
 _Vision Controls — HVAC Industrial AMBEV RJ_`.trim();
 }
 
-export function buildOrcamentoEmailContent(data: ShareOrcamentoData & { numero_ocorrencia?: number | string; tipo?: string; marca?: string; modelo?: string; tag_ambev?: string }) {
-  // Format validade as readable date (handles ISO string like 2026-10-06T00:00:00.000Z)
+export function buildOrcamentoEmailContent(data: ShareOrcamentoData & {
+  numero_ocorrencia?: number | string;
+  tipo?: string;
+  marca?: string;
+  modelo?: string;
+  tag_ambev?: string;
+  ug?: string;
+  linha?: string;
+  ordem_sap?: string;
+  pecas?: Array<{ descricao?: string; part_number?: string; quantidade?: number; valor_unitario?: string | number }>;
+}) {
   const formatValidade = (v?: string) => {
     if (!v) return '—';
-    try {
-      const d = new Date(v);
-      return d.toLocaleDateString('pt-BR'); // ex: 06/10/2026
-    } catch { return v; }
+    try { return new Date(v).toLocaleDateString('pt-BR'); } catch { return v; }
   };
 
-  // Build subject: OS {numero_ocorrencia} PROPOSTA {tipo} {marca} {modelo} TAG AMBEV {tag}
+  const today = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
   const equipDesc = [data.tipo, data.marca, data.modelo].filter(Boolean).join(' ');
   const tagAmbev = data.tag_ambev || data.tag || '';
   const osRef = data.numero_ocorrencia ? `OS ${data.numero_ocorrencia} ` : '';
-  const subject = `${osRef}PROPOSTA ${equipDesc} TAG AMBEV ${tagAmbev}`.trim();
-
+  const subject = `${osRef}PROPOSTA ${equipDesc} — TAG AMBEV ${tagAmbev} — ${data.numero}`.trim();
   const valorFmt = Number(data.valor_total ?? 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-  const body = `Prezados,
+  const buildLinhas = () => {
+    if (!data.pecas || data.pecas.length === 0) return '  (Ver itens no PDF em anexo)';
+    return data.pecas.map((p, i) => {
+      const rawUnit = typeof p.valor_unitario === 'string'
+        ? p.valor_unitario.replace(/\./g, '').replace(',', '.')
+        : String(p.valor_unitario ?? 0);
+      const unitario = parseFloat(rawUnit) || 0;
+      const qtd = Number(p.quantidade ?? 1);
+      const total = (unitario * qtd).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+      const unitFmt = unitario.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+      const descr = [p.descricao, p.part_number].filter(Boolean).join(' | ').substring(0, 52);
+      return `  ${String(i + 1).padEnd(3)} ${String(qtd).padEnd(4)} ${descr.padEnd(53)} R$ ${unitFmt.padStart(10)}   R$ ${total.padStart(10)}`;
+    }).join('\n');
+  };
 
-Encaminhamos a proposta orçamentária referente ao equipamento sob manutenção pela Vision Controls.
+  const sep1 = '════════════════════════════════════════════════════════';
+  const sep2 = '────────────────────────────────────────────────────────';
+  const nl = '\n';
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-PROPOSTA Nº ${data.numero}
-${data.numero_ocorrencia ? `OS VINCULADA: #${data.numero_ocorrencia}` : ''}
-TAG DO EQUIPAMENTO: ${tagAmbev || 'N/D'}
-${equipDesc ? `Equipamento: ${equipDesc}` : ''}
-Fornecedor: ${data.fornecedor ?? '—'}
-Valor Total: R$ ${valorFmt}
-Validade: ${formatValidade(data.validade)}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  const lines: string[] = [
+    'VISION CONTROLS ASSOCIADOS LTDA',
+    'Rua Almirante Tamandaré, 515 — Alto da XV — Curitiba/PR',
+    'CNPJ: 10.823.200/0001-06 | Fone: (41) 3667-9835',
+    sep1,
+    nl,
+    `PROPOSTA ORÇAMENTÁRIA Nº ${data.numero}`,
+    today,
+    nl,
+    'À',
+    data.enviado_para || 'Ambev — Engenharia de Utilidades',
+    nl,
+    'Ref.: Fornecimento e Manutenção de Equipamento de Refrigeração Industrial',
+    data.numero_ocorrencia ? `Ordem SAP: ${data.ordem_sap || String(data.numero_ocorrencia)}` : '',
+    `Tag AMBEV: ${tagAmbev}  |  Equipamento: ${equipDesc}`,
+    data.ug ? `Setor / UG: ${data.ug}${data.linha ? ' / ' + data.linha : ''}` : '',
+    nl,
+    'Prezado(a),',
+    nl,
+    'Apresentamos nossa proposta comercial para manutenção corretiva do equipamento de',
+    'refrigeração industrial identificado acima, conforme levantamento técnico realizado em campo.',
+    nl,
+    sep2,
+    '1.0 ESCOPO DE FORNECIMENTO',
+    sep2,
+    nl,
+    '  Nº  QTD  DESCRIÇÃO / ESPECIFICAÇÃO                          VLR. UNIT.     VLR. TOTAL',
+    buildLinhas(),
+    nl,
+    `  VALOR TOTAL DA PROPOSTA:                                         R$ ${valorFmt}`,
+    nl,
+    sep2,
+    '2.0 CONDIÇÕES COMERCIAIS',
+    sep2,
+    nl,
+    `  Valor Total: R$ ${valorFmt}`,
+    '  Preços incluem todos os impostos, taxas e encargos federais, estaduais e municipais.',
+    nl,
+    sep2,
+    '3.0 CONDIÇÕES DE PAGAMENTO',
+    sep2,
+    nl,
+    '  A combinar conforme aprovação AMBEV.',
+    nl,
+    sep2,
+    '4.0 VALIDADE DA PROPOSTA',
+    sep2,
+    nl,
+    `  Válida até: ${formatValidade(data.validade)}`,
+    '  O preço será mantido por 30 dias da data de emissão.',
+    nl,
+    sep2,
+    '5.0 INFORMAÇÕES PARA CADASTRO',
+    sep2,
+    nl,
+    '  Razão Social:   VISION CONTROLS ASSOCIADOS LTDA',
+    '  Nome Fantasia:  VISION CONTROLS',
+    '  CNPJ:           10.823.200/0001-06',
+    '  Insc. Est.:     9048501360',
+    '  Endereço:       Rua Almirante Tamandaré, 515 — Alto da XV, Curitiba/PR — CEP 80045-110',
+    '  Telefone:       (41) 3667-9835',
+    nl,
+    sep1,
+    nl,
+    'Ficamos à disposição para esclarecimentos e aguardamos aprovação.',
+    nl,
+    'Atenciosamente,',
+    nl,
+    'VISION CONTROLS ASSOCIADOS LTDA',
+    'Equipe Técnica Comercial — HVAC Industrial',
+    'AMBEV Cervejaria RJ',
+  ];
 
-Ficamos à disposição para esclarecimentos.
-
-Atenciosamente,
-Vision Controls — HVAC Industrial
-AMBEV Cervejaria RJ`;
+  const body = lines.filter(l => l !== null && l !== undefined && l !== '').join('\n');
 
   return { subject, body };
 }
-
 export interface ShareOccurrenceData {
   numero: number;
   tag: string;

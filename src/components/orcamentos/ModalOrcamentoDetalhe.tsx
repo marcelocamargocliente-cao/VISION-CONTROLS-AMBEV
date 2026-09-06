@@ -186,10 +186,12 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
     status: statusConfig.label,
     enviado_para: orcamento.enviado_para,
     numero_ocorrencia: ocorrencia?.numero,
-    link_pdf: undefined, // PDF link removed from email/share per user request
+    ordem_sap: ocorrencia?.ordem_sap,
+    link_pdf: undefined,
     data_envio: orcamento.data_envio ? formatDate(orcamento.data_envio) : undefined,
     dias_aguardando: diasEnvio,
     descricao_ocorrencia: ocorrencia?.descricao_anomalia,
+    pecas: orcamento.pecas,
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
