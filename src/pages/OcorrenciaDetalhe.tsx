@@ -75,6 +75,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
   const [pecas, setPecas] = useState<PecaPendente[]>([]);
   const [orcamentos, setOrcamentos] = useState<Orcamento[]>([]);
   const [fotos, setFotos] = useState<Anexo[]>([]);
+  const [pdfs, setPdfs] = useState<Anexo[]>([]);
   const [loading, setLoading] = useState(true);
 
   // New Event Form State
@@ -133,6 +134,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
         setPecas(pcs);
         setOrcamentos(orcs);
         setFotos(anx.filter((a) => a.tipo_anexo === 'FOTO'));
+        setPdfs(anx.filter((a) => a.tipo_anexo !== 'FOTO'));
       }
     } catch (e) {
       console.error(e);
@@ -202,6 +204,17 @@ export const OcorrenciaDetalhe: React.FC = () => {
       await loadData();
     } catch (e) {
       console.error(e);
+    }
+  };
+
+  const handleDeletarPeca = async (pecaId: string) => {
+    if (!confirm('Remover esta peça?')) return;
+    try {
+      await DataStore.deletePeca(pecaId);
+      setPecas((prev) => prev.filter((p) => p.id !== pecaId));
+    } catch (e) {
+      console.error('Erro ao remover peça:', e);
+      alert('Erro ao remover peça. Tente novamente.');
     }
   };
 
@@ -319,14 +332,24 @@ export const OcorrenciaDetalhe: React.FC = () => {
               status: ocorrencia.status,
               pecas_resumo: pecas.map((p) => `${p.quantidade}x ${p.descricao}`).join(', '),
               orcamento_valor: totalOrcamentos > 0 ? totalOrcamentos : undefined,
+              anexos_links: [...fotos, ...pdfs].filter((a) => a.url).map((a) => ({ nome: a.legenda || a.nome || 'Anexo', url: a.url! })),
             }}
           />
 
-          {/* Print Button */}
+          {/* Print Button - abre PDF anexado se existir */}
           <button
-            onClick={() => window.print()}
+            onClick={() => {
+              const pdfAnexo = pdfs.find((a) => a.url && (a.url.toLowerCase().includes('.pdf') || a.mime_type === 'application/pdf'));
+              if (pdfAnexo?.url) {
+                window.open(pdfAnexo.url, '_blank');
+              } else if (pdfs.length > 0 && pdfs[0].url) {
+                window.open(pdfs[0].url, '_blank');
+              } else {
+                window.print();
+              }
+            }}
             className="p-1.5 rounded-lg bg-[#161B22] hover:bg-[#21262D]  hover: border border-[#30363D] transition-colors cursor-pointer shrink-0"
-            title="Imprimir Relatório Técnico"
+            title="Imprimir / PDF"
           >
             <Printer className="w-4 h-4" />
           </button>
@@ -453,6 +476,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
                         <th className="p-2.5">Part Number</th>
                         <th className="p-2.5">Status</th>
                         <th className="p-2.5 text-right">Valor Unit.</th>
+                        <th className="p-2.5 w-8"></th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#30363D] ">
@@ -471,6 +495,11 @@ export const OcorrenciaDetalhe: React.FC = () => {
                           </td>
                           <td className="p-2.5 text-right  ">
                             {p.valor_unitario ? formatCurrency(p.valor_unitario) : '-'}
+                          </td>
+                          <td className="p-2.5 text-center">
+                            <button onClick={() => handleDeletarPeca(p.id)} title="Remover peça" className="text-red-400 hover:text-red-300 transition-colors cursor-pointer bg-transparent border-none p-0">
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
                           </td>
                         </tr>
                       ))}
