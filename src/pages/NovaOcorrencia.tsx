@@ -227,7 +227,7 @@ export const NovaOcorrencia: React.FC = () => {
       {/* Form Container (Flex column with scrollable body + fixed footer) */}
       <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-0 overflow-hidden text-xs">
         {/* Corpo com Scroll */}
-        <div className="nova-ocorrencia-body flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-4 md:p-6 space-y-4 max-w-4xl w-full mx-auto">
+        <div className="nova-ocorrencia-body flex-1 min-h-0 overflow-y-auto p-4 md:p-6 space-y-4 max-w-4xl w-full mx-auto">
           {/* STEP 1: EQUIPAMENTO & LOCALIZAÇÃO */}
           <div className="card space-y-3">
             <div className="flex items-center justify-between border-b border-[#30363D] pb-2">
@@ -449,7 +449,7 @@ export const NovaOcorrencia: React.FC = () => {
                 3
               </span>
               <h3 className="card-title text-xs sm:text-sm uppercase ">
-                Diagnóstico de Campo & Códigos SAP
+                Diagnóstico de Campo
               </h3>
             </div>
 
@@ -687,6 +687,7 @@ export const NovaOcorrencia: React.FC = () => {
             type="submit"
             disabled={loading || !selectedEquip}
             className="btn-primary !py-2 !px-5 text-xs font-display font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+            style={{ position: 'relative', zIndex: 30 }}
           >
             <CheckCircle2 className="w-4 h-4" />
             <span>{loading ? 'Registrando Chamado...' : 'Gravar Ocorrência e Gerar Protocolo'}</span>
