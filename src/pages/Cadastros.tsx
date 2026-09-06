@@ -474,7 +474,7 @@ export const Cadastros: React.FC = () => {
           <div className="shrink-0 flex flex-col sm:flex-row gap-2 bg-[#111827] p-2.5 rounded-lg border border-blue-500/15 justify-between items-stretch sm:items-center">
             <div className="flex flex-wrap items-center gap-2">
               <div className="relative min-w-[220px]">
-                <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 " />
+                <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   id="input-search-estrutura"
                   type="text"
@@ -720,7 +720,7 @@ export const Cadastros: React.FC = () => {
           <div className="shrink-0 flex flex-col sm:flex-row gap-2 bg-[#111827] p-2.5 rounded-lg border border-blue-500/15 justify-between items-stretch sm:items-center">
             <div className="flex flex-wrap items-center gap-2">
               <div className="relative min-w-[240px]">
-                <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 " />
+                <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   id="input-search-equipe"
                   type="text"

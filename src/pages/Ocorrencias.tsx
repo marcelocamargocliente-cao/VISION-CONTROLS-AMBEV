@@ -99,9 +99,11 @@ export const Ocorrencias: React.FC = () => {
     const matchesSearch =
       !term ||
       String(occ.numero).includes(term) ||
-      (eq && eq.tag.toLowerCase().includes(term)) ||
-      (eq && eq.modelo.toLowerCase().includes(term)) ||
-      (eq && eq.linha_nome.toLowerCase().includes(term)) ||
+      (eq?.tag?.toLowerCase().includes(term)) ||
+      (eq?.modelo?.toLowerCase().includes(term)) ||
+      (eq?.linha_nome?.toLowerCase().includes(term)) ||
+      (eq?.patrimonio_ref?.toLowerCase().includes(term)) ||
+      (eq?.tag_sap?.toLowerCase().includes(term)) ||
       (occ.nota_sap && occ.nota_sap.includes(term)) ||
       (occ.ordem_sap && occ.ordem_sap.includes(term)) ||
       (occ.ordem_vision && occ.ordem_vision.toLowerCase().includes(term)) ||
@@ -177,7 +179,7 @@ export const Ocorrencias: React.FC = () => {
       <div className="card border border-[#2C343E] rounded-[4px] p-3 space-y-3 shadow-md">
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="flex-1 relative">
-            <Search className="w-4 h-4  absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={searchTerm}

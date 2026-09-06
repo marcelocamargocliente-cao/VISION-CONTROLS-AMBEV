@@ -195,7 +195,7 @@ export const Dashboard: React.FC = () => {
         <div className="flex items-center gap-2 shrink-0">
           {/* Global Search Compact */}
           <form onSubmit={handleSearchSubmit} className="relative w-[180px] md:w-[220px]">
-            <Search className="w-3.5 h-3.5  absolute left-2.5 top-1/2 -translate-y-1/2" />
+            <Search className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={searchQuery}

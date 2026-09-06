@@ -391,7 +391,7 @@ export const Orcamentos: React.FC = () => {
         <div className="flex flex-wrap items-center gap-3 flex-1">
           {/* Search */}
           <div className="relative flex-1 min-w-[220px]">
-            <Search className="w-3.5 h-3.5  absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               id="input-busca-orcamentos"
               type="text"

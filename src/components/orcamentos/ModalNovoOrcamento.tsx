@@ -198,9 +198,10 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
       return;
     }
 
+    // Convert BR format "1.500,00" → 1500.00
     const numValor =
       typeof valorTotal === 'string'
-        ? parseFloat(valorTotal.replace(/[^\d.,]/g, '').replace(',', '.')) || 0
+        ? parseFloat(valorTotal.replace(/\./g, '').replace(',', '.')) || 0
         : Number(valorTotal);
 
     if (isNaN(numValor) || numValor <= 0) {
@@ -428,12 +429,18 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
               </label>
               <input
                 id="novo-orc-valor"
-                type="number"
-                step="0.01"
+                type="text"
+                inputMode="numeric"
                 required
                 value={valorTotal}
-                onChange={(e) => setValorTotal(e.target.value)}
-                placeholder="Ex: 14850.00"
+                onChange={(e) => {
+                  const raw = e.target.value.replace(/\D/g, '');
+                  if (raw === '') { setValorTotal(''); return; }
+                  const cents = parseInt(raw, 10);
+                  const formatted = (cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                  setValorTotal(formatted);
+                }}
+                placeholder="Ex: 1.500,00"
                 className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#38BDF8] rounded-[6px] px-3 py-2 text-xs font-mono font-bold text-[#38BDF8] focus:outline-none"
               />
             </div>
@@ -527,55 +534,55 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
                 {pecas.map((peca, i) => (
                   <div
                     key={i}
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: '2fr 1fr 60px 100px auto',
-                      gap: 8,
-                      marginTop: 8,
-                      alignItems: 'start',
-                    }}
+                    className="border border-[#2C343E] rounded-[6px] p-3 space-y-2 bg-[#0D1117]"
                   >
-                    <input
-                      placeholder="Descrição da peça"
-                      value={peca.descricao}
-                      onChange={(e) => atualizarPeca(i, 'descricao', e.target.value)}
-                      className="bg-[#0D1117] border border-[#2C343E] focus:border-[#38BDF8] rounded-[4px] px-2.5 py-1.5 text-xs text-[#ECEFF1] placeholder:text-[#6B7683] focus:outline-none"
-                    />
-                    <input
-                      placeholder="Part Number"
+                    {/* Row 1: Descrição da peça + botão remover */}
+                    <div className="flex gap-2 items-start">
+                      <input
+                        placeholder="Nome / Descrição da peça"
+                        value={peca.descricao}
+                        onChange={(e) => atualizarPeca(i, 'descricao', e.target.value)}
+                        className="flex-1 bg-[#14181D] border border-[#2C343E] focus:border-[#38BDF8] rounded-[4px] px-2.5 py-1.5 text-xs text-[#ECEFF1] placeholder:text-[#6B7683] focus:outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removerPeca(i)}
+                        style={{ background: 'none', border: 'none', color: '#FF6B6B', cursor: 'pointer', padding: 4 }}
+                        title="Remover peça"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                    {/* Row 2: Descrição ampla (dados, referência, especificação) */}
+                    <textarea
+                      placeholder="Dados técnicos, referência, código SAP, especificação, fabricante, modelo..."
                       value={peca.part_number}
                       onChange={(e) => atualizarPeca(i, 'part_number', e.target.value)}
-                      className="bg-[#0D1117] border border-[#2C343E] focus:border-[#38BDF8] rounded-[4px] px-2.5 py-1.5 text-xs font-mono text-[#ECEFF1] placeholder:text-[#6B7683] focus:outline-none"
+                      rows={3}
+                      className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#38BDF8] rounded-[4px] px-2.5 py-1.5 text-xs font-mono text-[#ECEFF1] placeholder:text-[#6B7683] focus:outline-none resize-y"
                     />
-                    <input
-                      type="number"
-                      placeholder="Qtd"
-                      value={peca.quantidade}
-                      onChange={(e) => atualizarPeca(i, 'quantidade', Number(e.target.value))}
-                      min={1}
-                      className="bg-[#0D1117] border border-[#2C343E] focus:border-[#38BDF8] rounded-[4px] px-2 py-1.5 text-xs font-mono text-[#ECEFF1] text-center focus:outline-none"
-                    />
-                    <input
-                      placeholder="R$ 0,00"
-                      value={peca.valor_unitario}
-                      onChange={(e) => atualizarPeca(i, 'valor_unitario', e.target.value)}
-                      className="bg-[#0D1117] border border-[#2C343E] focus:border-[#38BDF8] rounded-[4px] px-2.5 py-1.5 text-xs font-mono text-[#ECEFF1] focus:outline-none"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removerPeca(i)}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        color: '#FF6B6B',
-                        cursor: 'pointer',
-                        padding: 4,
-                        marginTop: 4,
-                      }}
-                      title="Remover peça"
-                    >
-                      <Trash2 size={14} />
-                    </button>
+                    {/* Row 3: Qtd + Valor unitário */}
+                    <div className="flex gap-2">
+                      <div className="flex items-center gap-1.5">
+                        <label className="text-[10px] text-[#8B949E] shrink-0">Qtd</label>
+                        <input
+                          type="number"
+                          value={peca.quantidade}
+                          onChange={(e) => atualizarPeca(i, 'quantidade', Number(e.target.value))}
+                          min={1}
+                          className="w-16 bg-[#14181D] border border-[#2C343E] focus:border-[#38BDF8] rounded-[4px] px-2 py-1.5 text-xs font-mono text-[#ECEFF1] text-center focus:outline-none"
+                        />
+                      </div>
+                      <div className="flex items-center gap-1.5 flex-1">
+                        <label className="text-[10px] text-[#8B949E] shrink-0">R$ unit.</label>
+                        <input
+                          placeholder="0,00"
+                          value={peca.valor_unitario}
+                          onChange={(e) => atualizarPeca(i, 'valor_unitario', e.target.value)}
+                          className="flex-1 bg-[#14181D] border border-[#2C343E] focus:border-[#38BDF8] rounded-[4px] px-2.5 py-1.5 text-xs font-mono text-[#ECEFF1] focus:outline-none"
+                        />
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
