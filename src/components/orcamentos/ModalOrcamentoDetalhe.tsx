@@ -168,7 +168,8 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
   const shareData: any = {
     numero: orcamento.numero,
     tag: equipamento?.tag || 'N/D',
-    tipo: equipamento?.tipo || 'Equipamento HVAC',
+    tag_ambev: equipamento?.patrimonio_ref || equipamento?.tag_sap || equipamento?.tag || 'N/D',
+    tipo: equipamento?.tipo_equipamento || equipamento?.tipo || 'Equipamento HVAC',
     marca: equipamento?.marca,
     modelo: equipamento?.modelo,
     ug: equipamento?.ug_codigo || 'UG',
@@ -182,10 +183,10 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
     status: statusConfig.label,
     enviado_para: orcamento.enviado_para,
     numero_ocorrencia: ocorrencia?.numero,
-    link_pdf: orcamento.arquivo_pdf_url || orcamento.arquivo_url,
+    link_pdf: undefined, // PDF link removed from email/share per user request
     data_envio: orcamento.data_envio ? formatDate(orcamento.data_envio) : undefined,
     dias_aguardando: diasEnvio,
-    descricao_ocorrencia: ocorrencia?.descricao,
+    descricao_ocorrencia: ocorrencia?.descricao_anomalia,
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -280,10 +281,15 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
               <FileText className="w-5 h-5" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-[10px] font-mono tracking-widest text-[#94A3B8] uppercase font-bold">
                   Proposta Orçamentária • AMBEV
                 </span>
+                {ocorrencia?.numero && (
+                  <span className="px-2 py-0.5 rounded-[2px] font-mono text-[10px] font-bold bg-[#F5A623]/15 text-[#F5A623] border border-[#F5A623]/30">
+                    OS #{ocorrencia.numero}
+                  </span>
+                )}
                 <span
                   className={`px-2 py-0.5 rounded-[2px] font-mono text-[10px] font-bold border uppercase ${statusConfig.badgeBg}`}
                 >
@@ -291,23 +297,36 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                 </span>
                 {isEditing && (
                   <span className="px-2 py-0.5 rounded-[2px] font-mono text-[10px] font-bold bg-[#F5A623]/20 text-[#F5A623] border border-[#F5A623]/40 animate-pulse">
-                    Modo Edição
+                    ✏️ Modo Edição
                   </span>
                 )}
               </div>
-              <h3 className="text-lg font-mono font-bold text-[#ECEFF1] tracking-wide">
-                {isEditing ? (
-                  <input
-                    type="text"
-                    value={formData.numero}
-                    onChange={(e) => setFormData({ ...formData, numero: e.target.value })}
-                    className="bg-[#1C222A] border border-[#38BDF8]/50 text-[#38BDF8] px-2 py-0.5 rounded text-base font-mono focus:outline-none focus:ring-1 focus:ring-[#38BDF8]"
-                    placeholder="Número da Proposta"
-                  />
-                ) : (
-                  orcamento.numero
+              <div className="flex items-center gap-3 mt-0.5">
+                <h3 className="text-lg font-mono font-bold text-[#ECEFF1] tracking-wide">
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={formData.numero}
+                      onChange={(e) => setFormData({ ...formData, numero: e.target.value })}
+                      className="bg-[#1C222A] border border-[#38BDF8]/50 text-[#38BDF8] px-2 py-0.5 rounded text-base font-mono focus:outline-none focus:ring-1 focus:ring-[#38BDF8]"
+                      placeholder="Número da Proposta"
+                    />
+                  ) : (
+                    orcamento.numero
+                  )}
+                </h3>
+                {isAuthorizedToEdit && !isEditing && (
+                  <button
+                    type="button"
+                    onClick={() => setIsEditing(true)}
+                    className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-[3px] bg-[#F5A623]/15 hover:bg-[#F5A623]/30 text-[#F5A623] border border-[#F5A623]/40 transition-colors"
+                    title="Editar proposta"
+                  >
+                    <Edit3 className="w-3 h-3" />
+                    EDITAR
+                  </button>
                 )}
-              </h3>
+              </div>
             </div>
           </div>
 

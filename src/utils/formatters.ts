@@ -449,27 +449,37 @@ OS #${data.numero_ocorrencia ?? '—'}${desc}${pdfStr}
 _Vision Controls — HVAC Industrial AMBEV RJ_`.trim();
 }
 
-export function buildOrcamentoEmailContent(data: ShareOrcamentoData) {
-  const subject = `[IVCA] Proposta ${data.numero} — TAG ${data.tag}`;
+export function buildOrcamentoEmailContent(data: ShareOrcamentoData & { numero_ocorrencia?: number | string; tipo?: string; marca?: string; modelo?: string; tag_ambev?: string }) {
+  // Format validade as readable date (handles ISO string like 2026-10-06T00:00:00.000Z)
+  const formatValidade = (v?: string) => {
+    if (!v) return '—';
+    try {
+      const d = new Date(v);
+      return d.toLocaleDateString('pt-BR'); // ex: 06/10/2026
+    } catch { return v; }
+  };
+
+  // Build subject: OS {numero_ocorrencia} PROPOSTA {tipo} {marca} {modelo} TAG AMBEV {tag}
+  const equipDesc = [data.tipo, data.marca, data.modelo].filter(Boolean).join(' ');
+  const tagAmbev = data.tag_ambev || data.tag || '';
+  const osRef = data.numero_ocorrencia ? `OS ${data.numero_ocorrencia} ` : '';
+  const subject = `${osRef}PROPOSTA ${equipDesc} TAG AMBEV ${tagAmbev}`.trim();
+
   const valorFmt = Number(data.valor_total ?? 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  const pdfSection = data.link_pdf
-    ? `\n\n📎 DOCUMENTO PDF DA PROPOSTA:\n${data.link_pdf}\n(Baixe e anexe este arquivo ao responder este e-mail)`
-    : '';
 
   const body = `Prezados,
 
-Encaminhos abaixo a proposta orçamentária referente ao equipamento sob manutenção pela Vision Controls.
+Encaminhamos a proposta orçamentária referente ao equipamento sob manutenção pela Vision Controls.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 PROPOSTA Nº ${data.numero}
-TAG DO EQUIPAMENTO: ${data.tag || 'N/D'}
+${data.numero_ocorrencia ? `OS VINCULADA: #${data.numero_ocorrencia}` : ''}
+TAG DO EQUIPAMENTO: ${tagAmbev || 'N/D'}
+${equipDesc ? `Equipamento: ${equipDesc}` : ''}
 Fornecedor: ${data.fornecedor ?? '—'}
 Valor Total: R$ ${valorFmt}
-Status: ${data.status}
-Enviado para: ${data.enviado_para ?? 'Engenharia de Utilidades AMBEV'}
-Validade: ${data.validade ?? '—'}
+Validade: ${formatValidade(data.validade)}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-${pdfSection}
 
 Ficamos à disposição para esclarecimentos.
 
