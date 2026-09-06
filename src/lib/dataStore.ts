@@ -793,27 +793,50 @@ export const DataStore = {
       created_at: new Date().toISOString(),
     });
 
+    if (isSupabaseConfigured) {
+      try {
+        await supabase.from('ocorrencias').update({ status: novoStatus, updated_at: new Date().toISOString() }).eq('id', ocorrenciaId);
+        const ev = dbState.eventos[0];
+        if (ev) await supabase.from('ocorrencia_eventos').insert({ ...ev });
+      } catch (e) { console.warn('updateOcorrenciaStatus Supabase error:', e); }
+    }
     persistState();
   },
 
   async addComentario(ocorrenciaId: string, usuarioNome: string, texto: string): Promise<void> {
-    dbState.eventos.unshift({
+    const ev = {
       id: `ev-${Date.now()}`,
       ocorrencia_id: ocorrenciaId,
       usuario_nome: usuarioNome,
-      tipo_evento: 'COMENTARIO',
+      tipo_evento: 'COMENTARIO' as const,
       descricao: texto,
       created_at: new Date().toISOString(),
-    });
+    };
+    dbState.eventos.unshift(ev);
+    if (isSupabaseConfigured) {
+      try { await supabase.from('ocorrencia_eventos').insert(ev); } catch (e) { console.warn(e); }
+    }
     persistState();
   },
 
   // 14. Peças por Ocorrência
   async getPecas(): Promise<Peca[]> {
+    if (isSupabaseConfigured) {
+      try {
+        const { data } = await supabase.from('pecas').select('*');
+        if (data) { dbState.pecas = data as Peca[]; persistState(); return data as Peca[]; }
+      } catch (e) { console.warn(e); }
+    }
     return [...dbState.pecas];
   },
 
   async getPecasByOcorrencia(ocorrenciaId: string): Promise<Peca[]> {
+    if (isSupabaseConfigured) {
+      try {
+        const { data } = await supabase.from('pecas').select('*').eq('ocorrencia_id', ocorrenciaId);
+        if (data) return data as Peca[];
+      } catch (e) { console.warn(e); }
+    }
     return dbState.pecas.filter((p) => p.ocorrencia_id === ocorrenciaId);
   },
 
@@ -822,6 +845,9 @@ export const DataStore = {
       const idx = dbState.pecas.findIndex((p) => p.id === peca.id);
       if (idx >= 0) {
         dbState.pecas[idx] = { ...dbState.pecas[idx], ...peca };
+        if (isSupabaseConfigured) {
+          try { await supabase.from('pecas').update({ ...peca }).eq('id', peca.id); } catch (e) { console.warn(e); }
+        }
         persistState();
         return dbState.pecas[idx];
       }
@@ -837,22 +863,35 @@ export const DataStore = {
       unidade: peca.unidade || 'UN',
       fornecedor: peca.fornecedor,
       valor_unitario: peca.valor_unitario,
+      ncm: (peca as any).ncm,
       previsao_entrega: peca.previsao_entrega,
       status: peca.status || 'SOLICITADA',
       created_at: new Date().toISOString(),
     };
 
+    if (isSupabaseConfigured) {
+      try {
+        const { data } = await supabase.from('pecas').insert({ ...newPeca }).select().single();
+        if (data) newPeca.id = (data as any).id;
+      } catch (e) { console.warn('savePeca Supabase error:', e); }
+    }
     dbState.pecas.push(newPeca);
     persistState();
     return newPeca;
   },
 
   async deletePeca(pecaId: string): Promise<void> {
+    if (isSupabaseConfigured) {
+      try { await supabase.from('pecas').delete().eq('id', pecaId); } catch (e) { console.warn(e); }
+    }
     dbState.pecas = dbState.pecas.filter((p) => p.id !== pecaId);
     persistState();
   },
 
   async deleteOcorrencia(ocorrenciaId: string): Promise<void> {
+    if (isSupabaseConfigured) {
+      try { await supabase.from('ocorrencias').delete().eq('id', ocorrenciaId); } catch (e) { console.warn(e); }
+    }
     dbState.pecas = dbState.pecas.filter((p) => p.ocorrencia_id !== ocorrenciaId);
     dbState.orcamentos = dbState.orcamentos.filter((o) => o.ocorrencia_id !== ocorrenciaId);
     dbState.eventos = dbState.eventos.filter((e) => e.ocorrencia_id !== ocorrenciaId);
@@ -862,25 +901,41 @@ export const DataStore = {
 
   // 15. Orçamentos por Ocorrência
   async getOrcamentos(): Promise<Orcamento[]> {
+    if (isSupabaseConfigured) {
+      try {
+        const { data } = await supabase.from('orcamentos').select('*').order('created_at', { ascending: false });
+        if (data) { dbState.orcamentos = data as Orcamento[]; persistState(); return data as Orcamento[]; }
+      } catch (e) { console.warn(e); }
+    }
     return [...dbState.orcamentos].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   },
 
   async getOrcamentosByOcorrencia(ocorrenciaId: string): Promise<Orcamento[]> {
+    if (isSupabaseConfigured) {
+      try {
+        const { data } = await supabase.from('orcamentos').select('*').eq('ocorrencia_id', ocorrenciaId);
+        if (data) return data as Orcamento[];
+      } catch (e) { console.warn(e); }
+    }
     return dbState.orcamentos.filter((o) => o.ocorrencia_id === ocorrenciaId);
   },
 
   async getAllOrcamentos(): Promise<Orcamento[]> {
-    return [...dbState.orcamentos].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    return this.getOrcamentos();
   },
 
   async saveOrcamento(orc: Partial<Orcamento>): Promise<Orcamento> {
     if (orc.id) {
       const idx = dbState.orcamentos.findIndex((o) => o.id === orc.id);
-      if (idx >= 0) {
-        dbState.orcamentos[idx] = { ...dbState.orcamentos[idx], ...orc };
-        persistState();
-        return dbState.orcamentos[idx];
+      const updated = idx >= 0
+        ? { ...dbState.orcamentos[idx], ...orc, updated_at: new Date().toISOString() }
+        : { ...orc, updated_at: new Date().toISOString() } as Orcamento;
+      if (isSupabaseConfigured) {
+        try {
+          await supabase.from('orcamentos').upsert({ ...updated }).eq('id', orc.id);
+        } catch (e) { console.warn('saveOrcamento update Supabase error:', e); }
       }
+      if (idx >= 0) { dbState.orcamentos[idx] = updated; persistState(); return updated; }
     }
 
     const newOrc: Orcamento = {
@@ -901,6 +956,12 @@ export const DataStore = {
       created_at: new Date().toISOString(),
     };
 
+    if (isSupabaseConfigured) {
+      try {
+        const { data } = await supabase.from('orcamentos').insert({ ...newOrc }).select().single();
+        if (data) newOrc.id = (data as any).id;
+      } catch (e) { console.warn('saveOrcamento insert Supabase error:', e); }
+    }
     dbState.orcamentos.push(newOrc);
     persistState();
     return newOrc;
@@ -922,6 +983,9 @@ export const DataStore = {
       descricao: evento.descricao,
       created_at: new Date().toISOString(),
     };
+    if (isSupabaseConfigured) {
+      try { await supabase.from('ocorrencia_eventos').insert({ id: newEv.id, ocorrencia_id: newEv.ocorrencia_id, usuario_nome: newEv.usuario_nome, tipo_evento: newEv.tipo_evento, descricao: newEv.descricao, created_at: newEv.created_at }); } catch (e) { console.warn('addEvento Supabase error:', e); }
+    }
     dbState.eventos.unshift(newEv);
     persistState();
     return newEv;
@@ -954,6 +1018,12 @@ export const DataStore = {
   },
 
   async getEventosByOcorrencia(ocorrenciaId: string): Promise<OcorrenciaEvento[]> {
+    if (isSupabaseConfigured) {
+      try {
+        const { data } = await supabase.from('ocorrencia_eventos').select('*').eq('ocorrencia_id', ocorrenciaId).order('created_at', { ascending: false });
+        if (data) return data as OcorrenciaEvento[];
+      } catch (e) { console.warn(e); }
+    }
     return dbState.eventos
       .filter((e) => e.ocorrencia_id === ocorrenciaId)
       .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
