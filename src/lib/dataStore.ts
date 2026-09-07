@@ -45,7 +45,7 @@ import {
 import { extrairLocal } from '../utils/formatters';
 
 // Local storage keys for caching and optimistic updates
-const STORAGE_KEY = 'IVCA_DATABASE_LOCAL_V4'; // V4: UGs/Profiles/Areas agora no Supabase
+const STORAGE_KEY = 'IVCA_DATABASE_LOCAL_V5'; // V5: Equipamentos atualizados da planilha
 
 interface LocalDbState {
   profiles: Profile[];
@@ -194,24 +194,28 @@ export const DataStore = {
         }
 
         if (!error && data && data.length > 0) {
-          return data.map((item: any) => ({
+          const mapped = data.map((item: any) => ({
             id: `equip-${item.tag}`,
             tag: String(item.tag || ''),
             ug_ref: item.ug_ref || '',
             area_ref: item.area_ref || '',
             localizacao_ref: item.localizacao_ref || '',
+            local_instalacao: item.local_instalacao || item.localizacao_ref || '',
             patrimonio_ref: item.patrimonio_ref != null ? String(item.patrimonio_ref) : undefined,
             tipo_equipamento: item.tipo_equipamento || '',
             marca: item.marca || undefined,
             modelo: item.modelo || undefined,
             capacidade: item.capacidade || undefined,
-            aplicacao: 'INDUSTRIAL',
+            aplicacao: item.aplicacao || 'INDUSTRIAL',
             status: (item.status as EquipStatus) || 'OK',
-            local_instalacao: item.local_instalacao || (item.ug_ref ? `${item.ug_ref} · ${item.localizacao_ref || ''}` : ''),
             tipo: item.tipo_equipamento || '',
             patrimonio: item.patrimonio_ref != null ? String(item.patrimonio_ref) : undefined,
             tag_sap: item.patrimonio_ref != null ? String(item.patrimonio_ref) : undefined,
           })) as Equipamento[];
+          // Atualizar dbState para que getVwEquipamentos use dados frescos do Supabase
+          dbState.equipamentos = mapped;
+          persistState();
+          return mapped;
         }
       } catch (err) {
         console.warn('Erro ao buscar equipamentos no Supabase:', err);
@@ -249,7 +253,7 @@ export const DataStore = {
 
       return {
         ...eq,
-        local_instalacao: localExtraido,
+        local_instalacao: eq.localizacao_ref || localExtraido,
         ug_ref: eq.ug_ref || ugCodigo,
         area_ref: eq.area_ref || area?.nome || 'Geral',
         localizacao_ref: eq.localizacao_ref || ctTexto,
@@ -261,7 +265,7 @@ export const DataStore = {
         ug_nome: ugNome,
         area_nome: eq.area_ref || area?.nome || 'Área Geral',
         linha_nome: eq.localizacao_ref || linha?.nome || 'Linha Geral',
-        centro_trabalho_nome: ctTexto || 'CT Não Definido',
+        centro_trabalho_nome: eq.localizacao_ref || ctTexto || 'CT Não Definido',
         centro_trabalho_sap: ct?.codigo_sap,
         total_ocorrencias_abertas: openOcc ? 1 : 0,
         dias_parado_atual: diasParado,
