@@ -1022,10 +1022,10 @@ export const OcorrenciaDetalhe: React.FC = () => {
                   <div>
                     {tipoAtivo === 'PECA' && (
                       <>
-                        <label className="block eyebrow mb-1">Part Number</label>
+                        <label className="block eyebrow mb-1">Descrição</label>
                         <input type="text" value={newPeca.part_number || ''}
                           onChange={(e) => setNewPeca({ ...newPeca, part_number: e.target.value })}
-                          placeholder="ZR61K3E-TFD"
+                          placeholder="Ex: Hermético, Scroll, Semi-hermético..."
                           className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] p-2.5 rounded-lg outline-none" />
                       </>
                     )}
@@ -1053,19 +1053,19 @@ export const OcorrenciaDetalhe: React.FC = () => {
                     )}
                     {tipoAtivo === 'INSUMO' && (
                       <>
-                        <label className="block eyebrow mb-1">Referência / Código</label>
+                        <label className="block eyebrow mb-1">Descrição</label>
                         <input type="text" value={newPeca.part_number || ''}
                           onChange={(e) => setNewPeca({ ...newPeca, part_number: e.target.value })}
-                          placeholder="Ex: R410A-DAC"
+                          placeholder="Ex: Cilindro 11kg, Fluido, Solda..."
                           className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] p-2.5 rounded-lg outline-none" />
                       </>
                     )}
                     {tipoAtivo === 'FRETE' && (
                       <>
-                        <label className="block eyebrow mb-1">Nota Fiscal / Referência</label>
+                        <label className="block eyebrow mb-1">Descrição</label>
                         <input type="text" value={newPeca.part_number || ''}
                           onChange={(e) => setNewPeca({ ...newPeca, part_number: e.target.value })}
-                          placeholder="Ex: NF 001234"
+                          placeholder="Ex: NF 001234, Entrega expressa..."
                           className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] p-2.5 rounded-lg outline-none" />
                       </>
                     )}
