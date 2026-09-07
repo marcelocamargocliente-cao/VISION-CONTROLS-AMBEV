@@ -57,7 +57,12 @@ export const Equipamentos: React.FC = () => {
         .select('tag, tipo_equipamento, marca, modelo, capacidade, status, ug_ref, area_ref, patrimonio_ref, localizacao_ref, local_instalacao')
         .order('tag', { ascending: true });
 
+      if (error) {
+        console.error('[Equipamentos] Erro Supabase:', error.message, error);
+      }
+
       if (!error && data && data.length > 0) {
+        console.log('[Equipamentos] Carregados do Supabase:', data.length);
         const mapped: Equipamento[] = data.map((item: any) => ({
           id: `equip-${item.tag}`,
           tag: String(item.tag || ''),
@@ -81,7 +86,9 @@ export const Equipamentos: React.FC = () => {
       }
 
       // Fallback: JSON local (já atualizado com dados da planilha)
+      console.warn('[Equipamentos] Usando fallback JSON local');
       const eqs = await DataStore.getEquipamentos();
+      console.log('[Equipamentos] Fallback carregou:', eqs.length);
       setEquipamentos(eqs);
     } catch (e) {
       console.error('Erro ao carregar lista de equipamentos:', e);
