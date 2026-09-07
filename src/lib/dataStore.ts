@@ -45,7 +45,7 @@ import {
 import { extrairLocal } from '../utils/formatters';
 
 // Local storage keys for caching and optimistic updates
-const STORAGE_KEY = 'IVCA_DATABASE_LOCAL_V3';
+const STORAGE_KEY = 'IVCA_DATABASE_LOCAL_V4'; // V4: UGs/Profiles/Areas agora no Supabase
 
 interface LocalDbState {
   profiles: Profile[];
