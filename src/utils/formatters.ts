@@ -500,11 +500,12 @@ export function buildOrcamentoEmailContent(data: ShareOrcamentoData & {
       const totalItem = unitario * qtd;
       const unitFmt = unitario.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
       const totalFmt = totalItem.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-      const ncmStr = (p.ncm || '').padEnd(14);
+      const ncm = p.ncm ? p.ncm.trim() : '-';
       // part_number é o campo salvo no banco (antes era especificacao no modal)
-      const espec = p.part_number || p.especificacao || '';
-      const descr = [p.descricao, espec].filter(Boolean).join(' | ').substring(0, 45);
-      return `  ${String(i + 1).padEnd(3)} ${String(qtd).padEnd(4)} ${descr.padEnd(46)} ${ncmStr} R$ ${unitFmt.padStart(10)}  TOTAL: R$ ${totalFmt}`;
+      const espec = p.part_number || p.especificacao || '-';
+      const descr = p.descricao || '';
+      // Formato legível em qualquer cliente de email — sem padEnd que quebra em fonte proporcional
+      return `  ${i + 1}. ${qtd}x  ${descr}  |  ${espec}  |  NCM: ${ncm}  |  Unit: R$ ${unitFmt}  |  Total: R$ ${totalFmt}`;
     }).join('\n');
   };
 
@@ -536,7 +537,7 @@ export function buildOrcamentoEmailContent(data: ShareOrcamentoData & {
     '1.0 ESCOPO DE FORNECIMENTO',
     sep2,
     nl,
-    '  Nº  QTD  DESCRIÇÃO / ESPECIFICAÇÃO                              NCM            VLR. UNIT.',
+    '  Nº   QTD   DESCRIÇÃO  |  ESPECIFICAÇÃO  |  NCM  |  VLR. UNIT.  |  TOTAL',
     buildLinhas(),
     nl,
     `  VALOR TOTAL DA PROPOSTA:                                         R$ ${valorFmt}`,
