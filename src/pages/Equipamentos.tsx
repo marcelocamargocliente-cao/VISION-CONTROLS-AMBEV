@@ -170,6 +170,7 @@ export const Equipamentos: React.FC = () => {
 
   const paradosCount = filteredEquipamentos.filter((e) => e.status === 'PARADO').length;
   const okCount = filteredEquipamentos.filter((e) => e.status === 'OK').length;
+  const nokCount = filteredEquipamentos.filter((e) => e.status === 'RESTRICAO').length;
 
   const hasActiveFilters = Boolean(searchTerm || selectedStatus || selectedUg || selectedArea || selectedTipo);
 
@@ -308,6 +309,7 @@ export const Equipamentos: React.FC = () => {
             >
               <option value="">Todos os Status</option>
               <option value="OK">OK</option>
+              <option value="RESTRICAO">NOK</option>
               <option value="PARADO">PARADO</option>
             </select>
           </div>
@@ -523,6 +525,10 @@ export const Equipamentos: React.FC = () => {
           <span>·</span>
           <span className="text-emerald-400 font-semibold">
             {okCount} OK
+          </span>
+          <span>·</span>
+          <span className={nokCount > 0 ? 'text-[#F85149] font-bold' : 'text-gray-500'}>
+            {nokCount} NOK
           </span>
           <span>·</span>
           <span className={paradosCount > 0 ? 'text-red-400 font-bold' : ''}>
