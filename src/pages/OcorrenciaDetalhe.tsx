@@ -668,6 +668,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
                               fabricante: p.fabricante,
                               quantidade: p.quantidade,
                               valor_unitario: p.valor_unitario,
+                              ncm: p.ncm,
                               status: p.status,
                               tipo_item: tipo,
                             } as any,
