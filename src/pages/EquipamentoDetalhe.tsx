@@ -416,7 +416,7 @@ export const EquipamentoDetalhe: React.FC = () => {
                     className="w-full h-[36px] bg-[#0A0E1A] border border-blue-500/20 text-white px-3 rounded text-xs outline-none"
                   >
                     <option value="OK">OK</option>
-                    <option value="PARADO">PARADO</option>
+                    <option value="RESTRICAO">NOK</option>
                   </select>
                 </div>
               </div>

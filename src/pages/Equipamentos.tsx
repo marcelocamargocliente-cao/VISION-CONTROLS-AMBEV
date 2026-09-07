@@ -168,7 +168,6 @@ export const Equipamentos: React.FC = () => {
     });
   }, [equipamentos, searchTerm, selectedStatus, selectedUg, selectedArea, selectedTipo]);
 
-  const paradosCount = filteredEquipamentos.filter((e) => e.status === 'PARADO').length;
   const okCount = filteredEquipamentos.filter((e) => e.status === 'OK').length;
   const nokCount = filteredEquipamentos.filter((e) => e.status === 'RESTRICAO').length;
 
@@ -310,7 +309,6 @@ export const Equipamentos: React.FC = () => {
               <option value="">Todos os Status</option>
               <option value="OK">OK</option>
               <option value="RESTRICAO">NOK</option>
-              <option value="PARADO">PARADO</option>
             </select>
           </div>
 
@@ -530,10 +528,6 @@ export const Equipamentos: React.FC = () => {
           <span className={nokCount > 0 ? 'text-[#F85149] font-bold' : 'text-gray-500'}>
             {nokCount} NOK
           </span>
-          <span>·</span>
-          <span className={paradosCount > 0 ? 'text-red-400 font-bold' : ''}>
-            {paradosCount} PARADO{paradosCount === 1 ? '' : 'S'}
-          </span>
         </div>
 
         <div className="hidden sm:inline text-gray-500 text-[10px]">
@@ -705,7 +699,7 @@ export const Equipamentos: React.FC = () => {
                     className="w-full h-[32px] bg-[#0A0E1A] border border-blue-500/20 text-white px-2 rounded text-[11px] outline-none"
                   >
                     <option value="OK">OK</option>
-                    <option value="PARADO">PARADO</option>
+                    <option value="RESTRICAO">NOK</option>
                   </select>
                 </div>
               </div>
