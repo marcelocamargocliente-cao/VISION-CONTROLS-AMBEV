@@ -173,6 +173,7 @@ export interface Peca {
   fornecedor?: string;
   valor_unitario?: number;
   ncm?: string;
+  tipo_item?: 'PECA' | 'SERVICO' | 'HORA_EXTRA' | 'INSUMO' | 'FRETE';
   previsao_entrega?: string;
   status: PecaStatus;
   data_aplicacao?: string;

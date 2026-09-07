@@ -864,6 +864,7 @@ export const DataStore = {
       fornecedor: peca.fornecedor,
       valor_unitario: peca.valor_unitario,
       ncm: peca.ncm,
+      tipo_item: (peca as any).tipo_item || 'PECA',
       previsao_entrega: peca.previsao_entrega,
       status: peca.status || 'SOLICITADA',
       created_at: new Date().toISOString(),
