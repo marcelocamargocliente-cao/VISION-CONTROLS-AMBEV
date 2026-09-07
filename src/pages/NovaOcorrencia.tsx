@@ -102,7 +102,7 @@ export const NovaOcorrencia: React.FC = () => {
       {
         descricao: '',
         part_number: '',
-        fabricante: selectedEquip?.marca || 'RITTAL',
+        fabricante: '',
         quantidade: 1,
         fornecedor: '',
         valor_unitario: 0,

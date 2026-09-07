@@ -90,7 +90,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
 
     descricao: '',
     part_number: '',
-    fabricante: 'RITTAL',
+    fabricante: '',
     quantidade: 1,
     fornecedor: '',
     valor_unitario: 0,
@@ -1024,6 +1024,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
           fabricante: p.fabricante,
           quantidade: p.quantidade,
           valor_unitario: p.valor_unitario,
+          ncm: p.ncm,
         }))}
       />
 

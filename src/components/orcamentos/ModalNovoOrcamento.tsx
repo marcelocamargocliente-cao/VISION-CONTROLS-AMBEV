@@ -29,7 +29,7 @@ interface ModalNovoOrcamentoProps {
   defaultOcorrenciaId?: string;
   equipamentosMap?: Map<string, VwEquipamento>;
   orcamentoToEdit?: Orcamento | null;
-  pecasVinculadas?: Array<{ descricao: string; part_number?: string; fabricante?: string; quantidade: number; valor_unitario?: number }>;
+  pecasVinculadas?: Array<{ descricao: string; part_number?: string; fabricante?: string; quantidade: number; valor_unitario?: number; ncm?: string }>;
 }
 
 interface PecaItem {
@@ -161,6 +161,19 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
       }
     }
   }, [isOpen, defaultOcorrenciaId, ocorrencias, orcamentoToEdit]);
+
+  // Recalcular Valor Total automaticamente sempre que as peças mudarem
+  useEffect(() => {
+    const total = pecas.reduce((acc, p) => {
+      const valorStr = typeof p.valor_unitario === 'string' ? p.valor_unitario : String(p.valor_unitario || '');
+      const valor = parseFloat(valorStr.replace(/\./g, '').replace(',', '.')) || 0;
+      const qtd = Number(p.quantidade) || 0;
+      return acc + valor * qtd;
+    }, 0);
+    if (total > 0) {
+      setValorTotal(total.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    }
+  }, [pecas]);
 
   if (!isOpen) return null;
 
@@ -520,10 +533,10 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
                       });
                     }}
                     className="px-2.5 py-1 text-[11px] font-semibold rounded-[4px] bg-[#F5A623]/15 hover:bg-[#F5A623]/25 text-[#F5A623] border border-[#F5A623]/40 transition-colors flex items-center gap-1 cursor-pointer"
-                    title={`Importar ${pecasVinculadas.length} peça(s) da ocorrência`}
+                    title={`Importar ${pecasVinculadas.length} peça(s)/serviço(s) da ocorrência`}
                   >
                     <Download className="w-3 h-3" />
-                    <span>Importar {pecasVinculadas.length} peça(s) da OS</span>
+                    <span>Importar Peças/Serviços ({pecasVinculadas.length})</span>
                   </button>
                 )}
                 <button
