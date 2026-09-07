@@ -1,25 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
 
-const env = (import.meta as any).env || {};
+// Credenciais fixas — a publishable key é segura no browser (protegida por RLS).
+// Não usamos env vars aqui porque valores legados/incorretos no Vercel quebravam a conexão.
+const supabaseUrl = 'https://hiaexzlqctlvibusuxoj.supabase.co';
+const supabaseAnonKey = 'sb_publishable_tn3oRuGPEgzrS0y3jEp8dw_sppYPuzT';
 
-// Aceita variações de nome para evitar problemas de digitação nas env vars
-const supabaseUrl =
-  env.VITE_SUPABASE_URL ||
-  env.VITE_SUPABASE_PROJECT_URL ||
-  'https://hiaexzlqctlvibusuxoj.supabase.co';
-
-const supabaseAnonKey =
-  env.VITE_SUPABASE_ANON_KEY ||
-  env.VITE_SUPABASE_KEY ||
-  'sb_publishable_tn3oRuGPEgzrS0y3jEp8dw_sppYPuzT';
-
-export const isSupabaseConfigured = Boolean(
-  supabaseUrl &&
-  supabaseAnonKey &&
-  !supabaseUrl.includes('your-project') &&
-  !supabaseUrl.includes('mock-') &&
-  supabaseUrl.startsWith('http')
-);
+export const isSupabaseConfigured = true;
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
