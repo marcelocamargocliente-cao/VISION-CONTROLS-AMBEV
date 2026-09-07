@@ -193,6 +193,22 @@ export const OcorrenciaDetalhe: React.FC = () => {
         ocorrencia_id: ocorrencia.id,
         equipamento_id: ocorrencia.equipamento_id,
       });
+
+      // Recalcular valor_total de todos os orçamentos vinculados a esta ocorrência
+      const pecasAtualizadas = await DataStore.getPecasByOcorrencia(ocorrencia.id);
+      const novoTotal = pecasAtualizadas.reduce((sum, p) => {
+        const unit = Number(p.valor_unitario) || 0;
+        const qtd = Number(p.quantidade) || 1;
+        return sum + unit * qtd;
+      }, 0);
+
+      const orcsVinculados = await DataStore.getOrcamentosByOcorrencia(ocorrencia.id);
+      for (const orc of orcsVinculados) {
+        if (orc.id) {
+          await DataStore.saveOrcamento({ id: orc.id, valor_total: novoTotal });
+        }
+      }
+
       setShowAddPecaModal(false);
       setValorPecaDisplay('');
       setNewPeca({
@@ -205,8 +221,8 @@ export const OcorrenciaDetalhe: React.FC = () => {
         status: 'PENDENTE_COTACAO',
       });
       await loadData();
-    } catch (e) {
-      console.error(e);
+    } catch (err) {
+      console.error(err);
     }
   };
 
