@@ -680,6 +680,13 @@ export const DataStore = {
 
     dbState.ocorrencias.unshift(newOcc);
 
+    // Persistir ocorrência no Supabase
+    if (isSupabaseConfigured) {
+      try {
+        await supabase.from('ocorrencias').insert({ ...newOcc });
+      } catch (e) { console.warn('createOcorrencia insert error:', e); }
+    }
+
     // Trigger Rule: When opened with "equipamento parado", set equip status to PARADO
     if (newOcc.equipamento_parado) {
       const eq = dbState.equipamentos.find((e) => e.id === newOcc.equipamento_id);
@@ -701,9 +708,10 @@ export const DataStore = {
     });
 
     // Add Pecas
-    pecas.forEach((p, idx) => {
-      dbState.pecas.push({
-        id: `peca-${Date.now()}-${idx}`,
+    for (let idx = 0; idx < pecas.length; idx++) {
+      const p = pecas[idx];
+      const pecaObj: any = {
+        id: `peca-${Date.now()}-${idx}-${Math.random().toString(36).slice(2, 5)}`,
         ocorrencia_id: newId,
         descricao: p.descricao || 'Peça não identificada',
         part_number: p.part_number,
@@ -712,11 +720,21 @@ export const DataStore = {
         unidade: p.unidade || 'UN',
         fornecedor: p.fornecedor,
         valor_unitario: p.valor_unitario,
+        ncm: (p as any).ncm,
+        tipo_item: (p as any).tipo_item || 'PECA',
         previsao_entrega: p.previsao_entrega,
         status: p.status || 'SOLICITADA',
         created_at: new Date().toISOString(),
-      });
-    });
+      };
+      dbState.pecas.push(pecaObj);
+      // Salvar no Supabase imediatamente se configurado
+      if (isSupabaseConfigured) {
+        try {
+          const { data } = await supabase.from('pecas').insert({ ...pecaObj }).select().single();
+          if (data) pecaObj.id = (data as any).id;
+        } catch (e) { console.warn('createOcorrencia savePeca error:', e); }
+      }
+    }
 
     // Add Orcamentos
     orcamentos.forEach((orc, idx) => {
