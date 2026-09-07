@@ -11,7 +11,7 @@ const supabaseUrl =
 const supabaseAnonKey =
   env.VITE_SUPABASE_ANON_KEY ||
   env.VITE_SUPABASE_KEY ||
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhpYWV4emxxY3RsdmlidXN1eG9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2OTE5NzAsImV4cCI6MjEwMzI2Nzk3MH0.t8Fq250jW_4krOdxYXHFh2rCgcq4zhLXEnHN0RJ-wUk';
+  'sb_publishable_tn3oRuGPEgzrS0y3jEp8dw_sppYPuzT';
 
 export const isSupabaseConfigured = Boolean(
   supabaseUrl &&
