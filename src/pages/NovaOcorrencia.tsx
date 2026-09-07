@@ -515,7 +515,7 @@ export const NovaOcorrencia: React.FC = () => {
             </div>
           </div>
 
-          {/* STEP 4: PEÇAS & COMPONENTES NECESSÁRIOS */}
+          {/* STEP 4: PEÇAS & SERVIÇOS */}
           <div className="card space-y-3">
             <div className="flex items-center justify-between border-b border-[#30363D] pb-2">
               <div className="flex items-center gap-2">
@@ -523,7 +523,7 @@ export const NovaOcorrencia: React.FC = () => {
                   4
                 </span>
                 <h3 className="card-title text-xs sm:text-sm uppercase ">
-                  Peças & Componentes Necessários ({pecas.length})
+                  Peças & Serviços ({pecas.length})
                 </h3>
               </div>
               <button
@@ -532,13 +532,13 @@ export const NovaOcorrencia: React.FC = () => {
                 className="btn-primary !py-1 !px-2.5 !text-[11px] gap-1 cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>+ Adicionar Peça</span>
+                <span>+ Adicionar Item</span>
               </button>
             </div>
 
             {pecas.length === 0 ? (
               <p className="text-xs  italic py-1">
-                Nenhuma peça pendente de compra adicionada. Clique em "+ Adicionar Peça" caso o reparo exija componentes novos.
+                Nenhuma peça pendente de compra adicionada. Clique em "+ Adicionar Item" caso o reparo exija componentes novos.
               </p>
             ) : (
               <div className="space-y-3">
@@ -555,7 +555,7 @@ export const NovaOcorrencia: React.FC = () => {
                     <div className="space-y-2 pr-6">
                       {/* Linha 1: Nome/tipo da peça */}
                       <div>
-                        <label className="block eyebrow mb-1">PEÇA / COMPONENTE *</label>
+                        <label className="block eyebrow mb-1">DESCRIÇÃO *</label>
                         <input
                           type="text"
                           required

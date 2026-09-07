@@ -84,6 +84,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
 
   // New Peca Modal
   const [showAddPecaModal, setShowAddPecaModal] = useState(false);
+  const [confirmDeleteOrc, setConfirmDeleteOrc] = useState<Orcamento | null>(null);
   const [valorPecaDisplay, setValorPecaDisplay] = useState<string>('');
   const [newPeca, setNewPeca] = useState<Partial<PecaPendente>>({
 
@@ -115,6 +116,13 @@ export const OcorrenciaDetalhe: React.FC = () => {
   const abrirDuplicar = (orc: Orcamento) => {
     setDuplicarOrigem(orc);
     setIsDuplicarOpen(true);
+  };
+
+  const handleDeleteOrcamento = async (orc: Orcamento) => {
+    try {
+      await DataStore.deleteOrcamento(orc.id);
+      await loadData();
+    } catch (e) { console.error(e); }
   };
 
   const loadData = async () => {
@@ -467,7 +475,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <Package className="w-4 h-4 " />
                   <h3 className="card-title text-xs uppercase ">
-                    Peças & Componentes ({pecas.length})
+                    Peças & Serviços ({pecas.length})
                   </h3>
                 </div>
                 {canEdit && (
@@ -476,7 +484,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
                     className="btn-primary !py-1 !px-2.5 !text-[11px] gap-1 cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
-                    <span>Adicionar Peça</span>
+                    <span>Adicionar Item</span>
                   </button>
                 )}
               </div>
@@ -665,6 +673,16 @@ export const OcorrenciaDetalhe: React.FC = () => {
                             >
                               📋 Duplicar e Reenviar
                             </button>
+                            <button
+                              type="button"
+                              onClick={(e) => { e.stopPropagation(); setConfirmDeleteOrc(orc); }}
+                              title="Deletar proposta"
+                              style={{ fontSize: 11, padding: '4px 8px', background: 'none', border: '1px solid rgba(248,113,113,0.3)', borderRadius: 4, cursor: 'pointer', color: '#F87171' }}
+                              onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'rgba(248,113,113,0.15)'; e.currentTarget.style.borderColor = '#F87171'; }}
+                              onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.borderColor = 'rgba(248,113,113,0.3)'; }}
+                            >
+                              🗑️
+                            </button>
                           </div>
                         )}
                       </div>
@@ -770,12 +788,12 @@ export const OcorrenciaDetalhe: React.FC = () => {
         </div>
       </div>
 
-      {/* MODAL: ADICIONAR PEÇA */}
+      {/* MODAL: ADICIONAR ITEM */}
       {showAddPecaModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-[#161B22] border border-[#30363D] rounded-xl w-full max-w-md p-5 space-y-4 shadow-2xl">
             <h3 className="text-sm font-display font-bold  uppercase">
-              {newPeca.id ? 'Editar Peça / Componente' : 'Adicionar Peça / Componente'}
+              {newPeca.id ? 'Editar Peça / Serviço' : 'Adicionar Item / Componente'}
             </h3>
             <form onSubmit={handleSaveNewPeca} className="space-y-3.5 text-xs font-body">
               <div>
@@ -923,6 +941,23 @@ export const OcorrenciaDetalhe: React.FC = () => {
       />
 
       {/* Modal Duplicar e Reenviar Proposta */}
+      {/* Confirm Delete Orcamento */}
+      {confirmDeleteOrc && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <div className="bg-[#1C222A] border border-red-500/40 rounded-[6px] p-5 w-full max-w-sm shadow-2xl space-y-3">
+            <p className="text-sm font-bold text-red-400">Deletar Proposta Comercial?</p>
+            <p className="text-xs text-[#94A3B8]">Proposta <strong className="text-white">{confirmDeleteOrc.numero}</strong> será removida permanentemente. Esta ação não pode ser desfeita.</p>
+            <div className="flex justify-end gap-2 pt-1">
+              <button onClick={() => setConfirmDeleteOrc(null)} className="btn-secondary !text-xs !py-1.5 !px-3">Cancelar</button>
+              <button
+                onClick={async () => { await handleDeleteOrcamento(confirmDeleteOrc); setConfirmDeleteOrc(null); }}
+                className="!text-xs !py-1.5 !px-3 bg-red-600 hover:bg-red-700 text-white rounded-[4px] font-semibold transition-colors"
+              >Confirmar Deletar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <ModalDuplicarOrcamento
         orcamentoOriginal={duplicarOrigem}
         ocorrenciaId={ocorrencia?.id || ''}

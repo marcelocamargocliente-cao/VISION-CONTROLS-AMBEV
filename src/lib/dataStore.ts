@@ -863,7 +863,7 @@ export const DataStore = {
       unidade: peca.unidade || 'UN',
       fornecedor: peca.fornecedor,
       valor_unitario: peca.valor_unitario,
-      ncm: (peca as any).ncm,
+      ncm: peca.ncm,
       previsao_entrega: peca.previsao_entrega,
       status: peca.status || 'SOLICITADA',
       created_at: new Date().toISOString(),
@@ -970,6 +970,14 @@ export const DataStore = {
     dbState.orcamentos.push(newOrc);
     persistState();
     return newOrc;
+  },
+
+  async deleteOrcamento(orcamentoId: string): Promise<void> {
+    if (isSupabaseConfigured) {
+      try { await supabase.from('orcamentos').delete().eq('id', orcamentoId); } catch (e) { console.warn('deleteOrcamento Supabase error:', e); }
+    }
+    dbState.orcamentos = dbState.orcamentos.filter((o) => o.id !== orcamentoId);
+    persistState();
   },
 
   // 16. Eventos Timeline

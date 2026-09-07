@@ -295,7 +295,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
             </div>
             <div>
               <h3 className="text-base font-mono font-bold text-[#ECEFF1]">
-                {orcamentoToEdit ? 'Editar Proposta / Orçamento' : 'Emitir Nova Proposta / Orçamento'}
+                {orcamentoToEdit ? 'Editar Proposta Comercial' : 'Emitir Nova Proposta Comercial'}
               </h3>
               <p className="text-[10px] text-[#94A3B8] font-mono">
                 {orcamentoToEdit ? 'Atualização de dados da proposta existente' : 'Cadastro e envio de proposta de manutenção para aprovação AMBEV'}
@@ -512,7 +512,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
                         valor_unitario: p.valor_unitario
                           ? (p.valor_unitario).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
                           : '',
-                        ncm: (p as any).ncm || '',
+                        ncm: p.ncm || '',
                       }));
                       setPecas(prev => {
                         const filtered = prev.filter(p => p.descricao.trim() !== '');
