@@ -16,6 +16,12 @@ export const ColaboradorModal: React.FC<ColaboradorModalProps> = ({
   onSuccess,
   profileToEdit,
 }) => {
+  const CARGOS = [
+    'Administrador', 'Gerente', 'Gestor de Contrato', 'Encarregado de Campo',
+    'Técnico de Refrigeração', 'Técnico Eletricista', 'Técnico Mecânico',
+    'Mecânico', 'Eletricista', 'Ajudante', 'Engenheiro', 'Analista',
+  ];
+
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('Vision@2026');
@@ -27,6 +33,34 @@ export const ColaboradorModal: React.FC<ColaboradorModalProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Permissões granulares
+  const [perms, setPerms] = useState({
+    pode_abrir_ocorrencia:    true,
+    pode_editar_ocorrencia:   false,
+    pode_fechar_ocorrencia:   false,
+    pode_criar_orcamento:     false,
+    pode_aprovar_orcamento:   false,
+    pode_gerenciar_equipe:    false,
+    pode_gerenciar_cadastros: false,
+  });
+
+  const PERMS_POR_ROLE: Record<UserRole, typeof perms> = {
+    ADMIN:        { pode_abrir_ocorrencia: true,  pode_editar_ocorrencia: true,  pode_fechar_ocorrencia: true,  pode_criar_orcamento: true,  pode_aprovar_orcamento: true,  pode_gerenciar_equipe: true,  pode_gerenciar_cadastros: true  },
+    GESTOR:       { pode_abrir_ocorrencia: true,  pode_editar_ocorrencia: true,  pode_fechar_ocorrencia: true,  pode_criar_orcamento: true,  pode_aprovar_orcamento: true,  pode_gerenciar_equipe: true,  pode_gerenciar_cadastros: false },
+    ENCARREGADO:  { pode_abrir_ocorrencia: true,  pode_editar_ocorrencia: true,  pode_fechar_ocorrencia: false, pode_criar_orcamento: true,  pode_aprovar_orcamento: false, pode_gerenciar_equipe: false, pode_gerenciar_cadastros: false },
+    TECNICO:      { pode_abrir_ocorrencia: true,  pode_editar_ocorrencia: false, pode_fechar_ocorrencia: false, pode_criar_orcamento: false, pode_aprovar_orcamento: false, pode_gerenciar_equipe: false, pode_gerenciar_cadastros: false },
+    VISUALIZADOR: { pode_abrir_ocorrencia: false, pode_editar_ocorrencia: false, pode_fechar_ocorrencia: false, pode_criar_orcamento: false, pode_aprovar_orcamento: false, pode_gerenciar_equipe: false, pode_gerenciar_cadastros: false },
+  };
+
+  const handleRoleChange = (newRole: UserRole) => {
+    setRole(newRole);
+    setPerms(PERMS_POR_ROLE[newRole]);
+  };
+
+  const togglePerm = (key: keyof typeof perms) => {
+    setPerms(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
   useEffect(() => {
     if (profileToEdit) {
       setNome(profileToEdit.nome || '');
@@ -36,6 +70,15 @@ export const ColaboradorModal: React.FC<ColaboradorModalProps> = ({
       setEmpresa(profileToEdit.empresa || 'VISION CONTROLS');
       setTelefone(profileToEdit.telefone || '');
       setAtivo(profileToEdit.ativo !== false);
+      setPerms({
+        pode_abrir_ocorrencia:    (profileToEdit as any).pode_abrir_ocorrencia    ?? PERMS_POR_ROLE[profileToEdit.role]?.pode_abrir_ocorrencia    ?? true,
+        pode_editar_ocorrencia:   (profileToEdit as any).pode_editar_ocorrencia   ?? PERMS_POR_ROLE[profileToEdit.role]?.pode_editar_ocorrencia   ?? false,
+        pode_fechar_ocorrencia:   (profileToEdit as any).pode_fechar_ocorrencia   ?? PERMS_POR_ROLE[profileToEdit.role]?.pode_fechar_ocorrencia   ?? false,
+        pode_criar_orcamento:     (profileToEdit as any).pode_criar_orcamento     ?? PERMS_POR_ROLE[profileToEdit.role]?.pode_criar_orcamento     ?? false,
+        pode_aprovar_orcamento:   (profileToEdit as any).pode_aprovar_orcamento   ?? PERMS_POR_ROLE[profileToEdit.role]?.pode_aprovar_orcamento   ?? false,
+        pode_gerenciar_equipe:    (profileToEdit as any).pode_gerenciar_equipe    ?? PERMS_POR_ROLE[profileToEdit.role]?.pode_gerenciar_equipe    ?? false,
+        pode_gerenciar_cadastros: (profileToEdit as any).pode_gerenciar_cadastros ?? PERMS_POR_ROLE[profileToEdit.role]?.pode_gerenciar_cadastros ?? false,
+      });
     } else {
       setNome('');
       setEmail('');
@@ -45,6 +88,7 @@ export const ColaboradorModal: React.FC<ColaboradorModalProps> = ({
       setEmpresa('VISION CONTROLS');
       setTelefone('');
       setAtivo(true);
+      setPerms(PERMS_POR_ROLE['TECNICO']);
     }
     setError(null);
   }, [profileToEdit, isOpen]);
@@ -78,6 +122,7 @@ export const ColaboradorModal: React.FC<ColaboradorModalProps> = ({
           cargo: cargo.trim() || undefined,
           role,
           empresa: empresa.trim() || 'VISION CONTROLS',
+          ...perms,
           telefone: telefone.trim() || undefined,
           ativo,
         });
@@ -95,6 +140,7 @@ export const ColaboradorModal: React.FC<ColaboradorModalProps> = ({
           empresa: empresa.trim() || 'VISION CONTROLS',
           telefone: telefone.trim() || undefined,
           ativo,
+          ...perms,
         });
 
         if (!res.success || !res.profile) {
@@ -244,14 +290,15 @@ export const ColaboradorModal: React.FC<ColaboradorModalProps> = ({
               <label className="block text-[11px] font-mono uppercase text-[#CBD5E1] mb-1">
                 Cargo / Ocupação
               </label>
-              <input
+              <select
                 id="input-colab-cargo"
-                type="text"
                 value={cargo}
                 onChange={(e) => setCargo(e.target.value)}
-                placeholder="Ex: Técnico de Campo Climatização"
                 className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#F5A623] text-[#ECEFF1] text-xs rounded-[3px] px-3 py-2 outline-none transition-colors"
-              />
+              >
+                <option value="">Selecione um cargo...</option>
+                {CARGOS.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
             </div>
 
             {/* Perfil no Sistema (Role) */}
@@ -262,7 +309,7 @@ export const ColaboradorModal: React.FC<ColaboradorModalProps> = ({
               <select
                 id="select-colab-role"
                 value={role}
-                onChange={(e) => setRole(e.target.value as UserRole)}
+                onChange={(e) => handleRoleChange(e.target.value as UserRole)}
                 required
                 className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#F5A623] text-[#ECEFF1] text-xs rounded-[3px] px-3 py-2 outline-none transition-colors font-mono"
               >
@@ -306,6 +353,34 @@ export const ColaboradorModal: React.FC<ColaboradorModalProps> = ({
                 className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#F5A623] text-[#ECEFF1] text-xs font-mono rounded-[3px] px-3 py-2 outline-none transition-colors"
               />
             </div>
+          </div>
+
+          {/* Painel de Permissões Granulares */}
+          <div className="p-3 bg-[#0D1117] border border-[#2C343E] rounded-[4px] space-y-2">
+            <div className="flex items-center gap-2 mb-1">
+              <Shield className="w-3.5 h-3.5 text-[#F5A623]" />
+              <span className="text-[10px] font-mono uppercase font-bold text-[#F5A623]">Permissões do Usuário</span>
+              <span className="text-[9px] text-[#6B7683] ml-1">(ajustadas pelo perfil — pode customizar)</span>
+            </div>
+            {([
+              { key: 'pode_abrir_ocorrencia',    label: 'Abrir Ocorrência' },
+              { key: 'pode_editar_ocorrencia',   label: 'Editar Ocorrência' },
+              { key: 'pode_fechar_ocorrencia',   label: 'Fechar / Concluir OS' },
+              { key: 'pode_criar_orcamento',     label: 'Emitir Proposta Comercial' },
+              { key: 'pode_aprovar_orcamento',   label: 'Aprovar Orçamento' },
+              { key: 'pode_gerenciar_equipe',    label: 'Gerenciar Equipe & Acessos' },
+              { key: 'pode_gerenciar_cadastros', label: 'Gerenciar Cadastros (UGs, Áreas)' },
+            ] as { key: keyof typeof perms; label: string }[]).map(({ key, label }) => (
+              <label key={key} className="flex items-center justify-between gap-2 cursor-pointer py-0.5">
+                <span className="text-[11px] text-[#CBD5E1]">{label}</span>
+                <input
+                  type="checkbox"
+                  checked={perms[key]}
+                  onChange={() => togglePerm(key)}
+                  className="accent-[#2ECC71] w-3.5 h-3.5"
+                />
+              </label>
+            ))}
           </div>
 
           {!profileToEdit && (
