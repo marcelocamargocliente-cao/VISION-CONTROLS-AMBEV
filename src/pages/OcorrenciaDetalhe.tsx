@@ -82,20 +82,38 @@ export const OcorrenciaDetalhe: React.FC = () => {
   const [novoComentario, setNovoComentario] = useState('');
   const [sendingEvent, setSendingEvent] = useState(false);
 
-  // New Peca Modal
+  // New Peca Modal — carrinho + rascunhos independentes por tipo
   const [showAddPecaModal, setShowAddPecaModal] = useState(false);
   const [confirmDeleteOrc, setConfirmDeleteOrc] = useState<Orcamento | null>(null);
   const [valorPecaDisplay, setValorPecaDisplay] = useState<string>('');
-  const [newPeca, setNewPeca] = useState<Partial<PecaPendente>>({
+  const [carritoItems, setCarritoItems] = useState<Partial<PecaPendente>[]>([]);
+  const [tipoAtivo, setTipoAtivo] = useState<'PECA' | 'SERVICO' | 'HORA_EXTRA' | 'INSUMO' | 'FRETE'>('PECA');
 
-    descricao: '',
-    part_number: '',
-    fabricante: '',
-    quantidade: 1,
-    fornecedor: '',
-    valor_unitario: 0,
-    status: 'PENDENTE_COTACAO',
+  const emptyRascunho = (): Partial<PecaPendente> => ({
+    descricao: '', part_number: '', fabricante: '', quantidade: 1,
+    fornecedor: '', valor_unitario: 0, status: 'PENDENTE_COTACAO',
   });
+  const [rascunhos, setRascunhos] = useState<Record<string, Partial<PecaPendente>>>({
+    PECA: emptyRascunho(), SERVICO: emptyRascunho(), HORA_EXTRA: emptyRascunho(),
+    INSUMO: emptyRascunho(), FRETE: emptyRascunho(),
+  });
+  const [valoresDisplay, setValoresDisplay] = useState<Record<string, string>>({
+    PECA: '', SERVICO: '', HORA_EXTRA: '', INSUMO: '', FRETE: '',
+  });
+
+  const newPeca = rascunhos[tipoAtivo];
+  const setNewPeca = (val: Partial<PecaPendente>) =>
+    setRascunhos(prev => ({ ...prev, [tipoAtivo]: val }));
+  const valorPecaDisplayAtivo = valoresDisplay[tipoAtivo];
+  const setValorPecaDisplayAtivo = (v: string) =>
+    setValoresDisplay(prev => ({ ...prev, [tipoAtivo]: v }));
+
+  const resetModal = () => {
+    setCarritoItems([]);
+    setTipoAtivo('PECA');
+    setRascunhos({ PECA: emptyRascunho(), SERVICO: emptyRascunho(), HORA_EXTRA: emptyRascunho(), INSUMO: emptyRascunho(), FRETE: emptyRascunho() });
+    setValoresDisplay({ PECA: '', SERVICO: '', HORA_EXTRA: '', INSUMO: '', FRETE: '' });
+  };
 
   // New Orcamento Modal & Detalhes
   const [showAddOrcModal, setShowAddOrcModal] = useState(false);
@@ -192,17 +210,44 @@ export const OcorrenciaDetalhe: React.FC = () => {
     }
   };
 
+  // Adiciona o rascunho atual ao carrinho
+  const handleAdicionarAoCarrinho = () => {
+    if (!newPeca.descricao?.trim()) return;
+    const item: Partial<PecaPendente> = {
+      ...newPeca,
+      tipo_item: tipoAtivo,
+    };
+    setCarritoItems(prev => [...prev, item]);
+    // Limpa só o rascunho do tipo ativo
+    setRascunhos(prev => ({ ...prev, [tipoAtivo]: emptyRascunho() }));
+    setValoresDisplay(prev => ({ ...prev, [tipoAtivo]: '' }));
+  };
+
+  const handleRemoverDoCarrinho = (idx: number) => {
+    setCarritoItems(prev => prev.filter((_, i) => i !== idx));
+  };
+
   const handleSaveNewPeca = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!ocorrencia || !newPeca.descricao) return;
-    try {
-      await DataStore.savePeca({
-        ...newPeca,
-        ocorrencia_id: ocorrencia.id,
-        equipamento_id: ocorrencia.equipamento_id,
-      });
+    if (!ocorrencia) return;
 
-      // Recalcular valor_total de todos os orçamentos vinculados a esta ocorrência
+    // Monta lista final: itens do carrinho + rascunho atual (se preenchido)
+    const itensParaSalvar: Partial<PecaPendente>[] = [...carritoItems];
+    if (newPeca.descricao?.trim()) {
+      itensParaSalvar.push({ ...newPeca, tipo_item: tipoAtivo });
+    }
+    if (itensParaSalvar.length === 0) return;
+
+    try {
+      for (const item of itensParaSalvar) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await DataStore.savePeca({
+          ...(item as any),
+          ocorrencia_id: ocorrencia.id,
+        });
+      }
+
+      // Recalcular valor_total de todos os orçamentos vinculados
       const pecasAtualizadas = await DataStore.getPecasByOcorrencia(ocorrencia.id);
       const novoTotal = pecasAtualizadas.reduce((sum, p) => {
         const unit = Number(p.valor_unitario) || 0;
@@ -218,16 +263,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
       }
 
       setShowAddPecaModal(false);
-      setValorPecaDisplay('');
-      setNewPeca({
-        descricao: '',
-        part_number: '',
-        fabricante: '',
-        quantidade: 1,
-        fornecedor: '',
-        valor_unitario: 0,
-        status: 'PENDENTE_COTACAO',
-      });
+      resetModal();
       await loadData();
     } catch (err) {
       console.error(err);
@@ -806,214 +842,264 @@ export const OcorrenciaDetalhe: React.FC = () => {
         </div>
       </div>
 
-      {/* MODAL: ADICIONAR / EDITAR ITEM */}
+      {/* MODAL: ADICIONAR / EDITAR ITEM — com carrinho e rascunhos por tipo */}
       {showAddPecaModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#161B22] border border-[#30363D] rounded-xl w-full max-w-md p-5 space-y-4 shadow-2xl">
-            <h3 className="text-sm font-display font-bold uppercase">
-              {newPeca.id ? 'Editar Item' : 'Adicionar Item'}
-            </h3>
-            <form onSubmit={handleSaveNewPeca} className="space-y-3.5 text-xs font-body">
+          <div className="bg-[#161B22] border border-[#30363D] rounded-xl w-full max-w-md shadow-2xl flex flex-col max-h-[90vh]">
 
-              {/* Tipo de Item */}
-              <div>
-                <label className="block eyebrow mb-1">Tipo de Item</label>
-                <div className="grid grid-cols-5 gap-1">
-                  {([
-                    { value: 'PECA',       label: '🔧 Peça',      color: '#38BDF8' },
-                    { value: 'SERVICO',    label: '🛠️ Serviço',   color: '#A78BFA' },
-                    { value: 'HORA_EXTRA', label: '⏱️ H. Extra',  color: '#F5A623' },
-                    { value: 'INSUMO',     label: '🧴 Insumo',    color: '#34D399' },
-                    { value: 'FRETE',      label: '🚚 Frete',     color: '#FB923C' },
-                  ] as const).map(({ value, label, color }) => {
-                    const selected = (newPeca.tipo_item || 'PECA') === value;
-                    return (
-                      <button
-                        key={value}
-                        type="button"
-                        onClick={() => {
-                          setNewPeca({
-                            descricao: '',
-                            part_number: '',
-                            fabricante: '',
-                            quantidade: 1,
-                            fornecedor: '',
-                            valor_unitario: 0,
-                            status: 'PENDENTE_COTACAO',
-                            tipo_item: value,
-                          });
-                          setValorPecaDisplay('');
-                        }}
-                        style={{
-                          border: `1px solid ${selected ? color : '#30363D'}`,
-                          background: selected ? `${color}22` : 'transparent',
-                          color: selected ? color : '#8B949E',
-                          borderRadius: 6, padding: '6px 2px', fontSize: 10, fontWeight: 700,
-                          cursor: 'pointer', transition: 'all 0.15s', textAlign: 'center', lineHeight: 1.4,
-                        }}
-                      >
-                        {label}
-                      </button>
-                    );
-                  })}
-                </div>
+            {/* Header */}
+            <div className="px-5 pt-5 pb-3 border-b border-[#30363D] shrink-0">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-display font-bold uppercase">Adicionar Itens</h3>
+                {carritoItems.length > 0 && (
+                  <span className="text-[10px] font-bold bg-[#2ECC71]/15 text-[#2ECC71] border border-[#2ECC71]/30 rounded-full px-2 py-0.5">
+                    {carritoItems.length} no carrinho
+                  </span>
+                )}
               </div>
+            </div>
 
-              {/* Descrição — sempre visível */}
-              <div>
-                <label className="block eyebrow mb-1">
-                  {(newPeca.tipo_item === 'HORA_EXTRA') ? 'Funcionário / Cargo' :
-                   (newPeca.tipo_item === 'SERVICO') ? 'Descrição do Serviço' :
-                   (newPeca.tipo_item === 'FRETE') ? 'Transportadora / Tipo de Frete' :
-                   (newPeca.tipo_item === 'INSUMO') ? 'Descrição do Insumo' : 'Nome / Descrição da Peça'}
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={newPeca.descricao || ''}
-                  onChange={(e) => setNewPeca({ ...newPeca, descricao: e.target.value })}
-                  placeholder={
-                    newPeca.tipo_item === 'HORA_EXTRA' ? 'Ex: Encarregado Arthur Silva' :
-                    newPeca.tipo_item === 'SERVICO' ? 'Ex: Solda oxiacetilênica na tubulação' :
-                    newPeca.tipo_item === 'FRETE' ? 'Ex: Jadlog — Entrega expressa' :
-                    newPeca.tipo_item === 'INSUMO' ? 'Ex: Gás R-410A cilindro 11kg' :
-                    'Ex: Compressor Scroll Copeland'
-                  }
-                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] p-2.5 rounded-lg outline-none"
-                />
-              </div>
+            <div className="overflow-y-auto flex-1 px-5 py-4">
+              <form onSubmit={handleSaveNewPeca} id="form-add-peca" className="space-y-3.5 text-xs font-body">
 
-              {/* Detalhes secundários — variam por tipo */}
-              <div className="grid grid-cols-2 gap-2.5">
-                {/* Coluna esquerda */}
+                {/* Tipo de Item — trocar não apaga rascunho */}
                 <div>
-                  {(!newPeca.tipo_item || newPeca.tipo_item === 'PECA') && (
-                    <>
-                      <label className="block eyebrow mb-1">Part Number</label>
-                      <input type="text" value={newPeca.part_number || ''}
-                        onChange={(e) => setNewPeca({ ...newPeca, part_number: e.target.value })}
-                        placeholder="ZR61K3E-TFD"
-                        className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] p-2.5 rounded-lg outline-none" />
-                    </>
-                  )}
-                  {newPeca.tipo_item === 'SERVICO' && (
-                    <>
-                      <label className="block eyebrow mb-1">Prestador / Técnico</label>
-                      <input type="text" value={newPeca.fabricante || ''}
-                        onChange={(e) => setNewPeca({ ...newPeca, fabricante: e.target.value })}
-                        placeholder="Ex: Vision Controls"
-                        className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] p-2.5 rounded-lg outline-none" />
-                    </>
-                  )}
-                  {newPeca.tipo_item === 'HORA_EXTRA' && (
-                    <>
-                      <label className="block eyebrow mb-1">Tipo de H. Extra</label>
-                      <select value={newPeca.part_number || '100%'}
-                        onChange={(e) => setNewPeca({ ...newPeca, part_number: e.target.value })}
-                        className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] p-2.5 rounded-lg outline-none">
-                        <option value="100%">100% (Domingo/Feriado)</option>
-                        <option value="50%">50% (Dia útil)</option>
-                        <option value="75%">75% (Sábado)</option>
-                        <option value="SOBREAVISO">Sobreaviso</option>
-                      </select>
-                    </>
-                  )}
-                  {newPeca.tipo_item === 'INSUMO' && (
-                    <>
-                      <label className="block eyebrow mb-1">Referência / Código</label>
-                      <input type="text" value={newPeca.part_number || ''}
-                        onChange={(e) => setNewPeca({ ...newPeca, part_number: e.target.value })}
-                        placeholder="Ex: R410A-DAC"
-                        className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] p-2.5 rounded-lg outline-none" />
-                    </>
-                  )}
-                  {newPeca.tipo_item === 'FRETE' && (
-                    <>
-                      <label className="block eyebrow mb-1">Nota Fiscal / Referência</label>
-                      <input type="text" value={newPeca.part_number || ''}
-                        onChange={(e) => setNewPeca({ ...newPeca, part_number: e.target.value })}
-                        placeholder="Ex: NF 001234"
-                        className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] p-2.5 rounded-lg outline-none" />
-                    </>
-                  )}
+                  <label className="block eyebrow mb-1">Tipo de Item</label>
+                  <div className="grid grid-cols-5 gap-1">
+                    {([
+                      { value: 'PECA',       label: '🔧 Peça',      color: '#38BDF8' },
+                      { value: 'SERVICO',    label: '🛠️ Serviço',   color: '#A78BFA' },
+                      { value: 'HORA_EXTRA', label: '⏱️ H. Extra',  color: '#F5A623' },
+                      { value: 'INSUMO',     label: '🧴 Insumo',    color: '#34D399' },
+                      { value: 'FRETE',      label: '🚚 Frete',     color: '#FB923C' },
+                    ] as const).map(({ value, label, color }) => {
+                      const selected = tipoAtivo === value;
+                      const temRascunho = rascunhos[value]?.descricao?.trim();
+                      return (
+                        <button
+                          key={value}
+                          type="button"
+                          onClick={() => setTipoAtivo(value)}
+                          style={{
+                            border: `1px solid ${selected ? color : temRascunho ? color + '66' : '#30363D'}`,
+                            background: selected ? `${color}22` : temRascunho ? `${color}11` : 'transparent',
+                            color: selected ? color : temRascunho ? color + 'CC' : '#8B949E',
+                            borderRadius: 6, padding: '6px 2px', fontSize: 10, fontWeight: 700,
+                            cursor: 'pointer', transition: 'all 0.15s', textAlign: 'center', lineHeight: 1.4,
+                            position: 'relative',
+                          }}
+                        >
+                          {label}
+                          {temRascunho && !selected && (
+                            <span style={{ position: 'absolute', top: 2, right: 3, width: 5, height: 5, borderRadius: '50%', background: color }} />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
 
-                {/* Coluna direita: Quantidade */}
+                {/* Descrição — sempre visível, valor do rascunho do tipo ativo */}
                 <div>
                   <label className="block eyebrow mb-1">
-                    {newPeca.tipo_item === 'HORA_EXTRA' ? 'Qtd Horas' :
-                     newPeca.tipo_item === 'SERVICO' ? 'Qtd / Horas' :
-                     newPeca.tipo_item === 'FRETE' ? 'Qtd Volumes' : 'Quantidade'}
+                    {tipoAtivo === 'HORA_EXTRA' ? 'Funcionário / Cargo' :
+                     tipoAtivo === 'SERVICO' ? 'Descrição do Serviço' :
+                     tipoAtivo === 'FRETE' ? 'Transportadora / Tipo de Frete' :
+                     tipoAtivo === 'INSUMO' ? 'Descrição do Insumo' : 'Nome / Descrição da Peça'}
+                  </label>
+                  <input
+                    type="text"
+                    value={newPeca.descricao || ''}
+                    onChange={(e) => setNewPeca({ ...newPeca, descricao: e.target.value })}
+                    placeholder={
+                      tipoAtivo === 'HORA_EXTRA' ? 'Ex: Encarregado Arthur Silva' :
+                      tipoAtivo === 'SERVICO' ? 'Ex: Solda oxiacetilênica na tubulação' :
+                      tipoAtivo === 'FRETE' ? 'Ex: Jadlog — Entrega expressa' :
+                      tipoAtivo === 'INSUMO' ? 'Ex: Gás R-410A cilindro 11kg' :
+                      'Ex: Compressor Scroll Copeland'
+                    }
+                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] p-2.5 rounded-lg outline-none"
+                  />
+                </div>
+
+                {/* Detalhes secundários — variam por tipo */}
+                <div className="grid grid-cols-2 gap-2.5">
+                  <div>
+                    {tipoAtivo === 'PECA' && (
+                      <>
+                        <label className="block eyebrow mb-1">Part Number</label>
+                        <input type="text" value={newPeca.part_number || ''}
+                          onChange={(e) => setNewPeca({ ...newPeca, part_number: e.target.value })}
+                          placeholder="ZR61K3E-TFD"
+                          className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] p-2.5 rounded-lg outline-none" />
+                      </>
+                    )}
+                    {tipoAtivo === 'SERVICO' && (
+                      <>
+                        <label className="block eyebrow mb-1">Prestador / Técnico</label>
+                        <input type="text" value={newPeca.fabricante || ''}
+                          onChange={(e) => setNewPeca({ ...newPeca, fabricante: e.target.value })}
+                          placeholder="Ex: Vision Controls"
+                          className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] p-2.5 rounded-lg outline-none" />
+                      </>
+                    )}
+                    {tipoAtivo === 'HORA_EXTRA' && (
+                      <>
+                        <label className="block eyebrow mb-1">Tipo de H. Extra</label>
+                        <select value={newPeca.part_number || '100%'}
+                          onChange={(e) => setNewPeca({ ...newPeca, part_number: e.target.value })}
+                          className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] p-2.5 rounded-lg outline-none">
+                          <option value="100%">100% (Domingo/Feriado)</option>
+                          <option value="50%">50% (Dia útil)</option>
+                          <option value="75%">75% (Sábado)</option>
+                          <option value="SOBREAVISO">Sobreaviso</option>
+                        </select>
+                      </>
+                    )}
+                    {tipoAtivo === 'INSUMO' && (
+                      <>
+                        <label className="block eyebrow mb-1">Referência / Código</label>
+                        <input type="text" value={newPeca.part_number || ''}
+                          onChange={(e) => setNewPeca({ ...newPeca, part_number: e.target.value })}
+                          placeholder="Ex: R410A-DAC"
+                          className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] p-2.5 rounded-lg outline-none" />
+                      </>
+                    )}
+                    {tipoAtivo === 'FRETE' && (
+                      <>
+                        <label className="block eyebrow mb-1">Nota Fiscal / Referência</label>
+                        <input type="text" value={newPeca.part_number || ''}
+                          onChange={(e) => setNewPeca({ ...newPeca, part_number: e.target.value })}
+                          placeholder="Ex: NF 001234"
+                          className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] p-2.5 rounded-lg outline-none" />
+                      </>
+                    )}
+                  </div>
+
+                  {/* Quantidade */}
+                  <div>
+                    <label className="block eyebrow mb-1">
+                      {tipoAtivo === 'HORA_EXTRA' ? 'Qtd Horas' :
+                       tipoAtivo === 'SERVICO' ? 'Qtd / Horas' :
+                       tipoAtivo === 'FRETE' ? 'Qtd Volumes' : 'Quantidade'}
+                    </label>
+                    <input
+                      type="text" inputMode="numeric"
+                      value={newPeca.quantidade === undefined || newPeca.quantidade === null ? '' : String(newPeca.quantidade)}
+                      onChange={(e) => {
+                        const raw = e.target.value.replace(/\D/g, '');
+                        setNewPeca({ ...newPeca, quantidade: raw === '' ? undefined : Number(raw) });
+                      }}
+                      onBlur={() => { if (!newPeca.quantidade || newPeca.quantidade < 1) setNewPeca({ ...newPeca, quantidade: 1 }); }}
+                      placeholder="1"
+                      className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] p-2.5 rounded-lg outline-none text-center"
+                    />
+                  </div>
+                </div>
+
+                {/* Fabricante + NCM (só para PEÇA) */}
+                {tipoAtivo === 'PECA' && (
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <div>
+                      <label className="block eyebrow mb-1">Fabricante</label>
+                      <input type="text" value={newPeca.fabricante || ''}
+                        onChange={(e) => setNewPeca({ ...newPeca, fabricante: e.target.value })}
+                        placeholder="Ex: Copeland"
+                        className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] p-2.5 rounded-lg outline-none" />
+                    </div>
+                    <div>
+                      <label className="block eyebrow mb-1">NCM</label>
+                      <input type="text" value={(newPeca as any).ncm || ''}
+                        onChange={(e) => setNewPeca({ ...newPeca, ...{ ncm: e.target.value } })}
+                        placeholder="Ex: 8415.10.11"
+                        className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] p-2.5 rounded-lg outline-none font-mono" />
+                    </div>
+                  </div>
+                )}
+
+                {/* Valor */}
+                <div>
+                  <label className="block eyebrow mb-1">
+                    {tipoAtivo === 'HORA_EXTRA' ? 'Valor por Hora (R$)' :
+                     tipoAtivo === 'SERVICO' ? 'Valor Unitário (R$)' :
+                     tipoAtivo === 'FRETE' ? 'Valor Total do Frete (R$)' : 'Valor Estimado (R$)'}
                   </label>
                   <input
                     type="text" inputMode="numeric"
-                    value={newPeca.quantidade === undefined || newPeca.quantidade === null ? '' : String(newPeca.quantidade)}
+                    value={valorPecaDisplayAtivo}
                     onChange={(e) => {
                       const raw = e.target.value.replace(/\D/g, '');
-                      setNewPeca({ ...newPeca, quantidade: raw === '' ? undefined : Number(raw) });
+                      if (raw === '') { setValorPecaDisplayAtivo(''); setNewPeca({ ...newPeca, valor_unitario: 0 }); return; }
+                      const cents = parseInt(raw, 10);
+                      const fmt = (cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                      setValorPecaDisplayAtivo(fmt);
+                      setNewPeca({ ...newPeca, valor_unitario: cents / 100 });
                     }}
-                    onBlur={() => { if (!newPeca.quantidade || newPeca.quantidade < 1) setNewPeca({ ...newPeca, quantidade: 1 }); }}
-                    placeholder="1"
-                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] p-2.5 rounded-lg outline-none text-center"
+                    placeholder="0,00"
+                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] p-2.5 rounded-lg outline-none font-mono text-right"
                   />
                 </div>
-              </div>
 
-              {/* Fabricante (só para PEÇA) e Valor */}
-              <div className="grid grid-cols-2 gap-2.5">
-                {(!newPeca.tipo_item || newPeca.tipo_item === 'PECA') && (
-                  <div>
-                    <label className="block eyebrow mb-1">Fabricante</label>
-                    <input type="text" value={newPeca.fabricante || ''}
-                      onChange={(e) => setNewPeca({ ...newPeca, fabricante: e.target.value })}
-                      placeholder="Ex: Copeland"
-                      className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] p-2.5 rounded-lg outline-none" />
+                {/* Botão: Adicionar ao carrinho */}
+                {newPeca.descricao?.trim() && (
+                  <button
+                    type="button"
+                    onClick={handleAdicionarAoCarrinho}
+                    className="w-full py-2 text-xs font-bold rounded-lg border border-dashed border-[#A78BFA]/50 text-[#A78BFA] hover:bg-[#A78BFA]/10 transition-colors cursor-pointer"
+                  >
+                    + Adicionar mais um item ao lote
+                  </button>
+                )}
+
+                {/* Carrinho — itens prontos */}
+                {carritoItems.length > 0 && (
+                  <div className="space-y-1.5 pt-1">
+                    <label className="block eyebrow">Itens no lote ({carritoItems.length})</label>
+                    {carritoItems.map((item, idx) => {
+                      const tipoLabel: Record<string, string> = { PECA: '🔧', SERVICO: '🛠️', HORA_EXTRA: '⏱️', INSUMO: '🧴', FRETE: '🚚' };
+                      return (
+                        <div key={idx} className="flex items-center justify-between bg-[#0D1117] border border-[#30363D] rounded-lg px-3 py-2 gap-2">
+                          <div className="flex items-center gap-2 flex-1 min-w-0">
+                            <span className="text-sm shrink-0">{tipoLabel[item.tipo_item || 'PECA'] || '🔧'}</span>
+                            <div className="min-w-0">
+                              <p className="text-xs font-semibold text-[#ECEFF1] truncate">{item.descricao}</p>
+                              <p className="text-[10px] text-[#8B949E]">
+                                {item.quantidade}x
+                                {item.valor_unitario ? ` · R$ ${(item.valor_unitario).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : ''}
+                              </p>
+                            </div>
+                          </div>
+                          <button type="button" onClick={() => handleRemoverDoCarrinho(idx)}
+                            style={{ background: 'none', border: 'none', color: '#FF6B6B', cursor: 'pointer', padding: 4 }}>
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
-                {(!newPeca.tipo_item || newPeca.tipo_item === 'PECA') && (
-                  <div>
-                    <label className="block eyebrow mb-1">NCM</label>
-                    <input type="text" value={(newPeca as any).ncm || ''}
-                      onChange={(e) => setNewPeca({ ...newPeca, ...{ ncm: e.target.value } })}
-                      placeholder="Ex: 8415.10.11"
-                      className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] p-2.5 rounded-lg outline-none font-mono" />
-                  </div>
-                )}
-              </div>
+              </form>
+            </div>
 
-              {/* Valor */}
-              <div>
-                <label className="block eyebrow mb-1">
-                  {newPeca.tipo_item === 'HORA_EXTRA' ? 'Valor por Hora (R$)' :
-                   newPeca.tipo_item === 'SERVICO' ? 'Valor Unitário (R$)' :
-                   newPeca.tipo_item === 'FRETE' ? 'Valor Total do Frete (R$)' : 'Valor Estimado (R$)'}
-                </label>
-                <input
-                  type="text" inputMode="numeric"
-                  value={valorPecaDisplay}
-                  onChange={(e) => {
-                    const raw = e.target.value.replace(/\D/g, '');
-                    if (raw === '') { setValorPecaDisplay(''); setNewPeca({ ...newPeca, valor_unitario: 0 }); return; }
-                    const cents = parseInt(raw, 10);
-                    const fmt = (cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                    setValorPecaDisplay(fmt);
-                    setNewPeca({ ...newPeca, valor_unitario: cents / 100 });
-                  }}
-                  placeholder="0,00"
-                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7] p-2.5 rounded-lg outline-none font-mono text-right"
-                />
-              </div>
+            {/* Footer fixo */}
+            <div className="px-5 pb-5 pt-3 border-t border-[#30363D] shrink-0 flex items-center justify-between gap-2">
+              <button type="button"
+                onClick={() => { setShowAddPecaModal(false); resetModal(); }}
+                className="btn-secondary !py-1.5 !px-3 text-xs cursor-pointer">
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                form="form-add-peca"
+                disabled={carritoItems.length === 0 && !newPeca.descricao?.trim()}
+                className="btn-primary !py-1.5 !px-4 text-xs font-display font-bold cursor-pointer disabled:opacity-40"
+              >
+                {carritoItems.length > 0
+                  ? `Salvar ${carritoItems.length + (newPeca.descricao?.trim() ? 1 : 0)} item(s)`
+                  : 'Adicionar Item'}
+              </button>
+            </div>
 
-              <div className="pt-2 flex items-center justify-end gap-2">
-                <button type="button" onClick={() => { setShowAddPecaModal(false); setNewPeca({ descricao: '', part_number: '', fabricante: '', quantidade: 1, fornecedor: '', valor_unitario: 0, status: 'PENDENTE_COTACAO' }); setValorPecaDisplay(''); }}
-                  className="btn-secondary !py-1.5 !px-3 text-xs cursor-pointer">
-                  Cancelar
-                </button>
-                <button type="submit" className="btn-primary !py-1.5 !px-4 text-xs font-display font-bold cursor-pointer">
-                  {newPeca.id ? 'Salvar Alterações' : 'Adicionar Item'}
-                </button>
-              </div>
-            </form>
           </div>
         </div>
       )}
