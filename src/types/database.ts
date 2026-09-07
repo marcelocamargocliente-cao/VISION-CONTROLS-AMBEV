@@ -193,6 +193,7 @@ export interface Orcamento {
   arquivo_url?: string;
   descricao_anomalia?: string;
   observacoes?: string;
+  numero_pedido?: string;
   pecas?: Array<{
     descricao: string;
     part_number?: string;

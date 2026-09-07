@@ -385,17 +385,24 @@ export function gerarNumeroOrcamento(date: Date = new Date()): string {
   return `ORC-${yyyy}-${mm}${dd}-REV1`;
 }
 
-export function gerarNumeroRevisao(numeroAtual: string = ''): string {
-  if (!numeroAtual) {
-    return gerarNumeroOrcamento();
-  }
-  const revMatch = numeroAtual.match(/^(.*?)-REV(\d+)$/i);
+export function gerarNumeroRevisao(numeroAtual: string = '', ordemSap?: string): string {
+  // Use ordem_sap as base when available (ex: 10000878484-REV2)
+  const base = ordemSap || numeroAtual || gerarNumeroOrcamento();
+  const revMatch = base.match(/^(.*?)-REV(\d+)$/i);
   if (revMatch) {
-    const base = revMatch[1];
+    const b = revMatch[1];
     const nextRev = parseInt(revMatch[2], 10) + 1;
-    return `${base}-REV${nextRev}`;
+    return `${b}-REV${nextRev}`;
   }
-  return `${numeroAtual}-REV2`;
+  // strip existing REV from original if base is ordem_sap and numero has REV
+  if (ordemSap && numeroAtual) {
+    const existingRev = numeroAtual.match(/-REV(\d+)$/i);
+    if (existingRev) {
+      const nextRev = parseInt(existingRev[1], 10) + 1;
+      return `${ordemSap}-REV${nextRev}`;
+    }
+  }
+  return `${base}-REV2`;
 }
 
 export interface ShareOrcamentoData {
@@ -506,7 +513,7 @@ export function buildOrcamentoEmailContent(data: ShareOrcamentoData & {
     // Abertura simples — sem cabeçalho com dados da empresa
     'Olá Prezados,',
     nl,
-    `PROPOSTA ORÇAMENTÁRIA Nº ${data.numero}`,
+    `PROPOSTA COMERCIAL Nº ${data.numero}`,
     today,
     nl,
     'À',

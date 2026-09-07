@@ -599,14 +599,14 @@ export const OcorrenciaDetalhe: React.FC = () => {
                     className="btn-primary !py-1 !px-2.5 !text-[11px] gap-1 cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
-                    <span>Cadastrar Proposta</span>
+                    <span>Nova Proposta Comercial</span>
                   </button>
                 )}
               </div>
 
               {orcamentos.length === 0 ? (
                 <p className="text-xs  italic py-2">
-                  Nenhum orçamento emitido para aprovação ainda.
+                  Nenhum proposta comercial emitida para aprovação ainda.
                 </p>
               ) : (
                 <div className="space-y-2">
@@ -939,6 +939,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
       {/* Modal Revisão do Orçamento */}
       <ModalRevisaoOrcamento
         orcamentoOrigem={revisaoOrigem}
+        ocorrencia={ocorrencia}
         isOpen={isRevisaoOpen}
         onClose={() => setIsRevisaoOpen(false)}
         onCreated={async (novoOrc) => {

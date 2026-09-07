@@ -18,6 +18,7 @@ import { gerarNumeroRevisao, formatCurrency } from '../../utils/formatters';
 
 interface ModalRevisaoOrcamentoProps {
   orcamentoOrigem: Orcamento | null;
+  ocorrencia?: { ordem_sap?: string; numero?: number } | null;
   isOpen: boolean;
   onClose: () => void;
   onCreated: (novoOrcamento: Orcamento) => void;
@@ -25,6 +26,7 @@ interface ModalRevisaoOrcamentoProps {
 
 export const ModalRevisaoOrcamento: React.FC<ModalRevisaoOrcamentoProps> = ({
   orcamentoOrigem,
+  ocorrencia,
   isOpen,
   onClose,
   onCreated,
@@ -44,7 +46,7 @@ export const ModalRevisaoOrcamento: React.FC<ModalRevisaoOrcamentoProps> = ({
 
   useEffect(() => {
     if (orcamentoOrigem) {
-      const sugerido = gerarNumeroRevisao(orcamentoOrigem.numero);
+      const sugerido = gerarNumeroRevisao(orcamentoOrigem.numero, ocorrencia?.ordem_sap);
       setNumero(sugerido);
       setValorTotal(orcamentoOrigem.valor_total || 0);
       setFornecedor(orcamentoOrigem.fornecedor || '');
@@ -122,7 +124,7 @@ export const ModalRevisaoOrcamento: React.FC<ModalRevisaoOrcamentoProps> = ({
         await DataStore.addEvento({
           ocorrencia_id: orcamentoOrigem.ocorrencia_id,
           tipo_evento: 'ORCAMENTO_ENVIADO',
-          descricao: `Nova revisão orçamentária ${novoOrcamento.numero} (${formatCurrency(
+          descricao: `Nova revisão da proposta ${novoOrcamento.numero} (${formatCurrency(
             novoOrcamento.valor_total
           )}) enviada para ${novoOrcamento.enviado_para || 'AMBEV'}`,
         });
@@ -208,11 +210,17 @@ export const ModalRevisaoOrcamento: React.FC<ModalRevisaoOrcamentoProps> = ({
               <div className="relative">
                 <input
                   id="revisao-valor"
-                  type="number"
-                  step="0.01"
+                  type="text"
+                  inputMode="numeric"
                   required
                   value={valorTotal}
-                  onChange={(e) => setValorTotal(e.target.value)}
+                  onChange={(e) => {
+                    const raw = e.target.value.replace(/\D/g, '');
+                    if (raw === '') { setValorTotal(''); return; }
+                    const cents = parseInt(raw, 10);
+                    const fmt = (cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    setValorTotal(fmt);
+                  }}
                   className="w-full bg-[#14181D] border border-[#2C343E] rounded px-3 py-2 text-xs font-mono font-bold text-[#ECEFF1] focus:border-[#38BDF8] focus:outline-none"
                   placeholder="0,00"
                 />

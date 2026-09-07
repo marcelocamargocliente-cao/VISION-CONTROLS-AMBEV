@@ -97,6 +97,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
     observacoes: string;
     arquivo_pdf_url: string;
     descricao_anomalia: string;
+    numero_pedido: string;
   }>({
     numero: '',
     fornecedor: '',
@@ -108,6 +109,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
     observacoes: '',
     arquivo_pdf_url: '',
     descricao_anomalia: '',
+    numero_pedido: '',
   });
 
   // Local Toast feedback
@@ -137,6 +139,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
         observacoes: orcamento.observacoes || '',
         arquivo_pdf_url: orcamento.arquivo_pdf_url || orcamento.arquivo_url || '',
         descricao_anomalia: orcamento.descricao_anomalia || ocorrencia?.descricao_anomalia || '',
+        numero_pedido: orcamento.numero_pedido || '',
       });
       setIsEditing(initialEditMode);
 
@@ -232,6 +235,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
         arquivo_pdf_url: formData.arquivo_pdf_url,
         arquivo_url: formData.arquivo_pdf_url,
         descricao_anomalia: formData.descricao_anomalia.trim(),
+        numero_pedido: formData.numero_pedido.trim(),
       });
 
       // Special handling when approved
@@ -288,7 +292,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-[10px] font-mono tracking-widest text-[#94A3B8] uppercase font-bold">
-                  Proposta Orçamentária • AMBEV
+                  Proposta Comercial • AMBEV
                 </span>
                 {ocorrencia?.numero && (
                   <span className="px-2 py-0.5 rounded-[2px] font-mono text-[10px] font-bold bg-[#F5A623]/15 text-[#F5A623] border border-[#F5A623]/30">
@@ -557,6 +561,27 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                   <div className="flex items-center gap-2 text-xs text-[#ECEFF1] bg-[#1C222A] p-2.5 rounded-[4px] border border-[#2C343E]">
                     <User className="w-3.5 h-3.5 text-[#38BDF8]" />
                     <span>{orcamento.enviado_para || 'Contato AMBEV não especificado'}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Número do Pedido AMBEV */}
+              <div>
+                <label className="block text-[10px] uppercase font-mono text-[#94A3B8] mb-1">
+                  Nº do Pedido AMBEV
+                </label>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={formData.numero_pedido}
+                    onChange={(e) => setFormData({ ...formData, numero_pedido: e.target.value })}
+                    className="w-full bg-[#1C222A] border border-[#2C343E] rounded px-3 py-1.5 text-xs text-[#ECEFF1] focus:border-[#38BDF8] focus:outline-none font-mono"
+                    placeholder="Ex: 4500123456 — preenchido após aprovação AMBEV"
+                  />
+                ) : (
+                  <div className={`flex items-center gap-2 text-xs bg-[#1C222A] p-2.5 rounded-[4px] border ${orcamento.numero_pedido ? 'border-green-500/40 text-green-400' : 'border-[#2C343E] text-[#94A3B8]'}`}>
+                    <FileText className="w-3.5 h-3.5" />
+                    <span className="font-mono">{orcamento.numero_pedido || '— Aguardando pedido AMBEV'}</span>
                   </div>
                 )}
               </div>
