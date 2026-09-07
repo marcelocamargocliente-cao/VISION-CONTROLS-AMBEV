@@ -62,7 +62,7 @@ export const ModalRevisaoOrcamento: React.FC<ModalRevisaoOrcamentoProps> = ({
       setPdfUrl('');
       setErrorMsg('');
     }
-  }, [orcamentoOrigem]);
+  }, [orcamentoOrigem, isOpen]);
 
   if (!isOpen || !orcamentoOrigem) return null;
 

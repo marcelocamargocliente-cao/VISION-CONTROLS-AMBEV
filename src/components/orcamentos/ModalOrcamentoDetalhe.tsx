@@ -125,7 +125,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
     }, 4000);
   };
 
-  // Sync form data when orcamento changes
+  // Sync form data when orcamento changes — NÃO reseta isEditing aqui para não interromper save em andamento
   useEffect(() => {
     if (orcamento) {
       setFormData({
@@ -141,7 +141,6 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
         descricao_anomalia: orcamento.descricao_anomalia || ocorrencia?.descricao_anomalia || '',
         numero_pedido: orcamento.numero_pedido || '',
       });
-      setIsEditing(initialEditMode);
 
       // Load pecas for linked occurrence
       if (orcamento.ocorrencia_id) {
@@ -152,7 +151,14 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
           .finally(() => setLoadingPecas(false));
       }
     }
-  }, [orcamento, isOpen, initialEditMode]);
+  }, [orcamento]);
+
+  // Resetar modo edição apenas quando o modal ABRE (isOpen muda para true)
+  useEffect(() => {
+    if (isOpen) {
+      setIsEditing(initialEditMode);
+    }
+  }, [isOpen, initialEditMode]);
 
   if (!isOpen || !orcamento) return null;
 
