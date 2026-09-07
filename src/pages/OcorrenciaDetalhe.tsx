@@ -231,7 +231,26 @@ export const OcorrenciaDetalhe: React.FC = () => {
     e.preventDefault();
     if (!ocorrencia) return;
 
-    // Monta lista final: itens do carrinho + rascunho atual (se preenchido)
+    const isEdicao = !!(newPeca as any).id;
+
+    // Modo edição: salva só o item atual sem carrinho
+    if (isEdicao) {
+      if (!newPeca.descricao?.trim()) return;
+      try {
+        await DataStore.savePeca({
+          ...(newPeca as any),
+          ocorrencia_id: ocorrencia.id,
+        });
+        setShowAddPecaModal(false);
+        resetModal();
+        await loadData();
+      } catch (err) {
+        console.error(err);
+      }
+      return;
+    }
+
+    // Modo criação: monta lista final — carrinho + rascunho atual (se preenchido)
     const itensParaSalvar: Partial<PecaPendente>[] = [...carritoItems];
     if (newPeca.descricao?.trim()) {
       itensParaSalvar.push({ ...newPeca, tipo_item: tipoAtivo });
@@ -587,18 +606,26 @@ export const OcorrenciaDetalhe: React.FC = () => {
                       {/* Botão editar */}
                       <button
                         onClick={() => {
+                          const tipo = ((p as any).tipo_item || 'PECA') as 'PECA' | 'SERVICO' | 'HORA_EXTRA' | 'INSUMO' | 'FRETE';
                           const unit = p.valor_unitario ? Number(p.valor_unitario) : 0;
-                          setValorPecaDisplay(unit ? unit.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : '');
-                          setNewPeca({
-                            id: p.id,
-                            descricao: p.descricao,
-                            part_number: p.part_number,
-                            fabricante: p.fabricante,
-                            quantidade: p.quantidade,
-                            valor_unitario: p.valor_unitario,
-                            status: p.status,
-                            tipo_item: (p as any).tipo_item || 'PECA',
-                          } as any);
+                          const display = unit ? unit.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : '';
+                          // Reset modal e popula o rascunho do tipo correto com os dados da peça
+                          resetModal();
+                          setTipoAtivo(tipo);
+                          setRascunhos(prev => ({
+                            ...prev,
+                            [tipo]: {
+                              id: p.id,
+                              descricao: p.descricao,
+                              part_number: p.part_number,
+                              fabricante: p.fabricante,
+                              quantidade: p.quantidade,
+                              valor_unitario: p.valor_unitario,
+                              status: p.status,
+                              tipo_item: tipo,
+                            } as any,
+                          }));
+                          setValoresDisplay(prev => ({ ...prev, [tipo]: display }));
                           setShowAddPecaModal(true);
                         }}
                         title="Editar peça"
@@ -850,8 +877,8 @@ export const OcorrenciaDetalhe: React.FC = () => {
             {/* Header */}
             <div className="px-5 pt-5 pb-3 border-b border-[#30363D] shrink-0">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-display font-bold uppercase">Adicionar Itens</h3>
-                {carritoItems.length > 0 && (
+                <h3 className="text-sm font-display font-bold uppercase">{(newPeca as any).id ? 'Editar Item' : 'Adicionar Itens'}</h3>
+                {!(newPeca as any).id && carritoItems.length > 0 && (
                   <span className="text-[10px] font-bold bg-[#2ECC71]/15 text-[#2ECC71] border border-[#2ECC71]/30 rounded-full px-2 py-0.5">
                     {carritoItems.length} no carrinho
                   </span>
@@ -1040,8 +1067,8 @@ export const OcorrenciaDetalhe: React.FC = () => {
                   />
                 </div>
 
-                {/* Botão: Adicionar ao carrinho */}
-                {newPeca.descricao?.trim() && (
+                {/* Botão: Adicionar ao carrinho — só em modo criação */}
+                {!(newPeca as any).id && newPeca.descricao?.trim() && (
                   <button
                     type="button"
                     onClick={handleAdicionarAoCarrinho}
@@ -1051,8 +1078,8 @@ export const OcorrenciaDetalhe: React.FC = () => {
                   </button>
                 )}
 
-                {/* Carrinho — itens prontos */}
-                {carritoItems.length > 0 && (
+                {/* Carrinho — itens prontos, só em modo criação */}
+                {!(newPeca as any).id && carritoItems.length > 0 && (
                   <div className="space-y-1.5 pt-1">
                     <label className="block eyebrow">Itens no lote ({carritoItems.length})</label>
                     {carritoItems.map((item, idx) => {
@@ -1094,9 +1121,11 @@ export const OcorrenciaDetalhe: React.FC = () => {
                 disabled={carritoItems.length === 0 && !newPeca.descricao?.trim()}
                 className="btn-primary !py-1.5 !px-4 text-xs font-display font-bold cursor-pointer disabled:opacity-40"
               >
-                {carritoItems.length > 0
-                  ? `Salvar ${carritoItems.length + (newPeca.descricao?.trim() ? 1 : 0)} item(s)`
-                  : 'Adicionar Item'}
+                {(newPeca as any).id
+                  ? 'Salvar Alterações'
+                  : carritoItems.length > 0
+                    ? `Salvar ${carritoItems.length + (newPeca.descricao?.trim() ? 1 : 0)} item(s)`
+                    : 'Adicionar Item'}
               </button>
             </div>
 
