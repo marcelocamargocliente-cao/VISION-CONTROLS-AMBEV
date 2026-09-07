@@ -282,7 +282,7 @@ export const NovaOcorrencia: React.FC = () => {
                                 AMBEV {eq.patrimonio_ref || eq.tag_sap}
                               </span>
                             )}
-                            <IndustrialTag tag={eq.tag} size="sm" />
+                            <IndustrialTag tag={eq.patrimonio_ref || eq.tag_sap || eq.tag} size="sm" />
                             <span className="font-semibold text-xs">{eq.tipo} ({eq.marca} {eq.modelo})</span>
                           </div>
                           <div className="text-[10px] text-gray-400 mt-0.5">

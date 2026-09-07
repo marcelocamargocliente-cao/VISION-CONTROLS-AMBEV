@@ -389,7 +389,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
           <div>
             <span className="eyebrow  block mb-1">Equipamento Ativo</span>
             <div className="flex items-center gap-2.5">
-              {equipamento && <IndustrialTag tag={equipamento.tag} size="lg" />}
+              {equipamento && <IndustrialTag tag={equipamento.patrimonio_ref || equipamento.tag_sap || equipamento.tag} size="lg" />}
               <div className="min-w-0">
                 <p className="font-display font-bold  text-xs sm:text-sm truncate">{equipamento?.tipo || 'Equipamento'}</p>
                 <p className="text-[11px]   truncate">{equipamento?.marca} {equipamento?.modelo}</p>
@@ -831,7 +831,19 @@ export const OcorrenciaDetalhe: React.FC = () => {
                       <button
                         key={value}
                         type="button"
-                        onClick={() => setNewPeca({ ...newPeca, tipo_item: value, fabricante: value === 'PECA' ? (newPeca.fabricante || '') : '', part_number: value === 'PECA' ? (newPeca.part_number || '') : '' })}
+                        onClick={() => {
+                          setNewPeca({
+                            descricao: '',
+                            part_number: '',
+                            fabricante: '',
+                            quantidade: 1,
+                            fornecedor: '',
+                            valor_unitario: 0,
+                            status: 'PENDENTE_COTACAO',
+                            tipo_item: value,
+                          });
+                          setValorPecaDisplay('');
+                        }}
                         style={{
                           border: `1px solid ${selected ? color : '#30363D'}`,
                           background: selected ? `${color}22` : 'transparent',

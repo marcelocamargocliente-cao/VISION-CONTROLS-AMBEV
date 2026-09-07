@@ -281,8 +281,10 @@ export const Ocorrencias: React.FC = () => {
 
                         {/* TAG & Equipamento */}
                         <td className="py-3 px-3">
-                          {eq ? <IndustrialTag tag={eq.tag} size="sm" /> : <span className=" text-xs">TAG -</span>}
-                          <div className="text-xs font-semibold  mt-1">
+                          {eq
+                            ? <IndustrialTag tag={eq.patrimonio_ref || eq.tag_sap || eq.tag} size="sm" />
+                            : <span className="text-xs">TAG -</span>}
+                          <div className="text-xs font-semibold mt-1">
                             {eq ? `${eq.tipo} ${eq.marca}` : 'Equipamento'}
                           </div>
                         </td>
@@ -434,7 +436,7 @@ export const Ocorrencias: React.FC = () => {
 
                             <div>
                               <div className="flex items-center gap-1.5 mb-1">
-                                {eq && <IndustrialTag tag={eq.tag} size="sm" />}
+                                {eq && <IndustrialTag tag={eq.patrimonio_ref || eq.tag_sap || eq.tag} size="sm" />}
                               </div>
                               <p className="text-xs font-semibold  line-clamp-1">
                                 {eq?.tipo} {eq?.marca}
