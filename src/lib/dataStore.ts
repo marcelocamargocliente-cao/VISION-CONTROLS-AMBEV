@@ -1195,7 +1195,13 @@ export const DataStore = {
         ? { ...dbState.ugs[idx], ...ug, codigo: ug.codigo ? ug.codigo.trim().toUpperCase() : dbState.ugs[idx].codigo }
         : { ...ug, codigo: ug.codigo?.toUpperCase() || '' } as UG;
       if (isSupabaseConfigured) {
-        try { await supabase.from('ugs').update({ ...updated }).eq('id', ug.id); } catch (e) { console.warn('saveUG update', e); }
+        const { error } = await supabase.from('ugs').update({
+          codigo: updated.codigo,
+          nome: updated.nome,
+          descricao: updated.descricao,
+          ordem: updated.ordem,
+        }).eq('id', ug.id);
+        if (error) console.error('saveUG update ERROR:', error);
       }
       if (idx >= 0) { dbState.ugs[idx] = updated; persistState(); return updated; }
     }
@@ -1245,7 +1251,12 @@ export const DataStore = {
       if (idx >= 0) {
         const updated = { ...dbState.areas[idx], ...area };
         if (isSupabaseConfigured) {
-          try { await supabase.from('areas').update({ ...updated }).eq('id', area.id); } catch (e) { console.warn('saveArea update', e); }
+          const { error } = await supabase.from('areas').update({
+            ug_id: updated.ug_id,
+            nome: updated.nome,
+            codigo: updated.codigo,
+          }).eq('id', area.id);
+          if (error) console.error('saveArea update ERROR:', error);
         }
         dbState.areas[idx] = updated;
         persistState();
@@ -1259,7 +1270,8 @@ export const DataStore = {
       codigo: area.codigo || '',
     };
     if (isSupabaseConfigured) {
-      try { await supabase.from('areas').insert({ ...newArea }); } catch (e) { console.warn('saveArea insert', e); }
+      const { error } = await supabase.from('areas').insert({ ...newArea });
+      if (error) console.error('saveArea insert ERROR:', error);
     }
     dbState.areas.push(newArea);
     persistState();
@@ -1359,7 +1371,8 @@ export const DataStore = {
         ? { ...dbState.profiles[idx], ...profile }
         : { ...profile } as Profile;
       if (isSupabaseConfigured) {
-        try { await supabase.from('profiles').update({ ...updated }).eq('id', profile.id); } catch (e) { console.warn('saveProfile update', e); }
+        const { error } = await supabase.from('profiles').update({ ...updated }).eq('id', profile.id);
+        if (error) console.error('saveProfile update ERROR:', error);
       }
       if (idx >= 0) { dbState.profiles[idx] = updated; persistState(); return updated; }
     }
@@ -1375,7 +1388,8 @@ export const DataStore = {
       created_at: new Date().toISOString(),
     };
     if (isSupabaseConfigured) {
-      try { await supabase.from('profiles').insert({ ...newProfile }); } catch (e) { console.warn('saveProfile insert', e); }
+      const { error } = await supabase.from('profiles').insert({ ...newProfile });
+      if (error) console.error('saveProfile insert ERROR:', error);
     }
     dbState.profiles.push(newProfile);
     persistState();
@@ -1387,7 +1401,8 @@ export const DataStore = {
     if (prof) {
       prof.ativo = ativo;
       if (isSupabaseConfigured) {
-        try { await supabase.from('profiles').update({ ativo }).eq('id', profileId); } catch (e) { console.warn('toggleProfileActive', e); }
+        const { error } = await supabase.from('profiles').update({ ativo }).eq('id', profileId);
+        if (error) console.error('toggleProfileActive ERROR:', error);
       }
       persistState();
       return prof;
