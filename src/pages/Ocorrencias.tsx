@@ -264,12 +264,18 @@ export const Ocorrencias: React.FC = () => {
                     return (
                       <tr
                         key={occ.id}
-                        onClick={() => navigate(`/ocorrencias/${occ.id}`)}
+                        onMouseDown={(e) => { (e.currentTarget as any)._mouseDownX = e.clientX; (e.currentTarget as any)._mouseDownY = e.clientY; }}
+                        onClick={(e) => {
+                          const dx = e.clientX - ((e.currentTarget as any)._mouseDownX || e.clientX);
+                          const dy = e.clientY - ((e.currentTarget as any)._mouseDownY || e.clientY);
+                          if (Math.abs(dx) > 5 || Math.abs(dy) > 5) return; // user was selecting text
+                          navigate(`/ocorrencias/${occ.id}`);
+                        }}
                         className="hover:bg-[#232B35] cursor-pointer transition-colors group"
                       >
                         {/* Nº / Data */}
                         <td className="py-3 px-3">
-                          <div className=" font-bold text-sm ">#{occ.numero}</div>
+                          <div className="font-bold text-sm text-[#F5A623]">{occ.ordem_sap ? `OS ${occ.ordem_sap}` : `#${occ.numero}`}</div>
                           <div className="text-[10px]  ">{formatDate(occ.data_avaria)}</div>
                         </td>
 
@@ -410,11 +416,17 @@ export const Ocorrencias: React.FC = () => {
                         return (
                           <div
                             key={occ.id}
-                            onClick={() => navigate(`/ocorrencias/${occ.id}`)}
+                            onMouseDown={(e) => { (e.currentTarget as any)._mouseDownX = e.clientX; (e.currentTarget as any)._mouseDownY = e.clientY; }}
+                            onClick={(e) => {
+                              const dx = e.clientX - ((e.currentTarget as any)._mouseDownX || e.clientX);
+                              const dy = e.clientY - ((e.currentTarget as any)._mouseDownY || e.clientY);
+                              if (Math.abs(dx) > 5 || Math.abs(dy) > 5) return;
+                              navigate(`/ocorrencias/${occ.id}`);
+                            }}
                             className="p-3 bg-[var(--bg-input)] hover:bg-[#232B35] border border-[#2C343E] hover:border-[#F5A623] rounded-[3px] cursor-pointer transition-colors space-y-2 group"
                           >
                             <div className="flex items-center justify-between">
-                              <span className=" font-bold text-xs ">#{occ.numero}</span>
+                              <span className=" font-bold text-xs text-[#F5A623]">{occ.ordem_sap ? `OS ${occ.ordem_sap}` : `#${occ.numero}`}</span>
                               <span className={`text-[9px]  px-1.5 py-0.2 rounded border ${crit.badgeBg}`}>
                                 {crit.label}
                               </span>

@@ -302,7 +302,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="font-display font-extrabold text-[15px] sm:text-base  tracking-tight">
-                OCORRÊNCIA #{ocorrencia.numero}
+                {ocorrencia.ordem_sap ? `OS ${ocorrencia.ordem_sap}` : `OCORRÊNCIA #${ocorrencia.numero}`}
               </span>
               <span className={`px-2 py-0.5 rounded-full text-[10px]  font-semibold border ${critConfig.badgeBg}`}>
                 {critConfig.label}

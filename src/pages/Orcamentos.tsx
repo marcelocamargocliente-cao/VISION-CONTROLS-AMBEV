@@ -485,7 +485,13 @@ export const Orcamentos: React.FC = () => {
                   return (
                     <tr
                       key={orc.id}
-                      onClick={() => handleOpenDetail(orc)}
+                      onMouseDown={(e) => { (e.currentTarget as any)._mouseDownX = e.clientX; (e.currentTarget as any)._mouseDownY = e.clientY; }}
+                      onClick={(e) => {
+                        const dx = e.clientX - ((e.currentTarget as any)._mouseDownX || e.clientX);
+                        const dy = e.clientY - ((e.currentTarget as any)._mouseDownY || e.clientY);
+                        if (Math.abs(dx) > 5 || Math.abs(dy) > 5) return;
+                        handleOpenDetail(orc);
+                      }}
                       className="hover:bg-[#232B35] transition-colors cursor-pointer group"
                     >
                       {/* Nº Proposta */}
