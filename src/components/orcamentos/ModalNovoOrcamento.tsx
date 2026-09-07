@@ -34,9 +34,10 @@ interface ModalNovoOrcamentoProps {
 
 interface PecaItem {
   descricao: string;
-  part_number: string;
+  especificacao: string;   // antes: part_number — dados técnicos/referência
   quantidade: number;
   valor_unitario: string;
+  valor_total: string;     // calculado: qtd × unitário (somente exibição)
   ncm: string;
 }
 
@@ -109,14 +110,21 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
         setDescricaoAnomalia(orcamentoToEdit.descricao_anomalia || '');
         
         if (orcamentoToEdit.pecas && orcamentoToEdit.pecas.length > 0) {
-          setPecas(orcamentoToEdit.pecas.map(p => ({
-            descricao: p.descricao || '',
-            part_number: p.part_number || '',
-            quantidade: p.quantidade || 1,
-            valor_unitario: String(p.valor_unitario || ''),
-          })));
+          setPecas(orcamentoToEdit.pecas.map(p => {
+            const qtd = p.quantidade || 1;
+            const unit = parseFloat(String(p.valor_unitario || '0').replace(/\./g, '').replace(',', '.')) || 0;
+            const totalVal = unit * qtd;
+            return {
+              descricao: p.descricao || '',
+              especificacao: p.part_number || '',
+              quantidade: qtd,
+              valor_unitario: unit > 0 ? unit.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : String(p.valor_unitario || ''),
+              valor_total: totalVal > 0 ? totalVal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '',
+              ncm: (p as any).ncm || '',
+            };
+          }));
         } else {
-          setPecas([{ descricao: '', part_number: '', quantidade: 1, valor_unitario: '' }]);
+          setPecas([{ descricao: '', especificacao: '', quantidade: 1, valor_unitario: '', valor_total: '', ncm: '' }]);
         }
         
         setObservacoes(orcamentoToEdit.observacoes || '');
@@ -140,7 +148,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
 
         setEnviadoPara('AMBEV RJ');
         setDescricaoAnomalia('');
-        setPecas([{ descricao: '', part_number: '', quantidade: 1, valor_unitario: '' }]);
+        setPecas([{ descricao: '', especificacao: '', quantidade: 1, valor_unitario: '', valor_total: '', ncm: '' }]);
         setObservacoes('');
         setPdfFile(null);
         setPdfUrl('');
@@ -178,11 +186,20 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
   if (!isOpen) return null;
 
   const adicionarPeca = () => {
-    setPecas((prev) => [...prev, { descricao: '', part_number: '', quantidade: 1, valor_unitario: '' }]);
+    setPecas((prev) => [...prev, { descricao: '', especificacao: '', quantidade: 1, valor_unitario: '', valor_total: '', ncm: '' }]);
   };
 
   const atualizarPeca = (index: number, campo: keyof PecaItem, valor: string | number) => {
-    setPecas((prev) => prev.map((p, i) => (i === index ? { ...p, [campo]: valor } : p)));
+    setPecas((prev) => prev.map((p, i) => {
+      if (i !== index) return p;
+      const updated = { ...p, [campo]: valor };
+      // Recalcular valor_total sempre que qtd ou unitário mudar
+      const unit = parseFloat(String(campo === 'valor_unitario' ? valor : updated.valor_unitario).replace(/\./g, '').replace(',', '.')) || 0;
+      const qtd = Number(campo === 'quantidade' ? valor : updated.quantidade) || 0;
+      const total = unit * qtd;
+      updated.valor_total = total > 0 ? total.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '';
+      return updated;
+    }));
   };
 
   const removerPeca = (index: number) => {
@@ -228,7 +245,14 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
 
     setSubmitting(true);
     try {
-      const pecasValidas = pecas.filter((p) => p.descricao.trim());
+      // Converter especificacao → part_number para manter compatibilidade com banco
+      const pecasValidas = pecas.filter((p) => p.descricao.trim()).map(p => ({
+        descricao: p.descricao,
+        part_number: p.especificacao,
+        quantidade: p.quantidade,
+        valor_unitario: parseFloat(String(p.valor_unitario).replace(/\./g, '').replace(',', '.')) || 0,
+        ncm: p.ncm,
+      }));
 
       const payload = {
         ocorrencia_id: ocorrenciaId,
@@ -518,15 +542,19 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
                   <button
                     type="button"
                     onClick={() => {
-                      const importadas = pecasVinculadas.map(p => ({
-                        descricao: p.descricao || '',
-                        part_number: [p.fabricante, p.part_number].filter(Boolean).join(' — '),
-                        quantidade: p.quantidade || 1,
-                        valor_unitario: p.valor_unitario
-                          ? (p.valor_unitario).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-                          : '',
-                        ncm: p.ncm || '',
-                      }));
+                      const importadas = pecasVinculadas.map(p => {
+                        const qtd = p.quantidade || 1;
+                        const unit = p.valor_unitario || 0;
+                        const totalVal = unit * qtd;
+                        return {
+                          descricao: p.descricao || '',
+                          especificacao: [p.fabricante, p.part_number].filter(Boolean).join(' — '),
+                          quantidade: qtd,
+                          valor_unitario: unit > 0 ? unit.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '',
+                          valor_total: totalVal > 0 ? totalVal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '',
+                          ncm: p.ncm || '',
+                        };
+                      });
                       setPecas(prev => {
                         const filtered = prev.filter(p => p.descricao.trim() !== '');
                         return [...filtered, ...importadas];
@@ -576,15 +604,15 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
                         <Trash2 size={14} />
                       </button>
                     </div>
-                    {/* Row 2: Descrição ampla (dados, referência, especificação) */}
+                    {/* Row 2: Especificação (antes part_number) */}
                     <textarea
                       placeholder="Dados técnicos, referência, código SAP, especificação, fabricante, modelo..."
-                      value={peca.part_number}
-                      onChange={(e) => atualizarPeca(i, 'part_number', e.target.value)}
-                      rows={3}
+                      value={peca.especificacao}
+                      onChange={(e) => atualizarPeca(i, 'especificacao', e.target.value)}
+                      rows={2}
                       className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#38BDF8] rounded-[4px] px-2.5 py-1.5 text-xs font-mono text-[#ECEFF1] placeholder:text-[#6B7683] focus:outline-none resize-y"
                     />
-                    {/* Row 3: Qtd + Valor unitário + NCM */}
+                    {/* Row 3: Qtd + R$ unit. + Valor Total + NCM */}
                     <div className="flex gap-2 flex-wrap">
                       <div className="flex items-center gap-1.5">
                         <label className="text-[10px] text-[#8B949E] shrink-0">Qtd</label>
@@ -596,7 +624,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
                           className="w-16 bg-[#14181D] border border-[#2C343E] focus:border-[#38BDF8] rounded-[4px] px-2 py-1.5 text-xs font-mono text-[#ECEFF1] text-center focus:outline-none"
                         />
                       </div>
-                      <div className="flex items-center gap-1.5 flex-1 min-w-[120px]">
+                      <div className="flex items-center gap-1.5 flex-1 min-w-[110px]">
                         <label className="text-[10px] text-[#8B949E] shrink-0">R$ unit.</label>
                         <input
                           type="text"
@@ -613,7 +641,16 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
                           className="flex-1 bg-[#14181D] border border-[#2C343E] focus:border-[#38BDF8] rounded-[4px] px-2.5 py-1.5 text-xs font-mono text-[#ECEFF1] focus:outline-none text-right"
                         />
                       </div>
-                      <div className="flex items-center gap-1.5 min-w-[110px]">
+                      <div className="flex items-center gap-1.5 flex-1 min-w-[110px]">
+                        <label className="text-[10px] text-[#8B949E] shrink-0 font-semibold text-[#2ECC71]">= Total</label>
+                        <input
+                          type="text"
+                          readOnly
+                          value={peca.valor_total || '—'}
+                          className="flex-1 bg-[#14181D] border border-[#2ECC71]/20 rounded-[4px] px-2.5 py-1.5 text-xs font-mono font-bold text-[#2ECC71] focus:outline-none text-right cursor-default"
+                        />
+                      </div>
+                      <div className="flex items-center gap-1.5 min-w-[100px]">
                         <label className="text-[10px] text-[#8B949E] shrink-0">NCM</label>
                         <input
                           type="text"

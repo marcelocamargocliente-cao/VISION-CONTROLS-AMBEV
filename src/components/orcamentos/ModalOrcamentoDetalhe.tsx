@@ -821,9 +821,10 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                       <thead>
                         <tr className="bg-[#14181D] text-[#94A3B8] font-mono text-[9px] uppercase border-b border-[#2C343E]">
                           <th className="py-1.5 px-2.5">Descrição</th>
-                          <th className="py-1.5 px-2 font-mono">Part Number</th>
+                          <th className="py-1.5 px-2 font-mono">Especificação</th>
                           <th className="py-1.5 px-2 text-center">Qtd</th>
                           <th className="py-1.5 px-2 text-right">Unitário</th>
+                          <th className="py-1.5 px-2 text-right text-[#2ECC71]">Total</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-[#2C343E]/50 text-[#ECEFF1]">
@@ -845,8 +846,11 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                             <td className="py-1.5 px-2 text-center font-mono text-[11px]">
                               {peca.quantidade} {peca.unidade || 'UN'}
                             </td>
-                            <td className="py-1.5 px-2 text-right font-mono text-[11px] text-[#2ECC71]">
+                            <td className="py-1.5 px-2 text-right font-mono text-[11px] text-[#94A3B8]">
                               {formatCurrency(peca.valor_unitario)}
+                            </td>
+                            <td className="py-1.5 px-2 text-right font-mono text-[11px] font-bold text-[#2ECC71]">
+                              {formatCurrency((Number(peca.valor_unitario) || 0) * (Number(peca.quantidade) || 1))}
                             </td>
                           </tr>
                         ))}
