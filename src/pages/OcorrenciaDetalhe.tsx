@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   AlertTriangle,
@@ -87,6 +87,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
   const [confirmDeleteOrc, setConfirmDeleteOrc] = useState<Orcamento | null>(null);
   const [valorPecaDisplay, setValorPecaDisplay] = useState<string>('');
   const [carritoItems, setCarritoItems] = useState<Partial<PecaPendente>[]>([]);
+  const carritoRef = useRef<Partial<PecaPendente>[]>([]);
   const [tipoAtivo, setTipoAtivo] = useState<'PECA' | 'SERVICO' | 'HORA_EXTRA' | 'INSUMO' | 'FRETE'>('PECA');
 
   const emptyRascunho = (): Partial<PecaPendente> => ({
@@ -109,6 +110,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
     setValoresDisplay(prev => ({ ...prev, [tipoAtivo]: v }));
 
   const resetModal = () => {
+    carritoRef.current = [];
     setCarritoItems([]);
     setTipoAtivo('PECA');
     setRascunhos({ PECA: emptyRascunho(), SERVICO: emptyRascunho(), HORA_EXTRA: emptyRascunho(), INSUMO: emptyRascunho(), FRETE: emptyRascunho() });
@@ -217,7 +219,9 @@ export const OcorrenciaDetalhe: React.FC = () => {
       ...newPeca,
       tipo_item: tipoAtivo,
     };
-    setCarritoItems(prev => [...prev, item]);
+    const novoCarrinho = [...carritoRef.current, item];
+    carritoRef.current = novoCarrinho;
+    setCarritoItems(novoCarrinho);
     // Limpa só o rascunho do tipo ativo
     setRascunhos(prev => ({ ...prev, [tipoAtivo]: emptyRascunho() }));
     setValoresDisplay(prev => ({ ...prev, [tipoAtivo]: '' }));
@@ -250,8 +254,8 @@ export const OcorrenciaDetalhe: React.FC = () => {
       return;
     }
 
-    // Modo criação: monta lista final — carrinho + rascunho atual (se preenchido)
-    const itensParaSalvar: Partial<PecaPendente>[] = [...carritoItems];
+    // Modo criação: monta lista final — carritoRef (sempre atualizado) + rascunho atual
+    const itensParaSalvar: Partial<PecaPendente>[] = [...carritoRef.current];
     if (newPeca.descricao?.trim()) {
       itensParaSalvar.push({ ...newPeca, tipo_item: tipoAtivo });
     }

@@ -854,7 +854,7 @@ export const DataStore = {
     }
 
     const newPeca: Peca = {
-      id: `peca-${Date.now()}`,
+      id: `peca-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
       ocorrencia_id: peca.ocorrencia_id || '',
       descricao: peca.descricao || 'Nova Peça',
       part_number: peca.part_number,
