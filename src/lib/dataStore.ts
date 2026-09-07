@@ -1052,13 +1052,13 @@ export const DataStore = {
   async getEventosByOcorrencia(ocorrenciaId: string): Promise<OcorrenciaEvento[]> {
     if (isSupabaseConfigured) {
       try {
-        const { data } = await supabase.from('ocorrencia_eventos').select('*').eq('ocorrencia_id', ocorrenciaId).order('created_at', { ascending: false });
+        const { data } = await supabase.from('ocorrencia_eventos').select('*').eq('ocorrencia_id', ocorrenciaId).order('created_at', { ascending: true });
         if (data) return data as OcorrenciaEvento[];
       } catch (e) { console.warn(e); }
     }
     return dbState.eventos
       .filter((e) => e.ocorrencia_id === ocorrenciaId)
-      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
   },
 
   // 17. Anexos & Fotos

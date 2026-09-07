@@ -729,10 +729,14 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                         </div>
                         <span
                           className={`px-2 py-0.5 rounded-[2px] font-mono text-[10px] font-bold border uppercase ${
-                            getOcorrenciaStatusConfig(ocorrencia.status).badgeBg
+                            ocorrencia.status === 'AGUARDANDO_ORCAMENTO'
+                              ? 'bg-[#38BDF8]/15 text-[#38BDF8] border-[#38BDF8]/40'
+                              : getOcorrenciaStatusConfig(ocorrencia.status).badgeBg
                           }`}
                         >
-                          {getOcorrenciaStatusConfig(ocorrencia.status).label}
+                          {ocorrencia.status === 'AGUARDANDO_ORCAMENTO'
+                            ? 'ORÇAMENTO ENVIADO'
+                            : getOcorrenciaStatusConfig(ocorrencia.status).label}
                         </span>
                       </div>
                     ) : (

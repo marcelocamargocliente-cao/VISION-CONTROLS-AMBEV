@@ -24,6 +24,15 @@ interface ModalRevisaoOrcamentoProps {
   onCreated: (novoOrcamento: Orcamento) => void;
 }
 
+// Calcula a validade padrão: 30 dias após data_envio do orçamento (ou hoje)
+const calcValidadePadrao = (orcamento: Orcamento | null): string => {
+  if (!orcamento) return '';
+  const base = orcamento.data_envio ? new Date(orcamento.data_envio) : new Date();
+  const d = new Date(base);
+  d.setDate(d.getDate() + 30);
+  return d.toISOString().substring(0, 10);
+};
+
 export const ModalRevisaoOrcamento: React.FC<ModalRevisaoOrcamentoProps> = ({
   orcamentoOrigem,
   ocorrencia,
@@ -37,7 +46,7 @@ export const ModalRevisaoOrcamento: React.FC<ModalRevisaoOrcamentoProps> = ({
   const [valorTotal, setValorTotal] = useState<string | number>('');
   const [fornecedor, setFornecedor] = useState('');
   const [enviadoPara, setEnviadoPara] = useState('');
-  const [validade, setValidade] = useState('');
+  const [validade, setValidade] = useState(() => calcValidadePadrao(orcamentoOrigem));
   const [observacoes, setObservacoes] = useState('');
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [pdfUrl, setPdfUrl] = useState('');
@@ -48,11 +57,13 @@ export const ModalRevisaoOrcamento: React.FC<ModalRevisaoOrcamentoProps> = ({
     if (orcamentoOrigem) {
       const sugerido = gerarNumeroRevisao(orcamentoOrigem.numero, ocorrencia?.ordem_sap);
       setNumero(sugerido);
-      setValorTotal(orcamentoOrigem.valor_total || 0);
+      const vt = Number(orcamentoOrigem.valor_total) || 0;
+      setValorTotal(vt > 0 ? vt.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '');
       setFornecedor(orcamentoOrigem.fornecedor || '');
       setEnviadoPara(orcamentoOrigem.enviado_para || '');
-      // Calculate 30 days ahead from today for default new validity
-      const d = new Date();
+      // Validade = 30 dias a partir da data de envio original (ou hoje se não houver)
+      const base = orcamentoOrigem.data_envio ? new Date(orcamentoOrigem.data_envio) : new Date();
+      const d = new Date(base);
       d.setDate(d.getDate() + 30);
       setValidade(d.toISOString().substring(0, 10));
       setObservacoes(
