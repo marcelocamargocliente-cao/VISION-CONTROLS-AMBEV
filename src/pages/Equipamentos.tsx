@@ -379,6 +379,7 @@ export const Equipamentos: React.FC = () => {
             <thead className="sticky top-0 z-10 bg-[#1a2235] border-b border-blue-500/20 shadow-sm text-gray-300">
               <tr className="text-[10px] uppercase tracking-wider h-[36px]">
                 <th className="py-2 px-3 w-[90px]">TAG AMBEV</th>
+                <th className="py-2 px-3 w-[90px]">TAG VISION</th>
                 <th className="py-2 px-3 w-[60px] text-center">UG</th>
                 <th className="py-2 px-3 w-[150px]">LOCAL</th>
                 <th className="py-2 px-3 min-w-[180px]">LOCAL DE INSTALAÇÃO</th>
@@ -408,14 +409,16 @@ export const Equipamentos: React.FC = () => {
                   >
                     {/* 1. TAG AMBEV */}
                     <td className="py-2 px-3 align-middle w-[90px]">
-                      <div className="flex flex-col gap-0.5">
-                        <span className="bg-[#1E3A5F] text-blue-400 font-bold text-[11px] rounded px-2 py-0.5 inline-flex items-center border border-blue-500/30 font-mono">
-                          {eq.patrimonio_ref || eq.tag_sap || eq.tag}
-                        </span>
-                        {(eq.patrimonio_ref || eq.tag_sap) && (
-                          <span className="text-[9px] text-gray-500 font-mono pl-0.5">V:{eq.tag}</span>
-                        )}
-                      </div>
+                      <span className="bg-[#1E3A5F] text-blue-400 font-bold text-[11px] rounded px-2 py-0.5 inline-flex items-center border border-blue-500/30 font-mono">
+                        {eq.patrimonio_ref || eq.tag_sap || '—'}
+                      </span>
+                    </td>
+
+                    {/* 1b. TAG VISION */}
+                    <td className="py-2 px-3 align-middle w-[90px]">
+                      <span className="bg-[#2D2A1F] text-[#F5A623] font-bold text-[11px] rounded px-2 py-0.5 inline-flex items-center border border-[#F5A623]/30 font-mono">
+                        {eq.tag}
+                      </span>
                     </td>
 
                     {/* 2. UG */}

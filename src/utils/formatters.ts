@@ -150,11 +150,11 @@ export function getEquipStatusConfig(status: EquipStatus) {
       };
     case 'RESTRICAO':
       return {
-        label: 'Restrição Operacional',
-        shortLabel: 'Restrição',
-        ledClass: 'led-warn',
-        badgeBg: 'bg-[#D29922]/15 text-[#D29922] border-[#D29922]/30',
-        textColor: 'text-[#D29922]',
+        label: 'NOK',
+        shortLabel: 'NOK',
+        ledClass: 'led-alert',
+        badgeBg: 'bg-[#F85149]/15 text-[#F85149] border-[#F85149]/40',
+        textColor: 'text-[#F85149]',
       };
     case 'PARADO':
       return {
