@@ -354,10 +354,10 @@ export function getOrcamentoStatusConfig(status: OrcamentoStatus) {
     case 'EXPIRADO':
       return {
         label: 'Expirado',
-        badgeBg: 'bg-[#30363D]/40 text-[#8B949E] border-[#30363D]',
-        textColor: 'text-[#8B949E]',
-        color: '#484F58',
-        borderTopColor: '#484F58',
+        badgeBg: 'bg-[#F5A623]/15 text-[#F5A623] border-[#F5A623]/40',
+        textColor: 'text-[#F5A623]',
+        color: '#F5A623',
+        borderTopColor: '#F5A623',
       };
     case 'CANCELADO':
       return {
