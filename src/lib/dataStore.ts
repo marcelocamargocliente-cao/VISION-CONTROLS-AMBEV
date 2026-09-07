@@ -67,7 +67,10 @@ function getInitialDbState(): LocalDbState {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
-      return JSON.parse(saved);
+      const parsed = JSON.parse(saved);
+      // Sempre usar equipamentos do JSON (nunca do cache — dados podem estar desatualizados)
+      parsed.equipamentos = [...INITIAL_EQUIPAMENTOS];
+      return parsed;
     }
   } catch (e) {
     console.warn('Could not read from localStorage, using default seed', e);

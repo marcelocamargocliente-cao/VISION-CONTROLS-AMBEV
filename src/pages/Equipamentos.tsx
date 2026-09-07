@@ -51,42 +51,36 @@ export const Equipamentos: React.FC = () => {
   const loadData = async () => {
     setLoading(true);
     try {
-      // 1. Consulta direta Supabase
-      if (isSupabaseConfigured) {
-        const { data, error } = await supabase
-          .from('equipamentos')
-          .select('tag, tipo_equipamento, marca, modelo, capacidade, status, ug_ref, area_ref, patrimonio_ref, localizacao_ref, local_instalacao')
-          .order('tag', { ascending: true });
+      // Sempre tenta Supabase primeiro
+      const { data, error } = await supabase
+        .from('equipamentos')
+        .select('tag, tipo_equipamento, marca, modelo, capacidade, status, ug_ref, area_ref, patrimonio_ref, localizacao_ref, local_instalacao')
+        .order('tag', { ascending: true });
 
-        if (error) {
-          console.error('Supabase query error:', error);
-        }
-
-        if (!error && data && data.length > 0) {
-          const mapped: Equipamento[] = data.map((item: any) => ({
-            id: `equip-${item.tag}`,
-            tag: String(item.tag || ''),
-            ug_ref: item.ug_ref,
-            area_ref: item.area_ref,
-            localizacao_ref: item.localizacao_ref,
-            patrimonio_ref: item.patrimonio_ref != null ? String(item.patrimonio_ref) : undefined,
-            tipo_equipamento: item.tipo_equipamento || '',
-            marca: item.marca || undefined,
-            modelo: item.modelo || undefined,
-            capacidade: item.capacidade || undefined,
-            aplicacao: 'INDUSTRIAL',
-            status: (item.status as EquipStatus) || 'OK',
-            local_instalacao: item.local_instalacao || (item.ug_ref ? `${item.ug_ref} · ${item.localizacao_ref || ''}` : ''),
-            tipo: item.tipo_equipamento || '',
-            patrimonio: item.patrimonio_ref != null ? String(item.patrimonio_ref) : undefined,
-          }));
-          setEquipamentos(mapped);
-          setLoading(false);
-          return;
-        }
+      if (!error && data && data.length > 0) {
+        const mapped: Equipamento[] = data.map((item: any) => ({
+          id: `equip-${item.tag}`,
+          tag: String(item.tag || ''),
+          ug_ref: item.ug_ref || '',
+          area_ref: item.area_ref || '',
+          localizacao_ref: item.localizacao_ref || '',
+          patrimonio_ref: item.patrimonio_ref != null ? String(item.patrimonio_ref) : undefined,
+          tipo_equipamento: item.tipo_equipamento || '',
+          marca: item.marca || undefined,
+          modelo: item.modelo || undefined,
+          capacidade: item.capacidade || undefined,
+          aplicacao: 'INDUSTRIAL',
+          status: (item.status as EquipStatus) || 'OK',
+          local_instalacao: item.localizacao_ref || item.local_instalacao || '',
+          tipo: item.tipo_equipamento || '',
+          patrimonio: item.patrimonio_ref != null ? String(item.patrimonio_ref) : undefined,
+        }));
+        setEquipamentos(mapped);
+        setLoading(false);
+        return;
       }
 
-      // 3. Fallback DataStore (194 equipamentos reais)
+      // Fallback: JSON local (já atualizado com dados da planilha)
       const eqs = await DataStore.getEquipamentos();
       setEquipamentos(eqs);
     } catch (e) {
