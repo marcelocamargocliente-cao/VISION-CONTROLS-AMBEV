@@ -21,6 +21,7 @@ import {
   User,
   Shield,
   Trash2,
+  Eye,
 } from 'lucide-react';
 import { DataStore } from '../lib/dataStore';
 import {
@@ -87,6 +88,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
 
   // New Peca Modal — carrinho + rascunhos independentes por tipo
   const [showAddPecaModal, setShowAddPecaModal] = useState(false);
+  const [viewPeca, setViewPeca] = useState<PecaPendente | null>(null);
   const [confirmDeleteOrc, setConfirmDeleteOrc] = useState<Orcamento | null>(null);
   const [valorPecaDisplay, setValorPecaDisplay] = useState<string>('');
   const [carritoItems, setCarritoItems] = useState<Partial<PecaPendente>[]>([]);
@@ -665,6 +667,20 @@ export const OcorrenciaDetalhe: React.FC = () => {
                         {p.valor_unitario ? formatCurrency(p.valor_unitario) : '—'}
                       </span>
 
+                      {/* Botão visualizar */}
+                      <button
+                        onClick={() => setViewPeca(p)}
+                        title="Visualizar detalhes"
+                        style={{
+                          background: 'none', border: '1px solid rgba(139,148,158,0.3)',
+                          padding: '4px 6px', cursor: 'pointer', color: '#8B949E',
+                          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                          borderRadius: '4px', flexShrink: 0
+                        }}
+                      >
+                        <Eye size={14} />
+                      </button>
+
                       {/* Botão editar */}
                       <button
                         onClick={() => {
@@ -936,6 +952,94 @@ export const OcorrenciaDetalhe: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* MODAL: VISUALIZAR ITEM */}
+      {viewPeca && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[#161B22] border border-[#30363D] rounded-xl w-full max-w-md p-5 space-y-3 shadow-2xl">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-display font-bold uppercase">Detalhes do Item</h3>
+              <button onClick={() => setViewPeca(null)} className="text-gray-400 hover:text-white cursor-pointer text-lg">&times;</button>
+            </div>
+
+            <div className="space-y-2.5 text-xs">
+              {/* Tipo */}
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-[#8B949E] uppercase w-24 shrink-0">Tipo</span>
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold" style={{
+                  background: (viewPeca as any).tipo_item === 'SERVICO' ? '#A78BFA22' : (viewPeca as any).tipo_item === 'HORA_EXTRA' ? '#F5A62322' : (viewPeca as any).tipo_item === 'INSUMO' ? '#34D39922' : (viewPeca as any).tipo_item === 'FRETE' ? '#FB923C22' : '#38BDF822',
+                  color: (viewPeca as any).tipo_item === 'SERVICO' ? '#A78BFA' : (viewPeca as any).tipo_item === 'HORA_EXTRA' ? '#F5A623' : (viewPeca as any).tipo_item === 'INSUMO' ? '#34D399' : (viewPeca as any).tipo_item === 'FRETE' ? '#FB923C' : '#38BDF8',
+                  border: '1px solid currentColor', borderColor: 'currentColor',
+                }}>
+                  {(viewPeca as any).tipo_item || 'PECA'}
+                </span>
+              </div>
+
+              {/* Nome */}
+              <div className="flex gap-2">
+                <span className="text-[10px] text-[#8B949E] uppercase w-24 shrink-0">Nome</span>
+                <span className="text-[#ECEFF1] font-semibold">{viewPeca.descricao}</span>
+              </div>
+
+              {/* Descrição */}
+              {viewPeca.part_number && (
+                <div className="flex gap-2">
+                  <span className="text-[10px] text-[#8B949E] uppercase w-24 shrink-0">Descrição</span>
+                  <span className="text-[#94A3B8] font-mono">{viewPeca.part_number}</span>
+                </div>
+              )}
+
+              {/* Fabricante */}
+              {viewPeca.fabricante && (
+                <div className="flex gap-2">
+                  <span className="text-[10px] text-[#8B949E] uppercase w-24 shrink-0">Fabricante</span>
+                  <span className="text-[#94A3B8]">{viewPeca.fabricante}</span>
+                </div>
+              )}
+
+              {/* Quantidade */}
+              <div className="flex gap-2">
+                <span className="text-[10px] text-[#8B949E] uppercase w-24 shrink-0">Quantidade</span>
+                <span className="text-[#ECEFF1] font-mono">{viewPeca.quantidade} {viewPeca.unidade || 'UN'}</span>
+              </div>
+
+              {/* Valor */}
+              <div className="flex gap-2">
+                <span className="text-[10px] text-[#8B949E] uppercase w-24 shrink-0">Valor Unit.</span>
+                <span className="text-[#38BDF8] font-mono font-bold">{viewPeca.valor_unitario ? formatCurrency(viewPeca.valor_unitario) : '—'}</span>
+              </div>
+
+              {/* Valor Total */}
+              <div className="flex gap-2">
+                <span className="text-[10px] text-[#8B949E] uppercase w-24 shrink-0">Valor Total</span>
+                <span className="text-[#2ECC71] font-mono font-bold">
+                  {viewPeca.valor_unitario ? formatCurrency(Number(viewPeca.valor_unitario) * Number(viewPeca.quantidade || 1)) : '—'}
+                </span>
+              </div>
+
+              {/* NCM */}
+              {viewPeca.ncm && (
+                <div className="flex gap-2">
+                  <span className="text-[10px] text-[#8B949E] uppercase w-24 shrink-0">NCM</span>
+                  <span className="text-[#94A3B8] font-mono">{viewPeca.ncm}</span>
+                </div>
+              )}
+
+              {/* Status */}
+              <div className="flex gap-2">
+                <span className="text-[10px] text-[#8B949E] uppercase w-24 shrink-0">Status</span>
+                <span className="text-[#F5A623] font-mono text-[10px]">{viewPeca.status}</span>
+              </div>
+            </div>
+
+            <div className="pt-2 flex justify-end">
+              <button onClick={() => setViewPeca(null)} className="btn-secondary !py-1.5 !px-4 text-xs cursor-pointer">
+                Fechar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* MODAL: ADICIONAR / EDITAR ITEM — com carrinho e rascunhos por tipo */}
       {showAddPecaModal && (
