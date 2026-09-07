@@ -890,7 +890,16 @@ export const Cadastros: React.FC = () => {
       <UgModal
         isOpen={isUgModalOpen}
         onClose={() => setIsUgModalOpen(false)}
-        onSuccess={() => loadData()}
+        onSuccess={(savedUg) => {
+          // Atualiza estado local imediatamente (sem esperar Supabase)
+          setHierarchy(prev => ({
+            ...prev,
+            ugs: ugToEdit
+              ? prev.ugs.map(u => u.id === savedUg.id ? savedUg : u)
+              : [...prev.ugs, savedUg],
+          }));
+          loadData(); // sync com Supabase em background
+        }}
         ugToEdit={ugToEdit}
         existingCount={hierarchy.ugs.length}
       />
@@ -898,7 +907,15 @@ export const Cadastros: React.FC = () => {
       <AreaModal
         isOpen={isAreaModalOpen}
         onClose={() => setIsAreaModalOpen(false)}
-        onSuccess={() => loadData()}
+        onSuccess={(savedArea) => {
+          setHierarchy(prev => ({
+            ...prev,
+            areas: areaToEdit
+              ? prev.areas.map(a => a.id === savedArea.id ? savedArea : a)
+              : [...prev.areas, savedArea],
+          }));
+          loadData();
+        }}
         areaToEdit={areaToEdit}
         ugs={hierarchy.ugs}
       />
@@ -915,9 +932,14 @@ export const Cadastros: React.FC = () => {
       <ColaboradorModal
         isOpen={isColabModalOpen}
         onClose={() => setIsColabModalOpen(false)}
-        onSuccess={async () => {
+        onSuccess={async (savedProfile) => {
+          // Atualiza estado local imediatamente
+          setProfiles(prev =>
+            colabToEdit
+              ? prev.map(p => p.id === savedProfile.id ? savedProfile : p)
+              : [...prev, savedProfile]
+          );
           await loadData();
-          await refreshProfiles();
         }}
         profileToEdit={colabToEdit}
       />
