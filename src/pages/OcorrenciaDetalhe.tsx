@@ -44,6 +44,7 @@ import {
   calculateDaysDiff,
   getCriticidadeConfig,
   getOcorrenciaStatusConfig,
+  getOrcamentoStatusConfig,
   gerarNumeroOrcamento,
 } from '../utils/formatters';
 import { ModalOrcamentoDetalhe } from '../components/orcamentos/ModalOrcamentoDetalhe';
@@ -74,6 +75,8 @@ export const OcorrenciaDetalhe: React.FC = () => {
   const [eventos, setEventos] = useState<OcorrenciaEvento[]>([]);
   const [pecas, setPecas] = useState<PecaPendente[]>([]);
   const [orcamentos, setOrcamentos] = useState<Orcamento[]>([]);
+  // True quando há pelo menos 1 proposta e todas estão EXPIRADO
+  const todasPropostasExpiradas = orcamentos.length > 0 && orcamentos.every(o => o.status === 'EXPIRADO');
   const [fotos, setFotos] = useState<Anexo[]>([]);
   const [pdfs, setPdfs] = useState<Anexo[]>([]);
   const [loading, setLoading] = useState(true);
@@ -431,15 +434,27 @@ export const OcorrenciaDetalhe: React.FC = () => {
               <select
                 value={ocorrencia.status}
                 onChange={(e) => handleStatusChange(e.target.value as OcorrenciaStatus)}
-                className="bg-[#161B22] border border-[#2F81F7]/60  font-display font-bold text-xs rounded-lg px-3 py-1.5 outline-none cursor-pointer tracking-wide hover:border-[#2F81F7] transition-colors"
+                className={`font-display font-bold text-xs rounded-lg px-3 py-1.5 outline-none cursor-pointer tracking-wide transition-colors ${
+                  todasPropostasExpiradas
+                    ? 'bg-[#F5A623]/10 border border-[#F5A623]/60 text-[#F5A623] hover:border-[#F5A623]'
+                    : 'bg-[#161B22] border border-[#2F81F7]/60 hover:border-[#2F81F7]'
+                }`}
               >
                 {STATUS_FLOW.map((st) => (
-                  <option key={st} value={st} className="bg-[#161B22] ">
-                    Fase: {getOcorrenciaStatusConfig(st).label}
+                  <option key={st} value={st} className="bg-[#161B22] text-white">
+                    {todasPropostasExpiradas && ocorrencia.status === st
+                      ? `⚠ PROPOSTA EXPIRADA — ${getOcorrenciaStatusConfig(st).label}`
+                      : `Fase: ${getOcorrenciaStatusConfig(st).label}`}
                   </option>
                 ))}
               </select>
             </div>
+          )}
+          {/* Alerta visual quando todas propostas expiradas */}
+          {todasPropostasExpiradas && (
+            <span className="text-[10px] font-bold px-2 py-1 rounded-md bg-[#F5A623]/15 border border-[#F5A623]/40 text-[#F5A623] animate-pulse">
+              ⚠ ORÇAMENTO EXPIRADO
+            </span>
           )}
 
           {/* Compartilhar Button */}
@@ -762,9 +777,14 @@ export const OcorrenciaDetalhe: React.FC = () => {
                           <span className="font-bold group-hover:underline">
                             {orc.numero}
                           </span>
-                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#21262D] border border-[#30363D] font-mono">
-                            {orc.status}
-                          </span>
+                          {(() => {
+                            const sc = getOrcamentoStatusConfig(orc.status);
+                            return (
+                              <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold border ${sc.badgeBg}`}>
+                                {sc.label}
+                              </span>
+                            );
+                          })()}
                         </div>
                         <p className="mt-1 font-medium truncate">{orc.fornecedor}</p>
                         <p className="text-[10px] text-[#8B949E]">
