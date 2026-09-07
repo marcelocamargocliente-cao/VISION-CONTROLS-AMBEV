@@ -88,33 +88,67 @@ export const OcorrenciaDetalhe: React.FC = () => {
   const [valorPecaDisplay, setValorPecaDisplay] = useState<string>('');
   const [carritoItems, setCarritoItems] = useState<Partial<PecaPendente>[]>([]);
   const carritoRef = useRef<Partial<PecaPendente>[]>([]);
-  const [tipoAtivo, setTipoAtivo] = useState<'PECA' | 'SERVICO' | 'HORA_EXTRA' | 'INSUMO' | 'FRETE'>('PECA');
+  const [tipoAtivo, setTipoAtivoState] = useState<'PECA' | 'SERVICO' | 'HORA_EXTRA' | 'INSUMO' | 'FRETE'>('PECA');
 
   const emptyRascunho = (): Partial<PecaPendente> => ({
     descricao: '', part_number: '', fabricante: '', quantidade: 1,
     fornecedor: '', valor_unitario: 0, status: 'PENDENTE_COTACAO',
   });
-  const [rascunhos, setRascunhos] = useState<Record<string, Partial<PecaPendente>>>({
+  const emptyDisplay = () => ({ PECA: '', SERVICO: '', HORA_EXTRA: '', INSUMO: '', FRETE: '' });
+  const emptyAllRascunhos = () => ({
     PECA: emptyRascunho(), SERVICO: emptyRascunho(), HORA_EXTRA: emptyRascunho(),
     INSUMO: emptyRascunho(), FRETE: emptyRascunho(),
   });
-  const [valoresDisplay, setValoresDisplay] = useState<Record<string, string>>({
-    PECA: '', SERVICO: '', HORA_EXTRA: '', INSUMO: '', FRETE: '',
-  });
+
+  // Rascunhos e displays também em refs para evitar stale closures
+  const rascunhosRef = useRef<Record<string, Partial<PecaPendente>>>(emptyAllRascunhos());
+  const [rascunhos, setRascunhosState] = useState<Record<string, Partial<PecaPendente>>>(emptyAllRascunhos());
+  const valoresDisplayRef = useRef<Record<string, string>>(emptyDisplay());
+  const [valoresDisplay, setValoresDisplayState] = useState<Record<string, string>>(emptyDisplay());
+  const tipoAtivoRef = useRef<'PECA' | 'SERVICO' | 'HORA_EXTRA' | 'INSUMO' | 'FRETE'>('PECA');
+
+  // Setters que atualizam ref E state ao mesmo tempo
+  const setRascunhos = (fn: (prev: Record<string, Partial<PecaPendente>>) => Record<string, Partial<PecaPendente>>) => {
+    const next = fn(rascunhosRef.current);
+    rascunhosRef.current = next;
+    setRascunhosState(next);
+  };
+  const setValoresDisplay = (fn: (prev: Record<string, string>) => Record<string, string>) => {
+    const next = fn(valoresDisplayRef.current);
+    valoresDisplayRef.current = next;
+    setValoresDisplayState(next);
+  };
+  const setTipoAtivo = (v: 'PECA' | 'SERVICO' | 'HORA_EXTRA' | 'INSUMO' | 'FRETE') => {
+    tipoAtivoRef.current = v;
+    setTipoAtivoState(v);
+  };
 
   const newPeca = rascunhos[tipoAtivo];
-  const setNewPeca = (val: Partial<PecaPendente>) =>
-    setRascunhos(prev => ({ ...prev, [tipoAtivo]: val }));
+  const setNewPeca = (val: Partial<PecaPendente>) => {
+    const t = tipoAtivoRef.current;
+    const next = { ...rascunhosRef.current, [t]: val };
+    rascunhosRef.current = next;
+    setRascunhosState(next);
+  };
   const valorPecaDisplayAtivo = valoresDisplay[tipoAtivo];
-  const setValorPecaDisplayAtivo = (v: string) =>
-    setValoresDisplay(prev => ({ ...prev, [tipoAtivo]: v }));
+  const setValorPecaDisplayAtivo = (v: string) => {
+    const t = tipoAtivoRef.current;
+    const next = { ...valoresDisplayRef.current, [t]: v };
+    valoresDisplayRef.current = next;
+    setValoresDisplayState(next);
+  };
 
   const resetModal = () => {
     carritoRef.current = [];
     setCarritoItems([]);
-    setTipoAtivo('PECA');
-    setRascunhos({ PECA: emptyRascunho(), SERVICO: emptyRascunho(), HORA_EXTRA: emptyRascunho(), INSUMO: emptyRascunho(), FRETE: emptyRascunho() });
-    setValoresDisplay({ PECA: '', SERVICO: '', HORA_EXTRA: '', INSUMO: '', FRETE: '' });
+    tipoAtivoRef.current = 'PECA';
+    setTipoAtivoState('PECA');
+    const emptyR = emptyAllRascunhos();
+    rascunhosRef.current = emptyR;
+    setRascunhosState(emptyR);
+    const emptyD = emptyDisplay();
+    valoresDisplayRef.current = emptyD;
+    setValoresDisplayState(emptyD);
   };
 
   // New Orcamento Modal & Detalhes
@@ -214,17 +248,24 @@ export const OcorrenciaDetalhe: React.FC = () => {
 
   // Adiciona o rascunho atual ao carrinho
   const handleAdicionarAoCarrinho = () => {
-    if (!newPeca.descricao?.trim()) return;
+    // Ler sempre dos refs para evitar stale closures
+    const tipo = tipoAtivoRef.current;
+    const rascunhoAtual = rascunhosRef.current[tipo];
+    if (!rascunhoAtual.descricao?.trim()) return;
     const item: Partial<PecaPendente> = {
-      ...newPeca,
-      tipo_item: tipoAtivo,
+      ...rascunhoAtual,
+      tipo_item: tipo,
     };
     const novoCarrinho = [...carritoRef.current, item];
     carritoRef.current = novoCarrinho;
     setCarritoItems(novoCarrinho);
     // Limpa só o rascunho do tipo ativo
-    setRascunhos(prev => ({ ...prev, [tipoAtivo]: emptyRascunho() }));
-    setValoresDisplay(prev => ({ ...prev, [tipoAtivo]: '' }));
+    const novosRascunhos = { ...rascunhosRef.current, [tipo]: emptyRascunho() };
+    rascunhosRef.current = novosRascunhos;
+    setRascunhosState(novosRascunhos);
+    const novosDisplay = { ...valoresDisplayRef.current, [tipo]: '' };
+    valoresDisplayRef.current = novosDisplay;
+    setValoresDisplayState(novosDisplay);
   };
 
   const handleRemoverDoCarrinho = (idx: number) => {
@@ -254,10 +295,12 @@ export const OcorrenciaDetalhe: React.FC = () => {
       return;
     }
 
-    // Modo criação: monta lista final — carritoRef (sempre atualizado) + rascunho atual
+    // Modo criação: ler TUDO dos refs para evitar stale closures
+    const tipo = tipoAtivoRef.current;
+    const rascunhoAtual = rascunhosRef.current[tipo];
     const itensParaSalvar: Partial<PecaPendente>[] = [...carritoRef.current];
-    if (newPeca.descricao?.trim()) {
-      itensParaSalvar.push({ ...newPeca, tipo_item: tipoAtivo });
+    if (rascunhoAtual.descricao?.trim()) {
+      itensParaSalvar.push({ ...rascunhoAtual, tipo_item: tipo });
     }
     if (itensParaSalvar.length === 0) return;
 
