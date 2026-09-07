@@ -402,7 +402,6 @@ export const Equipamentos: React.FC = () => {
             {/* CORPO DA TABELA */}
             <tbody className="divide-y divide-white/[0.04]">
               {filteredEquipamentos.map((eq) => {
-                const isParado = eq.status === 'PARADO';
                 const isOk = eq.status === 'OK';
                 const targetKey = eq.tag || eq.id;
                 const ugCode = eq.ug_ref || '—';
@@ -477,21 +476,17 @@ export const Equipamentos: React.FC = () => {
                       </span>
                     </td>
 
-                    {/* 9. STATUS (OK / PARADO) */}
+                    {/* 9. STATUS (OK / NOK) */}
                     <td className="py-2 px-3 align-middle w-[90px] text-center">
-                      {isParado ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-500/15 text-red-400 border border-red-500/30 whitespace-nowrap">
-                          <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse shrink-0" />
-                          <span>PARADO</span>
-                        </span>
-                      ) : isOk ? (
+                      {isOk ? (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 whitespace-nowrap">
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
                           <span>OK</span>
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-500/15 text-gray-400 border border-gray-500/30 whitespace-nowrap">
-                          <span>{eq.status || 'OK'}</span>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-500/15 text-red-400 border border-red-500/40 whitespace-nowrap">
+                          <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
+                          <span>NOK</span>
                         </span>
                       )}
                     </td>
