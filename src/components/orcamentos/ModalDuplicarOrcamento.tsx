@@ -51,9 +51,17 @@ export const ModalDuplicarOrcamento: React.FC<ModalDuplicarOrcamentoProps> = ({
         numero: proximoNumero(),
         status: 'RASCUNHO',
         fornecedor: orcamentoOriginal.fornecedor ?? '',
-        valor_total: orcamentoOriginal.valor_total ?? '',
+        valor_total: (() => {
+          const v = Number(orcamentoOriginal.valor_total) || 0;
+          return v > 0 ? v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '';
+        })(),
         data_envio: new Date().toISOString().split('T')[0],
-        validade: '',
+        validade: (() => {
+          const base = orcamentoOriginal.data_envio ? new Date(orcamentoOriginal.data_envio) : new Date();
+          const d = new Date(base);
+          d.setDate(d.getDate() + 30);
+          return d.toISOString().substring(0, 10);
+        })(),
         enviado_para: orcamentoOriginal.enviado_para ?? '',
         observacoes: '',
       });
@@ -69,7 +77,8 @@ export const ModalDuplicarOrcamento: React.FC<ModalDuplicarOrcamentoProps> = ({
       toast.error('Informe o número da nova proposta.');
       return;
     }
-    if (form.valor_total === '' || isNaN(Number(form.valor_total))) {
+    const valorNum = parseFloat(String(form.valor_total).replace(/\./g, '').replace(',', '.')) || 0;
+    if (form.valor_total === '' || valorNum <= 0) {
       toast.error('Informe um valor total válido.');
       return;
     }
@@ -82,7 +91,7 @@ export const ModalDuplicarOrcamento: React.FC<ModalDuplicarOrcamentoProps> = ({
         numero: form.numero.trim(),
         status: form.status,
         fornecedor: form.fornecedor.trim(),
-        valor_total: Number(form.valor_total),
+        valor_total: parseFloat(String(form.valor_total).replace(/\./g, '').replace(',', '.')) || 0,
         data_envio: form.data_envio ? new Date(form.data_envio).toISOString() : new Date().toISOString(),
         validade: form.validade ? new Date(form.validade).toISOString() : undefined,
         enviado_para: form.enviado_para.trim(),
@@ -114,7 +123,7 @@ export const ModalDuplicarOrcamento: React.FC<ModalDuplicarOrcamentoProps> = ({
             numero: form.numero.trim(),
             status: form.status,
             fornecedor: form.fornecedor.trim(),
-            valor_total: Number(form.valor_total),
+            valor_total: parseFloat(String(form.valor_total).replace(/\./g, '').replace(',', '.')) || 0,
             data_envio: form.data_envio,
             validade: form.validade || null,
             enviado_para: form.enviado_para.trim(),
@@ -254,13 +263,19 @@ export const ModalDuplicarOrcamento: React.FC<ModalDuplicarOrcamentoProps> = ({
               </label>
               <input
                 id="duplicar-orc-valor"
-                type="number"
+                type="text"
+                inputMode="numeric"
                 required
                 value={form.valor_total}
-                onChange={(e) => setForm((p) => ({ ...p, valor_total: e.target.value }))}
+                onChange={(e) => {
+                  const raw = e.target.value.replace(/\D/g, '');
+                  if (raw === '') { setForm((p) => ({ ...p, valor_total: '' })); return; }
+                  const cents = parseInt(raw, 10);
+                  const fmt = (cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                  setForm((p) => ({ ...p, valor_total: fmt }));
+                }}
                 placeholder="0,00"
-                step="0.01"
-                className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#58A6FF] rounded-lg px-3 py-2 text-xs font-mono font-bold text-[#38BDF8] placeholder:text-[#6E7681] focus:outline-none"
+                className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#58A6FF] rounded-lg px-3 py-2 text-xs font-mono font-bold text-[#38BDF8] placeholder:text-[#6E7681] focus:outline-none text-right"
               />
             </div>
 
