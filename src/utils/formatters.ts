@@ -479,12 +479,11 @@ export function buildOrcamentoEmailContent(data: ShareOrcamentoData & {
   const localInstalacao = data.local_instalacao || data.linha || '';
   const ordemRef = data.ordem_sap || String(data.numero_ocorrencia || '');
 
-  // Assunto: OS XXXXXX ENVIO DE PROPOSTA COMERCIAL PARA O EQUIPAMENTO MODELO XXXXXX TAG AMBEV XXXX
+  // Assunto simplificado: OS XXXXXX — PROPOSTA COMERCIAL — EQUIPAMENTO — LOCAL — TAG AMBEV XXXX
   const subject = [
     ordemRef ? `OS ${ordemRef}` : '',
-    'ENVIO DE PROPOSTA COMERCIAL PARA O EQUIPAMENTO',
+    'ENVIO DE PROPOSTA COMERCIAL',
     equipDesc || 'HVAC INDUSTRIAL',
-    localInstalacao ? `LOCAL DE INSTALAÇÃO ${localInstalacao}` : '',
     tagAmbev ? `TAG AMBEV ${tagAmbev}` : '',
   ].filter(Boolean).join(' — ');
 
@@ -492,16 +491,20 @@ export function buildOrcamentoEmailContent(data: ShareOrcamentoData & {
 
   const buildLinhas = () => {
     if (!data.pecas || data.pecas.length === 0) return '  (Ver itens no PDF em anexo)';
-    return data.pecas.map((p, i) => {
+    return data.pecas.map((p: any, i: number) => {
       const rawUnit = typeof p.valor_unitario === 'string'
         ? p.valor_unitario.replace(/\./g, '').replace(',', '.')
         : String(p.valor_unitario ?? 0);
       const unitario = parseFloat(rawUnit) || 0;
       const qtd = Number(p.quantidade ?? 1);
+      const totalItem = unitario * qtd;
       const unitFmt = unitario.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+      const totalFmt = totalItem.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
       const ncmStr = (p.ncm || '').padEnd(14);
-      const descr = [p.descricao, p.part_number].filter(Boolean).join(' | ').substring(0, 45);
-      return `  ${String(i + 1).padEnd(3)} ${String(qtd).padEnd(4)} ${descr.padEnd(46)} ${ncmStr} R$ ${unitFmt.padStart(10)}`;
+      // part_number é o campo salvo no banco (antes era especificacao no modal)
+      const espec = p.part_number || p.especificacao || '';
+      const descr = [p.descricao, espec].filter(Boolean).join(' | ').substring(0, 45);
+      return `  ${String(i + 1).padEnd(3)} ${String(qtd).padEnd(4)} ${descr.padEnd(46)} ${ncmStr} R$ ${unitFmt.padStart(10)}  TOTAL: R$ ${totalFmt}`;
     }).join('\n');
   };
 

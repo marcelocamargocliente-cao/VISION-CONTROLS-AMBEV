@@ -1186,7 +1186,10 @@ export const OcorrenciaDetalhe: React.FC = () => {
         onClose={() => setShowAddOrcModal(false)}
         onCreated={async (novoOrc) => {
           await loadData();
-          setSelectedOrcamento(novoOrc);
+          // Buscar orçamento atualizado do banco (com pecas JSONB completo)
+          const orcsAtualizados = await DataStore.getOrcamentosByOcorrencia(ocorrencia?.id || '');
+          const orcAtualizado = orcsAtualizados.find(o => o.id === novoOrc.id || o.numero === novoOrc.numero) || novoOrc;
+          setSelectedOrcamento(orcAtualizado);
           setIsOrcDetailOpen(true);
         }}
         defaultOcorrenciaId={ocorrencia?.id}
