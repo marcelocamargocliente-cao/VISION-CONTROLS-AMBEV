@@ -549,14 +549,24 @@ export const EquipamentoDetalhe: React.FC = () => {
                     className="p-3.5 rounded-lg bg-[#111827] border border-blue-500/20 hover:border-blue-500/40 cursor-pointer transition-all hover:bg-[#1E293B]"
                   >
                     <div className="flex items-center justify-between gap-2 mb-1.5">
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs font-bold text-blue-400">{occ.codigo}</span>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-mono text-xs font-bold text-blue-400">
+                          {(occ as any).ordem_sap ? `OS ${(occ as any).ordem_sap}` : (occ as any).codigo || occ.id?.slice(0, 8)}
+                        </span>
                         <StatusBadge type="ocorrencia" status={occ.status} size="xs" />
                       </div>
                       <span className="text-[10px] text-gray-400">{formatDateTime(occ.created_at)}</span>
                     </div>
-                    <h4 className="text-xs font-bold text-white mb-1">{occ.tipo_falha}</h4>
-                    <p className="text-[11px] text-gray-400 line-clamp-2">{occ.descricao_falha}</p>
+                    {/* Descrição do problema em destaque */}
+                    <p className="text-[12px] font-semibold text-white mb-1 line-clamp-2">
+                      {(occ as any).descricao_anomalia || (occ as any).tipo_falha || 'Sem descrição'}
+                    </p>
+                    {/* Tipo de serviço menor */}
+                    {((occ as any).tipo_servico || (occ as any).descricao_falha) && (
+                      <p className="text-[10px] text-gray-500 line-clamp-1">
+                        {(occ as any).tipo_servico || (occ as any).descricao_falha}
+                      </p>
+                    )}
                   </div>
                 ))}
               </div>
