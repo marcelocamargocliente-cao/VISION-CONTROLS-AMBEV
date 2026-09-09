@@ -11,7 +11,6 @@ import {
   LogOut,
   ChevronDown,
   ChevronRight,
-  Menu,
   X,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -22,8 +21,8 @@ export const AppLayout: React.FC = () => {
   const { user, logout, switchDemoUser, allProfiles, canManageCadastros, canCreateOccurrence } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [profileSheetOpen, setProfileSheetOpen] = useState(false);
   const [paradosCount, setParadosCount] = useState<number>(2);
   const [recentes, setRecentes] = useState<VwAgingParadas[]>([]);
   const [recentesOpen, setRecentesOpen] = useState(true);
@@ -37,29 +36,37 @@ export const AppLayout: React.FC = () => {
     });
   }, [location.pathname]);
 
+  // Fecha o sheet de perfil ao trocar de rota
+  useEffect(() => {
+    setProfileSheetOpen(false);
+  }, [location.pathname]);
+
   const navItems = [
-    { to: '/', label: 'Dashboard', num: '01', icon: LayoutDashboard, exact: true },
-    { to: '/equipamentos', label: 'Equipamentos', num: '02', icon: Cpu },
+    { to: '/', label: 'Dashboard', short: 'Painel', num: '01', icon: LayoutDashboard, exact: true },
+    { to: '/equipamentos', label: 'Equipamentos', short: 'Equip.', num: '02', icon: Cpu },
     {
       to: '/ocorrencias',
       label: 'Ocorrências',
+      short: 'Ocorr.',
       num: '03',
       icon: AlertTriangle,
       badge: paradosCount > 0 ? `${paradosCount}` : undefined,
     },
-    { to: '/orcamentos', label: 'Orçamentos', num: '04', icon: FileText },
+    { to: '/orcamentos', label: 'Orçamentos', short: 'Orçam.', num: '04', icon: FileText },
     ...(canManageCadastros
-      ? [{ to: '/cadastros', label: 'Cadastros', num: '05', icon: Settings2 }]
+      ? [{ to: '/cadastros', label: 'Cadastros', short: 'Config', num: '05', icon: Settings2 }]
       : []),
   ];
 
   const firstName = user?.nome ? user.nome.split(' ')[0] : 'Adriano';
+  const isNovaOcorrenciaRoute = location.pathname.includes('/ocorrencias/nova');
 
   return (
     <div className="h-screen w-full flex overflow-hidden bg-[#0D1117] font-body text-[#E6EDF3]">
-      {/* DESKTOP SIDEBAR (240px) - Flexbox 100vh sem scroll */}
+      {/* ============================================================
+          DESKTOP SIDEBAR (240px) — inalterada
+          ============================================================ */}
       <aside className="no-print hidden md:flex w-60 border-r border-[#30363D] bg-[#0D1117] flex-col shrink-0 select-none z-30 h-screen overflow-hidden">
-        {/* Brand Header (Max 48px + Saudação compacta, shrink-0) */}
         <div className="px-3 py-2.5 border-b border-[#30363D] shrink-0">
           <div className="flex items-center gap-2.5 h-[34px]">
             <div className="w-7 h-7 bg-gradient-to-br from-[#2F81F7] to-[#58A6FF] flex items-center justify-center font-display font-bold text-white rounded-lg shadow-md shadow-[#2F81F7]/25 text-xs tracking-tight shrink-0">
@@ -75,7 +82,6 @@ export const AppLayout: React.FC = () => {
             </div>
           </div>
 
-          {/* User Welcome Greeting: fonte 12px, margem mínima */}
           <div className="mt-1 pt-1 border-t border-[#30363D]/60 flex items-center justify-between">
             <p className="text-[12px] font-body font-normal text-[#8B949E] truncate">
               Bom dia, <span className="text-[#E6EDF3] font-semibold">{firstName}</span> 👋
@@ -83,7 +89,6 @@ export const AppLayout: React.FC = () => {
           </div>
         </div>
 
-        {/* Quick Action Button: Altura 32px, fonte 12px (shrink-0) */}
         {canCreateOccurrence && (
           <div className="px-2.5 py-1.5 border-b border-[#30363D] bg-[#161B22]/60 shrink-0">
             <button
@@ -97,7 +102,6 @@ export const AppLayout: React.FC = () => {
           </div>
         )}
 
-        {/* Navigation Sections (flex-1, overflow-hidden) */}
         <nav className="flex-1 py-1.5 overflow-hidden px-2 flex flex-col justify-between min-h-0">
           <div className="overflow-hidden">
             <div className="px-2.5 mb-1 text-[9px] font-body font-bold text-[#8B949E] tracking-wider uppercase">
@@ -133,7 +137,6 @@ export const AppLayout: React.FC = () => {
             </div>
           </div>
 
-          {/* Section: RECENTES (shrink-0, max-height 120px, overflow-hidden) */}
           <div className="pt-1.5 border-t border-[#30363D] shrink-0 max-h-[120px] overflow-hidden">
             <button
               onClick={() => setRecentesOpen(!recentesOpen)}
@@ -177,7 +180,6 @@ export const AppLayout: React.FC = () => {
           </div>
         </nav>
 
-        {/* User Profile Footer (shrink-0): Altura ~40px, sempre visível no rodapé da sidebar */}
         <div className="p-2 border-t border-[#30363D] bg-[#161B22]/40 relative shrink-0">
           <button
             id="btn-user-profile-menu"
@@ -237,103 +239,148 @@ export const AppLayout: React.FC = () => {
         </div>
       </aside>
 
-      {/* MAIN CONTAINER */}
+      {/* ============================================================
+          CONTAINER PRINCIPAL
+          ============================================================ */}
       <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
-        {/* MOBILE HEADER */}
-        <header className="no-print h-12 md:hidden border-b border-[#30363D] bg-[#161B22] flex items-center justify-between px-3 shrink-0 z-20">
-          <div className="flex items-center gap-2">
-            <button
-              id="btn-mobile-menu-toggle"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-1 rounded-lg bg-[#0D1117] border border-[#30363D] text-[#8B949E]"
-            >
-              {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-            </button>
-            <div className="flex items-center gap-1.5">
-              <div className="w-6 h-6 bg-gradient-to-br from-[#2F81F7] to-[#58A6FF] flex items-center justify-center font-display font-bold text-white rounded-md text-[11px]">
-                VC
-              </div>
-              <span className="text-xs font-display font-bold text-[#E6EDF3] tracking-tight uppercase">
+        {/* MOBILE HEADER (slim, 52px) */}
+        <header className="no-print h-[52px] md:hidden border-b border-[#30363D] bg-[#161B22] flex items-center justify-between px-3 shrink-0 z-20 safe-top">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="w-8 h-8 bg-gradient-to-br from-[#2F81F7] to-[#58A6FF] flex items-center justify-center font-display font-bold text-white rounded-lg text-[12px] shrink-0">
+              VC
+            </div>
+            <div className="min-w-0 leading-tight">
+              <span className="block text-[13px] font-display font-bold text-[#E6EDF3] tracking-tight uppercase truncate">
                 IVCA AMBEV RJ
+              </span>
+              <span className="block text-[9px] text-[#8B949E] truncate">
+                Integração Vision Controls
               </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <span className="text-[9px] bg-[#3FB950]/15 text-[#3FB950] px-2 py-0.5 rounded-full border border-[#3FB950]/30 font-mono font-bold flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-[#3FB950] animate-pulse" />
               ONLINE
             </span>
+            <button
+              onClick={() => setProfileSheetOpen(true)}
+              className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#2F81F7] to-[#58A6FF] border border-[#2F81F7]/30 flex items-center justify-center font-display font-bold text-[13px] text-white shrink-0 active:scale-95 transition-transform"
+              aria-label="Abrir perfil"
+            >
+              {user?.nome ? user.nome.charAt(0) : 'A'}
+            </button>
           </div>
         </header>
 
-        {/* MOBILE SLIDEOUT MENU */}
-        {mobileMenuOpen && (
-          <div className="no-print md:hidden fixed inset-0 top-12 bg-[#0D1117]/95 backdrop-blur-md z-50 p-4 flex flex-col justify-between overflow-y-auto">
-            <div className="space-y-3">
-              <p className="text-[12px] font-body font-medium text-[#8B949E]">
-                Bom dia, <span className="text-[#E6EDF3] font-bold">{firstName}</span> 👋
-              </p>
-
-              <div className="space-y-1">
-                {navItems.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <NavLink
-                      key={item.to}
-                      to={item.to}
-                      end={item.exact}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={({ isActive }) =>
-                        `flex items-center justify-between p-2.5 rounded-lg text-[12px] font-body ${
-                          isActive
-                            ? 'bg-[#2F81F7]/20 text-[#58A6FF] font-bold border border-[#2F81F7]/30'
-                            : 'text-[#E6EDF3] bg-[#161B22]'
-                        }`
-                      }
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <Icon className="w-4 h-4" />
-                        <span className="text-[9px] font-mono text-[#8B949E]">{item.num}</span>
-                        <span>{item.label}</span>
-                      </div>
-                      {item.badge && (
-                        <span className="px-1.5 py-0.5 text-[9px] font-mono font-bold bg-[#F85149] text-white rounded-full">
-                          {item.badge}
-                        </span>
-                      )}
-                    </NavLink>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="bg-[#161B22] p-3 rounded-xl border border-[#30363D] space-y-2 mt-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-[11px] font-display font-bold text-[#E6EDF3]">{user?.nome}</p>
-                  <p className="text-[9px] font-mono text-[#58A6FF]">{user?.role}</p>
-                </div>
-                <button
-                  onClick={() => {
-                    logout();
-                    setMobileMenuOpen(false);
-                    navigate('/login');
-                  }}
-                  className="px-2.5 py-1 text-[11px] text-[#F85149] bg-[#0D1117] rounded-lg border border-[#F85149]/30"
-                >
-                  Sair
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* SCROLLABLE VIEWPORT */}
+        {/* VIEWPORT DE CONTEÚDO */}
         <main className="flex-1 overflow-hidden min-w-0 min-h-0 bg-[var(--bg-app)] flex flex-col">
           <Outlet />
         </main>
+
+        {/* MOBILE BOTTOM NAV (barra de abas inferior) */}
+        <nav className="no-print md:hidden bottom-nav shrink-0 h-16 flex items-stretch px-1 safe-bottom z-30">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.exact}
+                className={({ isActive }) =>
+                  `bottom-nav-item ${isActive ? 'active' : ''}`
+                }
+              >
+                <Icon className="w-[22px] h-[22px]" strokeWidth={2} />
+                <span className="truncate max-w-full px-0.5">{item.short}</span>
+                {item.badge && <span className="bn-badge">{item.badge}</span>}
+              </NavLink>
+            );
+          })}
+        </nav>
       </div>
+
+      {/* FAB — Nova Ocorrência (mobile), some na própria tela de criação */}
+      {canCreateOccurrence && !isNovaOcorrenciaRoute && (
+        <button
+          onClick={() => navigate('/ocorrencias/nova')}
+          className="fab md:hidden flex items-center justify-center"
+          aria-label="Nova ocorrência"
+        >
+          <PlusCircle className="w-6 h-6" strokeWidth={2.2} />
+        </button>
+      )}
+
+      {/* ============================================================
+          PROFILE SHEET (mobile) — perfil, troca de usuário e sair
+          ============================================================ */}
+      {profileSheetOpen && (
+        <div
+          className="md:hidden fixed inset-0 z-[60] flex flex-col justify-end"
+          onClick={() => setProfileSheetOpen(false)}
+        >
+          <div className="sheet-backdrop absolute inset-0 bg-black/60 backdrop-blur-sm" />
+          <div
+            className="sheet-panel relative bg-[#161B22] border-t border-[#30363D] rounded-t-2xl p-4 pb-6 safe-bottom max-h-[80vh] overflow-y-auto scroll-fluido"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="w-10 h-1 rounded-full bg-[#30363D] mx-auto mb-4" />
+
+            <div className="flex items-center gap-3 pb-3 mb-3 border-b border-[#30363D]">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#2F81F7] to-[#58A6FF] flex items-center justify-center font-display font-bold text-[18px] text-white shrink-0">
+                {user?.nome ? user.nome.charAt(0) : 'A'}
+              </div>
+              <div className="min-w-0">
+                <p className="text-[15px] font-display font-bold text-[#E6EDF3] truncate">{user?.nome || 'Adriano Coelho Pinto'}</p>
+                <p className="text-[11px] font-mono text-[#58A6FF] uppercase">{user?.role || 'ADMIN'}</p>
+              </div>
+              <button
+                onClick={() => setProfileSheetOpen(false)}
+                className="ml-auto w-9 h-9 rounded-lg bg-[#0D1117] border border-[#30363D] text-[#8B949E] flex items-center justify-center shrink-0"
+                aria-label="Fechar"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <p className="text-[10px] font-mono uppercase tracking-wider text-[#8B949E] mb-2">
+              Alternar Perfil Demo
+            </p>
+            <div className="space-y-1.5 mb-3">
+              {allProfiles.map((p) => (
+                <button
+                  key={p.id}
+                  onClick={() => {
+                    switchDemoUser(p.id);
+                    setProfileSheetOpen(false);
+                  }}
+                  className={`w-full text-left px-3 py-3 text-[13px] rounded-xl flex items-center justify-between transition-colors ${
+                    p.id === user?.id
+                      ? 'bg-[#2F81F7]/20 text-[#58A6FF] font-bold border border-[#2F81F7]/30'
+                      : 'text-[#E6EDF3] bg-[#0D1117] border border-[#30363D]'
+                  }`}
+                >
+                  <span className="truncate">{p.nome}</span>
+                  <span className="text-[10px] font-mono text-[#8B949E] ml-2 shrink-0">{p.role}</span>
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={() => {
+                logout();
+                setProfileSheetOpen(false);
+                navigate('/login');
+              }}
+              className="w-full px-3 py-3 text-[13px] font-bold text-[#F85149] bg-[#F85149]/10 border border-[#F85149]/30 rounded-xl flex items-center justify-center gap-2"
+            >
+              <LogOut className="w-4 h-4" />
+              <span>Sair do sistema</span>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

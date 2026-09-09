@@ -1,17 +1,29 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { AppLayout } from './components/layout/AppLayout';
 import { Login } from './pages/Login';
-import { Dashboard } from './pages/Dashboard';
-import { Equipamentos } from './pages/Equipamentos';
-import { EquipamentoDetalhe } from './pages/EquipamentoDetalhe';
-import { Ocorrencias } from './pages/Ocorrencias';
-import { NovaOcorrencia } from './pages/NovaOcorrencia';
-import { OcorrenciaDetalhe } from './pages/OcorrenciaDetalhe';
-import { Orcamentos } from './pages/Orcamentos';
-import { Cadastros } from './pages/Cadastros';
+
+// Carregamento sob demanda — cada página só baixa quando acessada.
+// Abertura inicial no celular fica bem mais leve.
+const Dashboard = lazy(() => import('./pages/Dashboard').then((m) => ({ default: m.Dashboard })));
+const Equipamentos = lazy(() => import('./pages/Equipamentos').then((m) => ({ default: m.Equipamentos })));
+const EquipamentoDetalhe = lazy(() => import('./pages/EquipamentoDetalhe').then((m) => ({ default: m.EquipamentoDetalhe })));
+const Ocorrencias = lazy(() => import('./pages/Ocorrencias').then((m) => ({ default: m.Ocorrencias })));
+const NovaOcorrencia = lazy(() => import('./pages/NovaOcorrencia').then((m) => ({ default: m.NovaOcorrencia })));
+const OcorrenciaDetalhe = lazy(() => import('./pages/OcorrenciaDetalhe').then((m) => ({ default: m.OcorrenciaDetalhe })));
+const Orcamentos = lazy(() => import('./pages/Orcamentos').then((m) => ({ default: m.Orcamentos })));
+const Cadastros = lazy(() => import('./pages/Cadastros').then((m) => ({ default: m.Cadastros })));
+
+const PageLoader: React.FC = () => (
+  <div className="flex-1 flex items-center justify-center bg-[var(--bg-app)] text-[#8B949E] font-mono text-xs">
+    <div className="flex items-center gap-2">
+      <span className="led-dot led-ok animate-ping" />
+      <span>Carregando...</span>
+    </div>
+  </div>
+);
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, isLoading } = useAuth();
@@ -50,14 +62,14 @@ export const App: React.FC = () => {
               </ProtectedRoute>
             }
           >
-            <Route index element={<Dashboard />} />
-            <Route path="equipamentos" element={<Equipamentos />} />
-            <Route path="equipamentos/:id" element={<EquipamentoDetalhe />} />
-            <Route path="ocorrencias" element={<Ocorrencias />} />
-            <Route path="ocorrencias/nova" element={<NovaOcorrencia />} />
-            <Route path="ocorrencias/:id" element={<OcorrenciaDetalhe />} />
-            <Route path="orcamentos" element={<Orcamentos />} />
-            <Route path="cadastros" element={<Cadastros />} />
+            <Route index element={<Suspense fallback={<PageLoader />}><Dashboard /></Suspense>} />
+            <Route path="equipamentos" element={<Suspense fallback={<PageLoader />}><Equipamentos /></Suspense>} />
+            <Route path="equipamentos/:id" element={<Suspense fallback={<PageLoader />}><EquipamentoDetalhe /></Suspense>} />
+            <Route path="ocorrencias" element={<Suspense fallback={<PageLoader />}><Ocorrencias /></Suspense>} />
+            <Route path="ocorrencias/nova" element={<Suspense fallback={<PageLoader />}><NovaOcorrencia /></Suspense>} />
+            <Route path="ocorrencias/:id" element={<Suspense fallback={<PageLoader />}><OcorrenciaDetalhe /></Suspense>} />
+            <Route path="orcamentos" element={<Suspense fallback={<PageLoader />}><Orcamentos /></Suspense>} />
+            <Route path="cadastros" element={<Suspense fallback={<PageLoader />}><Cadastros /></Suspense>} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

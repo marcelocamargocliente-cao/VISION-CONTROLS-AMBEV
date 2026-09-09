@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useDeferredValue, memo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Search,
@@ -6,6 +6,7 @@ import {
   X,
   ChevronRight,
   RefreshCw,
+  MapPin,
 } from 'lucide-react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { DataStore } from '../lib/dataStore';
@@ -16,6 +17,82 @@ import {
 import { EmptyState } from '../components/common/EmptyState';
 import { useAuth } from '../context/AuthContext';
 
+/* ============================================================
+   CARD DE EQUIPAMENTO — versão mobile da lista (memoizado)
+   Evita re-render de todos os cards quando a busca muda.
+   ============================================================ */
+interface EquipCardProps {
+  eq: Equipamento;
+  onOpen: (key: string) => void;
+}
+
+const EquipCard = memo<EquipCardProps>(({ eq, onOpen }) => {
+  const isOk = eq.status === 'OK';
+  const targetKey = eq.tag || eq.id;
+  const local = eq.localizacao_ref || eq.local_instalacao || '';
+  const marcaModelo = [eq.marca, eq.modelo].filter(Boolean).join(' · ');
+
+  return (
+    <button
+      onClick={() => onOpen(targetKey)}
+      className="equip-card w-full text-left flex flex-col gap-2"
+    >
+      {/* Linha 1: TAGs + Status */}
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex items-center gap-1.5 flex-wrap min-w-0">
+          <span className="bg-[#1E3A5F] text-blue-400 font-bold text-[11px] rounded px-2 py-0.5 inline-flex items-center border border-blue-500/30 font-mono shrink-0">
+            {eq.patrimonio_ref || eq.tag_sap || '—'}
+          </span>
+          <span className="bg-[#2D2A1F] text-[#F5A623] font-bold text-[11px] rounded px-2 py-0.5 inline-flex items-center border border-[#F5A623]/30 font-mono shrink-0">
+            {eq.tag}
+          </span>
+        </div>
+        {isOk ? (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shrink-0">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            OK
+          </span>
+        ) : (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-500/15 text-red-400 border border-red-500/40 shrink-0">
+            <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
+            NOK
+          </span>
+        )}
+      </div>
+
+      {/* Linha 2: Tipo + UG/Área */}
+      <div className="min-w-0">
+        <p className="text-[13px] font-semibold text-white truncate leading-tight">
+          {eq.tipo_equipamento || eq.tipo || 'Equipamento'}
+        </p>
+        <p className="text-[11px] text-gray-400 truncate mt-0.5">
+          <span className="font-mono text-blue-300">UG {eq.ug_ref || '—'}</span>
+          {eq.area_ref ? <span> · {eq.area_ref}</span> : null}
+        </p>
+      </div>
+
+      {/* Linha 3: Local de instalação */}
+      {local && (
+        <div className="flex items-center gap-1.5 text-cyan-400 min-w-0">
+          <MapPin className="w-3.5 h-3.5 shrink-0" />
+          <span className="font-mono text-[11px] truncate">{local}</span>
+        </div>
+      )}
+
+      {/* Linha 4: Marca/modelo + ação */}
+      <div className="flex items-center justify-between gap-2 pt-2 border-t border-white/[0.06]">
+        <span className="text-[11px] text-gray-500 truncate">
+          {marcaModelo || 'Sem marca/modelo'}
+        </span>
+        <span className="inline-flex items-center gap-0.5 text-blue-400 font-semibold text-[11px] shrink-0">
+          Ficha <ChevronRight className="w-3.5 h-3.5" />
+        </span>
+      </div>
+    </button>
+  );
+});
+EquipCard.displayName = 'EquipCard';
+
 export const Equipamentos: React.FC = () => {
   const navigate = useNavigate();
   const { canEdit } = useAuth();
@@ -25,6 +102,9 @@ export const Equipamentos: React.FC = () => {
 
   // Filters & Search
   const [searchTerm, setSearchTerm] = useState('');
+  // O valor "adiado" deixa a digitação fluida: o input responde na hora e a
+  // filtragem da lista (195 itens) roda em segundo plano sem travar.
+  const deferredSearch = useDeferredValue(searchTerm);
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [selectedUg, setSelectedUg] = useState<string>('');
   const [selectedArea, setSelectedArea] = useState<string>('');
@@ -139,7 +219,7 @@ export const Equipamentos: React.FC = () => {
   // Filtered equipments
   const filteredEquipamentos = useMemo(() => {
     return equipamentos.filter((eq) => {
-      const term = searchTerm.toLowerCase().trim();
+      const term = deferredSearch.toLowerCase().trim();
       const tagStr = String(eq.tag || '').toLowerCase();
       const marcaStr = (eq.marca || '').toLowerCase();
       const modeloStr = (eq.modelo || '').toLowerCase();
@@ -166,7 +246,7 @@ export const Equipamentos: React.FC = () => {
 
       return matchesSearch && matchesStatus && matchesUg && matchesArea && matchesTipo;
     });
-  }, [equipamentos, searchTerm, selectedStatus, selectedUg, selectedArea, selectedTipo]);
+  }, [equipamentos, deferredSearch, selectedStatus, selectedUg, selectedArea, selectedTipo]);
 
   const okCount = filteredEquipamentos.filter((e) => e.status === 'OK').length;
   const nokCount = filteredEquipamentos.filter((e) => e.status === 'RESTRICAO').length;
@@ -180,6 +260,12 @@ export const Equipamentos: React.FC = () => {
     setSelectedArea('');
     setSelectedTipo('');
   };
+
+  // Estável entre renders — preserva a memoização dos cards.
+  const handleOpenEquip = useCallback(
+    (key: string) => navigate(`/equipamentos/${key}`),
+    [navigate]
+  );
 
   const handleSaveNewEquip = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -217,25 +303,26 @@ export const Equipamentos: React.FC = () => {
   return (
     <div
       id="equipamentos-page"
-      className="flex flex-col h-screen p-3 md:px-4 md:py-3 gap-2 overflow-hidden box-border bg-[#0A0E1A] select-none"
+      className="flex flex-col h-full min-h-0 p-3 md:px-4 md:py-3 gap-2 overflow-hidden box-border bg-[#0A0E1A] select-none"
     >
       {/* 1. HEADER DA PÁGINA (Fixo, max 56px) */}
       <header
         id="equipamentos-header"
-        className="shrink-0 h-[56px] flex items-center justify-between gap-3 px-3.5 rounded-lg bg-[#111827] border border-blue-500/20"
+        className="shrink-0 min-h-[56px] flex items-center justify-between gap-3 px-3 md:px-3.5 py-2 rounded-lg bg-[#111827] border border-blue-500/20"
       >
         <div className="min-w-0">
           <div className="flex items-center gap-2 mb-0.5 leading-none">
             <span className="text-[9px] tracking-widest bg-[#F59E0B]/10 text-[#F59E0B] px-1.5 py-0.5 rounded border border-[#F59E0B]/30 uppercase font-bold">
               Cadastro de Ativos
             </span>
-            <span className="text-[10px] text-gray-500">·</span>
-            <span className="text-[10px] text-gray-400 tracking-wider uppercase truncate">
+            <span className="hidden sm:inline text-[10px] text-gray-500">·</span>
+            <span className="hidden sm:inline text-[10px] text-gray-400 tracking-wider uppercase truncate">
               {equipamentos.length} EQUIPAMENTOS CADASTRADOS
             </span>
           </div>
-          <h1 className="text-[18px] md:text-[20px] font-bold text-white tracking-tight uppercase leading-tight truncate">
-            Parque de Equipamentos de Climatização
+          <h1 className="text-[15px] md:text-[20px] font-bold text-white tracking-tight uppercase leading-tight truncate">
+            <span className="hidden sm:inline">Parque de Equipamentos de Climatização</span>
+            <span className="sm:hidden">Equipamentos</span>
           </h1>
         </div>
 
@@ -245,10 +332,11 @@ export const Equipamentos: React.FC = () => {
             <button
               id="btn-open-new-equip-modal"
               onClick={() => setShowNewModal(true)}
-              className="h-[32px] inline-flex items-center gap-1.5 px-3 text-[11px] font-bold rounded-md btn-primary-gradient uppercase tracking-wider transition-all shadow-md shadow-blue-500/15 cursor-pointer leading-none text-white"
+              className="h-9 md:h-[32px] inline-flex items-center gap-1.5 px-3 text-[11px] font-bold rounded-md btn-primary-gradient uppercase tracking-wider transition-all shadow-md shadow-blue-500/15 cursor-pointer leading-none text-white"
             >
-              <Plus className="w-3.5 h-3.5" />
-              <span>+ Novo Equipamento</span>
+              <Plus className="w-4 h-4 md:w-3.5 md:h-3.5" />
+              <span className="hidden sm:inline">+ Novo Equipamento</span>
+              <span className="sm:hidden">Novo</span>
             </button>
           )}
 
@@ -256,9 +344,9 @@ export const Equipamentos: React.FC = () => {
           <button
             onClick={loadData}
             title="Atualizar lista"
-            className="h-[32px] w-[32px] flex items-center justify-center rounded-md bg-[#0A0E1A] border border-blue-500/20 text-gray-400 hover:text-white transition-colors cursor-pointer"
+            className="h-9 w-9 md:h-[32px] md:w-[32px] flex items-center justify-center rounded-md bg-[#0A0E1A] border border-blue-500/20 text-gray-400 hover:text-white transition-colors cursor-pointer"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-blue-400' : ''}`} />
+            <RefreshCw className={`w-4 h-4 md:w-3.5 md:h-3.5 ${loading ? 'animate-spin text-blue-400' : ''}`} />
           </button>
         </div>
       </header>
@@ -273,10 +361,11 @@ export const Equipamentos: React.FC = () => {
           <input
             id="input-search-equipamentos"
             type="text"
+            inputMode="search"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Busca por TAG AMBEV, TAG Vision, Marca, Modelo ou Local..."
-            className="w-full h-[36px] bg-[#111827] border border-blue-500/20 focus:border-blue-400 text-white text-[12px] placeholder-gray-500 rounded-md has-icon-left pr-3 outline-none transition-colors"
+            placeholder="Buscar TAG, marca, modelo ou local..."
+            className="w-full h-11 md:h-[36px] bg-[#111827] border border-blue-500/20 focus:border-blue-400 text-white text-[12px] placeholder-gray-500 rounded-md has-icon-left pr-3 outline-none transition-colors"
           />
         </div>
 
@@ -284,7 +373,7 @@ export const Equipamentos: React.FC = () => {
         {hasActiveFilters && (
           <button
             onClick={clearFilters}
-            className="h-[36px] px-3 text-[11px] font-medium text-gray-400 hover:text-white bg-[#111827] border border-blue-500/20 hover:border-blue-500/40 rounded-md transition-colors shrink-0 flex items-center gap-1 cursor-pointer"
+            className="h-11 md:h-[36px] px-3 text-[11px] font-medium text-gray-400 hover:text-white bg-[#111827] border border-blue-500/20 hover:border-blue-500/40 rounded-md transition-colors shrink-0 flex items-center gap-1 cursor-pointer"
           >
             <X className="w-3 h-3" />
             <span>Limpar filtros</span>
@@ -304,7 +393,7 @@ export const Equipamentos: React.FC = () => {
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="w-full h-[30px] bg-[#0A0E1A] border border-blue-500/20 text-white text-[11px] rounded px-2 outline-none cursor-pointer"
+              className="w-full h-10 sm:h-[30px] bg-[#0A0E1A] border border-blue-500/20 text-white text-[11px] rounded px-2 outline-none cursor-pointer"
             >
               <option value="">Todos os Status</option>
               <option value="OK">OK</option>
@@ -318,7 +407,7 @@ export const Equipamentos: React.FC = () => {
             <select
               value={selectedUg}
               onChange={(e) => setSelectedUg(e.target.value)}
-              className="w-full h-[30px] bg-[#0A0E1A] border border-blue-500/20 text-white text-[11px] rounded px-2 outline-none cursor-pointer font-mono"
+              className="w-full h-10 sm:h-[30px] bg-[#0A0E1A] border border-blue-500/20 text-white text-[11px] rounded px-2 outline-none cursor-pointer font-mono"
             >
               <option value="">Todas as UGs</option>
               {distinctUgs.map((ug) => (
@@ -335,7 +424,7 @@ export const Equipamentos: React.FC = () => {
             <select
               value={selectedArea}
               onChange={(e) => setSelectedArea(e.target.value)}
-              className="w-full h-[30px] bg-[#0A0E1A] border border-blue-500/20 text-white text-[11px] rounded px-2 outline-none cursor-pointer truncate"
+              className="w-full h-10 sm:h-[30px] bg-[#0A0E1A] border border-blue-500/20 text-white text-[11px] rounded px-2 outline-none cursor-pointer truncate"
             >
               <option value="">Todos os Locais</option>
               {distinctAreas.map((area) => (
@@ -352,7 +441,7 @@ export const Equipamentos: React.FC = () => {
             <select
               value={selectedTipo}
               onChange={(e) => setSelectedTipo(e.target.value)}
-              className="w-full h-[30px] bg-[#0A0E1A] border border-blue-500/20 text-white text-[11px] rounded px-2 outline-none cursor-pointer truncate"
+              className="w-full h-10 sm:h-[30px] bg-[#0A0E1A] border border-blue-500/20 text-white text-[11px] rounded px-2 outline-none cursor-pointer truncate"
             >
               <option value="">Todos os Tipos</option>
               {distinctTipos.map((tipo) => (
@@ -381,6 +470,9 @@ export const Equipamentos: React.FC = () => {
             />
           </div>
         ) : (
+          <>
+          {/* ===== DESKTOP: TABELA ===== */}
+          <div className="hidden md:block">
           <table className="w-full text-left border-collapse min-w-[980px]">
             {/* CABEÇALHO DA TABELA (sticky) */}
             <thead className="sticky top-0 z-10 bg-[#1a2235] border-b border-blue-500/20 shadow-sm text-gray-300">
@@ -503,6 +595,15 @@ export const Equipamentos: React.FC = () => {
               })}
             </tbody>
           </table>
+          </div>
+
+          {/* ===== MOBILE: CARDS ===== */}
+          <div className="md:hidden flex flex-col gap-2.5 p-2.5">
+            {filteredEquipamentos.map((eq) => (
+              <EquipCard key={eq.tag || eq.id} eq={eq} onOpen={handleOpenEquip} />
+            ))}
+          </div>
+          </>
         )}
       </div>
 
@@ -533,12 +634,12 @@ export const Equipamentos: React.FC = () => {
       {/* MODAL: NOVO EQUIPAMENTO (Alinhado aos novos campos) */}
       {showNewModal && (
         <div
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          className="sheet-backdrop fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
           onClick={(e) => {
             if (e.target === e.currentTarget) setShowNewModal(false);
           }}
         >
-          <div className="bg-[#111827] border border-blue-500/30 rounded-lg w-full max-w-xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+          <div className="sheet-panel bg-[#111827] border border-blue-500/30 rounded-t-2xl sm:rounded-lg w-full max-w-xl max-h-[92vh] sm:max-h-[90vh] flex flex-col shadow-2xl overflow-hidden safe-bottom">
             <div className="p-3.5 border-b border-white/[0.06] flex items-center justify-between bg-[#0A0E1A]">
               <div className="flex items-center gap-2">
                 <Plus className="w-4 h-4 text-blue-400" />
@@ -565,7 +666,7 @@ export const Equipamentos: React.FC = () => {
                     value={newEquip.tag}
                     onChange={(e) => setNewEquip({ ...newEquip, tag: e.target.value })}
                     placeholder="Ex: 352"
-                    className="w-full h-[32px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white px-2.5 rounded text-[11px] outline-none font-mono"
+                    className="w-full h-11 sm:h-[32px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white px-2.5 rounded text-[11px] outline-none font-mono"
                   />
                 </div>
 
@@ -575,7 +676,7 @@ export const Equipamentos: React.FC = () => {
                   <select
                     value={newEquip.ug_ref}
                     onChange={(e) => setNewEquip({ ...newEquip, ug_ref: e.target.value })}
-                    className="w-full h-[32px] bg-[#0A0E1A] border border-blue-500/20 text-white px-2 rounded text-[11px] outline-none font-mono"
+                    className="w-full h-11 sm:h-[32px] bg-[#0A0E1A] border border-blue-500/20 text-white px-2 rounded text-[11px] outline-none font-mono"
                   >
                     <option value="N1">N1</option>
                     <option value="N2">N2</option>
@@ -592,7 +693,7 @@ export const Equipamentos: React.FC = () => {
                     value={newEquip.patrimonio_ref || ''}
                     onChange={(e) => setNewEquip({ ...newEquip, patrimonio_ref: e.target.value })}
                     placeholder="Ex: 84"
-                    className="w-full h-[32px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white px-2.5 rounded text-[11px] outline-none font-mono"
+                    className="w-full h-11 sm:h-[32px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white px-2.5 rounded text-[11px] outline-none font-mono"
                   />
                 </div>
               </div>
@@ -606,7 +707,7 @@ export const Equipamentos: React.FC = () => {
                     value={newEquip.area_ref}
                     onChange={(e) => setNewEquip({ ...newEquip, area_ref: e.target.value })}
                     placeholder="Ex: RETORNÁVEIS, ONE WAY CERVEJA..."
-                    className="w-full h-[32px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white px-2.5 rounded text-[11px] outline-none"
+                    className="w-full h-11 sm:h-[32px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white px-2.5 rounded text-[11px] outline-none"
                   />
                 </div>
 
@@ -618,7 +719,7 @@ export const Equipamentos: React.FC = () => {
                     value={newEquip.localizacao_ref}
                     onChange={(e) => setNewEquip({ ...newEquip, localizacao_ref: e.target.value })}
                     placeholder="Ex: LINHA 542 / EMPACOTADORA 03"
-                    className="w-full h-[32px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white px-2.5 rounded text-[11px] outline-none"
+                    className="w-full h-11 sm:h-[32px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white px-2.5 rounded text-[11px] outline-none"
                   />
                 </div>
               </div>
@@ -632,7 +733,7 @@ export const Equipamentos: React.FC = () => {
                     value={newEquip.tipo_equipamento}
                     onChange={(e) => setNewEquip({ ...newEquip, tipo_equipamento: e.target.value })}
                     placeholder="Ex: RESFRIADOR DE PAINEL, SPLITÃO..."
-                    className="w-full h-[32px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white px-2.5 rounded text-[11px] outline-none"
+                    className="w-full h-11 sm:h-[32px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white px-2.5 rounded text-[11px] outline-none"
                   />
                 </div>
 
@@ -644,7 +745,7 @@ export const Equipamentos: React.FC = () => {
                     value={newEquip.marca}
                     onChange={(e) => setNewEquip({ ...newEquip, marca: e.target.value })}
                     placeholder="Ex: RITTAL, KRONES, YORK..."
-                    className="w-full h-[32px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white px-2.5 rounded text-[11px] outline-none"
+                    className="w-full h-11 sm:h-[32px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white px-2.5 rounded text-[11px] outline-none"
                   />
                 </div>
 
@@ -656,7 +757,7 @@ export const Equipamentos: React.FC = () => {
                     value={newEquip.modelo}
                     onChange={(e) => setNewEquip({ ...newEquip, modelo: e.target.value })}
                     placeholder="Ex: SK 3304.500"
-                    className="w-full h-[32px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white px-2.5 rounded text-[11px] outline-none font-mono"
+                    className="w-full h-11 sm:h-[32px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white px-2.5 rounded text-[11px] outline-none font-mono"
                   />
                 </div>
               </div>
@@ -670,7 +771,7 @@ export const Equipamentos: React.FC = () => {
                     value={newEquip.capacidade}
                     onChange={(e) => setNewEquip({ ...newEquip, capacidade: e.target.value })}
                     placeholder="Ex: 1500W, 36.000 BTU'S..."
-                    className="w-full h-[32px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white px-2.5 rounded text-[11px] outline-none font-mono"
+                    className="w-full h-11 sm:h-[32px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white px-2.5 rounded text-[11px] outline-none font-mono"
                   />
                 </div>
 
@@ -681,7 +782,7 @@ export const Equipamentos: React.FC = () => {
                     type="text"
                     disabled
                     value="INDUSTRIAL"
-                    className="w-full h-[32px] bg-[#0A0E1A]/60 border border-blue-500/10 text-gray-400 px-2.5 rounded text-[11px] outline-none cursor-not-allowed uppercase font-semibold"
+                    className="w-full h-11 sm:h-[32px] bg-[#0A0E1A]/60 border border-blue-500/10 text-gray-400 px-2.5 rounded text-[11px] outline-none cursor-not-allowed uppercase font-semibold"
                   />
                 </div>
 
@@ -691,7 +792,7 @@ export const Equipamentos: React.FC = () => {
                   <select
                     value={newEquip.status}
                     onChange={(e) => setNewEquip({ ...newEquip, status: e.target.value as EquipStatus })}
-                    className="w-full h-[32px] bg-[#0A0E1A] border border-blue-500/20 text-white px-2 rounded text-[11px] outline-none"
+                    className="w-full h-11 sm:h-[32px] bg-[#0A0E1A] border border-blue-500/20 text-white px-2 rounded text-[11px] outline-none"
                   >
                     <option value="OK">OK</option>
                     <option value="RESTRICAO">NOK</option>
@@ -703,13 +804,13 @@ export const Equipamentos: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowNewModal(false)}
-                  className="h-[30px] px-3 rounded bg-[#0A0E1A] border border-white/[0.08] text-gray-300 hover:text-white cursor-pointer"
+                  className="h-11 sm:h-[30px] px-3 rounded bg-[#0A0E1A] border border-white/[0.08] text-gray-300 hover:text-white cursor-pointer"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="h-[30px] px-4 rounded btn-primary-gradient font-bold tracking-wider uppercase text-[11px] cursor-pointer text-white"
+                  className="h-11 sm:h-[30px] px-4 rounded btn-primary-gradient font-bold tracking-wider uppercase text-[11px] cursor-pointer text-white"
                 >
                   Salvar Equipamento
                 </button>

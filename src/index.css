@@ -709,3 +709,155 @@ a:hover {
     opacity: 1 !important;
   }
 }
+
+/* ============================================
+   BOTÕES COM GRADIENTE (usados em ações primárias)
+   ============================================ */
+.btn-primary-gradient {
+  background: linear-gradient(135deg, #2F81F7 0%, #58A6FF 100%);
+  color: #fff;
+  border: none;
+  box-shadow: 0 2px 8px rgba(47,129,247,0.25);
+  transition: filter 150ms ease, transform 150ms ease;
+}
+.btn-primary-gradient:hover { filter: brightness(1.08); }
+.btn-primary-gradient:active { transform: scale(0.98); }
+
+.btn-nova-ocorrencia {
+  background: linear-gradient(135deg, #2F81F7 0%, #58A6FF 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(47,129,247,0.25);
+}
+.btn-nova-ocorrencia:hover { filter: brightness(1.08); }
+.btn-nova-ocorrencia:active { transform: scale(0.98); }
+
+/* ============================================
+   MOBILE — FUNDAÇÃO (safe-area, scroll fluido, alvos de toque)
+   ============================================ */
+
+/* Momentum scroll em iOS + sem "bounce" horizontal */
+.scroll-fluido {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+/* Utilitário: respeita a barra inferior do sistema (notch/gesture bar) */
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+.safe-top { padding-top: env(safe-area-inset-top); }
+
+/* Barra de navegação inferior (mobile) */
+.bottom-nav {
+  background: rgba(13,17,23,0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid var(--border-hover);
+}
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 100%;
+  color: var(--text-2);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: color 150ms ease;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+}
+.bottom-nav-item.active { color: var(--blue); }
+.bottom-nav-item.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 28px;
+  height: 3px;
+  border-radius: 0 0 3px 3px;
+  background: var(--blue);
+}
+.bottom-nav-item .bn-badge {
+  position: absolute;
+  top: 4px;
+  right: 50%;
+  transform: translateX(18px);
+  background: var(--red);
+  color: #fff;
+  font-size: 8px;
+  font-weight: 700;
+  line-height: 1;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Botão de ação flutuante (FAB) — Nova Ocorrência no mobile */
+.fab {
+  position: fixed;
+  right: 16px;
+  bottom: calc(72px + env(safe-area-inset-bottom));
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #2F81F7 0%, #58A6FF 100%);
+  color: #fff;
+  box-shadow: 0 6px 20px rgba(47,129,247,0.40);
+  z-index: 40;
+  -webkit-tap-highlight-color: transparent;
+}
+.fab:active { transform: scale(0.94); }
+
+/* Bottom sheet — modais deslizam de baixo no mobile */
+@keyframes sheetUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.sheet-backdrop { animation: fadeIn 180ms ease; }
+.sheet-panel { animation: sheetUp 260ms cubic-bezier(0.32, 0.72, 0, 1); }
+
+/* Card de equipamento (mobile) */
+.equip-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 14px;
+  transition: border-color 150ms ease, transform 100ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.equip-card:active { transform: scale(0.985); border-color: var(--blue); }
+
+/* ============================================
+   AJUSTES SÓ PARA TELAS ≤ 768px
+   ============================================ */
+@media (max-width: 768px) {
+  /* Evita o zoom automático do iOS ao focar inputs (exige ≥16px) */
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+
+  /* Alvos de toque confortáveis: mínimo 44px em ações-ícone */
+  .touch-target {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Título de página um pouco menor no celular */
+  h1 { font-size: 19px; }
+
+  /* KPI numbers proporcionais */
+  .kpi-number { font-size: 26px; }
+}
