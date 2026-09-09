@@ -13,6 +13,7 @@ import {
   Printer,
   Plus,
   FileText,
+  Copy,
 } from 'lucide-react';
 import { DataStore } from '../lib/dataStore';
 import {
@@ -41,6 +42,7 @@ export const EquipamentoDetalhe: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<'ficha' | 'ocorrencias' | 'manutencoes' | 'fotos' | 'qrcode'>('ficha');
   const [isEditing, setIsEditing] = useState(false);
+  const [isCopying, setIsCopying] = useState(false);
   const [formData, setFormData] = useState<Partial<VwEquipamento>>({});
 
   const loadData = async () => {
@@ -72,12 +74,62 @@ export const EquipamentoDetalhe: React.FC = () => {
     loadData();
   }, [id]);
 
+  const handleCopyModelo = () => {
+    if (!equipamento) return;
+    // Copia todos os dados do equipamento atual para o form, mas remove id e tag
+    // para que a pessoa preencha uma nova tag antes de salvar
+    setFormData({
+      ...equipamento,
+      id: undefined,
+      tag: '',
+    });
+    setIsCopying(true);
+    setIsEditing(true);
+    toast('Modelo copiado! Ajuste a TAG e os dados necessários, depois salve.', { icon: '📋' });
+  };
+
   const handleSaveFicha = async () => {
     if (!equipamento) return;
     try {
       const ug = formData.ug_ref || equipamento.ug_ref || 'N1';
       const loc = formData.localizacao_ref ?? equipamento.localizacao_ref ?? '';
       const localInst = ug ? `${ug} · ${loc}` : loc;
+
+      // Modo cópia: cria novo equipamento (sem id, tag obrigatória e nova)
+      if (isCopying) {
+        const novaTag = String(formData.tag || '').trim();
+        if (!novaTag) {
+          toast.error('Informe uma TAG VISION para o novo equipamento.');
+          return;
+        }
+        // Verifica se a tag já existe
+        const existe = (await DataStore.getEquipamentos()).some(
+          (e) => String(e.tag) === novaTag
+        );
+        if (existe) {
+          toast.error(`A TAG "${novaTag}" já existe. Escolha outra.`);
+          return;
+        }
+        await DataStore.saveEquipamento({
+          tag: novaTag,
+          ug_ref: ug,
+          area_ref: formData.area_ref ?? '',
+          localizacao_ref: loc,
+          patrimonio_ref: formData.patrimonio_ref,
+          tipo_equipamento: formData.tipo_equipamento,
+          marca: formData.marca,
+          modelo: formData.modelo,
+          capacidade: formData.capacidade,
+          aplicacao: 'INDUSTRIAL',
+          status: (formData.status as EquipStatus) ?? 'OK',
+          local_instalacao: localInst,
+        });
+        toast.success(`Equipamento TAG ${novaTag} criado a partir do modelo copiado!`);
+        setIsCopying(false);
+        setIsEditing(false);
+        navigate(`/equipamentos/equip-${novaTag}`);
+        return;
+      }
 
       await DataStore.saveEquipamento({
         tag: formData.tag || equipamento.tag,
@@ -108,6 +160,7 @@ export const EquipamentoDetalhe: React.FC = () => {
       setFormData(equipamento);
     }
     setIsEditing(false);
+    setIsCopying(false);
   };
 
   const handleTabChange = (tabId: 'ficha' | 'ocorrencias' | 'manutencoes' | 'fotos' | 'qrcode') => {
@@ -208,7 +261,7 @@ export const EquipamentoDetalhe: React.FC = () => {
                 onClick={handleSaveFicha}
                 className="px-4 py-1.5 rounded-md btn-primary-gradient text-white text-xs font-bold uppercase tracking-wider shadow-md cursor-pointer"
               >
-                ✓ Salvar Alterações
+                {isCopying ? '✓ Criar Novo Equipamento' : '✓ Salvar Alterações'}
               </button>
             </>
           ) : (
@@ -220,6 +273,16 @@ export const EquipamentoDetalhe: React.FC = () => {
                 >
                   <Edit3 className="w-3.5 h-3.5" />
                   <span>Editar Ficha</span>
+                </button>
+              )}
+              {canEdit && (
+                <button
+                  onClick={handleCopyModelo}
+                  title="Copiar este equipamento como modelo para um novo cadastro"
+                  className="px-3 py-1.5 rounded-md bg-[#2D2A1F] hover:bg-[#3D3826] text-[#F5A623] border border-[#F5A623]/30 text-xs font-semibold transition-colors flex items-center gap-1.5"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>Copiar Modelo</span>
                 </button>
               )}
               {canCreateOccurrence && (
@@ -286,6 +349,14 @@ export const EquipamentoDetalhe: React.FC = () => {
 
             {isEditing ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 text-xs">
+                {isCopying && (
+                  <div className="col-span-full bg-[#F5A623]/10 border border-[#F5A623]/40 rounded-lg p-3 flex items-start gap-2">
+                    <Copy className="w-4 h-4 text-[#F5A623] shrink-0 mt-0.5" />
+                    <div className="text-[11px] text-[#F5A623]">
+                      <strong>Modo cópia:</strong> os dados foram copiados do equipamento TAG {equipamento.tag}. Informe uma <strong>nova TAG VISION</strong> e ajuste o que for necessário. Ao salvar, um novo equipamento será criado.
+                    </div>
+                  </div>
+                )}
                 {/* 1. Tag Vision */}
                 <div className="space-y-1">
                   <label className="block text-[10px] uppercase font-bold text-gray-400">Tag Vision*</label>
@@ -293,7 +364,10 @@ export const EquipamentoDetalhe: React.FC = () => {
                     type="text"
                     value={formData.tag || ''}
                     onChange={(e) => setFormData((prev) => ({ ...prev, tag: e.target.value }))}
-                    className="w-full h-[36px] bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white px-3 rounded text-xs outline-none font-mono"
+                    placeholder={isCopying ? 'Digite a nova TAG...' : ''}
+                    className={`w-full h-[36px] bg-[#0A0E1A] border text-white px-3 rounded text-xs outline-none font-mono ${
+                      isCopying ? 'border-[#F5A623]/50 focus:border-[#F5A623]' : 'border-blue-500/20 focus:border-blue-400'
+                    }`}
                   />
                 </div>
 
