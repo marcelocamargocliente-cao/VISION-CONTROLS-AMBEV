@@ -282,6 +282,18 @@ export const Cadastros: React.FC = () => {
     }
   };
 
+  const handleDeleteColab = async (p: Profile) => {
+    const ok = window.confirm(`Excluir permanentemente o colaborador "${p.nome}"?\n\nEsta ação não pode ser desfeita.`);
+    if (!ok) return;
+    try {
+      await DataStore.deleteProfile(p.id);
+      setProfiles((prev) => prev.filter((x) => x.id !== p.id));
+      await refreshProfiles();
+    } catch (e) {
+      console.error('Error deleting profile:', e);
+    }
+  };
+
   // Mapper for Levantamento
   const mapLevantamento = (item: any, index: number) => ({
     item: item.item_num || index + 1,
@@ -718,27 +730,27 @@ export const Cadastros: React.FC = () => {
         <div className="flex-1 min-h-0 flex flex-col gap-2.5 overflow-hidden">
           {/* Controls fixos */}
           <div className="shrink-0 flex flex-col sm:flex-row gap-2 bg-[#111827] p-2.5 rounded-lg border border-blue-500/15 justify-between items-stretch sm:items-center">
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="relative min-w-[240px]">
+            <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2 w-full sm:w-auto">
+              <div className="relative w-full sm:min-w-[240px] sm:w-auto">
                 <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   id="input-search-equipe"
                   type="text"
-                  placeholder="Buscar colaborador por nome, cargo ou e-mail..."
+                  placeholder="Buscar por nome, cargo ou e-mail..."
                   value={searchEquipe}
                   onChange={(e) => setSearchEquipe(e.target.value)}
-                  className="w-full pl-8 pr-3 py-1 text-xs bg-black/40 border border-blue-500/20  rounded outline-none focus:border-emerald-400"
+                  className="w-full pl-8 pr-3 py-2 sm:py-1 text-xs bg-black/40 border border-blue-500/20 rounded outline-none focus:border-emerald-400"
                 />
               </div>
 
-              <div className="flex items-center gap-1 bg-black/40 border border-blue-500/20 px-2 py-1 rounded">
-                <Shield className="w-3.5 h-3.5 " />
-                <span className="text-[10px]  ">Função:</span>
+              <div className="flex items-center gap-1 bg-black/40 border border-blue-500/20 px-2 py-2 sm:py-1 rounded w-full sm:w-auto">
+                <Shield className="w-3.5 h-3.5 shrink-0" />
+                <span className="text-[10px] shrink-0">Função:</span>
                 <select
                   id="select-filter-role"
                   value={roleFilter}
                   onChange={(e) => setRoleFilter(e.target.value)}
-                  className="bg-transparent text-xs   outline-none cursor-pointer"
+                  className="bg-transparent text-xs outline-none cursor-pointer flex-1"
                 >
                   <option value="TODOS" className="bg-[#111827] ">TODAS AS FUNÇÕES</option>
                   <option value="ADMIN" className="bg-[#111827] ">ADMIN</option>
@@ -754,7 +766,7 @@ export const Cadastros: React.FC = () => {
               <button
                 id="btn-novo-colaborador"
                 onClick={handleOpenNewColab}
-                className="px-3 py-1.5 bg-[#10B981] hover:bg-[#34D399] text-black  font-bold text-xs uppercase tracking-wider rounded transition-colors flex items-center gap-1.5 shadow-md shrink-0 cursor-pointer"
+                className="px-3 py-2 sm:py-1.5 bg-[#10B981] hover:bg-[#34D399] text-black font-bold text-xs uppercase tracking-wider rounded transition-colors flex items-center justify-center gap-1.5 shadow-md shrink-0 cursor-pointer w-full sm:w-auto"
               >
                 <UserPlus className="w-3.5 h-3.5" />
                 <span>+ Novo Colaborador</span>
@@ -837,7 +849,7 @@ export const Cadastros: React.FC = () => {
                     </div>
 
                     {/* Footer status & actions */}
-                    <div className="mt-3 pt-2 border-t border-blue-500/10 flex items-center justify-between">
+                    <div className="mt-3 pt-2 border-t border-blue-500/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                       <div className="flex items-center gap-1.5">
                         <span
                           className={`w-2 h-2 rounded-full ${
@@ -850,12 +862,12 @@ export const Cadastros: React.FC = () => {
                       </div>
 
                       {canAdmin && (
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1 flex-wrap w-full sm:w-auto">
                           <button
                             id={`btn-edit-colab-${p.id}`}
                             onClick={() => handleEditColab(p)}
                             title="Editar Colaborador"
-                            className="px-2 py-0.5 text-[11px]  text-cyan-400 hover:bg-white/5 border border-transparent hover:border-blue-500/20 rounded transition-colors flex items-center gap-1 cursor-pointer"
+                            className="px-2 py-1 text-[11px] text-cyan-400 hover:bg-white/5 border border-transparent hover:border-blue-500/20 rounded transition-colors flex items-center gap-1 cursor-pointer"
                           >
                             <Edit2 className="w-3 h-3" />
                             <span>Editar</span>
@@ -865,13 +877,23 @@ export const Cadastros: React.FC = () => {
                             id={`btn-toggle-colab-${p.id}`}
                             onClick={() => handleToggleColabActive(p)}
                             title={isAtivo ? 'Desativar acesso do colaborador' : 'Reativar acesso do colaborador'}
-                            className={`px-2 py-0.5 text-[11px]  rounded border transition-colors flex items-center gap-1 cursor-pointer ${
+                            className={`px-2 py-1 text-[11px] rounded border transition-colors flex items-center gap-1 cursor-pointer ${
                               isAtivo
-                                ? 'text-red-400 hover:bg-red-500/10 border-transparent hover:border-red-500/30'
-                                : ' hover:bg-[#10B981]/10 border-transparent hover:border-[#10B981]/30'
+                                ? 'text-amber-400 hover:bg-amber-500/10 border-transparent hover:border-amber-500/30'
+                                : 'text-emerald-400 hover:bg-[#10B981]/10 border-transparent hover:border-[#10B981]/30'
                             }`}
                           >
                             <span>{isAtivo ? 'Desativar' : 'Ativar'}</span>
+                          </button>
+
+                          <button
+                            id={`btn-delete-colab-${p.id}`}
+                            onClick={() => handleDeleteColab(p)}
+                            title="Excluir colaborador permanentemente"
+                            className="px-2 py-1 text-[11px] text-red-400 hover:bg-red-500/10 border border-transparent hover:border-red-500/30 rounded transition-colors flex items-center gap-1 cursor-pointer"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                            <span>Excluir</span>
                           </button>
                         </div>
                       )}

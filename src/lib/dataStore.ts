@@ -344,29 +344,37 @@ export const DataStore = {
 
   // 5. View: Status por Linha (vw_status_por_linha)
   async getVwStatusPorLinha(filters?: GlobalFilters): Promise<VwStatusPorLinha[]> {
-    const equips = await this.getVwEquipamentos(filters);
-    const result: VwStatusPorLinha[] = [];
+    // Usar dados reais do Supabase agrupados por UG (ug_ref)
+    let equipamentos: Equipamento[] = dbState.equipamentos;
+    if (isSupabaseConfigured) {
+      try {
+        const { data } = await supabase.from('equipamentos').select('tag, ug_ref, status');
+        if (data && data.length > 0) equipamentos = data as any[];
+      } catch (e) { console.warn('getVwStatusPorLinha Supabase', e); }
+    }
 
-    dbState.linhas.forEach((linha) => {
-      const linhaEquips = equips.filter((e) => e.linha_id === linha.id);
-      if (linhaEquips.length > 0 || !filters?.linha_id) {
-        const total = linhaEquips.length;
-        const ok = linhaEquips.filter((e) => e.status === 'OK').length;
-        const parado = linhaEquips.filter((e) => e.status === 'PARADO').length;
-        const restricao = linhaEquips.filter((e) => e.status === 'RESTRICAO').length;
-        result.push({
-          linha_id: linha.id,
-          linha_nome: linha.nome.replace('Linha ', 'L'),
-          total,
-          ok,
-          parado,
-          restricao,
-        });
-      }
+    // Agrupar por ug_ref
+    const ugMap = new Map<string, { ok: number; nok: number; total: number }>();
+    equipamentos.forEach((e: any) => {
+      const ug = e.ug_ref || 'SEM UG';
+      const cur = ugMap.get(ug) || { ok: 0, nok: 0, total: 0 };
+      cur.total += 1;
+      if (e.status === 'OK') cur.ok += 1;
+      else cur.nok += 1;
+      ugMap.set(ug, cur);
     });
 
-    // Ordenado do pior (mais parados) para o melhor
-    return result.sort((a, b) => b.parado - a.parado);
+    const result: VwStatusPorLinha[] = Array.from(ugMap.entries()).map(([ug, data]) => ({
+      linha_id: ug,
+      linha_nome: ug,
+      total: data.total,
+      ok: data.ok,
+      parado: 0,
+      restricao: data.nok,
+    }));
+
+    // Ordem: N1, N2, N3, N4
+    return result.sort((a, b) => a.linha_nome.localeCompare(b.linha_nome));
   },
 
   // 6. View: Status por Área (vw_status_por_area)
@@ -1415,6 +1423,16 @@ export const DataStore = {
       return prof;
     }
     throw new Error('Perfil não encontrado');
+  },
+
+  async deleteProfile(profileId: string): Promise<{ success: boolean }> {
+    if (isSupabaseConfigured) {
+      const { error } = await supabase.from('profiles').delete().eq('id', profileId);
+      if (error) console.error('deleteProfile ERROR:', error);
+    }
+    dbState.profiles = dbState.profiles.filter((p) => p.id !== profileId);
+    persistState();
+    return { success: true };
   },
 
   async createColaborador(data: {
