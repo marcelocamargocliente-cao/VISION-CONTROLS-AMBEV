@@ -287,7 +287,16 @@ export const DataStore = {
 
   // 3. View: KPIs (vw_kpis)
   async getVwKpis(filters?: GlobalFilters): Promise<VwKpis> {
-    const list = await this.getVwEquipamentos(filters);
+    // Buscar equipamentos reais do Supabase para KPIs precisos
+    let list = await this.getVwEquipamentos(filters);
+    if (isSupabaseConfigured && (!filters || Object.keys(filters).length === 0)) {
+      try {
+        const { data } = await supabase.from('equipamentos').select('tag, status');
+        if (data && data.length > 0) {
+          list = data.map((e: any) => ({ ...e, status: e.status })) as any[];
+        }
+      } catch (e) { console.warn('getVwKpis Supabase', e); }
+    }
     const total = list.length;
     const ok = list.filter((e) => e.status === 'OK').length;
     const parados = list.filter((e) => e.status === 'PARADO').length;
@@ -305,6 +314,15 @@ export const DataStore = {
       .filter((orc) => orc.status === 'ENVIADO' || orc.status === 'ELABORACAO')
       .reduce((sum, orc) => sum + (orc.valor_total || 0), 0);
 
+    // MTTR real: média de dias entre abertura e conclusão das ocorrências concluídas
+    const concluidas = dbState.ocorrencias.filter((o) => o.status === 'CONCLUIDA' && o.updated_at);
+    const mttrMedio = concluidas.length > 0
+      ? Number((concluidas.reduce((sum, o) => {
+          const dias = Math.max(0, Math.floor((new Date(o.updated_at!).getTime() - new Date(o.created_at).getTime()) / (1000 * 3600 * 24)));
+          return sum + dias;
+        }, 0) / concluidas.length).toFixed(1))
+      : 0;
+
     return {
       total_equipamentos: total,
       operando_ok: ok,
@@ -316,7 +334,7 @@ export const DataStore = {
       aguardando_peca: aguardandoPeca,
       aguardando_orcamento_aprovacao: aguardandoOrcamento,
       valor_orcamentos_pendentes: valorOrcamentos,
-      mttr_medio_dias: 3.4,
+      mttr_medio_dias: mttrMedio,
     };
   },
 
@@ -542,18 +560,35 @@ export const DataStore = {
     });
   },
 
-  // 11. View: Evolução Mensal (vw_evolucao_mensal)
+  // 11. View: Evolução Mensal (vw_evolucao_mensal) — dados reais das ocorrências
   async getVwEvolucaoMensal(): Promise<VwEvolucaoMensal[]> {
-    return [
-      { mes_ano: '2026-01', mes_label: 'Jan/26', abertas: 12, concluidas: 14 },
-      { mes_ano: '2026-02', mes_label: 'Fev/26', abertas: 8, concluidas: 10 },
-      { mes_ano: '2026-03', mes_label: 'Mar/26', abertas: 9, concluidas: 8 },
-      { mes_ano: '2026-04', mes_label: 'Abr/26', abertas: 11, concluidas: 12 },
-      { mes_ano: '2026-05', mes_label: 'Mai/26', abertas: 6, concluidas: 7 },
-      { mes_ano: '2026-06', mes_label: 'Jun/26', abertas: 14, concluidas: 13 },
-      { mes_ano: '2026-07', mes_label: 'Jul/26', abertas: 7, concluidas: 9 },
-      { mes_ano: '2026-08', mes_label: 'Ago/26', abertas: 4, concluidas: 3 },
-    ];
+    // Últimos 8 meses
+    const meses: VwEvolucaoMensal[] = [];
+    const hoje = new Date();
+    const nomesMes = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+
+    for (let i = 7; i >= 0; i--) {
+      const d = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1);
+      const ano = d.getFullYear();
+      const mes = d.getMonth();
+      const mesAno = `${ano}-${String(mes + 1).padStart(2, '0')}`;
+      const label = `${nomesMes[mes]}/${String(ano).slice(2)}`;
+
+      const abertas = dbState.ocorrencias.filter((o) => {
+        const dc = new Date(o.created_at);
+        return dc.getFullYear() === ano && dc.getMonth() === mes;
+      }).length;
+
+      const concluidas = dbState.ocorrencias.filter((o) => {
+        if (o.status !== 'CONCLUIDA') return false;
+        const dc = new Date(o.updated_at || o.created_at);
+        return dc.getFullYear() === ano && dc.getMonth() === mes;
+      }).length;
+
+      meses.push({ mes_ano: mesAno, mes_label: label, abertas, concluidas });
+    }
+
+    return meses;
   },
 
   // 12. Equipamentos CRUD & Details

@@ -152,23 +152,7 @@ export const INITIAL_EVENTOS: OcorrenciaEvento[] = [];
 
 export const INITIAL_MANUTENCOES: Manutencao[] = [];
 
-// Populate up to 81 historical maintenances
-for (let m = 4; m <= 81; m++) {
-  const daysAgo = 10 + (m * 4);
-  const d = new Date();
-  d.setDate(d.getDate() - daysAgo);
-  INITIAL_MANUTENCOES.push({
-    id: `manut-${m}`,
-    equipamento_id: INITIAL_EQUIPAMENTOS[(m * 7) % INITIAL_EQUIPAMENTOS.length].id,
-    tipo_servico: m % 4 === 0 ? 'PREDITIVA' : 'PREVENTIVA',
-    data_execucao: d.toISOString(),
-    tecnico_nome: m % 2 === 0 ? 'Alan Silva' : 'Arthur Almeida',
-    ordem_sap: `4001${7000 + m}`,
-    nota_sap: `1009${4000 + m}`,
-    descricao_servico: 'Rotina de preventiva periódica com higienização de filtros, verificação de termostato eletrônico e reaperto de bornes elétricos.',
-    created_at: d.toISOString(),
-  });
-}
+// Manutenções reais são cadastradas pelos usuários — sem dados fictícios.
 
 // 195 Legacy survey records (44 NOK)
 export const INITIAL_LEVANTAMENTO_LEGADO: LevantamentoLegado[] = [];

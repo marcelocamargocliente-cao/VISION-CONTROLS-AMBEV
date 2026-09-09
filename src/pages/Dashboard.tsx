@@ -39,17 +39,17 @@ export const Dashboard: React.FC = () => {
   const [currentTime, setCurrentTime] = useState<string>('');
 
   const [kpis, setKpis] = useState<VwKpis>({
-    total_equipamentos: 181,
-    operando_ok: 179,
-    parados: 2,
-    restricao: 1,
+    total_equipamentos: 0,
+    operando_ok: 0,
+    parados: 0,
+    restricao: 0,
     desativados: 0,
-    disponibilidade_pct: 98.9,
-    ocorrencias_abertas: 2,
+    disponibilidade_pct: 100,
+    ocorrencias_abertas: 0,
     aguardando_peca: 0,
-    aguardando_orcamento_aprovacao: 1,
-    valor_orcamentos_pendentes: 14850,
-    mttr_medio_dias: 3.4,
+    aguardando_orcamento_aprovacao: 0,
+    valor_orcamentos_pendentes: 0,
+    mttr_medio_dias: 0,
   });
 
   const [statusUg, setStatusUg] = useState<VwStatusPorUg[]>([]);
