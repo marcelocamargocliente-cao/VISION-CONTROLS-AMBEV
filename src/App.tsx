@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -16,6 +16,20 @@ const OcorrenciaDetalhe = lazy(() => import('./pages/OcorrenciaDetalhe').then((m
 const Orcamentos = lazy(() => import('./pages/Orcamentos').then((m) => ({ default: m.Orcamentos })));
 const Cadastros = lazy(() => import('./pages/Cadastros').then((m) => ({ default: m.Cadastros })));
 
+// Detecta viewport de celular (mesmo breakpoint do Tailwind md: 768px)
+export function useIsMobile(): boolean {
+  const [isMobile, setIsMobile] = useState<boolean>(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches
+  );
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)');
+    const handler = () => setIsMobile(mq.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+  return isMobile;
+}
+
 const PageLoader: React.FC = () => (
   <div className="flex-1 flex items-center justify-center bg-[var(--bg-app)] text-[#8B949E] font-mono text-xs">
     <div className="flex items-center gap-2">
@@ -24,6 +38,18 @@ const PageLoader: React.FC = () => (
     </div>
   </div>
 );
+
+// Rota inicial: no desktop mostra o Dashboard; no celular ele fica oculto
+// (não fica bom em tela pequena) e cai direto em Equipamentos.
+const HomeRoute: React.FC = () => {
+  const isMobile = useIsMobile();
+  if (isMobile) return <Navigate to="/equipamentos" replace />;
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <Dashboard />
+    </Suspense>
+  );
+};
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, isLoading } = useAuth();
@@ -62,7 +88,7 @@ export const App: React.FC = () => {
               </ProtectedRoute>
             }
           >
-            <Route index element={<Suspense fallback={<PageLoader />}><Dashboard /></Suspense>} />
+            <Route index element={<HomeRoute />} />
             <Route path="equipamentos" element={<Suspense fallback={<PageLoader />}><Equipamentos /></Suspense>} />
             <Route path="equipamentos/:id" element={<Suspense fallback={<PageLoader />}><EquipamentoDetalhe /></Suspense>} />
             <Route path="ocorrencias" element={<Suspense fallback={<PageLoader />}><Ocorrencias /></Suspense>} />

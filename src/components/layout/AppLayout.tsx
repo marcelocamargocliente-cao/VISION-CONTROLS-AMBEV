@@ -69,11 +69,11 @@ export const AppLayout: React.FC = () => {
       <aside className="no-print hidden md:flex w-60 border-r border-[#30363D] bg-[#0D1117] flex-col shrink-0 select-none z-30 h-screen overflow-hidden">
         <div className="px-3 py-2.5 border-b border-[#30363D] shrink-0">
           <div className="flex items-center gap-2.5 h-[34px]">
-            <div className="w-7 h-7 bg-gradient-to-br from-[#2F81F7] to-[#58A6FF] flex items-center justify-center font-display font-bold text-white rounded-lg shadow-md shadow-[#2F81F7]/25 text-xs tracking-tight shrink-0">
+            <div className="w-7 h-7 bg-gradient-to-br from-[#30363D] to-[#484F58] flex items-center justify-center font-display font-bold text-white rounded-lg shadow-md shadow-black/20 text-xs tracking-tight shrink-0">
               VC
             </div>
             <div className="min-w-0">
-              <h1 className="text-[9px] font-display font-bold tracking-widest text-[#58A6FF] leading-none uppercase">
+              <h1 className="text-[9px] font-display font-bold tracking-widest text-[#E6EDF3] leading-none uppercase">
                 INTEGRAÇÃO
               </h1>
               <h2 className="text-[11px] font-display font-extrabold tracking-tight text-[#E6EDF3] leading-tight uppercase truncate">
@@ -118,7 +118,7 @@ export const AppLayout: React.FC = () => {
                     className={({ isActive }) =>
                       `h-[32px] flex items-center gap-2 px-2.5 rounded-lg text-[13px] font-body font-medium transition-all ${
                         isActive
-                          ? 'bg-[#2F81F7]/15 text-[#58A6FF] border border-[#2F81F7]/30 shadow-sm shadow-[#2F81F7]/10 font-semibold'
+                          ? 'bg-[#21262D] text-[#E6EDF3] border border-[#30363D] shadow-sm shadow-black/10 font-semibold'
                           : 'text-[#8B949E] hover:bg-[#161B22] hover:text-[#E6EDF3]'
                       }`
                     }
@@ -159,12 +159,12 @@ export const AppLayout: React.FC = () => {
                     <div
                       key={item.ocorrencia_id}
                       onClick={() => navigate(`/ocorrencias/${item.ocorrencia_id}`)}
-                      className="px-2 py-1 rounded-lg bg-[#161B22] hover:bg-[#1C2128] border border-[#30363D]/60 hover:border-[#2F81F7]/40 text-[11px] transition-all cursor-pointer group"
+                      className="px-2 py-1 rounded-lg bg-[#161B22] hover:bg-[#1C2128] border border-[#30363D]/60 hover:border-[#30363D] text-[11px] transition-all cursor-pointer group"
                     >
                       <div className="flex items-center justify-between gap-1">
                         <div className="flex items-center gap-1.5 min-w-0">
                           <span className="w-1.5 h-1.5 rounded-full bg-[#F85149] shrink-0 animate-pulse" />
-                          <span className="font-mono font-medium text-[#E6EDF3] group-hover:text-[#58A6FF] truncate text-[11px]">
+                          <span className="font-mono font-medium text-[#E6EDF3] group-hover:text-[#E6EDF3] truncate text-[11px]">
                             OS {item.ocorrencia_numero} · AMBEV {item.patrimonio_ref || item.tag_sap || item.tag}
                           </span>
                         </div>
@@ -187,12 +187,12 @@ export const AppLayout: React.FC = () => {
             className="w-full h-[40px] flex items-center justify-between px-2 py-1 rounded-lg hover:bg-[#161B22] transition-all text-left"
           >
             <div className="flex items-center gap-2 min-w-0">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#2F81F7] to-[#58A6FF] border border-[#2F81F7]/30 flex items-center justify-center font-display font-bold text-[11px] text-white shrink-0 shadow-sm">
+              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#30363D] to-[#484F58] border border-[#30363D] flex items-center justify-center font-display font-bold text-[11px] text-white shrink-0 shadow-sm">
                 {user?.nome ? user.nome.charAt(0) : 'A'}
               </div>
               <div className="min-w-0">
                 <p className="text-[11px] font-body font-bold text-[#E6EDF3] truncate">{user?.nome || 'Adriano Coelho Pinto'}</p>
-                <p className="text-[9px] font-mono text-[#58A6FF] uppercase truncate leading-none">
+                <p className="text-[9px] font-mono text-[#E6EDF3] uppercase truncate leading-none">
                   {user?.role || 'ADMIN'}
                 </p>
               </div>
@@ -214,7 +214,7 @@ export const AppLayout: React.FC = () => {
                   }}
                   className={`w-full text-left px-2 py-1.5 text-[11px] rounded-lg flex items-center justify-between transition-colors ${
                     p.id === user?.id
-                      ? 'bg-[#2F81F7]/20 text-[#58A6FF] font-bold border border-[#2F81F7]/30'
+                      ? 'bg-[#21262D] text-[#E6EDF3] font-bold border border-[#30363D]'
                       : 'text-[#E6EDF3] hover:bg-[#21262D]'
                   }`}
                 >
@@ -246,7 +246,7 @@ export const AppLayout: React.FC = () => {
         {/* MOBILE HEADER (slim, 52px) */}
         <header className="no-print h-[52px] md:hidden border-b border-[#30363D] bg-[#161B22] flex items-center justify-between px-3 shrink-0 z-20 safe-top">
           <div className="flex items-center gap-2 min-w-0">
-            <div className="w-8 h-8 bg-gradient-to-br from-[#2F81F7] to-[#58A6FF] flex items-center justify-center font-display font-bold text-white rounded-lg text-[12px] shrink-0">
+            <div className="w-8 h-8 bg-gradient-to-br from-[#30363D] to-[#484F58] flex items-center justify-center font-display font-bold text-white rounded-lg text-[12px] shrink-0">
               VC
             </div>
             <div className="min-w-0 leading-tight">
@@ -266,7 +266,7 @@ export const AppLayout: React.FC = () => {
             </span>
             <button
               onClick={() => setProfileSheetOpen(true)}
-              className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#2F81F7] to-[#58A6FF] border border-[#2F81F7]/30 flex items-center justify-center font-display font-bold text-[13px] text-white shrink-0 active:scale-95 transition-transform"
+              className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#30363D] to-[#484F58] border border-[#30363D] flex items-center justify-center font-display font-bold text-[13px] text-white shrink-0 active:scale-95 transition-transform"
               aria-label="Abrir perfil"
             >
               {user?.nome ? user.nome.charAt(0) : 'A'}
@@ -279,25 +279,27 @@ export const AppLayout: React.FC = () => {
           <Outlet />
         </main>
 
-        {/* MOBILE BOTTOM NAV (barra de abas inferior) */}
+        {/* MOBILE BOTTOM NAV (barra de abas inferior) — Dashboard fica oculto no celular */}
         <nav className="no-print md:hidden bottom-nav shrink-0 h-16 flex items-stretch px-1 safe-bottom z-30">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.exact}
-                className={({ isActive }) =>
-                  `bottom-nav-item ${isActive ? 'active' : ''}`
-                }
-              >
-                <Icon className="w-[22px] h-[22px]" strokeWidth={2} />
-                <span className="truncate max-w-full px-0.5">{item.short}</span>
-                {item.badge && <span className="bn-badge">{item.badge}</span>}
-              </NavLink>
-            );
-          })}
+          {navItems
+            .filter((item) => item.to !== '/')
+            .map((item) => {
+              const Icon = item.icon;
+              return (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  end={item.exact}
+                  className={({ isActive }) =>
+                    `bottom-nav-item ${isActive ? 'active' : ''}`
+                  }
+                >
+                  <Icon className="w-[22px] h-[22px]" strokeWidth={2} />
+                  <span className="truncate max-w-full px-0.5">{item.short}</span>
+                  {item.badge && <span className="bn-badge">{item.badge}</span>}
+                </NavLink>
+              );
+            })}
         </nav>
       </div>
 
@@ -328,12 +330,12 @@ export const AppLayout: React.FC = () => {
             <div className="w-10 h-1 rounded-full bg-[#30363D] mx-auto mb-4" />
 
             <div className="flex items-center gap-3 pb-3 mb-3 border-b border-[#30363D]">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#2F81F7] to-[#58A6FF] flex items-center justify-center font-display font-bold text-[18px] text-white shrink-0">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#30363D] to-[#484F58] flex items-center justify-center font-display font-bold text-[18px] text-white shrink-0">
                 {user?.nome ? user.nome.charAt(0) : 'A'}
               </div>
               <div className="min-w-0">
                 <p className="text-[15px] font-display font-bold text-[#E6EDF3] truncate">{user?.nome || 'Adriano Coelho Pinto'}</p>
-                <p className="text-[11px] font-mono text-[#58A6FF] uppercase">{user?.role || 'ADMIN'}</p>
+                <p className="text-[11px] font-mono text-[#E6EDF3] uppercase">{user?.role || 'ADMIN'}</p>
               </div>
               <button
                 onClick={() => setProfileSheetOpen(false)}
@@ -357,7 +359,7 @@ export const AppLayout: React.FC = () => {
                   }}
                   className={`w-full text-left px-3 py-3 text-[13px] rounded-xl flex items-center justify-between transition-colors ${
                     p.id === user?.id
-                      ? 'bg-[#2F81F7]/20 text-[#58A6FF] font-bold border border-[#2F81F7]/30'
+                      ? 'bg-[#21262D] text-[#E6EDF3] font-bold border border-[#30363D]'
                       : 'text-[#E6EDF3] bg-[#0D1117] border border-[#30363D]'
                   }`}
                 >

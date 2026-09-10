@@ -861,3 +861,46 @@ a:hover {
   /* KPI numbers proporcionais */
   .kpi-number { font-size: 26px; }
 }
+
+/* ============================================
+   PALETA NEUTRA (aplica em TUDO, menos o Dashboard)
+   Botões, abas, links, foco e navegação em tons de cinza.
+   Só permanecem coloridos os SINAIS: OK/NOK, ONLINE e alertas.
+   O Dashboard usa cores inline nos próprios componentes, então
+   estas regras não afetam os gráficos/KPIs.
+   ============================================ */
+.btn-primary-gradient,
+.btn-nova-ocorrencia {
+  background: #E6EDF3;
+  color: #0D1117;
+  box-shadow: none;
+}
+.btn-primary-gradient:hover,
+.btn-nova-ocorrencia:hover { filter: brightness(0.92); }
+
+.fab {
+  background: #E6EDF3;
+  color: #0D1117;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.45);
+}
+
+.bottom-nav-item.active { color: #E6EDF3; }
+.bottom-nav-item.active::before { background: #E6EDF3; }
+
+.btn-primary { background: #E6EDF3; color: #0D1117; }
+.btn-primary:hover { background: #FFFFFF; transform: translateY(-1px); }
+
+.btn-secondary:hover { border-color: var(--text-2); color: var(--text-1); }
+
+.tab-item.active { color: var(--text-1); border-bottom-color: #E6EDF3; }
+
+a { color: #C9D1D9; }
+a:hover { color: #E6EDF3; }
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--text-2);
+  box-shadow: 0 0 0 3px rgba(139,148,158,0.12);
+}
+
+.badge-blue { background: var(--bg-card-2); color: var(--text-1); border: 1px solid var(--border); }
+.tag-badge:hover { border-color: var(--text-2); }
