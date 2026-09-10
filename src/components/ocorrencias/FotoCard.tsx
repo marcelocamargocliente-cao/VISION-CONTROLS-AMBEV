@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Trash2 } from 'lucide-react';
+import { Trash2, X, ZoomIn } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Anexo } from '../../types/database';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
@@ -14,6 +14,7 @@ interface FotoCardProps {
 export const FotoCard: React.FC<FotoCardProps> = ({ foto, canDelete, onDeletada }) => {
   const [confirmando, setConfirmando] = useState(false);
   const [deletando, setDeletando] = useState(false);
+  const [visualizando, setVisualizando] = useState(false);
 
   const deletar = async () => {
     setDeletando(true);
@@ -53,13 +54,24 @@ export const FotoCard: React.FC<FotoCardProps> = ({ foto, canDelete, onDeletada 
 
   return (
     <>
-      {/* Card da foto com botão hover */}
+      {/* Card da foto — toque abre em tela cheia */}
       <div className="foto-card-container relative overflow-hidden rounded-lg border border-[#30363D] bg-[#0D1117] group aspect-video flex items-center justify-center">
-        <img
-          src={foto.url}
-          alt={foto.nome_arquivo || 'Foto da avaria'}
-          className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
-        />
+        <button
+          type="button"
+          onClick={() => setVisualizando(true)}
+          className="absolute inset-0 w-full h-full cursor-zoom-in p-0 border-0 bg-transparent"
+          aria-label="Ver foto em tela cheia"
+        >
+          <img
+            src={foto.url}
+            alt={foto.nome_arquivo || 'Foto da avaria'}
+            className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+          />
+          {/* Dica visual de que dá para ampliar */}
+          <span className="absolute bottom-2 left-2 w-7 h-7 rounded-md bg-black/55 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+            <ZoomIn size={14} />
+          </span>
+        </button>
 
         {/* Botão deletar — aparece no hover e sempre em mobile para roles permitidas */}
         {canDelete && (
@@ -70,12 +82,40 @@ export const FotoCard: React.FC<FotoCardProps> = ({ foto, canDelete, onDeletada 
               setConfirmando(true);
             }}
             title="Remover foto"
-            className="foto-delete-btn absolute top-2 right-2 w-7 h-7 rounded-md bg-[#F85149]/90 hover:bg-[#F85149] text-white border-0 cursor-pointer flex items-center justify-center opacity-0 transition-opacity duration-150 z-10 shadow-md"
+            className="foto-delete-btn absolute top-2 right-2 w-9 h-9 rounded-md bg-[#F85149]/90 hover:bg-[#F85149] text-white border-0 cursor-pointer flex items-center justify-center opacity-0 transition-opacity duration-150 z-10 shadow-md"
           >
-            <Trash2 size={13} />
+            <Trash2 size={15} />
           </button>
         )}
       </div>
+
+      {/* Lightbox — foto em tela cheia */}
+      {visualizando && (
+        <div
+          className="fixed inset-0 z-[9998] flex items-center justify-center bg-black/90 backdrop-blur-sm p-3 sheet-backdrop"
+          onClick={() => setVisualizando(false)}
+        >
+          <button
+            type="button"
+            onClick={() => setVisualizando(false)}
+            className="absolute top-4 right-4 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white border-0 flex items-center justify-center z-10"
+            aria-label="Fechar"
+          >
+            <X size={22} />
+          </button>
+          <img
+            src={foto.url}
+            alt={foto.nome_arquivo || 'Foto da avaria'}
+            className="max-w-full max-h-full object-contain rounded-lg select-none"
+            onClick={(e) => e.stopPropagation()}
+          />
+          {foto.nome_arquivo && (
+            <span className="absolute bottom-4 left-1/2 -translate-x-1/2 text-[11px] text-white/70 font-mono bg-black/50 px-3 py-1 rounded-full max-w-[80%] truncate">
+              {foto.nome_arquivo}
+            </span>
+          )}
+        </div>
+      )}
 
       {/* Modal de confirmação */}
       {confirmando && (

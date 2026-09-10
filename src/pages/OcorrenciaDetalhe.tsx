@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import toast from 'react-hot-toast';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   AlertTriangle,
@@ -22,6 +23,7 @@ import {
   Shield,
   Trash2,
   Eye,
+  RefreshCw,
 } from 'lucide-react';
 import { DataStore } from '../lib/dataStore';
 import {
@@ -80,6 +82,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
   const todasPropostasExpiradas = orcamentos.length > 0 && orcamentos.every(o => o.status === 'EXPIRADO');
   const [fotos, setFotos] = useState<Anexo[]>([]);
   const [pdfs, setPdfs] = useState<Anexo[]>([]);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // New Event Form State
@@ -352,25 +355,25 @@ export const OcorrenciaDetalhe: React.FC = () => {
     }
   };
 
-  const handleUploadPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUploadPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!ocorrencia || !e.target.files || e.target.files.length === 0) return;
     const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      const url = event.target?.result as string;
-      if (url) {
-        await DataStore.addAnexo({
-          ocorrencia_id: ocorrencia.id,
-          equipamento_id: ocorrencia.equipamento_id,
-          nome_arquivo: file.name,
-          url,
-          tipo_anexo: 'FOTO',
-          bucket: 'fotos',
-        });
-        await loadData();
-      }
-    };
-    reader.readAsDataURL(file);
+    e.target.value = ''; // permite reenviar a mesma foto depois
+    setUploadingPhoto(true);
+    const t = toast.loading('Enviando foto...');
+    try {
+      await DataStore.uploadFoto(file, {
+        ocorrencia_id: ocorrencia.id,
+        equipamento_id: ocorrencia.equipamento_id,
+      });
+      await loadData();
+      toast.success('Foto enviada', { id: t });
+    } catch (err) {
+      console.error('Erro ao enviar foto:', err);
+      toast.error('Não foi possível enviar a foto', { id: t });
+    } finally {
+      setUploadingPhoto(false);
+    }
   };
 
   if (loading) {
@@ -867,14 +870,27 @@ export const OcorrenciaDetalhe: React.FC = () => {
                   </h3>
                 </div>
                 {canEdit && (
-                  <label className="btn-secondary !py-1 !px-2.5 !text-[11px] gap-1 cursor-pointer">
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>Anexar Foto</span>
+                  <label
+                    className={`btn-secondary !py-1.5 !px-3 !text-[11px] gap-1 ${
+                      uploadingPhoto ? 'opacity-60 pointer-events-none' : 'cursor-pointer'
+                    }`}
+                  >
+                    {uploadingPhoto ? (
+                      <>
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                        <span>Enviando...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Anexar Foto</span>
+                      </>
+                    )}
                     <input
                       type="file"
                       accept="image/*"
-                      capture="environment"
                       onChange={handleUploadPhoto}
+                      disabled={uploadingPhoto}
                       className="hidden"
                     />
                   </label>

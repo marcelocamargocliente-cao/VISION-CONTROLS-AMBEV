@@ -1132,11 +1132,121 @@ export const DataStore = {
 
   // 17. Anexos & Fotos
   async getAnexos(equipamentoId?: string, ocorrenciaId?: string): Promise<Anexo[]> {
-    return dbState.anexos.filter((a) => {
+    // 1. Busca no Supabase (cross-device) quando configurado
+    let remote: Anexo[] = [];
+    if (isSupabaseConfigured) {
+      try {
+        let q = supabase.from('anexos').select('*');
+        if (ocorrenciaId && equipamentoId) {
+          q = q.or(`ocorrencia_id.eq.${ocorrenciaId},equipamento_id.eq.${equipamentoId}`);
+        } else if (ocorrenciaId) {
+          q = q.eq('ocorrencia_id', ocorrenciaId);
+        } else if (equipamentoId) {
+          q = q.eq('equipamento_id', equipamentoId);
+        }
+        const { data, error } = await q.order('created_at', { ascending: false });
+        if (!error && data) remote = data as Anexo[];
+        else if (error) console.warn('[getAnexos] Supabase:', error.message);
+      } catch (e) {
+        console.warn('[getAnexos] Falha Supabase, usando local:', e);
+      }
+    }
+
+    // 2. Anexos locais (fallback base64 / offline)
+    const local = dbState.anexos.filter((a) => {
       if (equipamentoId && a.equipamento_id === equipamentoId) return true;
       if (ocorrenciaId && a.ocorrencia_id === ocorrenciaId) return true;
       return false;
     });
+
+    // 3. Merge por id (remoto tem prioridade), mais recente primeiro
+    const map = new Map<string, Anexo>();
+    for (const a of local) map.set(a.id, a);
+    for (const a of remote) map.set(a.id, a);
+    return Array.from(map.values()).sort((a, b) =>
+      (b.created_at || '').localeCompare(a.created_at || '')
+    );
+  },
+
+  // Envia a foto de verdade: Supabase Storage + registro na tabela anexos.
+  // Se o Supabase falhar (offline/sem bucket), cai para base64 local para não perder a foto.
+  async uploadFoto(
+    file: File,
+    refs: { ocorrencia_id?: string; equipamento_id?: string }
+  ): Promise<Anexo> {
+    const safeName = (file.name || 'foto.jpg').replace(/[^a-zA-Z0-9._-]/g, '_');
+    const folder = refs.ocorrencia_id || refs.equipamento_id || 'geral';
+    const path = `${folder}/${Date.now()}_${safeName}`;
+
+    if (isSupabaseConfigured) {
+      try {
+        const { error: upErr } = await supabase.storage
+          .from('fotos')
+          .upload(path, file, {
+            cacheControl: '3600',
+            upsert: false,
+            contentType: file.type || 'image/jpeg',
+          });
+        if (upErr) throw upErr;
+
+        const { data: pub } = supabase.storage.from('fotos').getPublicUrl(path);
+        const publicUrl = pub.publicUrl;
+
+        const record: Anexo = {
+          id: `anexo-${Date.now()}`,
+          ocorrencia_id: refs.ocorrencia_id,
+          equipamento_id: refs.equipamento_id,
+          nome_arquivo: file.name,
+          url: publicUrl,
+          path,
+          tipo_anexo: 'FOTO',
+          bucket: 'fotos',
+          created_at: new Date().toISOString(),
+        };
+
+        const { error: dbErr } = await supabase.from('anexos').insert({
+          id: record.id,
+          ocorrencia_id: record.ocorrencia_id ?? null,
+          equipamento_id: record.equipamento_id ?? null,
+          nome_arquivo: record.nome_arquivo,
+          url: record.url,
+          path: record.path,
+          tipo_anexo: record.tipo_anexo,
+          bucket: record.bucket,
+          created_at: record.created_at,
+        });
+        if (dbErr) throw dbErr;
+
+        // Espelha localmente para a UI atualizar na hora
+        dbState.anexos.unshift(record);
+        try { persistState(); } catch { /* quota */ }
+        return record;
+      } catch (e) {
+        console.error('[uploadFoto] Falha no Supabase, salvando local:', e);
+        // segue para o fallback base64
+      }
+    }
+
+    // Fallback local (base64) — offline ou Supabase indisponível
+    const base64 = await new Promise<string>((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(r.result as string);
+      r.onerror = () => reject(new Error('Falha ao ler o arquivo'));
+      r.readAsDataURL(file);
+    });
+    const local: Anexo = {
+      id: `anexo-${Date.now()}`,
+      ocorrencia_id: refs.ocorrencia_id,
+      equipamento_id: refs.equipamento_id,
+      nome_arquivo: file.name,
+      url: base64,
+      tipo_anexo: 'FOTO',
+      bucket: 'fotos',
+      created_at: new Date().toISOString(),
+    };
+    dbState.anexos.unshift(local);
+    try { persistState(); } catch { /* quota */ }
+    return local;
   },
 
   async addAnexo(anexo: Omit<Anexo, 'id' | 'created_at'>): Promise<Anexo> {
@@ -1151,6 +1261,20 @@ export const DataStore = {
   },
 
   async deleteAnexo(id: string): Promise<void> {
+    const alvo = dbState.anexos.find((a) => a.id === id);
+
+    if (isSupabaseConfigured) {
+      try {
+        const path = alvo?.path;
+        if (path) {
+          await supabase.storage.from(alvo?.bucket || 'fotos').remove([path]);
+        }
+        await supabase.from('anexos').delete().eq('id', id);
+      } catch (e) {
+        console.warn('[deleteAnexo] Falha ao remover no Supabase:', e);
+      }
+    }
+
     dbState.anexos = dbState.anexos.filter((a) => a.id !== id);
     persistState();
   },

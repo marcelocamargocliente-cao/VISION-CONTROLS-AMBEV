@@ -211,6 +211,7 @@ export interface Anexo {
   equipamento_id?: string;
   nome_arquivo: string;
   url: string;
+  path?: string;
   tipo_anexo: 'FOTO' | 'DOCUMENTO' | 'LAUDO' | 'OUTRO';
   bucket: 'fotos' | 'documentos';
   created_at: string;
