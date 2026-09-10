@@ -173,48 +173,48 @@ export const Dashboard: React.FC = () => {
   return (
     <div
       id="dashboard-container"
-      className="w-full h-screen overflow-hidden p-3 box-border flex flex-col gap-2.5 bg-[#0D1117] select-none font-body "
+      className="w-full h-full min-h-0 md:overflow-hidden overflow-y-auto scroll-fluido p-3 box-border flex flex-col gap-2.5 bg-[#0D1117] select-none font-body"
     >
-      {/* HEADER DO CONTEÚDO (Máximo 40px, shrink-0, linha única compacta) */}
+      {/* HEADER DO CONTEÚDO — empilha no mobile, linha única no desktop */}
       <header
         id="dashboard-header"
-        className="h-[40px] shrink-0 flex items-center justify-between gap-3 px-3 rounded-xl bg-[#161B22] border border-[#30363D]"
+        className="shrink-0 flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:h-[40px] px-3 py-2 md:py-0 rounded-xl bg-[#161B22] border border-[#30363D]"
       >
         {/* Título inline com subtítulo separado por · */}
         <div className="flex items-center gap-2 min-w-0">
-          <h1 className="text-[14px] font-display font-bold  tracking-tight truncate leading-none">
+          <h1 className="text-[15px] md:text-[14px] font-display font-bold tracking-tight truncate leading-none">
             Bom dia, {firstName}.
           </h1>
-          <span className=" text-[11px]">·</span>
-          <p className="text-[12px] font-body  truncate leading-none hidden sm:inline">
+          <span className="text-[11px] text-[#8B949E]">·</span>
+          <p className="text-[12px] font-body text-[#8B949E] truncate leading-none hidden sm:inline">
             181 climatizadores industriais monitorados
           </p>
         </div>
 
-        {/* Action Controls & Relógio/Badges (mesma linha, fonte 11px) */}
+        {/* Ações (busca + filtros + atualizar + exportar) */}
         <div className="flex items-center gap-2 shrink-0">
           {/* Global Search Compact */}
-          <form onSubmit={handleSearchSubmit} className="relative w-[180px] md:w-[220px]">
+          <form onSubmit={handleSearchSubmit} className="relative flex-1 md:flex-none md:w-[220px]">
             <Search className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Buscar TAG, OS..."
-              className="w-full h-[28px] bg-[#21262D] border border-[#30363D] rounded-lg has-icon-left-sm pr-2.5 text-[12px] font-body  placeholder-[#484F58] focus:outline-none focus:border-[#2F81F7] transition-all leading-none"
+              className="w-full h-9 md:h-[28px] bg-[#21262D] border border-[#30363D] rounded-lg has-icon-left-sm pr-2.5 text-[12px] font-body text-[#E6EDF3] placeholder-[#484F58] focus:outline-none focus:border-[#2F81F7] transition-all leading-none"
             />
           </form>
 
           {/* Filter Toggle */}
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className={`h-[28px] flex items-center gap-1.5 px-2.5 rounded-lg text-[11px] font-body font-semibold border transition-all cursor-pointer leading-none ${
+            className={`h-9 md:h-[28px] flex items-center gap-1.5 px-2.5 rounded-lg text-[11px] font-body font-semibold border transition-all cursor-pointer leading-none shrink-0 ${
               showFilters || Object.keys(filters).length > 0
-                ? 'bg-[#2F81F7]/20  border-[#2F81F7]/40'
-                : 'bg-[#21262D]  border-[#30363D] hover:border-[#2F81F7]/40'
+                ? 'bg-[#2F81F7]/20 text-[#58A6FF] border-[#2F81F7]/40'
+                : 'bg-[#21262D] text-[#8B949E] border-[#30363D] hover:border-[#2F81F7]/40'
             }`}
           >
-            <Filter className="w-3 h-3" />
+            <Filter className="w-3.5 h-3.5" />
             <span>Filtros</span>
             {Object.keys(filters).length > 0 && (
               <span className="w-1.5 h-1.5 rounded-full bg-[#2F81F7]" />
@@ -225,27 +225,27 @@ export const Dashboard: React.FC = () => {
           <button
             onClick={loadData}
             title="Atualizar dados"
-            className="h-[28px] w-[28px] flex items-center justify-center rounded-lg bg-[#21262D] border border-[#30363D]  hover: hover:border-[#2F81F7]/40 transition-colors cursor-pointer"
+            className="h-9 w-9 md:h-[28px] md:w-[28px] flex items-center justify-center rounded-lg bg-[#21262D] border border-[#30363D] text-[#8B949E] hover:text-[#E6EDF3] hover:border-[#2F81F7]/40 transition-colors cursor-pointer shrink-0"
           >
-            <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin ' : ''}`} />
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-[#58A6FF]' : ''}`} />
           </button>
 
           {/* CSV Export */}
           <button
             onClick={handleExportCsv}
             title="Exportar dados em CSV"
-            className="h-[28px] w-[28px] flex items-center justify-center rounded-lg bg-[#21262D] border border-[#30363D]  hover: hover:border-[#2F81F7]/40 transition-colors cursor-pointer"
+            className="h-9 w-9 md:h-[28px] md:w-[28px] flex items-center justify-center rounded-lg bg-[#21262D] border border-[#30363D] text-[#8B949E] hover:text-[#E6EDF3] hover:border-[#2F81F7]/40 transition-colors cursor-pointer shrink-0"
           >
-            <Download className="w-3 h-3" />
+            <Download className="w-3.5 h-3.5" />
           </button>
 
           {/* Live Clock & Badge Online */}
           <div className="hidden lg:flex items-center gap-2 border-l border-[#30363D] pl-2.5">
-            <div className="flex items-center gap-1 text-[11px]   leading-none">
-              <Clock className="w-3 h-3 " />
+            <div className="flex items-center gap-1 text-[11px] text-[#8B949E] leading-none">
+              <Clock className="w-3 h-3" />
               <span>{currentTime}</span>
             </div>
-            <span className="text-[10px] bg-[#3FB950]/15  px-2 py-0.5 rounded-full border border-[#3FB950]/30  font-bold flex items-center gap-1 leading-none">
+            <span className="text-[10px] bg-[#3FB950]/15 text-[#3FB950] px-2 py-0.5 rounded-full border border-[#3FB950]/30 font-bold flex items-center gap-1 leading-none">
               <span className="w-1.5 h-1.5 rounded-full bg-[#3FB950] animate-pulse" />
               ONLINE
             </span>
@@ -253,10 +253,10 @@ export const Dashboard: React.FC = () => {
         </div>
       </header>
 
-      {/* LINHA 1: 4 CARDS KPI (Altura fixa 110px, shrink-0, 4 colunas iguais) */}
+      {/* LINHA 1: CARDS KPI — 2x2 no mobile, 4 colunas no desktop */}
       <div
         id="kpi-row"
-        className="grid grid-cols-4 gap-2.5 h-[110px] shrink-0"
+        className="grid grid-cols-2 md:grid-cols-4 gap-2.5 shrink-0 auto-rows-[104px] md:auto-rows-auto md:h-[110px]"
       >
         {/* Card 1: Total Equipamentos */}
         <KpiCard
@@ -322,18 +322,18 @@ export const Dashboard: React.FC = () => {
         />
       </div>
 
-      {/* LINHA 2: GRÁFICO DE OCORRÊNCIAS (flex: 1 1 0, min-height: 0 — CRESCE E PREENCHE O ESPAÇO) */}
-      <div id="chart-row" className="flex-1 min-h-0 w-full flex flex-col">
+      {/* LINHA 2: GRÁFICO DE OCORRÊNCIAS — altura fixa no mobile, cresce no desktop */}
+      <div id="chart-row" className="h-[300px] shrink-0 md:flex-1 md:min-h-0 md:h-auto md:shrink w-full flex flex-col">
         <AreaChartOcorrencias
           data={evolucaoMensal}
           mttrMedio={kpis.mttr_medio_dias || 3.4}
         />
       </div>
 
-      {/* LINHA 3: 3 CARDS INFERIORES (flex: 1 1 0, min-height: 0 — CRESCE E PREENCHE O RESTANTE) */}
+      {/* LINHA 3: 3 CARDS INFERIORES — empilhados no mobile, 3 colunas no desktop */}
       <div
         id="bottom-row"
-        className="flex-1 min-h-0 grid grid-cols-3 gap-2.5"
+        className="grid grid-cols-1 md:grid-cols-3 gap-2.5 md:flex-1 md:min-h-0 auto-rows-[300px] md:auto-rows-auto"
       >
         {/* Card A: Status por Linha */}
         <LinhaProgressBar linhas={statusLinha} />
@@ -347,15 +347,15 @@ export const Dashboard: React.FC = () => {
 
       {/* Modal / Floating Filter Bar se aberto */}
       {showFilters && (
-        <div className="fixed inset-x-0 top-16 z-50 px-6 max-w-4xl mx-auto drop-shadow-2xl">
+        <div className="fixed inset-x-0 top-14 md:top-16 z-50 px-3 md:px-6 max-w-4xl mx-auto drop-shadow-2xl">
           <div className="bg-[#111827] border border-blue-500/40 rounded-xl p-3 shadow-2xl backdrop-blur-xl">
             <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/[0.06]">
-              <span className="text-xs font-bold  uppercase tracking-wider">
+              <span className="text-xs font-bold text-[#E6EDF3] uppercase tracking-wider">
                 Filtragem Global
               </span>
               <button
                 onClick={() => setShowFilters(false)}
-                className="text-xs  hover: px-2 py-0.5 rounded bg-[#0A0E1A]"
+                className="text-xs text-[#8B949E] hover:text-[#E6EDF3] px-2 py-1 rounded bg-[#0A0E1A]"
               >
                 Fechar
               </button>
