@@ -47,11 +47,13 @@ const EquipCard = memo<EquipCardProps>(({ eq, onOpen }) => {
       {/* Linha 1: TAGs + UG (esquerda) · Status (direita) */}
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
-          <span className="bg-[#21262D] text-[#C9D1D9] font-bold text-[11px] rounded px-2 py-0.5 border border-[#30363D] font-mono">
-            {eq.patrimonio_ref || eq.tag_sap || '—'}
+          <span className="inline-flex items-baseline gap-1 bg-[#21262D] rounded px-2 py-0.5 border border-[#30363D]">
+            <span className="text-[8px] font-semibold tracking-wider text-[#6E7681] uppercase">AMBEV</span>
+            <span className="text-[11px] font-bold font-mono text-[#C9D1D9]">{eq.patrimonio_ref || eq.tag_sap || '—'}</span>
           </span>
-          <span className="bg-[#21262D] text-[#C9D1D9] font-bold text-[11px] rounded px-2 py-0.5 border border-[#30363D] font-mono">
-            {eq.tag}
+          <span className="inline-flex items-baseline gap-1 bg-[#21262D] rounded px-2 py-0.5 border border-[#30363D]">
+            <span className="text-[8px] font-semibold tracking-wider text-[#6E7681] uppercase">VISION</span>
+            <span className="text-[11px] font-bold font-mono text-[#C9D1D9]">{eq.tag}</span>
           </span>
           <span className="text-[11px] font-mono text-[#8B949E]">UG {eq.ug_ref || '—'}</span>
         </div>
