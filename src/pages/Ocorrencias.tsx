@@ -125,7 +125,7 @@ export const Ocorrencias: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-[11px]  tracking-widest  bg-[#F5A623]/10 px-2 py-0.5 rounded-[2px] border border-[#F5A623]/30 uppercase font-bold">
+            <span className="text-[11px]  tracking-widest  bg-[#21262D] px-2 py-0.5 rounded-[2px] border border-[#30363D] uppercase font-bold">
               Gestão de Chamados & Avarias
             </span>
             <span className="text-[11px]  ">•</span>
@@ -166,7 +166,7 @@ export const Ocorrencias: React.FC = () => {
             <button
               id="btn-nova-ocorrencia-main"
               onClick={() => navigate('/ocorrencias/nova')}
-              className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-[4px] bg-[#E5484D] hover:bg-[#C93B40]  font-condensed tracking-wider uppercase transition-colors shadow-md font-bold"
+              className="btn-primary-gradient inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-[4px] font-condensed tracking-wider uppercase shadow-md font-bold"
             >
               <Plus className="w-4 h-4" />
               <span>+ Nova Ocorrência</span>
@@ -185,7 +185,7 @@ export const Ocorrencias: React.FC = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Buscar por # número, TAG, linha, nota SAP, ordem SAP ou sintoma..."
-              className="w-full bg-[var(--bg-input)] border border-[#2C343E] focus:border-[#F5A623]  text-xs rounded-[3px] has-icon-left pr-3 py-2 outline-none"
+              className="w-full bg-[var(--bg-input)] border border-[#2C343E] focus:border-[#8B949E]  text-xs rounded-[3px] has-icon-left pr-3 py-2 outline-none"
             />
           </div>
 
@@ -242,7 +242,8 @@ export const Ocorrencias: React.FC = () => {
               onAction={() => navigate('/ocorrencias/nova')}
             />
           ) : (
-            <div className="overflow-x-auto">
+            <>
+            <div className="overflow-x-auto hidden md:block">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
                   <tr className="bg-[var(--bg-input)]   text-[10px] uppercase tracking-wider border-b border-[#2C343E]">
@@ -275,7 +276,7 @@ export const Ocorrencias: React.FC = () => {
                       >
                         {/* Nº / Data */}
                         <td className="py-3 px-3">
-                          <div className="font-bold text-sm text-[#F5A623]">{occ.ordem_sap ? `OS ${occ.ordem_sap}` : `#${occ.numero}`}</div>
+                          <div className="font-bold text-sm text-[#C9D1D9]">{occ.ordem_sap ? `OS ${occ.ordem_sap}` : `#${occ.numero}`}</div>
                           <div className="text-[10px]  ">{formatDate(occ.data_avaria)}</div>
                         </td>
 
@@ -293,7 +294,7 @@ export const Ocorrencias: React.FC = () => {
                         <td className="py-3 px-3">
                           <div className="flex items-center gap-1.5 leading-tight">
                             {eq?.ug_codigo && (
-                              <span className="px-1.5 py-0.5 bg-[#F5A623]/10 text-[#F5A623] border border-[#F5A623]/30 rounded font-bold text-[9px] shrink-0">
+                              <span className="px-1.5 py-0.5 bg-[#21262D] text-[#C9D1D9] border border-[#30363D] rounded font-bold text-[9px] shrink-0">
                                 UG {eq.ug_codigo}
                               </span>
                             )}
@@ -302,7 +303,7 @@ export const Ocorrencias: React.FC = () => {
                             </span>
                           </div>
                           {eq?.tag_sap && (
-                            <div className="text-[10px] text-cyan-400/80 mt-0.5">{eq.tag_sap}</div>
+                            <div className="text-[10px] text-[#8B949E] mt-0.5">{eq.tag_sap}</div>
                           )}
                         </td>
 
@@ -373,6 +374,91 @@ export const Ocorrencias: React.FC = () => {
                 </tbody>
               </table>
             </div>
+
+            {/* MOBILE: CARDS */}
+            <div className="md:hidden flex flex-col gap-2.5 p-2.5">
+              {filteredOcorrencias.map((occ) => {
+                const eq = equipamentosMap.get(occ.equipamento_id);
+                const crit = getCriticidadeConfig(occ.criticidade);
+                const dias = calculateDaysDiff(occ.data_avaria);
+                return (
+                  <div
+                    key={occ.id}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => navigate(`/ocorrencias/${occ.id}`)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        navigate(`/ocorrencias/${occ.id}`);
+                      }
+                    }}
+                    className="equip-card w-full cursor-pointer"
+                  >
+                    {/* Linha 1: OS/nº + data · status */}
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="min-w-0">
+                        <span className="text-[13px] font-bold text-white font-mono">
+                          {occ.ordem_sap ? `OS ${occ.ordem_sap}` : `#${occ.numero}`}
+                        </span>
+                        <span className="text-[10px] text-[#8B949E] ml-2">{formatDate(occ.data_avaria)}</span>
+                      </div>
+                      <StatusBadge type="ocorrencia" status={occ.status} size="sm" />
+                    </div>
+
+                    {/* Linha 2: TAG + equipamento */}
+                    <div className="flex items-center gap-2 mt-1.5 min-w-0">
+                      {eq && <IndustrialTag tag={eq.patrimonio_ref || eq.tag_sap || eq.tag} size="sm" />}
+                      <span className="text-[12px] text-[#E6EDF3] truncate">
+                        {eq ? `${eq.tipo} ${eq.marca || ''}`.trim() : 'Equipamento'}
+                      </span>
+                    </div>
+
+                    {/* Linha 3: local */}
+                    <div className="flex items-center gap-1.5 mt-1.5 min-w-0 text-[#8B949E]">
+                      {eq?.ug_codigo && (
+                        <span className="px-1.5 py-0.5 bg-[#21262D] text-[#C9D1D9] border border-[#30363D] rounded font-bold text-[9px] shrink-0">
+                          UG {eq.ug_codigo}
+                        </span>
+                      )}
+                      <span className="text-[11px] font-mono truncate">
+                        {[eq?.centro_trabalho_sap, eq?.centro_trabalho_nome].filter(Boolean).join(' - ') || eq?.linha_nome || '—'}
+                      </span>
+                    </div>
+
+                    {/* Linha 4: criticidade + parada · ações */}
+                    <div className="flex items-center justify-between gap-2 mt-2 pt-2 border-t border-white/[0.06]">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className={`px-2 py-0.5 rounded-[2px] text-[10px] border ${crit.badgeBg}`}>
+                          {crit.label}
+                        </span>
+                        {occ.equipamento_parado ? (
+                          <span className="text-[10px] font-bold text-red-400">PARADO ({dias}d)</span>
+                        ) : (
+                          <span className="text-[10px] text-[#8B949E]">Em operação</span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
+                        <button
+                          onClick={() => setConfirmDeleteOcc(occ)}
+                          title="Deletar"
+                          className="w-9 h-9 rounded-md bg-[#21262D] text-red-400 flex items-center justify-center"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => navigate(`/ocorrencias/${occ.id}`)}
+                          className="w-9 h-9 rounded-md bg-[#21262D] text-[#C9D1D9] flex items-center justify-center"
+                        >
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            </>
           )}
         </div>
       )}
@@ -425,10 +511,10 @@ export const Ocorrencias: React.FC = () => {
                               if (Math.abs(dx) > 5 || Math.abs(dy) > 5) return;
                               navigate(`/ocorrencias/${occ.id}`);
                             }}
-                            className="p-3 bg-[var(--bg-input)] hover:bg-[#232B35] border border-[#2C343E] hover:border-[#F5A623] rounded-[3px] cursor-pointer transition-colors space-y-2 group"
+                            className="p-3 bg-[var(--bg-input)] hover:bg-[#232B35] border border-[#2C343E] hover:border-[#30363D] rounded-[3px] cursor-pointer transition-colors space-y-2 group"
                           >
                             <div className="flex items-center justify-between">
-                              <span className=" font-bold text-xs text-[#F5A623]">{occ.ordem_sap ? `OS ${occ.ordem_sap}` : `#${occ.numero}`}</span>
+                              <span className=" font-bold text-xs text-[#C9D1D9]">{occ.ordem_sap ? `OS ${occ.ordem_sap}` : `#${occ.numero}`}</span>
                               <span className={`text-[9px]  px-1.5 py-0.2 rounded border ${crit.badgeBg}`}>
                                 {crit.label}
                               </span>
