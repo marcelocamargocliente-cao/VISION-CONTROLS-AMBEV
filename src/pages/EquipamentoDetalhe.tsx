@@ -229,7 +229,7 @@ export const EquipamentoDetalhe: React.FC = () => {
   const ugNome = equipamento.ug_ref || 'N1';
 
   return (
-    <div className="equipamento-detalhe-page flex flex-col p-3 md:p-4 gap-4 max-w-7xl mx-auto w-full h-full overflow-y-auto scroll-fluido">
+    <div className="equipamento-detalhe-page flex flex-col px-2 py-3 md:p-4 gap-4 max-w-7xl mx-auto w-full h-full overflow-y-auto scroll-fluido">
       {/* Header Bar */}
       <div className="equipamento-header flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#111827] border border-[#30363D] rounded-lg p-4 shadow-lg">
         <div className="flex items-start gap-3 flex-1 min-w-0">
@@ -340,7 +340,7 @@ export const EquipamentoDetalhe: React.FC = () => {
       <div className="equipamento-tab-content flex-1">
         {/* TAB 1: FICHA TÉCNICA (Campos: Tag Vision, UG, Área, Localização, Patrimônio, Tipo, Marca, Modelo, Capacidade, Aplicação, Status) */}
         {activeTab === 'ficha' && (
-          <div className="bg-[#111827] border border-[#30363D] rounded-lg p-3 md:p-6 space-y-5 md:space-y-6 shadow-xl">
+          <div className="bg-[#111827] border border-[#30363D] rounded-lg px-2.5 py-3 md:p-6 space-y-5 md:space-y-6 shadow-xl">
             {isEditing && (
               <div className="flex items-center gap-2 p-3 rounded-lg text-xs font-medium bg-[#21262D] border border-[#30363D] text-[#C9D1D9]">
                 <Edit3 className="w-4 h-4" /> Modo de edição ativo — altere os campos abaixo e clique em "Salvar Alterações".

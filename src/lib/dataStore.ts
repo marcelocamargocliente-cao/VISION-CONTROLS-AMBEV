@@ -1190,11 +1190,14 @@ export const DataStore = {
       return false;
     });
 
-    // 3. Merge por id (remoto tem prioridade), mais recente primeiro
-    const map = new Map<string, Anexo>();
-    for (const a of local) map.set(a.id, a);
-    for (const a of remote) map.set(a.id, a);
-    return Array.from(map.values()).sort((a, b) =>
+    // 3. Merge deduplicando por caminho do arquivo (path). Assim a mesma foto
+    // vinda do local + do Storage não aparece duplicada. Sem path (base64
+    // antigo), usa o id. Remoto (Storage/tabela) tem prioridade.
+    const byKey = new Map<string, Anexo>();
+    const keyOf = (a: Anexo) => a.path || a.id;
+    for (const a of local) byKey.set(keyOf(a), a);
+    for (const a of remote) byKey.set(keyOf(a), a);
+    return Array.from(byKey.values()).sort((a, b) =>
       (b.created_at || '').localeCompare(a.created_at || '')
     );
   },
