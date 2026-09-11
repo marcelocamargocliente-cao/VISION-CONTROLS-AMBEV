@@ -17,6 +17,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { DataStore } from '../../lib/dataStore';
 import { VwAgingParadas } from '../../types/database';
+import { ErrorBoundary } from '../ErrorBoundary';
 
 export const AppLayout: React.FC = () => {
   const { user, logout, switchDemoUser, allProfiles, canManageCadastros, canCreateOccurrence } = useAuth();
@@ -272,7 +273,9 @@ export const AppLayout: React.FC = () => {
 
         {/* VIEWPORT DE CONTEÚDO */}
         <main className="flex-1 overflow-hidden min-w-0 min-h-0 bg-[var(--bg-app)] flex flex-col">
-          <Outlet />
+          <ErrorBoundary key={location.pathname}>
+            <Outlet />
+          </ErrorBoundary>
         </main>
 
       </div>

@@ -411,7 +411,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
   return (
     <div
       id="ocorrencia-detalhe-page"
-      className="ocorrencia-detalhe-page h-full w-full flex flex-col overflow-y-auto lg:overflow-hidden scroll-fluido bg-[#0D1117] font-body "
+      className="ocorrencia-detalhe-page w-full bg-[#0D1117] font-body "
     >
       {/* HEADER FIXO (shrink-0) — número da ocorrência, criticidade, fase e ações */}
       <header className="ocorrencia-header no-print shrink-0 px-4 py-2.5 border-b border-[#30363D] bg-[#0D1117] sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3">
@@ -569,8 +569,8 @@ export const OcorrenciaDetalhe: React.FC = () => {
       </div>
 
       {/* ÁREA DE CONTEÚDO PRINCIPAL (ROLA COM SCROLL DEDICADO) */}
-      <div className="ocorrencia-content lg:flex-1 lg:min-h-0 lg:overflow-y-auto overflow-x-hidden p-4 pb-8">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-3.5 items-start max-w-7xl mx-auto">
+      <div className="ocorrencia-content">
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_320px] gap-3.5 items-start max-w-7xl mx-auto">
           {/* Coluna Principal (Esquerda) */}
           <div className="space-y-3.5 min-w-0">
             {/* Card: Diagnóstico de Engenharia & Avaria */}
@@ -925,7 +925,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
           </div>
 
           {/* Coluna Lateral (Direita, 320px) — Histórico & Timeline Sticky */}
-          <div className="lg:sticky lg:top-0 space-y-3.5">
+          <div className="md:sticky md:top-0 space-y-3.5">
             <div className="card flex flex-col lg:max-h-[calc(100vh-190px)] lg:overflow-hidden">
               <div className="flex items-center gap-2 border-b border-[#30363D] pb-2 mb-3 shrink-0">
                 <MessageSquare className="w-4 h-4 " />
