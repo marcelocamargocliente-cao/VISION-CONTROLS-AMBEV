@@ -239,11 +239,11 @@ export const EquipamentoDetalhe: React.FC = () => {
               </span>
               <StatusBadge type="equip" status={equipamento.status} size="sm" />
             </div>
-            <h2 className="text-lg md:text-xl font-bold text-white tracking-wide uppercase">
-              {tipoNome} · {equipamento.marca || 'EQUIPAMENTO'} {equipamento.modelo ? `(${equipamento.modelo})` : ''}
-            </h2>
-            <div className="text-xs text-[#8B949E] font-mono mt-0.5">
+            <h2 className="text-lg md:text-xl font-bold text-white tracking-wide uppercase font-mono">
               {equipamento.localizacao_ref || equipamento.local_instalacao || 'Fábrica AMBEV'} {equipamento.area_ref ? `· Local: ${equipamento.area_ref}` : ''}
+            </h2>
+            <div className="text-xs text-[#8B949E] mt-0.5 uppercase tracking-wide">
+              {tipoNome} · {equipamento.marca || 'EQUIPAMENTO'} {equipamento.modelo ? `(${equipamento.modelo})` : ''}
             </div>
           </div>
         </div>
