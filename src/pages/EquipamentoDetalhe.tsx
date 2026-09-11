@@ -721,7 +721,7 @@ export const EquipamentoDetalhe: React.FC = () => {
               <EmptyState
                 icon={Camera}
                 title="Nenhuma foto anexada"
-                description="Técnicos em campo podem fotografar placas de identificação ou serpentinas direto do celular."
+                description="Técnicos em campo podem fotografar placas de identificação ou informações técnicas que sejam relevantes para o registro da ocorrência"
               />
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
