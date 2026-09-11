@@ -11,6 +11,7 @@ import {
   LogOut,
   ChevronDown,
   ChevronRight,
+  Menu,
   X,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -22,7 +23,7 @@ export const AppLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
-  const [profileSheetOpen, setProfileSheetOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [paradosCount, setParadosCount] = useState<number>(2);
   const [recentes, setRecentes] = useState<VwAgingParadas[]>([]);
   const [recentesOpen, setRecentesOpen] = useState(true);
@@ -36,9 +37,9 @@ export const AppLayout: React.FC = () => {
     });
   }, [location.pathname]);
 
-  // Fecha o sheet de perfil ao trocar de rota
+  // Fecha o menu lateral ao trocar de rota
   useEffect(() => {
-    setProfileSheetOpen(false);
+    setDrawerOpen(false);
   }, [location.pathname]);
 
   const navItems = [
@@ -246,9 +247,13 @@ export const AppLayout: React.FC = () => {
         {/* MOBILE HEADER (slim, 52px) */}
         <header className="no-print h-[52px] md:hidden border-b border-[#30363D] bg-[#161B22] flex items-center justify-between px-3 shrink-0 z-20 safe-top">
           <div className="flex items-center gap-2 min-w-0">
-            <div className="w-8 h-8 bg-gradient-to-br from-[#30363D] to-[#484F58] flex items-center justify-center font-display font-bold text-white rounded-lg text-[12px] shrink-0">
-              VC
-            </div>
+            <button
+              onClick={() => setDrawerOpen(true)}
+              className="w-10 h-10 -ml-1 rounded-lg text-[#E6EDF3] flex items-center justify-center shrink-0 active:bg-[#21262D] transition-colors"
+              aria-label="Abrir menu"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
             <div className="min-w-0 leading-tight">
               <span className="block text-[13px] font-display font-bold text-[#E6EDF3] tracking-tight uppercase truncate">
                 IVCA AMBEV RJ
@@ -259,19 +264,10 @@ export const AppLayout: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
-            <span className="text-[9px] bg-[#3FB950]/15 text-[#3FB950] px-2 py-0.5 rounded-full border border-[#3FB950]/30 font-mono font-bold flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#3FB950] animate-pulse" />
-              ONLINE
-            </span>
-            <button
-              onClick={() => setProfileSheetOpen(true)}
-              className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#30363D] to-[#484F58] border border-[#30363D] flex items-center justify-center font-display font-bold text-[13px] text-white shrink-0 active:scale-95 transition-transform"
-              aria-label="Abrir perfil"
-            >
-              {user?.nome ? user.nome.charAt(0) : 'A'}
-            </button>
-          </div>
+          <span className="text-[9px] bg-[#3FB950]/15 text-[#3FB950] px-2 py-0.5 rounded-full border border-[#3FB950]/30 font-mono font-bold flex items-center gap-1 shrink-0">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#3FB950] animate-pulse" />
+            ONLINE
+          </span>
         </header>
 
         {/* VIEWPORT DE CONTEÚDO */}
@@ -279,28 +275,6 @@ export const AppLayout: React.FC = () => {
           <Outlet />
         </main>
 
-        {/* MOBILE BOTTOM NAV (barra de abas inferior) — Dashboard fica oculto no celular */}
-        <nav className="no-print md:hidden bottom-nav shrink-0 h-16 flex items-stretch px-1 safe-bottom z-30">
-          {navItems
-            .filter((item) => item.to !== '/')
-            .map((item) => {
-              const Icon = item.icon;
-              return (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  end={item.exact}
-                  className={({ isActive }) =>
-                    `bottom-nav-item ${isActive ? 'active' : ''}`
-                  }
-                >
-                  <Icon className="w-[22px] h-[22px]" strokeWidth={2} />
-                  <span className="truncate max-w-full px-0.5">{item.short}</span>
-                  {item.badge && <span className="bn-badge">{item.badge}</span>}
-                </NavLink>
-              );
-            })}
-        </nav>
       </div>
 
       {/* FAB — Nova Ocorrência (mobile), some na própria tela de criação */}
@@ -315,72 +289,143 @@ export const AppLayout: React.FC = () => {
       )}
 
       {/* ============================================================
-          PROFILE SHEET (mobile) — perfil, troca de usuário e sair
+          DRAWER LATERAL RETRÁTIL (mobile) — navegação + perfil
           ============================================================ */}
-      {profileSheetOpen && (
+      {drawerOpen && (
         <div
-          className="md:hidden fixed inset-0 z-[60] flex flex-col justify-end"
-          onClick={() => setProfileSheetOpen(false)}
+          className="md:hidden fixed inset-0 z-[60] flex"
+          onClick={() => setDrawerOpen(false)}
         >
           <div className="sheet-backdrop absolute inset-0 bg-black/60 backdrop-blur-sm" />
-          <div
-            className="sheet-panel relative bg-[#161B22] border-t border-[#30363D] rounded-t-2xl p-4 pb-6 safe-bottom max-h-[80vh] overflow-y-auto scroll-fluido"
+
+          <aside
+            className="drawer-panel relative w-[78%] max-w-[300px] h-full bg-[#0D1117] border-r border-[#30363D] flex flex-col safe-top"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="w-10 h-1 rounded-full bg-[#30363D] mx-auto mb-4" />
-
-            <div className="flex items-center gap-3 pb-3 mb-3 border-b border-[#30363D]">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#30363D] to-[#484F58] flex items-center justify-center font-display font-bold text-[18px] text-white shrink-0">
-                {user?.nome ? user.nome.charAt(0) : 'A'}
-              </div>
-              <div className="min-w-0">
-                <p className="text-[15px] font-display font-bold text-[#E6EDF3] truncate">{user?.nome || 'Adriano Coelho Pinto'}</p>
-                <p className="text-[11px] font-mono text-[#E6EDF3] uppercase">{user?.role || 'ADMIN'}</p>
+            {/* Cabeçalho do drawer */}
+            <div className="px-4 py-3 border-b border-[#30363D] flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 bg-gradient-to-br from-[#30363D] to-[#484F58] flex items-center justify-center font-display font-bold text-white rounded-lg text-[12px] shrink-0">
+                  VC
+                </div>
+                <div className="min-w-0 leading-tight">
+                  <span className="block text-[12px] font-display font-extrabold text-[#E6EDF3] tracking-tight uppercase truncate">
+                    Vision Controls
+                  </span>
+                  <span className="block text-[10px] text-[#8B949E] truncate">
+                    Bom dia, {firstName}
+                  </span>
+                </div>
               </div>
               <button
-                onClick={() => setProfileSheetOpen(false)}
-                className="ml-auto w-9 h-9 rounded-lg bg-[#0D1117] border border-[#30363D] text-[#8B949E] flex items-center justify-center shrink-0"
-                aria-label="Fechar"
+                onClick={() => setDrawerOpen(false)}
+                className="w-9 h-9 rounded-lg bg-[#161B22] border border-[#30363D] text-[#8B949E] flex items-center justify-center shrink-0"
+                aria-label="Fechar menu"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <p className="text-[10px] font-mono uppercase tracking-wider text-[#8B949E] mb-2">
-              Alternar Perfil Demo
-            </p>
-            <div className="space-y-1.5 mb-3">
-              {allProfiles.map((p) => (
+            {/* Navegação (Dashboard oculto no mobile) */}
+            <nav className="flex-1 overflow-y-auto scroll-fluido p-3 space-y-1">
+              {canCreateOccurrence && (
                 <button
-                  key={p.id}
                   onClick={() => {
-                    switchDemoUser(p.id);
-                    setProfileSheetOpen(false);
+                    navigate('/ocorrencias/nova');
+                    setDrawerOpen(false);
                   }}
-                  className={`w-full text-left px-3 py-3 text-[13px] rounded-xl flex items-center justify-between transition-colors ${
-                    p.id === user?.id
-                      ? 'bg-[#21262D] text-[#E6EDF3] font-bold border border-[#30363D]'
-                      : 'text-[#E6EDF3] bg-[#0D1117] border border-[#30363D]'
-                  }`}
+                  className="btn-nova-ocorrencia w-full h-11 mb-2"
                 >
-                  <span className="truncate">{p.nome}</span>
-                  <span className="text-[10px] font-mono text-[#8B949E] ml-2 shrink-0">{p.role}</span>
+                  <PlusCircle className="w-4 h-4" />
+                  <span>Nova Ocorrência</span>
                 </button>
-              ))}
-            </div>
+              )}
 
-            <button
-              onClick={() => {
-                logout();
-                setProfileSheetOpen(false);
-                navigate('/login');
-              }}
-              className="w-full px-3 py-3 text-[13px] font-bold text-[#F85149] bg-[#F85149]/10 border border-[#F85149]/30 rounded-xl flex items-center justify-center gap-2"
-            >
-              <LogOut className="w-4 h-4" />
-              <span>Sair do sistema</span>
-            </button>
-          </div>
+              {navItems
+                .filter((item) => item.to !== '/')
+                .map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <NavLink
+                      key={item.to}
+                      to={item.to}
+                      end={item.exact}
+                      onClick={() => setDrawerOpen(false)}
+                      className={({ isActive }) =>
+                        `h-12 flex items-center gap-3 px-3 rounded-xl text-[14px] font-medium transition-colors ${
+                          isActive
+                            ? 'bg-[#21262D] text-[#E6EDF3] font-semibold border border-[#30363D]'
+                            : 'text-[#8B949E] active:bg-[#161B22]'
+                        }`
+                      }
+                    >
+                      <Icon className="w-[20px] h-[20px] shrink-0" />
+                      <span className="flex-1 truncate">{item.label}</span>
+                      {item.badge && (
+                        <span className="bg-[#F85149] text-white px-1.5 py-0.5 rounded-full text-[10px] font-mono font-bold leading-none">
+                          {item.badge}
+                        </span>
+                      )}
+                    </NavLink>
+                  );
+                })}
+            </nav>
+
+            {/* Rodapé: perfil, troca de usuário e sair */}
+            <div className="border-t border-[#30363D] p-3 shrink-0 safe-bottom">
+              <button
+                onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                className="w-full flex items-center gap-2.5 px-2 py-2 rounded-xl active:bg-[#161B22] transition-colors text-left"
+              >
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#30363D] to-[#484F58] flex items-center justify-center font-display font-bold text-[15px] text-white shrink-0">
+                  {user?.nome ? user.nome.charAt(0) : 'A'}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[13px] font-display font-bold text-[#E6EDF3] truncate">{user?.nome || 'Adriano Coelho Pinto'}</p>
+                  <p className="text-[10px] font-mono text-[#8B949E] uppercase">{user?.role || 'ADMIN'}</p>
+                </div>
+                <ChevronDown className={`w-4 h-4 text-[#8B949E] shrink-0 transition-transform ${userDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {userDropdownOpen && (
+                <div className="mt-2 space-y-1">
+                  <p className="px-2 text-[9px] font-mono uppercase tracking-wider text-[#8B949E] mb-1">
+                    Alternar Perfil Demo
+                  </p>
+                  {allProfiles.map((p) => (
+                    <button
+                      key={p.id}
+                      onClick={() => {
+                        switchDemoUser(p.id);
+                        setUserDropdownOpen(false);
+                        setDrawerOpen(false);
+                      }}
+                      className={`w-full text-left px-3 py-2.5 text-[13px] rounded-lg flex items-center justify-between transition-colors ${
+                        p.id === user?.id
+                          ? 'bg-[#21262D] text-[#E6EDF3] font-bold border border-[#30363D]'
+                          : 'text-[#E6EDF3] active:bg-[#161B22]'
+                      }`}
+                    >
+                      <span className="truncate">{p.nome}</span>
+                      <span className="text-[10px] font-mono text-[#8B949E] ml-2 shrink-0">{p.role}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              <button
+                onClick={() => {
+                  logout();
+                  setDrawerOpen(false);
+                  navigate('/login');
+                }}
+                className="w-full mt-2 px-3 py-2.5 text-[13px] font-semibold text-[#F85149] bg-[#F85149]/10 border border-[#F85149]/30 rounded-xl flex items-center justify-center gap-2"
+              >
+                <LogOut className="w-4 h-4" />
+                <span>Sair do sistema</span>
+              </button>
+            </div>
+          </aside>
         </div>
       )}
     </div>

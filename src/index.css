@@ -805,7 +805,7 @@ a:hover {
 .fab {
   position: fixed;
   right: 16px;
-  bottom: calc(72px + env(safe-area-inset-bottom));
+  bottom: calc(20px + env(safe-area-inset-bottom));
   width: 52px;
   height: 52px;
   border-radius: 16px;
@@ -816,6 +816,13 @@ a:hover {
   -webkit-tap-highlight-color: transparent;
 }
 .fab:active { transform: scale(0.94); }
+
+/* Menu lateral retrátil (mobile) — desliza da esquerda */
+@keyframes drawerIn {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+.drawer-panel { animation: drawerIn 240ms cubic-bezier(0.32, 0.72, 0, 1); }
 
 /* Bottom sheet — modais deslizam de baixo no mobile */
 @keyframes sheetUp {

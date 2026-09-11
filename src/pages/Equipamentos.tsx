@@ -30,22 +30,30 @@ const EquipCard = memo<EquipCardProps>(({ eq, onOpen }) => {
   const isOk = eq.status === 'OK';
   const targetKey = eq.tag || eq.id;
   const local = eq.localizacao_ref || eq.local_instalacao || '';
-  const marcaModelo = [eq.marca, eq.modelo].filter(Boolean).join(' · ');
 
   return (
-    <button
+    <div
+      role="button"
+      tabIndex={0}
       onClick={() => onOpen(targetKey)}
-      className="equip-card w-full text-left flex flex-col gap-2"
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onOpen(targetKey);
+        }
+      }}
+      className="equip-card w-full cursor-pointer"
     >
-      {/* Linha 1: TAGs + Status */}
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex items-center gap-1.5 flex-wrap min-w-0">
-          <span className="bg-[#21262D] text-[#C9D1D9] font-bold text-[11px] rounded px-2 py-0.5 inline-flex items-center border border-[#30363D] font-mono shrink-0">
+      {/* Linha 1: TAGs + UG (esquerda) · Status (direita) */}
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
+          <span className="bg-[#21262D] text-[#C9D1D9] font-bold text-[11px] rounded px-2 py-0.5 border border-[#30363D] font-mono">
             {eq.patrimonio_ref || eq.tag_sap || '—'}
           </span>
-          <span className="bg-[#21262D] text-[#C9D1D9] font-bold text-[11px] rounded px-2 py-0.5 inline-flex items-center border border-[#30363D] font-mono shrink-0">
+          <span className="bg-[#21262D] text-[#C9D1D9] font-bold text-[11px] rounded px-2 py-0.5 border border-[#30363D] font-mono">
             {eq.tag}
           </span>
+          <span className="text-[11px] font-mono text-[#8B949E]">UG {eq.ug_ref || '—'}</span>
         </div>
         {isOk ? (
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shrink-0">
@@ -60,35 +68,23 @@ const EquipCard = memo<EquipCardProps>(({ eq, onOpen }) => {
         )}
       </div>
 
-      {/* Linha 2: Tipo + UG/Área */}
-      <div className="min-w-0">
-        <p className="text-[13px] font-semibold text-white truncate leading-tight">
-          {eq.tipo_equipamento || eq.tipo || 'Equipamento'}
-        </p>
-        <p className="text-[11px] text-gray-400 truncate mt-0.5">
-          <span className="font-mono text-[#8B949E]">UG {eq.ug_ref || '—'}</span>
-          {eq.area_ref ? <span> · {eq.area_ref}</span> : null}
-        </p>
-      </div>
+      {/* Linha 2: Tipo + área */}
+      <p className="text-[13px] text-[#E6EDF3] truncate mt-1.5">
+        <span className="font-semibold">{eq.tipo_equipamento || eq.tipo || 'Equipamento'}</span>
+        {eq.area_ref ? <span className="text-[#8B949E]"> · {eq.area_ref}</span> : null}
+      </p>
 
-      {/* Linha 3: Local de instalação */}
-      {local && (
-        <div className="flex items-center gap-1.5 text-[#8B949E] min-w-0">
+      {/* Linha 3: Local (esquerda) · Ficha (direita) */}
+      <div className="flex items-center justify-between gap-2 mt-1.5">
+        <div className="flex items-center gap-1.5 min-w-0 text-[#8B949E]">
           <MapPin className="w-3.5 h-3.5 shrink-0" />
-          <span className="font-mono text-[11px] truncate">{local}</span>
+          <span className="font-mono text-[11px] truncate">{local || '—'}</span>
         </div>
-      )}
-
-      {/* Linha 4: Marca/modelo + ação */}
-      <div className="flex items-center justify-between gap-2 pt-2 border-t border-white/[0.06]">
-        <span className="text-[11px] text-gray-500 truncate">
-          {marcaModelo || 'Sem marca/modelo'}
-        </span>
-        <span className="inline-flex items-center gap-0.5 text-[#C9D1D9] font-semibold text-[11px] shrink-0">
+        <span className="inline-flex items-center gap-0.5 text-[#E6EDF3] font-semibold text-[11px] shrink-0">
           Ficha <ChevronRight className="w-3.5 h-3.5" />
         </span>
       </div>
-    </button>
+    </div>
   );
 });
 EquipCard.displayName = 'EquipCard';
