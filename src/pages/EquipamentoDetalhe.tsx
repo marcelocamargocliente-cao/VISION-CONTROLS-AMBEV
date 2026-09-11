@@ -38,6 +38,7 @@ export const EquipamentoDetalhe: React.FC = () => {
   const [ocorrencias, setOcorrencias] = useState<Ocorrencia[]>([]);
   const [manutencoes, setManutencoes] = useState<Manutencao[]>([]);
   const [fotos, setFotos] = useState<Anexo[]>([]);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const [activeTab, setActiveTab] = useState<'ficha' | 'ocorrencias' | 'manutencoes' | 'fotos' | 'qrcode'>('ficha');
@@ -172,24 +173,22 @@ export const EquipamentoDetalhe: React.FC = () => {
     setActiveTab(tabId);
   };
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!equipamento || !e.target.files || e.target.files.length === 0) return;
     const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      const url = event.target?.result as string;
-      if (url) {
-        await DataStore.addAnexo({
-          equipamento_id: equipamento.id,
-          nome_arquivo: file.name,
-          url,
-          tipo_anexo: 'FOTO',
-          bucket: 'fotos',
-        });
-        await loadData();
-      }
-    };
-    reader.readAsDataURL(file);
+    e.target.value = ''; // permite reenviar a mesma foto depois
+    setUploadingPhoto(true);
+    const t = toast.loading('Enviando foto...');
+    try {
+      await DataStore.uploadFoto(file, { equipamento_id: equipamento.id });
+      await loadData();
+      toast.success('Foto enviada', { id: t });
+    } catch (err) {
+      console.error('Erro ao enviar foto:', err);
+      toast.error('Não foi possível enviar a foto', { id: t });
+    } finally {
+      setUploadingPhoto(false);
+    }
   };
 
   const qrUrl = window.location.origin + `/equipamentos/${equipamento?.tag || equipamento?.id || id}`;
@@ -703,14 +702,14 @@ export const EquipamentoDetalhe: React.FC = () => {
                 Galeria de Fotos do Equipamento ({fotos.length})
               </h3>
               {canEdit && (
-                <label className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md bg-[#1E293B] hover:bg-[#334155] text-gray-200 border border-[#30363D] cursor-pointer transition-colors">
-                  <Camera className="w-4 h-4 text-[#C9D1D9]" />
-                  <span>Upload de Foto</span>
+                <label className={`inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-md bg-[#1E293B] hover:bg-[#334155] text-gray-200 border border-[#30363D] transition-colors ${uploadingPhoto ? 'opacity-60 pointer-events-none' : 'cursor-pointer'}`}>
+                  <Camera className={`w-4 h-4 text-[#C9D1D9] ${uploadingPhoto ? 'animate-pulse' : ''}`} />
+                  <span>{uploadingPhoto ? 'Enviando...' : 'Upload de Foto'}</span>
                   <input
                     type="file"
                     accept="image/*"
-                    capture="environment"
                     onChange={handlePhotoUpload}
+                    disabled={uploadingPhoto}
                     className="hidden"
                   />
                 </label>
