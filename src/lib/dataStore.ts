@@ -1150,6 +1150,37 @@ export const DataStore = {
       } catch (e) {
         console.warn('[getAnexos] Falha Supabase, usando local:', e);
       }
+
+      // 1b. Lista TAMBÉM direto do Storage — assim as fotos aparecem em
+      // qualquer dispositivo mesmo que o registro na tabela anexos falhe.
+      try {
+        const folders = [ocorrenciaId, equipamentoId].filter(Boolean) as string[];
+        for (const folder of folders) {
+          const { data: files } = await supabase.storage
+            .from('fotos')
+            .list(folder, { limit: 100, sortBy: { column: 'created_at', order: 'desc' } });
+          if (!files) continue;
+          for (const file of files) {
+            if (!file.name || file.name === '.emptyFolderPlaceholder') continue;
+            const fullPath = `${folder}/${file.name}`;
+            if (remote.some((r) => r.path === fullPath)) continue; // já veio da tabela
+            const { data: pub } = supabase.storage.from('fotos').getPublicUrl(fullPath);
+            remote.push({
+              id: fullPath,
+              equipamento_id: folder === equipamentoId ? equipamentoId : undefined,
+              ocorrencia_id: folder === ocorrenciaId ? ocorrenciaId : undefined,
+              nome_arquivo: file.name.replace(/^\d+_/, ''),
+              url: pub.publicUrl,
+              path: fullPath,
+              tipo_anexo: 'FOTO',
+              bucket: 'fotos',
+              created_at: (file as any).created_at || new Date().toISOString(),
+            } as Anexo);
+          }
+        }
+      } catch (e) {
+        console.warn('[getAnexos] storage.list falhou:', e);
+      }
     }
 
     // 2. Anexos locais (fallback base64 / offline)
@@ -1191,6 +1222,9 @@ export const DataStore = {
 
     let supaError = '';
     if (isSupabaseConfigured) {
+      // 1) Upload para o Storage — é o que garante cross-device
+      let storageOk = false;
+      let publicUrl = '';
       try {
         const { error: upErr } = await supabase.storage
           .from('fotos')
@@ -1200,10 +1234,15 @@ export const DataStore = {
             contentType: file.type || 'image/jpeg',
           });
         if (upErr) throw upErr;
-
         const { data: pub } = supabase.storage.from('fotos').getPublicUrl(path);
-        const publicUrl = pub.publicUrl;
+        publicUrl = pub.publicUrl;
+        storageOk = true;
+      } catch (e: any) {
+        supaError = e?.message || String(e);
+        console.error('[uploadFoto] Falha no STORAGE, salvando local:', e);
+      }
 
+      if (storageOk) {
         const record: Anexo = {
           id: genId(),
           ocorrencia_id: refs.ocorrencia_id,
@@ -1216,28 +1255,30 @@ export const DataStore = {
           created_at: new Date().toISOString(),
         };
 
-        const { error: dbErr } = await supabase.from('anexos').insert({
-          id: record.id,
-          ocorrencia_id: record.ocorrencia_id ?? null,
-          equipamento_id: record.equipamento_id ?? null,
-          nome_arquivo: record.nome_arquivo,
-          url: record.url,
-          path: record.path,
-          tipo_anexo: record.tipo_anexo,
-          bucket: record.bucket,
-          created_at: record.created_at,
-        });
-        if (dbErr) throw dbErr;
+        // 2) Registro na tabela é best-effort: se falhar, a foto já está no
+        // Storage e o getAnexos a encontra via storage.list() em qualquer aparelho.
+        try {
+          const { error: dbErr } = await supabase.from('anexos').insert({
+            id: record.id,
+            ocorrencia_id: record.ocorrencia_id ?? null,
+            equipamento_id: record.equipamento_id ?? null,
+            nome_arquivo: record.nome_arquivo,
+            url: record.url,
+            path: record.path,
+            tipo_anexo: record.tipo_anexo,
+            bucket: record.bucket,
+            created_at: record.created_at,
+          });
+          if (dbErr) console.warn('[uploadFoto] insert anexos falhou (foto já está no Storage):', dbErr.message);
+        } catch (e: any) {
+          console.warn('[uploadFoto] insert anexos exceção (foto já está no Storage):', e?.message || e);
+        }
 
-        // Espelha localmente para a UI atualizar na hora
         dbState.anexos.unshift(record);
         try { persistState(); } catch { /* quota */ }
-        return record;
-      } catch (e: any) {
-        supaError = e?.message || String(e);
-        console.error('[uploadFoto] Falha no Supabase, salvando local:', e);
-        // segue para o fallback base64
+        return record; // sucesso — foto está no Storage
       }
+      // Storage falhou → cai para o fallback base64 abaixo
     }
 
     // Fallback local (base64) — offline ou Supabase indisponível

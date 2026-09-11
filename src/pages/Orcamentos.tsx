@@ -156,7 +156,7 @@ export const Orcamentos: React.FC = () => {
         particleCount: 70,
         spread: 60,
         origin: { y: 0.7 },
-        colors: ['#2ECC71', '#38BDF8', '#F5A623'],
+        colors: ['#2ECC71', '#8B949E', '#8B949E'],
       });
       showToast(`Orçamento ${orc.numero} aprovado! Equipamento liberado para execução.`, 'success');
       await loadData();
@@ -274,7 +274,7 @@ export const Orcamentos: React.FC = () => {
               ? 'card  border-[#2ECC71]'
               : toast.type === 'error'
               ? 'card  border-[#E5484D]'
-              : 'card  border-[#38BDF8]'
+              : 'card  border-[#30363D]'
           }`}
         >
           {toast.type === 'success' ? (
@@ -292,7 +292,7 @@ export const Orcamentos: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-[11px]  tracking-widest  bg-[#38BDF8]/10 px-2 py-0.5 rounded-[2px] border border-[#38BDF8]/30 uppercase font-bold">
+            <span className="text-[11px]  tracking-widest  bg-[#21262D] px-2 py-0.5 rounded-[2px] border border-[#30363D] uppercase font-bold">
               Gestão Comercial & Faturamento
             </span>
             <span className="text-[11px]  ">•</span>
@@ -307,7 +307,7 @@ export const Orcamentos: React.FC = () => {
           <button
             id="btn-emitir-novo-orcamento"
             onClick={() => setIsNovoOpen(true)}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-[4px] bg-[#38BDF8] hover:bg-[#0284C7]  font-bold text-xs uppercase tracking-wider transition-all shadow-md active:scale-95 shrink-0"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-[4px] bg-[#21262D] hover:bg-[#0284C7]  font-bold text-xs uppercase tracking-wider transition-all shadow-md active:scale-95 shrink-0"
           >
             <Plus className="w-4 h-4 stroke-[2.5]" />
             <span>Emitir Novo Orçamento</span>
@@ -398,7 +398,7 @@ export const Orcamentos: React.FC = () => {
               placeholder="Buscar por Nº, TAG, Fornecedor ou Contato..."
               value={searchFilter}
               onChange={(e) => setSearchFilter(e.target.value)}
-              className="w-full bg-[var(--bg-input)] border border-[#2C343E] rounded-[3px] has-icon-left-sm pr-3 py-1.5 text-xs  placeholder-[#6B7683] focus:border-[#38BDF8] focus:outline-none"
+              className="w-full bg-[var(--bg-input)] border border-[#2C343E] rounded-[3px] has-icon-left-sm pr-3 py-1.5 text-xs  placeholder-[#6B7683] focus:border-[#30363D] focus:outline-none"
             />
           </div>
 
@@ -525,14 +525,14 @@ export const Orcamentos: React.FC = () => {
                           <div onClick={(e) => e.stopPropagation()}>
                             <button
                               onClick={() => navigate(`/ocorrencias/${occ.id}`)}
-                              className="font-bold text-xs text-[#F5A623] hover:underline block"
+                              className="font-bold text-xs text-[#C9D1D9] hover:underline block"
                             >
                               {occ.ordem_sap ? `OS ${occ.ordem_sap}` : `OS #${occ.numero}`}
                             </button>
                             {eq && (
                               <div className="mt-0.5 flex items-center gap-1">
                                 <span className="text-[9px] text-gray-500 uppercase">TAG</span>
-                                <span className="bg-[#1E3A5F] text-cyan-400 font-bold text-[10px] rounded px-1.5 py-0.5 border border-cyan-500/30 font-mono">
+                                <span className="bg-[#21262D] text-[#C9D1D9] font-bold text-[10px] rounded px-1.5 py-0.5 border border-[#30363D] font-mono">
                                   {eq.patrimonio_ref || eq.tag_sap || eq.tag}
                                 </span>
                               </div>
@@ -555,7 +555,7 @@ export const Orcamentos: React.FC = () => {
                             isLate
                               ? 'bg-[#E5484D]/25  border-[#E5484D]/60 animate-pulse'
                               : isMedium
-                              ? 'bg-[#F5A623]/25  border-[#F5A623]/60'
+                              ? 'bg-[#21262D]  border-[#30363D]'
                               : 'bg-[#232B35]  border-[#2C343E]'
                           }`}
                         >
@@ -590,7 +590,7 @@ export const Orcamentos: React.FC = () => {
                             id={`btn-ver-orc-${orc.id}`}
                             onClick={() => handleOpenDetail(orc)}
                             title="Ver detalhes da proposta"
-                            className="p-1.5 bg-[var(--bg-input)] hover:bg-[#38BDF8]/20  hover: border border-[#2C343E] rounded transition-colors"
+                            className="p-1.5 bg-[var(--bg-input)] hover:bg-[#21262D]  hover: border border-[#2C343E] rounded transition-colors"
                           >
                             <Eye className="w-3.5 h-3.5" />
                           </button>
@@ -600,7 +600,7 @@ export const Orcamentos: React.FC = () => {
                             <button
                               onClick={() => abrirEdicao(orc)}
                               title="Editar orçamento"
-                              className="p-1.5 bg-[var(--bg-input)] hover:bg-[var(--blue)]/20 hover:border-blue-500 rounded transition-colors text-blue-400"
+                              className="p-1.5 bg-[var(--bg-input)] hover:bg-[var(--blue)]/20 hover:border-[#30363D] rounded transition-colors text-[#C9D1D9]"
                             >
                               <Pencil className="w-3.5 h-3.5" />
                             </button>

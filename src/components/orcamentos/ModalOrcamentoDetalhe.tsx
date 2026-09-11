@@ -250,7 +250,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
           particleCount: 80,
           spread: 70,
           origin: { y: 0.6 },
-          colors: ['#2ECC71', '#38BDF8', '#F5A623', '#FFFFFF'],
+          colors: ['#2ECC71', '#8B949E', '#8B949E', '#FFFFFF'],
         });
         showToast('🎉 Orçamento aprovado! Equipamento será marcado para execução.', 'success');
       } else {
@@ -292,7 +292,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
         {/* Header */}
         <div className="px-5 py-4 border-b border-[#2C343E] bg-[#14181D] flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-[4px] bg-[#38BDF8]/10 text-[#38BDF8] border border-[#38BDF8]/30">
+            <div className="p-2 rounded-[4px] bg-[#21262D] text-[#C9D1D9] border border-[#30363D]">
               <FileText className="w-5 h-5" />
             </div>
             <div>
@@ -301,7 +301,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                   Proposta Comercial • AMBEV
                 </span>
                 {ocorrencia?.numero && (
-                  <span className="px-2 py-0.5 rounded-[2px] font-mono text-[10px] font-bold bg-[#F5A623]/15 text-[#F5A623] border border-[#F5A623]/30">
+                  <span className="px-2 py-0.5 rounded-[2px] font-mono text-[10px] font-bold bg-[#21262D] text-[#C9D1D9] border border-[#30363D]">
                     {ocorrencia.ordem_sap ? `SAP ${ocorrencia.ordem_sap}` : `OS #${ocorrencia.numero}`}
                   </span>
                 )}
@@ -311,7 +311,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                   {statusConfig.label}
                 </span>
                 {isEditing && (
-                  <span className="px-2 py-0.5 rounded-[2px] font-mono text-[10px] font-bold bg-[#F5A623]/20 text-[#F5A623] border border-[#F5A623]/40 animate-pulse">
+                  <span className="px-2 py-0.5 rounded-[2px] font-mono text-[10px] font-bold bg-[#21262D] text-[#C9D1D9] border border-[#30363D] animate-pulse">
                     ✏️ Modo Edição
                   </span>
                 )}
@@ -323,7 +323,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                       type="text"
                       value={formData.numero}
                       onChange={(e) => setFormData({ ...formData, numero: e.target.value })}
-                      className="bg-[#1C222A] border border-[#38BDF8]/50 text-[#38BDF8] px-2 py-0.5 rounded text-base font-mono focus:outline-none focus:ring-1 focus:ring-[#38BDF8]"
+                      className="bg-[#1C222A] border border-[#30363D] text-[#C9D1D9] px-2 py-0.5 rounded text-base font-mono focus:outline-none focus:ring-1 focus:ring-[#8B949E]"
                       placeholder="Número da Proposta"
                     />
                   ) : (
@@ -334,7 +334,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                   <button
                     type="button"
                     onClick={() => setIsEditing(true)}
-                    className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-[3px] bg-[#F5A623]/15 hover:bg-[#F5A623]/30 text-[#F5A623] border border-[#F5A623]/40 transition-colors"
+                    className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-[3px] bg-[#21262D] hover:bg-[#21262D] text-[#C9D1D9] border border-[#30363D] transition-colors"
                     title="Editar proposta"
                   >
                     <Edit3 className="w-3 h-3" />
@@ -363,7 +363,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                 ? 'bg-[#2ECC71]/20 text-[#2ECC71] border-[#2ECC71]/40'
                 : toastMessage.type === 'error'
                 ? 'bg-[#E5484D]/20 text-[#FF6B6B] border-[#E5484D]/40'
-                : 'bg-[#38BDF8]/20 text-[#38BDF8] border-[#38BDF8]/40'
+                : 'bg-[#21262D] text-[#C9D1D9] border-[#30363D]'
             }`}
           >
             <div className="flex items-center gap-2">
@@ -391,7 +391,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
             {/* Left Column (5 Cols): Dados do Orçamento */}
             <div className="lg:col-span-6 space-y-5 bg-[#14181D]/60 p-4 sm:p-5 rounded-[4px] border border-[#2C343E]">
               <div className="flex items-center justify-between border-b border-[#2C343E] pb-2">
-                <span className="text-[11px] font-mono uppercase text-[#38BDF8] font-bold tracking-wider flex items-center gap-1.5">
+                <span className="text-[11px] font-mono uppercase text-[#C9D1D9] font-bold tracking-wider flex items-center gap-1.5">
                   <DollarSign className="w-3.5 h-3.5" />
                   Dados Comerciais da Proposta
                 </span>
@@ -403,14 +403,14 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
               </div>
 
               {/* Valor Total Highlight */}
-              <div className="p-3.5 bg-[#1C222A] border border-[#38BDF8]/30 rounded-[4px] flex items-center justify-between">
+              <div className="p-3.5 bg-[#1C222A] border border-[#30363D] rounded-[4px] flex items-center justify-between">
                 <div>
                   <span className="text-[10px] font-mono uppercase text-[#94A3B8] block">
                     Valor Total da Proposta
                   </span>
                   {isEditing ? (
                     <div className="flex items-center gap-1.5 mt-1">
-                      <span className="text-sm font-mono text-[#38BDF8] font-bold">R$</span>
+                      <span className="text-sm font-mono text-[#C9D1D9] font-bold">R$</span>
                       <input
                         type="text"
                         inputMode="numeric"
@@ -423,11 +423,11 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                           setFormData({ ...formData, valor_total: fmt });
                         }}
                         placeholder="0,00"
-                        className="bg-[#14181D] border border-[#38BDF8]/50 text-[#38BDF8] px-2 py-1 rounded text-xl font-bold font-mono w-44 focus:outline-none focus:ring-1 focus:ring-[#38BDF8]"
+                        className="bg-[#14181D] border border-[#30363D] text-[#C9D1D9] px-2 py-1 rounded text-xl font-bold font-mono w-44 focus:outline-none focus:ring-1 focus:ring-[#8B949E]"
                       />
                     </div>
                   ) : (
-                    <span className="text-2xl sm:text-3xl font-condensed font-bold text-[#38BDF8] tracking-tight">
+                    <span className="text-2xl sm:text-3xl font-condensed font-bold text-[#C9D1D9] tracking-tight">
                       {formatCurrency(orcamento.valor_total)}
                     </span>
                   )}
@@ -442,7 +442,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                       onChange={(e) =>
                         setFormData({ ...formData, status: e.target.value as OrcamentoStatus })
                       }
-                      className="bg-[#14181D] border border-[#2C343E] text-[#ECEFF1] text-xs rounded px-2 py-1 font-mono font-bold mt-1 focus:border-[#38BDF8] focus:outline-none"
+                      className="bg-[#14181D] border border-[#2C343E] text-[#ECEFF1] text-xs rounded px-2 py-1 font-mono font-bold mt-1 focus:border-[#30363D] focus:outline-none"
                     >
                       <option value="RASCUNHO">RASCUNHO</option>
                       <option value="ENVIADO">ENVIADO</option>
@@ -471,7 +471,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                     type="text"
                     value={formData.fornecedor}
                     onChange={(e) => setFormData({ ...formData, fornecedor: e.target.value })}
-                    className="w-full bg-[#1C222A] border border-[#2C343E] rounded px-3 py-1.5 text-xs text-[#ECEFF1] focus:border-[#38BDF8] focus:outline-none"
+                    className="w-full bg-[#1C222A] border border-[#2C343E] rounded px-3 py-1.5 text-xs text-[#ECEFF1] focus:border-[#30363D] focus:outline-none"
                     placeholder="Nome da Empresa / Fornecedor"
                   />
                 ) : (
@@ -498,7 +498,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                     />
                   ) : (
                     <div className="text-xs font-mono text-[#ECEFF1] font-medium flex items-center gap-1.5">
-                      <Calendar className="w-3 h-3 text-[#38BDF8]" />
+                      <Calendar className="w-3 h-3 text-[#C9D1D9]" />
                       {formatDate(orcamento.data_envio)}
                     </div>
                   )}
@@ -518,7 +518,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                     />
                   ) : (
                     <div className="text-xs font-mono text-[#ECEFF1] font-medium flex items-center gap-1.5">
-                      <Clock className="w-3 h-3 text-[#F5A623]" />
+                      <Clock className="w-3 h-3 text-[#C9D1D9]" />
                       {orcamento.validade ? formatDate(orcamento.validade) : '30 dias'}
                     </div>
                   )}
@@ -535,7 +535,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                         diasEnvio > 15
                           ? 'bg-[#E5484D]/25 text-[#FF6B6B] border border-[#E5484D]/60 animate-pulse'
                           : diasEnvio >= 8
-                          ? 'bg-[#F5A623]/25 text-[#F5A623] border border-[#F5A623]/60'
+                          ? 'bg-[#21262D] text-[#C9D1D9] border border-[#30363D]'
                           : 'bg-[#232B35] text-[#94A3B8]'
                       }`}
                     >
@@ -560,12 +560,12 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                     type="text"
                     value={formData.enviado_para}
                     onChange={(e) => setFormData({ ...formData, enviado_para: e.target.value })}
-                    className="w-full bg-[#1C222A] border border-[#2C343E] rounded px-3 py-1.5 text-xs text-[#ECEFF1] focus:border-[#38BDF8] focus:outline-none"
+                    className="w-full bg-[#1C222A] border border-[#2C343E] rounded px-3 py-1.5 text-xs text-[#ECEFF1] focus:border-[#30363D] focus:outline-none"
                     placeholder="Ex: Engenharia de Utilidades AMBEV (Eng. Marcos Silveira)"
                   />
                 ) : (
                   <div className="flex items-center gap-2 text-xs text-[#ECEFF1] bg-[#1C222A] p-2.5 rounded-[4px] border border-[#2C343E]">
-                    <User className="w-3.5 h-3.5 text-[#38BDF8]" />
+                    <User className="w-3.5 h-3.5 text-[#C9D1D9]" />
                     <span>{orcamento.enviado_para || 'Contato AMBEV não especificado'}</span>
                   </div>
                 )}
@@ -581,7 +581,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                     type="text"
                     value={formData.numero_pedido}
                     onChange={(e) => setFormData({ ...formData, numero_pedido: e.target.value })}
-                    className="w-full bg-[#1C222A] border border-[#2C343E] rounded px-3 py-1.5 text-xs text-[#ECEFF1] focus:border-[#38BDF8] focus:outline-none font-mono"
+                    className="w-full bg-[#1C222A] border border-[#2C343E] rounded px-3 py-1.5 text-xs text-[#ECEFF1] focus:border-[#30363D] focus:outline-none font-mono"
                     placeholder="Ex: 4500123456 — preenchido após aprovação AMBEV"
                   />
                 ) : (
@@ -602,7 +602,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                     rows={3}
                     value={formData.observacoes}
                     onChange={(e) => setFormData({ ...formData, observacoes: e.target.value })}
-                    className="w-full bg-[#1C222A] border border-[#2C343E] rounded p-2 text-xs text-[#ECEFF1] focus:border-[#38BDF8] focus:outline-none"
+                    className="w-full bg-[#1C222A] border border-[#2C343E] rounded p-2 text-xs text-[#ECEFF1] focus:border-[#30363D] focus:outline-none"
                     placeholder="Detalhes sobre escopo de fornecimento, frete CIF/FOB, mão de obra..."
                   />
                 ) : (
@@ -616,14 +616,14 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
               <div className="border-t border-[#2C343E]/60 pt-3">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-mono uppercase text-[#94A3B8] flex items-center gap-1.5">
-                    <Paperclip className="w-3.5 h-3.5 text-[#38BDF8]" />
+                    <Paperclip className="w-3.5 h-3.5 text-[#C9D1D9]" />
                     Arquivo PDF da Proposta
                   </span>
                   {orcamento.arquivo_pdf_url || orcamento.arquivo_url ? (
                     <button
                       type="button"
                       onClick={handleOpenPdf}
-                      className="text-[11px] font-mono text-[#38BDF8] hover:underline flex items-center gap-1"
+                      className="text-[11px] font-mono text-[#C9D1D9] hover:underline flex items-center gap-1"
                     >
                       <ExternalLink className="w-3 h-3" />
                       Visualizar PDF
@@ -644,7 +644,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                       <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
-                        className="px-3 py-1.5 bg-[#2C343E] hover:bg-[#38BDF8]/20 text-[#ECEFF1] hover:text-[#38BDF8] border border-[#38BDF8]/30 rounded text-xs font-semibold flex items-center gap-1.5"
+                        className="px-3 py-1.5 bg-[#2C343E] hover:bg-[#21262D] text-[#ECEFF1] hover:text-[#C9D1D9] border border-[#30363D] rounded text-xs font-semibold flex items-center gap-1.5"
                       >
                         <Upload className="w-3.5 h-3.5" />
                         Substituir PDF no bucket
@@ -677,7 +677,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
             {/* Right Column (6 Cols): Vínculo com a Ocorrência & Equipamento */}
             <div className="lg:col-span-6 space-y-5 bg-[#14181D]/60 p-4 sm:p-5 rounded-[4px] border border-[#2C343E]">
               <div className="flex items-center justify-between border-b border-[#2C343E] pb-2">
-                <span className="text-[11px] font-mono uppercase text-[#F5A623] font-bold tracking-wider flex items-center gap-1.5">
+                <span className="text-[11px] font-mono uppercase text-[#C9D1D9] font-bold tracking-wider flex items-center gap-1.5">
                   <Layers className="w-3.5 h-3.5" />
                   Vínculo com Ocorrência & Equipamento
                 </span>
@@ -687,7 +687,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                       <button
                         type="button"
                         onClick={() => { onClose(); navigate(`/ocorrencias/${ocorrencia.id}`); }}
-                        className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-[3px] bg-[#F5A623]/15 hover:bg-[#F5A623]/30 text-[#F5A623] border border-[#F5A623]/40 transition-colors"
+                        className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-[3px] bg-[#21262D] hover:bg-[#21262D] text-[#C9D1D9] border border-[#30363D] transition-colors"
                         title="Ir para a Ocorrência para editar dados SAP, equipamento e localização"
                       >
                         <Edit3 className="w-3 h-3" />
@@ -696,7 +696,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                     )}
                     <button
                       onClick={() => { onClose(); navigate(`/ocorrencias/${ocorrencia.id}`); }}
-                      className="text-[11px] font-mono text-[#F5A623] hover:underline flex items-center gap-1 font-bold"
+                      className="text-[11px] font-mono text-[#C9D1D9] hover:underline flex items-center gap-1 font-bold"
                     >
                       OS {ocorrencia.ordem_sap || ocorrencia.numero} — TAG AMBEV {equipamento?.patrimonio_ref || equipamento?.tag_sap || equipamento?.tag || 'N/D'}
                       <ExternalLink className="w-3 h-3" />
@@ -716,7 +716,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                       <div className="flex items-center gap-2 mt-0.5">
                         <div className="space-y-0.5">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <span className="font-mono font-bold text-sm text-[#F5A623]">
+                            <span className="font-mono font-bold text-sm text-[#C9D1D9]">
                               {ocorrencia.ordem_sap ? `Ordem SAP: ${ocorrencia.ordem_sap}` : `OS #${ocorrencia.numero}`}
                             </span>
                           </div>
@@ -731,8 +731,8 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                           className={`px-2 py-0.5 rounded-[2px] font-mono text-[10px] font-bold border uppercase ${
                             ocorrencia.status === 'AGUARDANDO_ORCAMENTO'
                               ? (orcamento.status === 'EXPIRADO'
-                                  ? 'bg-[#F5A623]/15 text-[#F5A623] border-[#F5A623]/40'
-                                  : 'bg-[#38BDF8]/15 text-[#38BDF8] border-[#38BDF8]/40')
+                                  ? 'bg-[#21262D] text-[#C9D1D9] border-[#30363D]'
+                                  : 'bg-[#21262D] text-[#C9D1D9] border-[#30363D]')
                               : getOcorrenciaStatusConfig(ocorrencia.status).badgeBg
                           }`}
                         >
@@ -752,7 +752,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                       TAG AMBEV
                     </span>
                     {equipamento ? (
-                      <span className="bg-[#1E3A5F] text-cyan-400 font-bold text-[11px] rounded px-2 py-0.5 border border-cyan-500/30 font-mono">
+                      <span className="bg-[#21262D] text-[#C9D1D9] font-bold text-[11px] rounded px-2 py-0.5 border border-[#30363D] font-mono">
                         {equipamento.patrimonio_ref || equipamento.tag_sap || equipamento.tag}
                       </span>
                     ) : (
@@ -809,7 +809,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-mono uppercase text-[#94A3B8] font-bold flex items-center gap-1.5">
-                    <Package className="w-3.5 h-3.5 text-[#38BDF8]" />
+                    <Package className="w-3.5 h-3.5 text-[#C9D1D9]" />
                     Peças Incluídas no Orçamento ({pecas.length})
                   </span>
                   {ocorrencia && (
@@ -852,7 +852,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                                 </div>
                               )}
                             </td>
-                            <td className="py-1.5 px-2 font-mono text-[10px] text-[#38BDF8]">
+                            <td className="py-1.5 px-2 font-mono text-[10px] text-[#C9D1D9]">
                               {peca.part_number || '-'}
                             </td>
                             <td className="py-1.5 px-2 text-center font-mono text-[11px]">
@@ -882,7 +882,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                     rows={3}
                     value={formData.descricao_anomalia}
                     onChange={(e) => setFormData({ ...formData, descricao_anomalia: e.target.value })}
-                    className="w-full bg-[#14181D] border border-[#38BDF8]/40 focus:border-[#38BDF8] rounded px-2.5 py-1.5 text-xs text-[#ECEFF1] focus:outline-none resize-y"
+                    className="w-full bg-[#14181D] border border-[#30363D] focus:border-[#30363D] rounded px-2.5 py-1.5 text-xs text-[#ECEFF1] focus:outline-none resize-y"
                     placeholder="Descreva o problema / avaria..."
                   />
                 ) : (
@@ -938,7 +938,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                   onClick={handleOpenPdf}
                   className={`inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-[4px] border transition-colors shadow-sm ${
                     orcamento.arquivo_pdf_url || orcamento.arquivo_url
-                      ? 'bg-[#38BDF8]/15 hover:bg-[#38BDF8]/25 text-[#38BDF8] border-[#38BDF8]/40'
+                      ? 'bg-[#21262D] hover:bg-[#21262D] text-[#C9D1D9] border-[#30363D]'
                       : 'bg-[#1C222A] text-[#6B7683] border-[#2C343E] cursor-not-allowed opacity-60'
                   }`}
                 >
@@ -952,7 +952,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                     id="btn-orc-enter-edit"
                     type="button"
                     onClick={() => setIsEditing(true)}
-                    className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-[4px] bg-[#F5A623]/15 hover:bg-[#F5A623]/25 text-[#F5A623] border border-[#F5A623]/40 transition-colors shadow-sm"
+                    className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-[4px] bg-[#21262D] hover:bg-[#21262D] text-[#C9D1D9] border border-[#30363D] transition-colors shadow-sm"
                   >
                     <Edit3 className="w-4 h-4" />
                     <span>Editar</span>
@@ -965,7 +965,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                     id="btn-orc-copiar-reenviar"
                     type="button"
                     onClick={() => onOpenRevisao(orcamento)}
-                    className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-[4px] bg-[#60A5FA]/15 hover:bg-[#60A5FA]/25 text-[#60A5FA] border border-[#60A5FA]/40 transition-colors shadow-sm"
+                    className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-[4px] bg-[#21262D] hover:bg-[#21262D] text-[#C9D1D9] border border-[#30363D] transition-colors shadow-sm"
                   >
                     <Copy className="w-4 h-4" />
                     <span>Copiar e Reenviar</span>

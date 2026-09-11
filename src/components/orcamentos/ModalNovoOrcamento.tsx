@@ -327,7 +327,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
         {/* Header */}
         <div className="px-5 py-4 border-b border-[#2C343E] bg-[#14181D] flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-[4px] bg-[#38BDF8]/15 text-[#38BDF8] border border-[#38BDF8]/30">
+            <div className="p-2 rounded-[4px] bg-[#21262D] text-[#C9D1D9] border border-[#30363D]">
               <Plus className="w-4 h-4" />
             </div>
             <div>
@@ -369,7 +369,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
                 id="novo-orc-ocorrencia"
                 value={ocorrenciaId}
                 onChange={(e) => setOcorrenciaId(e.target.value)}
-                className="w-full bg-[#14181D] border border-[#2C343E] rounded-[6px] px-3 py-2 text-xs font-mono text-[#ECEFF1] focus:border-[#38BDF8] focus:outline-none"
+                className="w-full bg-[#14181D] border border-[#2C343E] rounded-[6px] px-3 py-2 text-xs font-mono text-[#ECEFF1] focus:border-[#30363D] focus:outline-none"
                 required
               >
                 {ocorrencias.map((occ) => {
@@ -398,7 +398,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
                 value={numero}
                 onChange={(e) => setNumero(e.target.value)}
                 placeholder="Ex: ORC-2026-0825-REV1"
-                className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#38BDF8] rounded-[6px] px-3 py-2 text-xs font-mono font-bold text-[#ECEFF1] placeholder:text-[#6B7683] focus:outline-none"
+                className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#30363D] rounded-[6px] px-3 py-2 text-xs font-mono font-bold text-[#ECEFF1] placeholder:text-[#6B7683] focus:outline-none"
               />
             </div>
 
@@ -411,7 +411,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
                 id="novo-orc-status"
                 value={status}
                 onChange={(e) => setStatus(e.target.value as OrcamentoStatus)}
-                className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#38BDF8] rounded-[6px] px-3 py-2 text-xs font-mono text-[#ECEFF1] focus:outline-none cursor-pointer"
+                className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#30363D] rounded-[6px] px-3 py-2 text-xs font-mono text-[#ECEFF1] focus:outline-none cursor-pointer"
               >
                 <option value="RASCUNHO">Rascunho</option>
                 <option value="ENVIADO">Enviado</option>
@@ -438,7 +438,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
                 value={fornecedor}
                 onChange={(e) => setFornecedor(e.target.value)}
                 placeholder="Nome da empresa emitente"
-                className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#38BDF8] rounded-[6px] px-3 py-2 text-xs text-[#ECEFF1] focus:outline-none"
+                className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#30363D] rounded-[6px] px-3 py-2 text-xs text-[#ECEFF1] focus:outline-none"
               />
             </div>
 
@@ -461,7 +461,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
                   setValorTotal(formatted);
                 }}
                 placeholder="Ex: 1.500,00"
-                className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#38BDF8] rounded-[6px] px-3 py-2 text-xs font-mono font-bold text-[#38BDF8] focus:outline-none"
+                className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#30363D] rounded-[6px] px-3 py-2 text-xs font-mono font-bold text-[#C9D1D9] focus:outline-none"
               />
             </div>
           </div>
@@ -478,7 +478,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
                 type="date"
                 value={dataEnvio}
                 onChange={(e) => setDataEnvio(e.target.value)}
-                className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#38BDF8] rounded-[6px] px-3 py-2 text-xs font-mono text-[#ECEFF1] focus:outline-none"
+                className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#30363D] rounded-[6px] px-3 py-2 text-xs font-mono text-[#ECEFF1] focus:outline-none"
               />
               <span className="block text-[10px] text-[#8B949E] mt-1">
                 Preenchida com hoje — altere se necessário
@@ -495,7 +495,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
                 type="date"
                 value={validade}
                 onChange={(e) => setValidade(e.target.value)}
-                className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#38BDF8] rounded-[6px] px-3 py-2 text-xs font-mono text-[#ECEFF1] focus:outline-none"
+                className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#30363D] rounded-[6px] px-3 py-2 text-xs font-mono text-[#ECEFF1] focus:outline-none"
               />
             </div>
           </div>
@@ -511,7 +511,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
               value={enviadoPara}
               onChange={(e) => setEnviadoPara(e.target.value)}
               placeholder="Ex: AMBEV RJ / Engenharia de Utilidades"
-              className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#38BDF8] rounded-[6px] px-3 py-2 text-xs text-[#ECEFF1] focus:outline-none"
+              className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#30363D] rounded-[6px] px-3 py-2 text-xs text-[#ECEFF1] focus:outline-none"
             />
           </div>
 
@@ -526,7 +526,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
               value={descricaoAnomalia}
               onChange={(e) => setDescricaoAnomalia(e.target.value)}
               placeholder="Descreva o problema identificado no equipamento..."
-              className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#38BDF8] rounded-[6px] p-2.5 text-xs text-[#ECEFF1] placeholder:text-[#6B7683] focus:outline-none"
+              className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#30363D] rounded-[6px] p-2.5 text-xs text-[#ECEFF1] placeholder:text-[#6B7683] focus:outline-none"
             />
           </div>
 
@@ -534,7 +534,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
           <div className="p-3.5 bg-[#14181D] border border-[#2C343E] rounded-[6px] space-y-2.5">
             <div className="flex items-center justify-between">
               <label className="text-[11px] font-semibold text-[#ECEFF1] flex items-center gap-1.5">
-                <Package className="w-3.5 h-3.5 text-[#38BDF8]" />
+                <Package className="w-3.5 h-3.5 text-[#C9D1D9]" />
                 Peças / Itens Incluídos no Orçamento
               </label>
 <div className="flex items-center gap-2">
@@ -560,7 +560,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
                         return [...filtered, ...importadas];
                       });
                     }}
-                    className="px-2.5 py-1 text-[11px] font-semibold rounded-[4px] bg-[#F5A623]/15 hover:bg-[#F5A623]/25 text-[#F5A623] border border-[#F5A623]/40 transition-colors flex items-center gap-1 cursor-pointer"
+                    className="px-2.5 py-1 text-[11px] font-semibold rounded-[4px] bg-[#21262D] hover:bg-[#21262D] text-[#C9D1D9] border border-[#30363D] transition-colors flex items-center gap-1 cursor-pointer"
                     title={`Importar ${pecasVinculadas.length} peça(s)/serviço(s) da ocorrência`}
                   >
                     <Download className="w-3 h-3" />
@@ -570,7 +570,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
                 <button
                   type="button"
                   onClick={adicionarPeca}
-                  className="px-2.5 py-1 text-[11px] font-semibold rounded-[4px] bg-[#2C343E] hover:bg-[#38BDF8]/20 text-[#ECEFF1] hover:text-[#38BDF8] border border-[#38BDF8]/30 transition-colors flex items-center gap-1 cursor-pointer"
+                  className="px-2.5 py-1 text-[11px] font-semibold rounded-[4px] bg-[#2C343E] hover:bg-[#21262D] text-[#ECEFF1] hover:text-[#C9D1D9] border border-[#30363D] transition-colors flex items-center gap-1 cursor-pointer"
                 >
                   <Plus className="w-3 h-3" />
                   <span>Adicionar Item</span>
@@ -593,7 +593,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
                         placeholder="Nome / Descrição da peça"
                         value={peca.descricao}
                         onChange={(e) => atualizarPeca(i, 'descricao', e.target.value)}
-                        className="flex-1 bg-[#14181D] border border-[#2C343E] focus:border-[#38BDF8] rounded-[4px] px-2.5 py-1.5 text-xs text-[#ECEFF1] placeholder:text-[#6B7683] focus:outline-none"
+                        className="flex-1 bg-[#14181D] border border-[#2C343E] focus:border-[#30363D] rounded-[4px] px-2.5 py-1.5 text-xs text-[#ECEFF1] placeholder:text-[#6B7683] focus:outline-none"
                       />
                       <button
                         type="button"
@@ -610,7 +610,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
                       value={peca.especificacao}
                       onChange={(e) => atualizarPeca(i, 'especificacao', e.target.value)}
                       rows={2}
-                      className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#38BDF8] rounded-[4px] px-2.5 py-1.5 text-xs font-mono text-[#ECEFF1] placeholder:text-[#6B7683] focus:outline-none resize-y"
+                      className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#30363D] rounded-[4px] px-2.5 py-1.5 text-xs font-mono text-[#ECEFF1] placeholder:text-[#6B7683] focus:outline-none resize-y"
                     />
                     {/* Row 3: Qtd + R$ unit. + Valor Total + NCM */}
                     <div className="flex gap-2 flex-wrap">
@@ -621,7 +621,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
                           value={peca.quantidade}
                           onChange={(e) => atualizarPeca(i, 'quantidade', Number(e.target.value))}
                           min={1}
-                          className="w-16 bg-[#14181D] border border-[#2C343E] focus:border-[#38BDF8] rounded-[4px] px-2 py-1.5 text-xs font-mono text-[#ECEFF1] text-center focus:outline-none"
+                          className="w-16 bg-[#14181D] border border-[#2C343E] focus:border-[#30363D] rounded-[4px] px-2 py-1.5 text-xs font-mono text-[#ECEFF1] text-center focus:outline-none"
                         />
                       </div>
                       <div className="flex items-center gap-1.5 flex-1 min-w-[110px]">
@@ -638,7 +638,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
                             const fmt = (cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                             atualizarPeca(i, 'valor_unitario', fmt);
                           }}
-                          className="flex-1 bg-[#14181D] border border-[#2C343E] focus:border-[#38BDF8] rounded-[4px] px-2.5 py-1.5 text-xs font-mono text-[#ECEFF1] focus:outline-none text-right"
+                          className="flex-1 bg-[#14181D] border border-[#2C343E] focus:border-[#30363D] rounded-[4px] px-2.5 py-1.5 text-xs font-mono text-[#ECEFF1] focus:outline-none text-right"
                         />
                       </div>
                       <div className="flex items-center gap-1.5 flex-1 min-w-[110px]">
@@ -657,7 +657,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
                           placeholder="0000.00.00"
                           value={peca.ncm || ''}
                           onChange={(e) => atualizarPeca(i, 'ncm', e.target.value)}
-                          className="flex-1 bg-[#14181D] border border-[#2C343E] focus:border-[#38BDF8] rounded-[4px] px-2.5 py-1.5 text-xs font-mono text-[#ECEFF1] focus:outline-none"
+                          className="flex-1 bg-[#14181D] border border-[#2C343E] focus:border-[#30363D] rounded-[4px] px-2.5 py-1.5 text-xs font-mono text-[#ECEFF1] focus:outline-none"
                         />
                       </div>
                     </div>
@@ -677,7 +677,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
               rows={2}
               value={observacoes}
               onChange={(e) => setObservacoes(e.target.value)}
-              className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#38BDF8] rounded-[6px] p-2.5 text-xs text-[#ECEFF1] placeholder:text-[#6B7683] focus:outline-none"
+              className="w-full bg-[#14181D] border border-[#2C343E] focus:border-[#30363D] rounded-[6px] p-2.5 text-xs text-[#ECEFF1] placeholder:text-[#6B7683] focus:outline-none"
               placeholder="Escopo de materiais, frete incluso, mão de obra, condições de garantia..."
             />
           </div>
@@ -686,7 +686,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
           <div className="p-3.5 bg-[#14181D] border border-[#2C343E] rounded-[6px]">
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-[11px] font-semibold text-[#ECEFF1] flex items-center gap-1.5">
-                <Upload className="w-3.5 h-3.5 text-[#38BDF8]" />
+                <Upload className="w-3.5 h-3.5 text-[#C9D1D9]" />
                 Upload do PDF da Proposta
               </label>
               {pdfFile && (
@@ -709,7 +709,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
                 type="button"
                 id="btn-upload-novo-orc-pdf"
                 onClick={() => fileInputRef.current?.click()}
-                className="w-full sm:w-auto px-3.5 py-1.5 bg-[#2C343E] hover:bg-[#38BDF8]/20 text-[#ECEFF1] hover:text-[#38BDF8] border border-[#38BDF8]/30 rounded-[4px] text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                className="w-full sm:w-auto px-3.5 py-1.5 bg-[#2C343E] hover:bg-[#21262D] text-[#ECEFF1] hover:text-[#C9D1D9] border border-[#30363D] rounded-[4px] text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer"
               >
                 <Upload className="w-3.5 h-3.5" />
                 {pdfFile ? 'Substituir PDF' : 'Selecionar Documento PDF'}

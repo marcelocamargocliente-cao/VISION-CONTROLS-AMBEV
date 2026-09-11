@@ -158,13 +158,13 @@ export const ModalRevisaoOrcamento: React.FC<ModalRevisaoOrcamentoProps> = ({
     >
       <div
         id="modal-revisao-container"
-        className="bg-[#1C222A] border border-[#38BDF8]/40 rounded-[6px] shadow-2xl w-full max-w-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150"
+        className="bg-[#1C222A] border border-[#30363D] rounded-[6px] shadow-2xl w-full max-w-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="px-5 py-4 border-b border-[#2C343E] bg-[#14181D] flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-[4px] bg-[#38BDF8]/15 text-[#38BDF8] border border-[#38BDF8]/30">
+            <div className="p-2 rounded-[4px] bg-[#21262D] text-[#C9D1D9] border border-[#30363D]">
               <Copy className="w-4 h-4" />
             </div>
             <div>
@@ -172,7 +172,7 @@ export const ModalRevisaoOrcamento: React.FC<ModalRevisaoOrcamentoProps> = ({
                 Nova Revisão deste Orçamento
               </h3>
               <p className="text-[10px] text-[#94A3B8] font-mono">
-                Baseado na proposta anterior: <span className="text-[#38BDF8]">{orcamentoOrigem.numero}</span>
+                Baseado na proposta anterior: <span className="text-[#C9D1D9]">{orcamentoOrigem.numero}</span>
               </p>
             </div>
           </div>
@@ -207,7 +207,7 @@ export const ModalRevisaoOrcamento: React.FC<ModalRevisaoOrcamentoProps> = ({
               required
               value={numero}
               onChange={(e) => setNumero(e.target.value)}
-              className="w-full bg-[#14181D] border border-[#38BDF8]/40 rounded px-3 py-2 text-sm font-mono font-bold text-[#38BDF8] focus:ring-1 focus:ring-[#38BDF8] focus:outline-none"
+              className="w-full bg-[#14181D] border border-[#30363D] rounded px-3 py-2 text-sm font-mono font-bold text-[#C9D1D9] focus:ring-1 focus:ring-[#8B949E] focus:outline-none"
               placeholder="Ex: ORC-2026-0418-REV3"
             />
           </div>
@@ -232,7 +232,7 @@ export const ModalRevisaoOrcamento: React.FC<ModalRevisaoOrcamentoProps> = ({
                     const fmt = (cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                     setValorTotal(fmt);
                   }}
-                  className="w-full bg-[#14181D] border border-[#2C343E] rounded px-3 py-2 text-xs font-mono font-bold text-[#ECEFF1] focus:border-[#38BDF8] focus:outline-none"
+                  className="w-full bg-[#14181D] border border-[#2C343E] rounded px-3 py-2 text-xs font-mono font-bold text-[#ECEFF1] focus:border-[#30363D] focus:outline-none"
                   placeholder="0,00"
                 />
               </div>
@@ -247,7 +247,7 @@ export const ModalRevisaoOrcamento: React.FC<ModalRevisaoOrcamentoProps> = ({
                 type="date"
                 value={validade}
                 onChange={(e) => setValidade(e.target.value)}
-                className="w-full bg-[#14181D] border border-[#2C343E] rounded px-3 py-2 text-xs font-mono text-[#ECEFF1] focus:border-[#38BDF8] focus:outline-none"
+                className="w-full bg-[#14181D] border border-[#2C343E] rounded px-3 py-2 text-xs font-mono text-[#ECEFF1] focus:border-[#30363D] focus:outline-none"
               />
             </div>
           </div>
@@ -264,7 +264,7 @@ export const ModalRevisaoOrcamento: React.FC<ModalRevisaoOrcamentoProps> = ({
                 required
                 value={fornecedor}
                 onChange={(e) => setFornecedor(e.target.value)}
-                className="w-full bg-[#14181D] border border-[#2C343E] rounded px-3 py-2 text-xs text-[#ECEFF1] focus:border-[#38BDF8] focus:outline-none"
+                className="w-full bg-[#14181D] border border-[#2C343E] rounded px-3 py-2 text-xs text-[#ECEFF1] focus:border-[#30363D] focus:outline-none"
                 placeholder="Nome do fornecedor"
               />
             </div>
@@ -278,7 +278,7 @@ export const ModalRevisaoOrcamento: React.FC<ModalRevisaoOrcamentoProps> = ({
                 type="text"
                 value={enviadoPara}
                 onChange={(e) => setEnviadoPara(e.target.value)}
-                className="w-full bg-[#14181D] border border-[#2C343E] rounded px-3 py-2 text-xs text-[#ECEFF1] focus:border-[#38BDF8] focus:outline-none"
+                className="w-full bg-[#14181D] border border-[#2C343E] rounded px-3 py-2 text-xs text-[#ECEFF1] focus:border-[#30363D] focus:outline-none"
                 placeholder="Ex: Engenharia AMBEV RJ"
               />
             </div>
@@ -287,7 +287,7 @@ export const ModalRevisaoOrcamento: React.FC<ModalRevisaoOrcamentoProps> = ({
           {/* Upload de Novo PDF (Obrigatório) */}
           <div className="p-3.5 bg-[#14181D] border border-[#2C343E] rounded-[4px]">
             <div className="flex items-center justify-between mb-1.5">
-              <label className="text-[10px] uppercase font-mono text-[#F5A623] font-bold flex items-center gap-1.5">
+              <label className="text-[10px] uppercase font-mono text-[#C9D1D9] font-bold flex items-center gap-1.5">
                 <Upload className="w-3.5 h-3.5" />
                 Upload do Novo PDF da Proposta (Obrigatório) *
               </label>
@@ -311,7 +311,7 @@ export const ModalRevisaoOrcamento: React.FC<ModalRevisaoOrcamentoProps> = ({
                 type="button"
                 id="btn-upload-revisao-pdf"
                 onClick={() => fileInputRef.current?.click()}
-                className="w-full sm:w-auto px-4 py-2 bg-[#2C343E] hover:bg-[#38BDF8]/20 text-[#ECEFF1] hover:text-[#38BDF8] border border-[#38BDF8]/30 rounded text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
+                className="w-full sm:w-auto px-4 py-2 bg-[#2C343E] hover:bg-[#21262D] text-[#ECEFF1] hover:text-[#C9D1D9] border border-[#30363D] rounded text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
               >
                 <Upload className="w-4 h-4" />
                 {pdfFile ? 'Alterar Arquivo PDF' : 'Selecionar Documento PDF'}
@@ -333,7 +333,7 @@ export const ModalRevisaoOrcamento: React.FC<ModalRevisaoOrcamentoProps> = ({
               rows={3}
               value={observacoes}
               onChange={(e) => setObservacoes(e.target.value)}
-              className="w-full bg-[#14181D] border border-[#2C343E] rounded p-2.5 text-xs text-[#ECEFF1] focus:border-[#38BDF8] focus:outline-none"
+              className="w-full bg-[#14181D] border border-[#2C343E] rounded p-2.5 text-xs text-[#ECEFF1] focus:border-[#30363D] focus:outline-none"
               placeholder="Justificativa da nova revisão, alterações de escopo ou desconto..."
             />
           </div>
@@ -353,7 +353,7 @@ export const ModalRevisaoOrcamento: React.FC<ModalRevisaoOrcamentoProps> = ({
               id="btn-revisao-confirmar"
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 text-xs font-bold rounded-[4px] bg-[#38BDF8] hover:bg-[#0284C7] text-[#14181D] transition-colors shadow-md flex items-center gap-1.5"
+              className="px-4 py-2 text-xs font-bold rounded-[4px] bg-[#21262D] hover:bg-[#0284C7] text-[#14181D] transition-colors shadow-md flex items-center gap-1.5"
             >
               <CheckCircle2 className="w-4 h-4" />
               {submitting ? 'Emitindo Revisão...' : 'Confirmar e Enviar Nova Revisão'}

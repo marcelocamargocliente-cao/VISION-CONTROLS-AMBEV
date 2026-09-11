@@ -275,7 +275,7 @@ export const ModalDuplicarOrcamento: React.FC<ModalDuplicarOrcamentoProps> = ({
                   setForm((p) => ({ ...p, valor_total: fmt }));
                 }}
                 placeholder="0,00"
-                className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#58A6FF] rounded-lg px-3 py-2 text-xs font-mono font-bold text-[#38BDF8] placeholder:text-[#6E7681] focus:outline-none text-right"
+                className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#58A6FF] rounded-lg px-3 py-2 text-xs font-mono font-bold text-[#C9D1D9] placeholder:text-[#6E7681] focus:outline-none text-right"
               />
             </div>
 
