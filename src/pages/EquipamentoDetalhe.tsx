@@ -331,7 +331,7 @@ export const EquipamentoDetalhe: React.FC = () => {
       <div className="equipamento-tab-content flex-1">
         {/* TAB 1: FICHA TÉCNICA (Campos: Tag Vision, UG, Área, Localização, Patrimônio, Tipo, Marca, Modelo, Capacidade, Aplicação, Status) */}
         {activeTab === 'ficha' && (
-          <div className="bg-[#111827] border border-[#30363D] rounded-lg p-6 space-y-6 shadow-xl">
+          <div className="bg-[#111827] border border-[#30363D] rounded-lg p-3 md:p-6 space-y-5 md:space-y-6 shadow-xl">
             {isEditing && (
               <div className="flex items-center gap-2 p-3 rounded-lg text-xs font-medium bg-[#21262D] border border-[#30363D] text-[#C9D1D9]">
                 <Edit3 className="w-4 h-4" /> Modo de edição ativo — altere os campos abaixo e clique em "Salvar Alterações".
