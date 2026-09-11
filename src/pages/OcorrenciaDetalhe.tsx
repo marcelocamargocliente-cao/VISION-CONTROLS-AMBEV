@@ -368,7 +368,8 @@ export const OcorrenciaDetalhe: React.FC = () => {
       });
       await loadData();
       if ((res as any)._local) {
-        toast.error('Foto salva só neste aparelho — não subiu ao servidor. Verifique o Storage do Supabase.', { id: t, duration: 6000 });
+        const motivo = (res as any)._error ? ` Motivo: ${String((res as any)._error).slice(0, 140)}` : '';
+        toast.error(`Foto salva só neste aparelho — não subiu ao servidor.${motivo}`, { id: t, duration: 9000 });
         console.warn('[uploadFoto] erro Supabase:', (res as any)._error);
       } else {
         toast.success('Foto enviada', { id: t });
