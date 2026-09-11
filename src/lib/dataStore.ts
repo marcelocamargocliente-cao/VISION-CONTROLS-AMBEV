@@ -1177,6 +1177,17 @@ export const DataStore = {
     const safeName = (file.name || 'foto.jpg').replace(/[^a-zA-Z0-9._-]/g, '_');
     const folder = refs.ocorrencia_id || refs.equipamento_id || 'geral';
     const path = `${folder}/${Date.now()}_${safeName}`;
+    // UUID válido — encaixa tanto em coluna id text quanto uuid no Supabase
+    const genId = (): string => {
+      try {
+        if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) return crypto.randomUUID();
+      } catch { /* ignore */ }
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+        const r = (Math.random() * 16) | 0;
+        const v = c === 'x' ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+      });
+    };
 
     let supaError = '';
     if (isSupabaseConfigured) {
@@ -1194,7 +1205,7 @@ export const DataStore = {
         const publicUrl = pub.publicUrl;
 
         const record: Anexo = {
-          id: `anexo-${Date.now()}`,
+          id: genId(),
           ocorrencia_id: refs.ocorrencia_id,
           equipamento_id: refs.equipamento_id,
           nome_arquivo: file.name,
@@ -1237,7 +1248,7 @@ export const DataStore = {
       r.readAsDataURL(file);
     });
     const local: Anexo = {
-      id: `anexo-${Date.now()}`,
+      id: genId(),
       ocorrencia_id: refs.ocorrencia_id,
       equipamento_id: refs.equipamento_id,
       nome_arquivo: file.name,
