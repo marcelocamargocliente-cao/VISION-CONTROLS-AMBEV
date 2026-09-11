@@ -362,12 +362,17 @@ export const OcorrenciaDetalhe: React.FC = () => {
     setUploadingPhoto(true);
     const t = toast.loading('Enviando foto...');
     try {
-      await DataStore.uploadFoto(file, {
+      const res = await DataStore.uploadFoto(file, {
         ocorrencia_id: ocorrencia.id,
         equipamento_id: ocorrencia.equipamento_id,
       });
       await loadData();
-      toast.success('Foto enviada', { id: t });
+      if ((res as any)._local) {
+        toast.error('Foto salva só neste aparelho — não subiu ao servidor. Verifique o Storage do Supabase.', { id: t, duration: 6000 });
+        console.warn('[uploadFoto] erro Supabase:', (res as any)._error);
+      } else {
+        toast.success('Foto enviada', { id: t });
+      }
     } catch (err) {
       console.error('Erro ao enviar foto:', err);
       toast.error('Não foi possível enviar a foto', { id: t });

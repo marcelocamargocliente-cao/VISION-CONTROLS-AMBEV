@@ -14,6 +14,7 @@ import {
   Plus,
   FileText,
   Copy,
+  Image as ImageIcon,
 } from 'lucide-react';
 import { DataStore } from '../lib/dataStore';
 import {
@@ -26,6 +27,7 @@ import {
 import { IndustrialTag } from '../components/common/IndustrialTag';
 import { StatusBadge } from '../components/common/StatusBadge';
 import { EmptyState } from '../components/common/EmptyState';
+import { FotoCard } from '../components/ocorrencias/FotoCard';
 import { useAuth } from '../context/AuthContext';
 import { formatDate, formatDateTime } from '../utils/formatters';
 
@@ -39,6 +41,7 @@ export const EquipamentoDetalhe: React.FC = () => {
   const [manutencoes, setManutencoes] = useState<Manutencao[]>([]);
   const [fotos, setFotos] = useState<Anexo[]>([]);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [showPhotoMenu, setShowPhotoMenu] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const [activeTab, setActiveTab] = useState<'ficha' | 'ocorrencias' | 'manutencoes' | 'fotos' | 'qrcode'>('ficha');
@@ -177,12 +180,18 @@ export const EquipamentoDetalhe: React.FC = () => {
     if (!equipamento || !e.target.files || e.target.files.length === 0) return;
     const file = e.target.files[0];
     e.target.value = ''; // permite reenviar a mesma foto depois
+    setShowPhotoMenu(false);
     setUploadingPhoto(true);
     const t = toast.loading('Enviando foto...');
     try {
-      await DataStore.uploadFoto(file, { equipamento_id: equipamento.id });
+      const res = await DataStore.uploadFoto(file, { equipamento_id: equipamento.id });
       await loadData();
-      toast.success('Foto enviada', { id: t });
+      if ((res as any)._local) {
+        toast.error('Foto salva só neste aparelho — não subiu ao servidor. Verifique o Storage do Supabase.', { id: t, duration: 6000 });
+        console.warn('[uploadFoto] erro Supabase:', (res as any)._error);
+      } else {
+        toast.success('Foto enviada', { id: t });
+      }
     } catch (err) {
       console.error('Erro ao enviar foto:', err);
       toast.error('Não foi possível enviar a foto', { id: t });
@@ -702,17 +711,45 @@ export const EquipamentoDetalhe: React.FC = () => {
                 Galeria de Fotos do Equipamento ({fotos.length})
               </h3>
               {canEdit && (
-                <label className={`inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-md bg-[#1E293B] hover:bg-[#334155] text-gray-200 border border-[#30363D] transition-colors ${uploadingPhoto ? 'opacity-60 pointer-events-none' : 'cursor-pointer'}`}>
-                  <Camera className={`w-4 h-4 text-[#C9D1D9] ${uploadingPhoto ? 'animate-pulse' : ''}`} />
-                  <span>{uploadingPhoto ? 'Enviando...' : 'Upload de Foto'}</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handlePhotoUpload}
+                <div className="relative shrink-0">
+                  <button
+                    onClick={() => setShowPhotoMenu((v) => !v)}
                     disabled={uploadingPhoto}
-                    className="hidden"
-                  />
-                </label>
+                    className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-md btn-primary-gradient disabled:opacity-60"
+                  >
+                    <Camera className={`w-4 h-4 ${uploadingPhoto ? 'animate-pulse' : ''}`} />
+                    <span>{uploadingPhoto ? 'Enviando...' : 'Adicionar Foto'}</span>
+                  </button>
+
+                  {showPhotoMenu && !uploadingPhoto && (
+                    <>
+                      <div className="fixed inset-0 z-20" onClick={() => setShowPhotoMenu(false)} />
+                      <div className="absolute right-0 top-full mt-1 w-52 bg-[#161B22] border border-[#30363D] rounded-lg shadow-2xl p-1 z-30">
+                        <label className="flex items-center gap-2.5 px-3 py-3 text-xs text-[#E6EDF3] rounded-md hover:bg-[#21262D] cursor-pointer">
+                          <Camera className="w-4 h-4 text-[#8B949E] shrink-0" />
+                          <span>Tirar foto agora</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            capture="environment"
+                            onChange={handlePhotoUpload}
+                            className="hidden"
+                          />
+                        </label>
+                        <label className="flex items-center gap-2.5 px-3 py-3 text-xs text-[#E6EDF3] rounded-md hover:bg-[#21262D] cursor-pointer">
+                          <ImageIcon className="w-4 h-4 text-[#8B949E] shrink-0" />
+                          <span>Escolher da galeria</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handlePhotoUpload}
+                            className="hidden"
+                          />
+                        </label>
+                      </div>
+                    </>
+                  )}
+                </div>
               )}
             </div>
 
@@ -725,19 +762,12 @@ export const EquipamentoDetalhe: React.FC = () => {
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                 {fotos.map((foto) => (
-                  <div key={foto.id} className="bg-[#111827] border border-[#30363D] rounded-lg overflow-hidden group">
-                    <div className="aspect-video bg-[#0A0E1A] overflow-hidden">
-                      <img
-                        src={foto.url}
-                        alt={foto.nome_arquivo}
-                        referrerPolicy="no-referrer"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                      />
-                    </div>
-                    <div className="p-2 text-[10px] text-gray-400 truncate">
-                      {foto.nome_arquivo}
-                    </div>
-                  </div>
+                  <FotoCard
+                    key={foto.id}
+                    foto={foto}
+                    canDelete={canEdit}
+                    onDeletada={(idDeletado) => setFotos((prev) => prev.filter((f) => f.id !== idDeletado))}
+                  />
                 ))}
               </div>
             )}

@@ -1178,6 +1178,7 @@ export const DataStore = {
     const folder = refs.ocorrencia_id || refs.equipamento_id || 'geral';
     const path = `${folder}/${Date.now()}_${safeName}`;
 
+    let supaError = '';
     if (isSupabaseConfigured) {
       try {
         const { error: upErr } = await supabase.storage
@@ -1221,7 +1222,8 @@ export const DataStore = {
         dbState.anexos.unshift(record);
         try { persistState(); } catch { /* quota */ }
         return record;
-      } catch (e) {
+      } catch (e: any) {
+        supaError = e?.message || String(e);
         console.error('[uploadFoto] Falha no Supabase, salvando local:', e);
         // segue para o fallback base64
       }
@@ -1244,6 +1246,9 @@ export const DataStore = {
       bucket: 'fotos',
       created_at: new Date().toISOString(),
     };
+    // Marca que ficou só local (não sincronizou) para a UI avisar
+    (local as any)._local = true;
+    (local as any)._error = supaError;
     dbState.anexos.unshift(local);
     try { persistState(); } catch { /* quota */ }
     return local;

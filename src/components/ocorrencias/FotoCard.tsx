@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Trash2, X, ZoomIn } from 'lucide-react';
+import { Trash2, X, ZoomIn, Eye } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Anexo } from '../../types/database';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
@@ -73,20 +73,33 @@ export const FotoCard: React.FC<FotoCardProps> = ({ foto, canDelete, onDeletada 
           </span>
         </button>
 
-        {/* Botão deletar — aparece no hover e sempre em mobile para roles permitidas */}
-        {canDelete && (
+        {/* Ações: visualizar (olhinho) + deletar — sempre visíveis */}
+        <div className="absolute top-2 right-2 flex items-center gap-1.5 z-10">
           <button
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              setConfirmando(true);
+              setVisualizando(true);
             }}
-            title="Remover foto"
-            className="foto-delete-btn absolute top-2 right-2 w-9 h-9 rounded-md bg-[#F85149]/90 hover:bg-[#F85149] text-white border-0 cursor-pointer flex items-center justify-center opacity-0 transition-opacity duration-150 z-10 shadow-md"
+            title="Ver em tela cheia"
+            className="w-9 h-9 rounded-md bg-black/60 hover:bg-black/80 text-white border border-white/10 cursor-pointer flex items-center justify-center shadow-md"
           >
-            <Trash2 size={15} />
+            <Eye size={15} />
           </button>
-        )}
+          {canDelete && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setConfirmando(true);
+              }}
+              title="Remover foto"
+              className="w-9 h-9 rounded-md bg-[#F85149]/90 hover:bg-[#F85149] text-white border-0 cursor-pointer flex items-center justify-center shadow-md"
+            >
+              <Trash2 size={15} />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Lightbox — foto em tela cheia */}
