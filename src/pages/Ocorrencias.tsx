@@ -14,7 +14,10 @@ import {
   ChevronRight,
   ShieldAlert,
   Trash2,
+  Pencil,
+  X,
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { DataStore } from '../lib/dataStore';
 import {
   Ocorrencia,
@@ -47,7 +50,7 @@ const KANBAN_COLUMNS: OcorrenciaStatus[] = [
 
 export const Ocorrencias: React.FC = () => {
   const navigate = useNavigate();
-  const { canCreateOccurrence } = useAuth();
+  const { canCreateOccurrence, user } = useAuth();
 
   const [ocorrencias, setOcorrencias] = useState<Ocorrencia[]>([]);
   const [equipamentosMap, setEquipamentosMap] = useState<Map<string, VwEquipamento>>(new Map());
@@ -60,6 +63,53 @@ export const Ocorrencias: React.FC = () => {
   const [selectedCriticidade, setSelectedCriticidade] = useState<string>('');
   const [onlyParados, setOnlyParados] = useState(false);
   const [confirmDeleteOcc, setConfirmDeleteOcc] = useState<Ocorrencia | null>(null);
+  const [editOcc, setEditOcc] = useState<Ocorrencia | null>(null);
+  const [editForm, setEditForm] = useState<{ criticidade: Criticidade; descricao_anomalia: string; causa_provavel: string; equipamento_parado: boolean }>({
+    criticidade: 'MEDIA',
+    descricao_anomalia: '',
+    causa_provavel: '',
+    equipamento_parado: false,
+  });
+  const [savingEdit, setSavingEdit] = useState(false);
+
+  const abrirEdicao = (occ: Ocorrencia) => {
+    setEditForm({
+      criticidade: occ.criticidade,
+      descricao_anomalia: occ.descricao_anomalia || '',
+      causa_provavel: occ.causa_provavel || '',
+      equipamento_parado: !!occ.equipamento_parado,
+    });
+    setEditOcc(occ);
+  };
+
+  const salvarEdicao = async () => {
+    if (!editOcc) return;
+    if (!editForm.descricao_anomalia.trim()) {
+      toast.error('A descrição do problema não pode ficar vazia.');
+      return;
+    }
+    setSavingEdit(true);
+    try {
+      await DataStore.updateOcorrenciaCampos(
+        editOcc.id,
+        {
+          criticidade: editForm.criticidade,
+          descricao_anomalia: editForm.descricao_anomalia.trim(),
+          causa_provavel: editForm.causa_provavel.trim(),
+          equipamento_parado: editForm.equipamento_parado,
+        },
+        user?.nome || 'Sistema'
+      );
+      toast.success('Ocorrência atualizada');
+      setEditOcc(null);
+      await loadData();
+    } catch (e) {
+      console.error(e);
+      toast.error('Não foi possível salvar');
+    } finally {
+      setSavingEdit(false);
+    }
+  };
 
   const loadData = async () => {
     setLoading(true);
@@ -354,6 +404,13 @@ export const Ocorrencias: React.FC = () => {
                               }}
                             />
                             <button
+                              onClick={() => abrirEdicao(occ)}
+                              title="Editar ocorrência"
+                              className="p-1.5 rounded-[4px] bg-[#232B35] text-[#C9D1D9] hover:bg-[#2C343E] hover:text-white transition-colors"
+                            >
+                              <Pencil className="w-3.5 h-3.5" />
+                            </button>
+                            <button
                               onClick={() => setConfirmDeleteOcc(occ)}
                               title="Deletar ocorrência"
                               className="p-1.5 rounded-[4px] bg-[#232B35] hover:bg-red-400/20 text-red-400 hover:text-red-300 transition-colors"
@@ -439,6 +496,13 @@ export const Ocorrencias: React.FC = () => {
                         )}
                       </div>
                       <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
+                        <button
+                          onClick={() => abrirEdicao(occ)}
+                          title="Editar"
+                          className="w-9 h-9 rounded-md bg-[#21262D] text-[#C9D1D9] flex items-center justify-center"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </button>
                         <button
                           onClick={() => setConfirmDeleteOcc(occ)}
                           title="Deletar"
@@ -554,6 +618,106 @@ export const Ocorrencias: React.FC = () => {
         </div>
       )}
     </div>
+
+      {editOcc && (
+        <div
+          className="sheet-backdrop fixed inset-0 z-[9999] bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
+          onClick={(e) => { if (e.target === e.currentTarget && !savingEdit) setEditOcc(null); }}
+        >
+          <div className="sheet-panel bg-[#111827] border border-[#30363D] rounded-t-2xl sm:rounded-lg w-full max-w-lg max-h-[92vh] flex flex-col shadow-2xl overflow-hidden safe-bottom">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-[#30363D] shrink-0">
+              <div className="min-w-0">
+                <h3 className="text-sm font-display font-bold text-[#E6EDF3] uppercase tracking-wide">Editar Ocorrência</h3>
+                <p className="text-[11px] text-[#8B949E] font-mono truncate">OS {editOcc.ordem_sap || `#${editOcc.numero}`}</p>
+              </div>
+              <button
+                onClick={() => !savingEdit && setEditOcc(null)}
+                className="w-9 h-9 rounded-lg bg-[#0A0E1A] border border-[#30363D] text-[#8B949E] flex items-center justify-center shrink-0"
+                aria-label="Fechar"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-4 space-y-4 overflow-y-auto scroll-fluido">
+              {/* Criticidade */}
+              <div>
+                <label className="block text-[11px] font-semibold text-[#8B949E] uppercase tracking-wider mb-1.5">Criticidade</label>
+                <div className="grid grid-cols-4 gap-1.5">
+                  {(['BAIXA', 'MEDIA', 'ALTA', 'CRITICA'] as Criticidade[]).map((c) => (
+                    <button
+                      key={c}
+                      onClick={() => setEditForm((f) => ({ ...f, criticidade: c }))}
+                      className={`h-10 rounded-md text-[11px] font-bold border transition-colors ${
+                        editForm.criticidade === c
+                          ? 'bg-[#21262D] text-[#E6EDF3] border-[#8B949E]'
+                          : 'bg-[#0A0E1A] text-[#8B949E] border-[#30363D]'
+                      }`}
+                    >
+                      {c === 'MEDIA' ? 'MÉDIA' : c}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Descrição do problema */}
+              <div>
+                <label className="block text-[11px] font-semibold text-[#8B949E] uppercase tracking-wider mb-1.5">Descrição do Problema</label>
+                <textarea
+                  value={editForm.descricao_anomalia}
+                  onChange={(e) => setEditForm((f) => ({ ...f, descricao_anomalia: e.target.value }))}
+                  rows={3}
+                  className="w-full bg-[#0A0E1A] border border-[#30363D] focus:border-[#8B949E] text-[#E6EDF3] text-[13px] rounded-md p-2.5 outline-none resize-none leading-relaxed"
+                  placeholder="Descreva o problema..."
+                />
+              </div>
+
+              {/* Causa raiz */}
+              <div>
+                <label className="block text-[11px] font-semibold text-[#8B949E] uppercase tracking-wider mb-1.5">Causa Raiz Provável</label>
+                <textarea
+                  value={editForm.causa_provavel}
+                  onChange={(e) => setEditForm((f) => ({ ...f, causa_provavel: e.target.value }))}
+                  rows={2}
+                  className="w-full bg-[#0A0E1A] border border-[#30363D] focus:border-[#8B949E] text-[#E6EDF3] text-[13px] rounded-md p-2.5 outline-none resize-none"
+                  placeholder="(opcional)"
+                />
+              </div>
+
+              {/* Equipamento parado */}
+              <button
+                onClick={() => setEditForm((f) => ({ ...f, equipamento_parado: !f.equipamento_parado }))}
+                className="w-full flex items-center justify-between gap-3 p-3 rounded-md bg-[#0A0E1A] border border-[#30363D]"
+              >
+                <div className="text-left">
+                  <p className="text-[13px] font-semibold text-[#E6EDF3]">Equipamento parado</p>
+                  <p className="text-[11px] text-[#8B949E]">Marca o ativo como PARADO enquanto a ocorrência estiver aberta</p>
+                </div>
+                <span className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${editForm.equipamento_parado ? 'bg-red-500/70' : 'bg-[#30363D]'}`}>
+                  <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-all ${editForm.equipamento_parado ? 'left-[22px]' : 'left-0.5'}`} />
+                </span>
+              </button>
+            </div>
+
+            <div className="flex items-center gap-2 p-4 border-t border-[#30363D] shrink-0">
+              <button
+                onClick={() => setEditOcc(null)}
+                disabled={savingEdit}
+                className="flex-1 h-11 rounded-md bg-[#0A0E1A] border border-[#30363D] text-[#C9D1D9] text-sm font-semibold disabled:opacity-60"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={salvarEdicao}
+                disabled={savingEdit}
+                className="flex-1 h-11 rounded-md btn-primary-gradient text-sm font-bold disabled:opacity-60"
+              >
+                {savingEdit ? 'Salvando...' : 'Salvar'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {confirmDeleteOcc && (
         <div style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.65)', display:'flex', alignItems:'center', justifyContent:'center' }}>

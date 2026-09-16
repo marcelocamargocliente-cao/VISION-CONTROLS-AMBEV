@@ -890,6 +890,57 @@ export const DataStore = {
     persistState();
   },
 
+  async updateOcorrenciaCampos(
+    ocorrenciaId: string,
+    campos: Partial<Pick<Ocorrencia, 'criticidade' | 'descricao_anomalia' | 'causa_provavel' | 'equipamento_parado'>>,
+    usuarioNome: string
+  ): Promise<void> {
+    const occ = dbState.ocorrencias.find((o) => o.id === ocorrenciaId);
+    if (!occ) return;
+
+    if (campos.criticidade !== undefined) occ.criticidade = campos.criticidade;
+    if (campos.descricao_anomalia !== undefined) occ.descricao_anomalia = campos.descricao_anomalia;
+    if (campos.causa_provavel !== undefined) occ.causa_provavel = campos.causa_provavel;
+    if (campos.equipamento_parado !== undefined) {
+      occ.equipamento_parado = campos.equipamento_parado;
+      const eq = dbState.equipamentos.find((e) => e.id === occ.equipamento_id);
+      if (eq) {
+        if (campos.equipamento_parado) {
+          eq.status = 'PARADO';
+        } else {
+          const outraParada = dbState.ocorrencias.find(
+            (o) => o.equipamento_id === occ.equipamento_id && o.id !== occ.id &&
+              o.equipamento_parado && o.status !== 'CONCLUIDA' && o.status !== 'CANCELADA'
+          );
+          if (!outraParada && eq.status === 'PARADO') eq.status = 'OK';
+        }
+        eq.updated_at = new Date().toISOString();
+      }
+    }
+    occ.updated_at = new Date().toISOString();
+
+    dbState.eventos.unshift({
+      id: `ev-${Date.now()}`,
+      ocorrencia_id: ocorrenciaId,
+      usuario_nome: usuarioNome,
+      tipo_evento: 'COMENTARIO' as const,
+      descricao: 'Ocorrência editada',
+      created_at: new Date().toISOString(),
+    });
+
+    if (isSupabaseConfigured) {
+      try {
+        const upd: Record<string, unknown> = { updated_at: occ.updated_at };
+        if (campos.criticidade !== undefined) upd.criticidade = campos.criticidade;
+        if (campos.descricao_anomalia !== undefined) upd.descricao_anomalia = campos.descricao_anomalia;
+        if (campos.causa_provavel !== undefined) upd.causa_provavel = campos.causa_provavel;
+        if (campos.equipamento_parado !== undefined) upd.equipamento_parado = campos.equipamento_parado;
+        await supabase.from('ocorrencias').update(upd).eq('id', ocorrenciaId);
+      } catch (e) { console.warn('updateOcorrenciaCampos Supabase error:', e); }
+    }
+    persistState();
+  },
+
   async addComentario(ocorrenciaId: string, usuarioNome: string, texto: string): Promise<void> {
     const ev = {
       id: `ev-${Date.now()}`,
