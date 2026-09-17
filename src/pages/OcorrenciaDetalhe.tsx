@@ -893,7 +893,8 @@ export const OcorrenciaDetalhe: React.FC = () => {
               />
             )}
 
-            {/* Card: Orçamentos / Proposta Comercial AMBEV */}
+            {/* Card: Orçamentos / Proposta Comercial AMBEV — exibido apenas quando há propostas */}
+            {orcamentos.length > 0 && (
             <div className="card space-y-3">
               <div className="flex items-center justify-between border-b border-[#30363D] pb-2">
                 <div className="flex items-center gap-2">
@@ -902,15 +903,6 @@ export const OcorrenciaDetalhe: React.FC = () => {
                     Orçamentos AMBEV ({orcamentos.length})
                   </h3>
                 </div>
-                {canEdit && (
-                  <button
-                    onClick={() => { setCotacaoParaProposta(null); setShowAddOrcModal(true); }}
-                    className="btn-primary !py-1 !px-2.5 !text-[11px] gap-1 cursor-pointer"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>Nova Proposta Comercial</span>
-                  </button>
-                )}
               </div>
 
               {orcamentos.length === 0 ? (
@@ -997,6 +989,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
                 </div>
               )}
             </div>
+            )} {/* fim orcamentos.length > 0 */}
 
             {/* Card: Fotos da Ocorrência */}
             <div className="card space-y-3">
@@ -1474,6 +1467,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
         defaultOcorrenciaId={ocorrencia?.id}
         ocorrencias={ocorrencia ? [ocorrencia] : []}
         equipamentosMap={equipamento ? new Map([[equipamento.id, equipamento]]) : new Map()}
+        initialPdfUrl={cotacaoParaProposta?.pdf_url}
         pecasVinculadas={
           cotacaoParaProposta
             ? cotacaoParaProposta.itens.map(it => ({

@@ -30,6 +30,7 @@ interface ModalNovoOrcamentoProps {
   equipamentosMap?: Map<string, VwEquipamento>;
   orcamentoToEdit?: Orcamento | null;
   pecasVinculadas?: Array<{ descricao: string; part_number?: string; fabricante?: string; quantidade: number; valor_unitario?: number; ncm?: string }>;
+  initialPdfUrl?: string; // PDF da cotação pré-importado
 }
 
 interface PecaItem {
@@ -51,6 +52,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
   equipamentosMap = new Map(),
   orcamentoToEdit,
   pecasVinculadas = [],
+  initialPdfUrl,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -151,7 +153,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
         setPecas([{ descricao: '', especificacao: '', quantidade: 1, valor_unitario: '', valor_total: '', ncm: '' }]);
         setObservacoes('');
         setPdfFile(null);
-        setPdfUrl('');
+        setPdfUrl(initialPdfUrl || ''); // importa PDF da cotação se fornecido
         setErrorMsg('');
 
         const targetOccId = defaultOcorrenciaId || (ocorrencias.length > 0 ? ocorrencias[0].id : '');
