@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { DataStore } from '../../lib/dataStore';
-import { CotacaoFornecedor, CotacaoItem, EmpresaParceira, PecaPendente } from '../../types/database';
+import { CotacaoFornecedor, CotacaoItem, EmpresaParceira, PecaPendente, TipoItem } from '../../types/database';
 import { formatCurrency } from '../../utils/formatters';
 
 interface Props {
@@ -16,7 +16,19 @@ interface Props {
   onCriarProposta: (cotacao: CotacaoFornecedor) => void;
 }
 
-const ITEM_VAZIO: CotacaoItem = { descricao: '', quantidade: 1, valor_unitario: 0 };
+const TIPOS: { id: TipoItem; label: string; icon: string }[] = [
+  { id: 'PECA', label: 'Peça', icon: '🔧' },
+  { id: 'SERVICO', label: 'Serviço', icon: '🛠️' },
+  { id: 'H_EXTRA', label: 'H. Extra', icon: '⏱️' },
+  { id: 'INSUMO', label: 'Insumo', icon: '🧴' },
+  { id: 'FRETE', label: 'Frete', icon: '🚚' },
+];
+
+const ITEM_VAZIO: CotacaoItem = { descricao: '', detalhe: '', tipo: 'PECA', prestador: '', quantidade: 1, valor_unitario: 0 };
+
+// Máscara de moeda baseada em centavos: "250000" -> "2.500,00"
+const centavosParaTexto = (v: number): string =>
+  v ? v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '';
 
 export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, pecasOcorrencia = [], onItensAdicionados, onCriarProposta }) => {
   const [cotacoes, setCotacoes] = useState<CotacaoFornecedor[]>([]);
@@ -73,17 +85,24 @@ export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, pecasOco
   const importarMateriais = () => {
     if (pecasOcorrencia.length === 0) { toast('Nenhum material em Peças & Serviços', { icon: 'ℹ️' }); return; }
     const importados: CotacaoItem[] = pecasOcorrencia.map((p) => ({
-      descricao: p.descricao + (p.part_number ? ` (${p.part_number})` : ''),
+      descricao: p.descricao,
+      detalhe: (p as any).especificacao || p.part_number || '',
+      tipo: ((p as any).tipo_item as TipoItem) || 'PECA',
+      prestador: p.fabricante || '',
       quantidade: p.quantidade || 1,
       valor_unitario: p.valor_unitario || 0,
     }));
-    // remove linha vazia inicial se houver
     const base = itens.filter((it) => it.descricao.trim());
     const novaLista = [...base, ...importados];
     setItens(novaLista);
-    // marca todos os índices atuais como importados (já existem na OS)
     setItensImportados(new Set(novaLista.map((_, i) => i)));
     toast.success(`${importados.length} material(is) importado(s)`);
+  };
+
+  const updateValor = (i: number, texto: string) => {
+    const raw = texto.replace(/\D/g, '');
+    const valor = raw ? parseInt(raw, 10) / 100 : 0;
+    setItens(itens.map((it, idx) => idx !== i ? it : { ...it, valor_unitario: valor }));
   };
 
   const handleUploadPdf = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -119,6 +138,9 @@ export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, pecasOco
             await DataStore.savePeca({
               ocorrencia_id: ocorrenciaId,
               descricao: it.descricao,
+              especificacao: it.detalhe,
+              fabricante: it.prestador,
+              tipo_item: it.tipo || 'PECA',
               quantidade: it.quantidade,
               valor_unitario: it.valor_unitario,
               status: 'SOLICITADA',
@@ -149,8 +171,8 @@ export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, pecasOco
       return n;
     });
   };
-  const updateItem = (i: number, field: keyof CotacaoItem, val: string) =>
-    setItens(itens.map((it, idx) => idx !== i ? it : { ...it, [field]: field === 'descricao' ? val : Number(val) }));
+  const updateItem = (i: number, field: keyof CotacaoItem, val: string | number) =>
+    setItens(itens.map((it, idx) => idx !== i ? it : { ...it, [field]: val }));
 
   return (
     <div className="card space-y-3">
@@ -208,38 +230,60 @@ export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, pecasOco
               </div>
             </div>
 
-            <div className="space-y-2.5">
-              {itens.map((it, i) => (
-                <div key={i} className="bg-[#161B22] border border-[#30363D] rounded-lg p-3 space-y-2.5 relative">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold text-[#6E7681] uppercase">
-                      Item {i + 1}{itensImportados.has(i) && <span className="ml-1.5 text-emerald-400 normal-case">· da ocorrência</span>}
-                    </span>
-                    <button onClick={() => removeItem(i)} disabled={itens.length === 1}
-                      className="text-red-400 hover:text-red-300 disabled:opacity-30">
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+            <div className="space-y-2">
+              {itens.map((it, i) => {
+                const isServico = it.tipo === 'SERVICO' || it.tipo === 'H_EXTRA';
+                return (
+                <div key={i} className="bg-[#161B22] border border-[#30363D] rounded-lg p-2.5 space-y-1.5">
+                  <div className="flex items-center justify-between gap-2">
+                    {/* Tipo de item — botões compactos */}
+                    <div className="flex items-center gap-1 flex-wrap">
+                      {TIPOS.map((t) => (
+                        <button key={t.id} onClick={() => updateItem(i, 'tipo', t.id)}
+                          className={`px-1.5 h-6 rounded text-[10px] font-semibold border transition-colors ${
+                            it.tipo === t.id ? 'bg-[#21262D] text-[#E6EDF3] border-[#8B949E]' : 'bg-[#0A0E1A] text-[#8B949E] border-[#30363D]'
+                          }`}>
+                          {t.icon} {t.label}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-[9px] text-[#6E7681]">{itensImportados.has(i) && <span className="text-emerald-400">da OS</span>}</span>
+                      <button onClick={() => removeItem(i)} disabled={itens.length === 1}
+                        className="text-red-400 hover:text-red-300 disabled:opacity-30"><Trash2 className="w-3.5 h-3.5" /></button>
+                    </div>
                   </div>
+
                   <input value={it.descricao} onChange={(e) => updateItem(i, 'descricao', e.target.value)}
-                    placeholder="Descrição do item / material / serviço"
-                    className="w-full h-10 bg-[#0A0E1A] border border-[#30363D] text-[#E6EDF3] text-[12px] rounded-md px-2.5 outline-none focus:border-[#8B949E]" />
-                  <div className="grid grid-cols-2 gap-2.5">
-                    <div>
-                      <label className="block text-[9px] font-bold text-[#8B949E] uppercase mb-1">Qtd</label>
-                      <input type="number" min="1" value={it.quantidade} onChange={(e) => updateItem(i, 'quantidade', e.target.value)}
-                        className="w-full h-10 bg-[#0A0E1A] border border-[#30363D] text-[#E6EDF3] text-[12px] rounded-md px-2.5 outline-none text-center" />
-                    </div>
-                    <div>
-                      <label className="block text-[9px] font-bold text-[#8B949E] uppercase mb-1">Valor Unit. (R$)</label>
-                      <input type="number" min="0" step="0.01" value={it.valor_unitario} onChange={(e) => updateItem(i, 'valor_unitario', e.target.value)}
-                        className="w-full h-10 bg-[#0A0E1A] border border-[#30363D] text-[#E6EDF3] text-[12px] rounded-md px-2.5 outline-none text-right font-mono" />
+                    placeholder={isServico ? 'Descrição do serviço' : 'Nome / descrição do item'}
+                    className="w-full h-8 bg-[#0A0E1A] border border-[#30363D] text-[#E6EDF3] text-[12px] rounded px-2.5 outline-none focus:border-[#8B949E]" />
+
+                  <input value={it.detalhe || ''} onChange={(e) => updateItem(i, 'detalhe', e.target.value)}
+                    placeholder="Detalhes / especificação / dados técnicos, código SAP..."
+                    className="w-full h-8 bg-[#0A0E1A] border border-[#30363D] text-[#C9D1D9] text-[11px] rounded px-2.5 outline-none focus:border-[#8B949E]" />
+
+                  <div className="grid grid-cols-[1fr_60px_100px] gap-1.5">
+                    <input value={it.prestador || ''} onChange={(e) => updateItem(i, 'prestador', e.target.value)}
+                      placeholder={isServico ? 'Prestador / técnico' : 'Fabricante'}
+                      className="h-8 bg-[#0A0E1A] border border-[#30363D] text-[#E6EDF3] text-[11px] rounded px-2.5 outline-none focus:border-[#8B949E]" />
+                    <input type="text" inputMode="numeric" value={it.quantidade || ''}
+                      onChange={(e) => updateItem(i, 'quantidade', Number(e.target.value.replace(/\D/g, '')) || 1)}
+                      placeholder={isServico ? 'Horas' : 'Qtd'}
+                      className="h-8 bg-[#0A0E1A] border border-[#30363D] text-[#E6EDF3] text-[11px] rounded px-2 outline-none text-center focus:border-[#8B949E]" />
+                    <div className="relative">
+                      <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] text-[#6E7681]">R$</span>
+                      <input type="text" inputMode="numeric" value={centavosParaTexto(it.valor_unitario)}
+                        onChange={(e) => updateValor(i, e.target.value)} placeholder="0,00"
+                        className="w-full h-8 bg-[#0A0E1A] border border-[#30363D] text-[#E6EDF3] text-[11px] rounded pl-6 pr-2 outline-none text-right font-mono focus:border-[#8B949E]" />
                     </div>
                   </div>
-                  <div className="text-right text-[11px] text-[#8B949E]">
+
+                  <div className="text-right text-[10px] text-[#8B949E]">
                     Subtotal: <strong className="text-[#E6EDF3]">{formatCurrency(Number(it.quantidade) * Number(it.valor_unitario))}</strong>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
 
             <div className="text-right text-[13px] font-bold text-[#E6EDF3] mt-2.5 border-t border-[#30363D] pt-2">

@@ -191,8 +191,13 @@ export interface EmpresaParceira {
   created_at: string;
 }
 
+export type TipoItem = 'PECA' | 'SERVICO' | 'H_EXTRA' | 'INSUMO' | 'FRETE';
+
 export interface CotacaoItem {
   descricao: string;
+  detalhe?: string;        // especificação / dados técnicos / detalhes do item
+  tipo?: TipoItem;
+  prestador?: string;      // fabricante (peça) ou prestador/técnico (serviço)
   quantidade: number;
   valor_unitario: number;
 }
