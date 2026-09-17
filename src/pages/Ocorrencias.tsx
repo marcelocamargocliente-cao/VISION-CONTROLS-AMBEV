@@ -332,10 +332,19 @@ export const Ocorrencias: React.FC = () => {
 
                         {/* TAG & Equipamento */}
                         <td className="py-3 px-3">
-                          {eq
-                            ? <IndustrialTag tag={eq.patrimonio_ref || eq.tag_sap || eq.tag} size="sm" />
-                            : <span className="text-xs">TAG -</span>}
-                          <div className="text-xs font-semibold mt-1">
+                          <div className="flex items-center gap-1.5 flex-wrap mb-1">
+                            {(eq?.patrimonio_ref || eq?.tag_sap) && (
+                              <span className="inline-flex items-baseline gap-1 bg-[#21262D] rounded px-1.5 py-0.5 border border-[#30363D]">
+                                <span className="text-[8px] font-bold text-[#6E7681] uppercase">AMBEV</span>
+                                <span className="text-[11px] font-bold font-mono text-[#C9D1D9]">{eq.patrimonio_ref || eq.tag_sap}</span>
+                              </span>
+                            )}
+                            {eq && (
+                              <IndustrialTag tag={eq.tag} size="sm" />
+                            )}
+                            {!eq && <span className="text-xs">TAG -</span>}
+                          </div>
+                          <div className="text-xs font-semibold">
                             {eq ? `${eq.tipo} ${eq.marca}` : 'Equipamento'}
                           </div>
                         </td>
@@ -370,15 +379,15 @@ export const Ocorrencias: React.FC = () => {
                         </td>
 
                         {/* Parada / SAP */}
-                        <td className="py-3 px-3  text-[11px]">
+                        <td className="py-3 px-3 text-[11px]">
                           {occ.equipamento_parado ? (
-                            <span className=" font-bold">
-                              PARADO ({dias}d)
-                            </span>
+                            <span className="font-bold text-red-400">PARADO</span>
                           ) : (
-                            <span className="">Em Operação</span>
+                            <span className="text-[#8B949E]">Em Operação</span>
                           )}
-                          <div className="text-[10px] ">Nota: {occ.nota_sap || '-'}</div>
+                          {occ.nota_sap && (
+                            <div className="text-[10px] text-[#8B949E] mt-0.5">Nota: {occ.nota_sap}</div>
+                          )}
                         </td>
 
                         {/* Ações */}
