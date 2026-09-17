@@ -15,9 +15,11 @@ import {
   Search,
   Filter,
   Lock,
+  Briefcase,
+  X,
 } from 'lucide-react';
 import { DataStore } from '../lib/dataStore';
-import { Profile, UG, Area, Linha, CentroTrabalho } from '../types/database';
+import { Profile, UG, Area, Linha, CentroTrabalho, EmpresaParceira } from '../types/database';
 import { useAuth } from '../context/AuthContext';
 import { getRoleBadge } from '../utils/formatters';
 import { UgModal } from '../components/cadastros/UgModal';
@@ -28,7 +30,55 @@ import { ConfirmDeleteModal } from '../components/cadastros/ConfirmDeleteModal';
 
 export const Cadastros: React.FC = () => {
   const { refreshProfiles, canAdmin } = useAuth();
-  const [activeTab, setActiveTab] = useState<'ugs' | 'estrutura' | 'equipe'>('ugs');
+
+  // Estados de empresas parceiras
+  const [parceiras, setParceiras] = useState<EmpresaParceira[]>([]);
+  const [showFormParceira, setShowFormParceira] = useState(false);
+  const [editParceira, setEditParceira] = useState<EmpresaParceira | null>(null);
+  const [parceiraForm, setParceiraForm] = useState({ nome: '', cnpj: '', contato: '', email: '', telefone: '' });
+  const [savingParceira, setSavingParceira] = useState(false);
+
+  const loadParceiras = async () => {
+    const ps = await DataStore.getEmpresasParceiras();
+    setParceiras(ps);
+  };
+
+  const abrirNovaParceira = () => {
+    setEditParceira(null);
+    setParceiraForm({ nome: '', cnpj: '', contato: '', email: '', telefone: '' });
+    setShowFormParceira(true);
+  };
+
+  const abrirEditarParceira = (p: EmpresaParceira) => {
+    setEditParceira(p);
+    setParceiraForm({ nome: p.nome, cnpj: p.cnpj || '', contato: p.contato || '', email: p.email || '', telefone: p.telefone || '' });
+    setShowFormParceira(true);
+  };
+
+  const salvarParceira = async () => {
+    if (!parceiraForm.nome.trim()) return;
+    setSavingParceira(true);
+    try {
+      if (editParceira) {
+        await DataStore.updateCotacao?.(editParceira.id, parceiraForm as any);
+        // Usa Supabase direto para update de parceiras
+        const { supabase } = await import('../lib/supabase');
+        await supabase.from('empresas_parceiras').update({ ...parceiraForm, updated_at: new Date().toISOString() }).eq('id', editParceira.id);
+      } else {
+        await DataStore.saveEmpresaParceira({ ...parceiraForm, ativo: true });
+      }
+      setShowFormParceira(false);
+      await loadParceiras();
+    } catch (e) { console.error(e); }
+    finally { setSavingParceira(false); }
+  };
+
+  const deletarParceira = async (id: string) => {
+    if (!confirm('Desativar esta empresa parceira?')) return;
+    await DataStore.deleteEmpresaParceira(id);
+    await loadParceiras();
+  };
+  const [activeTab, setActiveTab] = useState<'ugs' | 'estrutura' | 'equipe' | 'parceiras'>('ugs');
 
   const [hierarchy, setHierarchy] = useState<{
     ugs: UG[];
@@ -93,6 +143,7 @@ export const Cadastros: React.FC = () => {
 
   useEffect(() => {
     loadData();
+    loadParceiras();
   }, []);
 
   // Sorted UGs by ordem or codigo
@@ -378,6 +429,21 @@ export const Cadastros: React.FC = () => {
           <span>Equipe Vision & Acessos</span>
           <span className="text-[10px]  px-1.5 py-0.2 rounded bg-black/40 ">
             {profiles.length}
+          </span>
+        </button>
+        <button
+          id="tab-cadastros-parceiras"
+          onClick={() => setActiveTab('parceiras')}
+          className={`shrink-0 whitespace-nowrap px-3 sm:px-4 py-2.5 text-[11px] font-semibold tracking-wider uppercase cursor-pointer border-b-2 transition-all flex items-center gap-2 ${
+            activeTab === 'parceiras'
+              ? 'border-[#EF4444] bg-white/[0.02]'
+              : 'border-transparent hover:'
+          }`}
+        >
+          <Briefcase className="w-3.5 h-3.5" />
+          <span>Empresas Parceiras</span>
+          <span className="text-[10px] px-1.5 py-0.2 rounded bg-black/40">
+            {parceiras.length}
           </span>
         </button>
 
@@ -902,6 +968,112 @@ export const Cadastros: React.FC = () => {
                 );
               })}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: EMPRESAS PARCEIRAS */}
+      {activeTab === 'parceiras' && (
+        <div className="flex-1 min-h-0 flex flex-col gap-2.5 overflow-hidden">
+          <div className="shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-[#111827] p-3 rounded-lg border border-[#30363D]">
+            <div>
+              <h3 className="text-sm font-condensed font-bold uppercase tracking-wide">Empresas Parceiras Fornecedoras</h3>
+              <p className="text-[11px] text-[#8B949E] mt-0.5">Empresas cadastradas para cotações e propostas comerciais.</p>
+            </div>
+            {canAdmin && (
+              <button onClick={abrirNovaParceira}
+                className="inline-flex items-center gap-1.5 px-3 py-2 text-[11px] font-bold rounded-md btn-primary-gradient">
+                <Plus className="w-3.5 h-3.5" /> + Nova Empresa
+              </button>
+            )}
+          </div>
+
+          {/* Formulário inline */}
+          {showFormParceira && (
+            <div className="shrink-0 bg-[#111827] border border-[#30363D] rounded-lg p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-[12px] font-bold text-[#E6EDF3] uppercase">{editParceira ? 'Editar Empresa' : 'Nova Empresa Parceira'}</p>
+                <button onClick={() => setShowFormParceira(false)}><X className="w-4 h-4 text-[#8B949E]" /></button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="sm:col-span-2">
+                  <label className="block text-[10px] font-bold text-[#8B949E] uppercase tracking-wider mb-1">Nome da Empresa *</label>
+                  <input value={parceiraForm.nome} onChange={(e) => setParceiraForm((f) => ({ ...f, nome: e.target.value }))}
+                    placeholder="Nome da empresa..."
+                    className="w-full h-10 bg-[#0A0E1A] border border-[#30363D] focus:border-[#8B949E] text-[#E6EDF3] text-[12px] rounded-md px-3 outline-none" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-[#8B949E] uppercase tracking-wider mb-1">CNPJ</label>
+                  <input value={parceiraForm.cnpj} onChange={(e) => setParceiraForm((f) => ({ ...f, cnpj: e.target.value }))}
+                    placeholder="00.000.000/0000-00"
+                    className="w-full h-10 bg-[#0A0E1A] border border-[#30363D] text-[#E6EDF3] text-[12px] rounded-md px-3 outline-none" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-[#8B949E] uppercase tracking-wider mb-1">Contato</label>
+                  <input value={parceiraForm.contato} onChange={(e) => setParceiraForm((f) => ({ ...f, contato: e.target.value }))}
+                    placeholder="Nome do responsável"
+                    className="w-full h-10 bg-[#0A0E1A] border border-[#30363D] text-[#E6EDF3] text-[12px] rounded-md px-3 outline-none" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-[#8B949E] uppercase tracking-wider mb-1">E-mail</label>
+                  <input type="email" value={parceiraForm.email} onChange={(e) => setParceiraForm((f) => ({ ...f, email: e.target.value }))}
+                    placeholder="email@empresa.com"
+                    className="w-full h-10 bg-[#0A0E1A] border border-[#30363D] text-[#E6EDF3] text-[12px] rounded-md px-3 outline-none" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-[#8B949E] uppercase tracking-wider mb-1">Telefone</label>
+                  <input value={parceiraForm.telefone} onChange={(e) => setParceiraForm((f) => ({ ...f, telefone: e.target.value }))}
+                    placeholder="(21) 99999-9999"
+                    className="w-full h-10 bg-[#0A0E1A] border border-[#30363D] text-[#E6EDF3] text-[12px] rounded-md px-3 outline-none" />
+                </div>
+              </div>
+              <div className="flex gap-2 pt-1">
+                <button onClick={() => setShowFormParceira(false)}
+                  className="flex-1 h-10 rounded-md bg-[#0A0E1A] border border-[#30363D] text-[#C9D1D9] text-[12px] font-semibold">Cancelar</button>
+                <button onClick={salvarParceira} disabled={savingParceira || !parceiraForm.nome.trim()}
+                  className="flex-1 h-10 rounded-md btn-primary-gradient text-[12px] font-bold disabled:opacity-60">
+                  {savingParceira ? 'Salvando...' : editParceira ? 'Atualizar' : 'Cadastrar'}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Lista */}
+          <div className="flex-1 min-h-0 overflow-y-auto space-y-2 scroll-fluido">
+            {parceiras.length === 0 ? (
+              <div className="text-center py-12 text-[#8B949E] text-sm">
+                Nenhuma empresa parceira cadastrada. Clique em "+ Nova Empresa" para adicionar.
+              </div>
+            ) : (
+              parceiras.map((p) => (
+                <div key={p.id} className="bg-[#111827] border border-[#30363D] rounded-lg p-3.5 flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-[#21262D] border border-[#30363D] flex items-center justify-center shrink-0">
+                    <Briefcase className="w-4 h-4 text-[#8B949E]" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[14px] font-bold text-[#E6EDF3] truncate">{p.nome}</p>
+                    <div className="flex flex-wrap gap-x-4 gap-y-0.5 mt-1">
+                      {p.cnpj && <span className="text-[11px] text-[#8B949E] font-mono">{p.cnpj}</span>}
+                      {p.contato && <span className="text-[11px] text-[#8B949E]">{p.contato}</span>}
+                      {p.email && <span className="text-[11px] text-[#8B949E]">{p.email}</span>}
+                      {p.telefone && <span className="text-[11px] text-[#8B949E]">{p.telefone}</span>}
+                    </div>
+                  </div>
+                  {canAdmin && (
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button onClick={() => abrirEditarParceira(p)}
+                        className="w-8 h-8 rounded-md bg-[#21262D] border border-[#30363D] text-[#C9D1D9] hover:text-white flex items-center justify-center">
+                        <Edit2 className="w-3.5 h-3.5" />
+                      </button>
+                      <button onClick={() => deletarParceira(p.id)}
+                        className="w-8 h-8 rounded-md bg-[#21262D] border border-[#30363D] text-red-400 hover:text-red-300 flex items-center justify-center">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))
+            )}
           </div>
         </div>
       )}
