@@ -313,16 +313,19 @@ export const NovaOcorrencia: React.FC = () => {
                 <div>
                   <span className="eyebrow  block">TAG AMBEV</span>
                   <p className="font-semibold text-cyan-400 text-xs mt-1">{selectedEquip.tag_sap || selectedEquip.patrimonio_ref || 'Sem Tag AMBEV'}</p>
-                  <p className="text-[11px]  mt-0.5">{selectedEquip.tipo}</p>
+                  <p className="text-[11px]  mt-0.5">{selectedEquip.tipo_equipamento || selectedEquip.tipo}</p>
                   <p className="text-[11px] text-gray-400">{selectedEquip.marca} {selectedEquip.modelo}</p>
                 </div>
 
                 <div>
                   <span className="eyebrow  block">LOCAL DE INSTALAÇÃO</span>
                   <p className="font-semibold text-xs mt-1">
-                    {[selectedEquip.centro_trabalho_sap, selectedEquip.centro_trabalho_nome].filter(Boolean).join(' - ') || selectedEquip.linha_nome}
+                    {selectedEquip.localizacao_ref || selectedEquip.local_instalacao || '—'}
                   </p>
-                  <p className="text-[11px] text-gray-400">UG {selectedEquip.ug_codigo}</p>
+                  <p className="text-[11px] text-gray-400">
+                    UG {selectedEquip.ug_ref || selectedEquip.ug_codigo || '—'}
+                    {(selectedEquip.area_ref) ? ` · ${selectedEquip.area_ref}` : ''}
+                  </p>
                 </div>
 
                 <div>
