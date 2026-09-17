@@ -693,7 +693,7 @@ export const EquipamentoDetalhe: React.FC = () => {
                       {canEdit && (
                         <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
                           <button
-                            onClick={() => abrirEdicaoOcc(occ)}
+                            onClick={() => navigate(`/ocorrencias/nova?edit=${occ.id}`)}
                             title="Editar"
                             className="w-7 h-7 rounded-md bg-[#21262D] border border-[#30363D] text-[#C9D1D9] hover:text-white flex items-center justify-center"
                           >

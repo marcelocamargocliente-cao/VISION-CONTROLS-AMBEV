@@ -32,6 +32,9 @@ export const NovaOcorrencia: React.FC = () => {
   const [searchParams] = useSearchParams();
   const { user } = useAuth();
 
+  const editId = searchParams.get('edit'); // modo edição quando presente
+  const modoEdicao = !!editId;
+
   const [equipamentos, setEquipamentos] = useState<VwEquipamento[]>([]);
   const [selectedEquip, setSelectedEquip] = useState<VwEquipamento | null>(null);
   const [equipSearch, setEquipSearch] = useState('');
@@ -63,20 +66,44 @@ export const NovaOcorrencia: React.FC = () => {
   useEffect(() => {
     DataStore.getVwEquipamentos().then((eqs) => {
       setEquipamentos(eqs);
-      const preselectedId = searchParams.get('equipamento_id');
-      if (preselectedId) {
-        const found = eqs.find((e) => e.id === preselectedId);
-        if (found) {
-          setSelectedEquip(found);
-          if (found.ppac) setPpac(found.ppac);
-        }
-        // Enriquece com dados frescos do Supabase (TAG AMBEV/patrimônio etc.)
-        DataStore.getEquipamentoById(preselectedId).then((full) => {
-          if (full) {
-            setSelectedEquip((prev) => ({ ...(prev || {}), ...full } as VwEquipamento));
-            if (full.ppac) setPpac(full.ppac);
-          }
+
+      if (modoEdicao && editId) {
+        // MODO EDIÇÃO: carrega a ocorrência existente e preenche todos os campos
+        DataStore.getOcorrenciaById(editId).then(async (occ) => {
+          if (!occ) return;
+          const equipId = occ.equipamento_id;
+          const found = eqs.find((e) => e.id === equipId);
+          if (found) setSelectedEquip(found);
+          // Enriquece com Supabase
+          const full = await DataStore.getEquipamentoById(equipId);
+          if (full) setSelectedEquip((prev) => ({ ...(prev || {}), ...full } as VwEquipamento));
+
+          // Preenche os campos com os dados da ocorrência
+          setTipoServico((occ as any).tipo_servico || 'CORRETIVA');
+          setCriticidade(occ.criticidade);
+          setDataAvaria(occ.data_avaria?.slice(0, 10) || new Date().toISOString().slice(0, 10));
+          setPrevisaoRetorno((occ as any).previsao_retorno?.slice(0, 10) || '');
+          setRelatanteNome((occ as any).relatante_nome || user?.nome || '');
+          setTecnicoResponsavel((occ as any).tecnico_responsavel_nome || '');
+          setDescricaoAnomalia(occ.descricao_anomalia || '');
+          setCausaProvavel(occ.causa_provavel || '');
+          setNotaSap((occ as any).nota_sap || '');
+          setOrdemSap((occ as any).ordem_sap || '');
+          setOrdemVision((occ as any).ordem_vision || '');
+          setPpac((occ as any).ppac || '');
+          setEquipamentoParado(!!occ.equipamento_parado);
+          setParouLinha(!!(occ as any).parou_linha);
         });
+      } else {
+        // MODO CRIAÇÃO: pré-seleciona equipamento via query param
+        const preselectedId = searchParams.get('equipamento_id');
+        if (preselectedId) {
+          const found = eqs.find((e) => e.id === preselectedId);
+          if (found) { setSelectedEquip(found); if (found.ppac) setPpac(found.ppac); }
+          DataStore.getEquipamentoById(preselectedId).then((full) => {
+            if (full) { setSelectedEquip((prev) => ({ ...(prev || {}), ...full } as VwEquipamento)); if (full.ppac) setPpac(full.ppac); }
+          });
+        }
       }
     });
   }, [searchParams]);
@@ -164,49 +191,76 @@ export const NovaOcorrencia: React.FC = () => {
 
     setLoading(true);
     try {
-      // Determine initial status: if has pieces -> AGUARDANDO_ORCAMENTO, else ABERTA
-      const initialStatus: OcorrenciaStatus = pecas.length > 0 ? 'AGUARDANDO_ORCAMENTO' : 'ABERTA';
-
-      const savedOcc = await DataStore.saveOcorrencia(
-        {
-          equipamento_id: selectedEquip.id,
+      if (modoEdicao && editId) {
+        // MODO EDIÇÃO: atualiza campos da ocorrência existente
+        await DataStore.updateOcorrenciaCampos(
+          editId,
+          {
+            criticidade,
+            descricao_anomalia: descricaoAnomalia.trim(),
+            causa_provavel: causaProvavel.trim(),
+            equipamento_parado: equipamentoParado,
+          },
+          user?.nome || 'Sistema'
+        );
+        // Atualiza campos extras via Supabase diretamente
+        await (DataStore as any).updateOcorrenciaExtra?.(editId, {
           tipo_servico: tipoServico,
-          criticidade: criticidade,
-          status: initialStatus,
           data_avaria: dataAvaria,
-          previsao_retorno: previsaoRetorno || undefined,
+          previsao_retorno: previsaoRetorno || null,
           relatante_nome: relatanteNome,
           tecnico_responsavel_nome: tecnicoResponsavel,
-          descricao_anomalia: descricaoAnomalia,
-          causa_provavel: causaProvavel || undefined,
-          nota_sap: notaSap || undefined,
-          ordem_sap: ordemSap || undefined,
-          ordem_vision: ordemVision || undefined,
-          ppac: ppac || undefined,
-          equipamento_parado: equipamentoParado,
+          nota_sap: notaSap || null,
+          ordem_sap: ordemSap || null,
+          ordem_vision: ordemVision || null,
+          ppac: ppac || null,
           parou_linha: parouLinha,
-        } as any,
-        pecas as any[],
-        [],
-        fotos.map((f) => f.url)
-      );
-
-      // Save fotos
-      for (const f of fotos) {
-        await DataStore.addAnexo({
-          ocorrencia_id: savedOcc.id,
-          equipamento_id: selectedEquip.id,
-          nome_arquivo: f.name,
-          url: f.url,
-          tipo_anexo: 'FOTO',
-          bucket: 'fotos',
         });
-      }
+        navigate(`/ocorrencias/${editId}`);
+      } else {
+        // MODO CRIAÇÃO: cria nova ocorrência
+        const initialStatus: OcorrenciaStatus = pecas.length > 0 ? 'AGUARDANDO_ORCAMENTO' : 'ABERTA';
 
-      navigate(`/ocorrencias/${savedOcc.id}`);
+        const savedOcc = await DataStore.saveOcorrencia(
+          {
+            equipamento_id: selectedEquip.id,
+            tipo_servico: tipoServico,
+            criticidade: criticidade,
+            status: initialStatus,
+            data_avaria: dataAvaria,
+            previsao_retorno: previsaoRetorno || undefined,
+            relatante_nome: relatanteNome,
+            tecnico_responsavel_nome: tecnicoResponsavel,
+            descricao_anomalia: descricaoAnomalia,
+            causa_provavel: causaProvavel || undefined,
+            nota_sap: notaSap || undefined,
+            ordem_sap: ordemSap || undefined,
+            ordem_vision: ordemVision || undefined,
+            ppac: ppac || undefined,
+            equipamento_parado: equipamentoParado,
+            parou_linha: parouLinha,
+          } as any,
+          pecas as any[],
+          [],
+          fotos.map((f) => f.url)
+        );
+
+        for (const f of fotos) {
+          await DataStore.addAnexo({
+            ocorrencia_id: savedOcc.id,
+            equipamento_id: selectedEquip.id,
+            nome_arquivo: f.name,
+            url: f.url,
+            tipo_anexo: 'FOTO',
+            bucket: 'fotos',
+          });
+        }
+
+        navigate(`/ocorrencias/${savedOcc.id}`);
+      }
     } catch (err) {
       console.error(err);
-      alert('Erro ao salvar ocorrência.');
+      alert(modoEdicao ? 'Erro ao atualizar ocorrência.' : 'Erro ao salvar ocorrência.');
     } finally {
       setLoading(false);
     }
@@ -220,19 +274,19 @@ export const NovaOcorrencia: React.FC = () => {
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="p-1.5 rounded-lg bg-[#161B22] hover:bg-[#21262D]  hover: border border-[#30363D] transition-colors cursor-pointer shrink-0"
+            className="p-1.5 rounded-lg bg-[#161B22] hover:bg-[#21262D] border border-[#30363D] transition-colors cursor-pointer shrink-0"
             title="Voltar"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
           <div className="min-w-0">
             <div className="flex items-center gap-2 mb-0.5">
-              <span className="text-[10px]  tracking-widest  bg-[#F85149]/15 px-2 py-0.5 rounded-full border border-[#F85149]/30 uppercase font-bold">
-                Registro de Campo (Mobile-First)
+              <span className={`text-[10px] tracking-widest px-2 py-0.5 rounded-full border uppercase font-bold ${modoEdicao ? 'bg-[#F5A623]/15 text-[#F5A623] border-[#F5A623]/30' : 'bg-[#F85149]/15 text-[#F85149] border-[#F85149]/30'}`}>
+                {modoEdicao ? 'Editando Registro' : 'Registro de Campo (Mobile-First)'}
               </span>
             </div>
-            <h2 className="text-sm sm:text-base font-display font-bold  tracking-tight uppercase truncate">
-              Abertura de Ocorrência Corretiva
+            <h2 className="text-sm sm:text-base font-display font-bold tracking-tight uppercase truncate">
+              {modoEdicao ? 'Editar Ocorrência Corretiva' : 'Abertura de Ocorrência Corretiva'}
             </h2>
           </div>
         </div>
@@ -717,7 +771,7 @@ export const NovaOcorrencia: React.FC = () => {
             style={{ position: 'relative', zIndex: 30 }}
           >
             <CheckCircle2 className="w-4 h-4" />
-            <span>{loading ? 'Registrando Chamado...' : 'Gravar Ocorrência e Gerar Protocolo'}</span>
+            <span>{loading ? (modoEdicao ? 'Atualizando...' : 'Registrando Chamado...') : (modoEdicao ? 'Salvar Alterações' : 'Gravar Ocorrência e Gerar Protocolo')}</span>
           </button>
         </div>
       </form>

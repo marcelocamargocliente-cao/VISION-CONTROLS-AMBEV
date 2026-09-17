@@ -404,7 +404,7 @@ export const Ocorrencias: React.FC = () => {
                               }}
                             />
                             <button
-                              onClick={() => abrirEdicao(occ)}
+                              onClick={() => navigate(`/ocorrencias/nova?edit=${occ.id}`)}
                               title="Editar ocorrência"
                               className="p-1.5 rounded-[4px] bg-[#232B35] text-[#C9D1D9] hover:bg-[#2C343E] hover:text-white transition-colors"
                             >
@@ -497,7 +497,7 @@ export const Ocorrencias: React.FC = () => {
                       </div>
                       <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
                         <button
-                          onClick={() => abrirEdicao(occ)}
+                          onClick={() => navigate(`/ocorrencias/nova?edit=${occ.id}`)}
                           title="Editar"
                           className="w-9 h-9 rounded-md bg-[#21262D] text-[#C9D1D9] flex items-center justify-center"
                         >

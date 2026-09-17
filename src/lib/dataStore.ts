@@ -941,6 +941,24 @@ export const DataStore = {
     persistState();
   },
 
+  // Atualiza campos extras da ocorrência (tipo_servico, datas, SAP, etc.)
+  async updateOcorrenciaExtra(
+    ocorrenciaId: string,
+    extras: Record<string, unknown>
+  ): Promise<void> {
+    const occ = dbState.ocorrencias.find((o) => o.id === ocorrenciaId);
+    if (occ) {
+      Object.assign(occ, extras);
+      occ.updated_at = new Date().toISOString();
+    }
+    if (isSupabaseConfigured) {
+      try {
+        await supabase.from('ocorrencias').update({ ...extras, updated_at: new Date().toISOString() }).eq('id', ocorrenciaId);
+      } catch (e) { console.warn('updateOcorrenciaExtra Supabase error:', e); }
+    }
+    persistState();
+  },
+
   async addComentario(ocorrenciaId: string, usuarioNome: string, texto: string): Promise<void> {
     const ev = {
       id: `ev-${Date.now()}`,
