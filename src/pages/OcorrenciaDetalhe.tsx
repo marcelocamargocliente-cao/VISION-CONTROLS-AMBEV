@@ -889,6 +889,8 @@ export const OcorrenciaDetalhe: React.FC = () => {
               <SecaoCotacoes
                 ocorrenciaId={ocorrencia.id}
                 canEdit={canEdit}
+                pecasOcorrencia={pecas}
+                onItensAdicionados={loadData}
                 onCriarProposta={handleCriarPropostaDeCotacao}
               />
             )}

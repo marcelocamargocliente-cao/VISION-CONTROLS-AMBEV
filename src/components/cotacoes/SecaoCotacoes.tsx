@@ -1,22 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import {
   Building2, Plus, Trash2, ChevronDown, ChevronUp,
-  FileText, CheckCircle2, Upload, X, Pencil
+  FileText, CheckCircle2, Upload, X, Pencil, PackagePlus
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { DataStore } from '../../lib/dataStore';
-import { CotacaoFornecedor, CotacaoItem, EmpresaParceira } from '../../types/database';
+import { CotacaoFornecedor, CotacaoItem, EmpresaParceira, PecaPendente } from '../../types/database';
 import { formatCurrency } from '../../utils/formatters';
 
 interface Props {
   ocorrenciaId: string;
   canEdit: boolean;
+  pecasOcorrencia?: PecaPendente[];       // itens já em Peças & Serviços
+  onItensAdicionados?: () => void;         // recarrega Peças & Serviços na OS
   onCriarProposta: (cotacao: CotacaoFornecedor) => void;
 }
 
 const ITEM_VAZIO: CotacaoItem = { descricao: '', quantidade: 1, valor_unitario: 0 };
 
-export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, onCriarProposta }) => {
+export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, pecasOcorrencia = [], onItensAdicionados, onCriarProposta }) => {
   const [cotacoes, setCotacoes] = useState<CotacaoFornecedor[]>([]);
   const [parceiras, setParceiras] = useState<EmpresaParceira[]>([]);
   const [expandido, setExpandido] = useState<string | null>(null);
@@ -28,6 +30,8 @@ export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, onCriarP
   const [empresaId, setEmpresaId] = useState('');
   const [empresaNome, setEmpresaNome] = useState('');
   const [itens, setItens] = useState<CotacaoItem[]>([{ ...ITEM_VAZIO }]);
+  // marca quais itens são novos (não vieram das Peças & Serviços) para sincronizar
+  const [itensImportados, setItensImportados] = useState<Set<number>>(new Set());
   const [observacoes, setObs] = useState('');
   const [pdfUrl, setPdfUrl] = useState('');
   const [pdfNome, setPdfNome] = useState('');
@@ -46,13 +50,15 @@ export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, onCriarP
   const valorTotal = itens.reduce((s, it) => s + (Number(it.quantidade) * Number(it.valor_unitario)), 0);
 
   const resetForm = () => {
-    setEmpresaId(''); setEmpresaNome(''); setItens([{ ...ITEM_VAZIO }]);
+    setEmpresaId(''); setEmpresaNome(''); setItens([{ ...ITEM_VAZIO }]); setItensImportados(new Set());
     setObs(''); setPdfUrl(''); setPdfNome(''); setEditando(null); setShowForm(false);
   };
 
   const abrirEditar = (c: CotacaoFornecedor) => {
     setEditando(c); setEmpresaId(c.empresa_id || ''); setEmpresaNome(c.empresa_nome);
-    setItens(c.itens.length > 0 ? c.itens : [{ ...ITEM_VAZIO }]);
+    const its = c.itens.length > 0 ? c.itens : [{ ...ITEM_VAZIO }];
+    setItens(its);
+    setItensImportados(new Set(its.map((_, i) => i))); // ao editar, nada é "novo"
     setObs(c.observacoes || ''); setPdfUrl(c.pdf_url || ''); setPdfNome(c.pdf_nome || '');
     setShowForm(true);
   };
@@ -61,6 +67,23 @@ export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, onCriarP
     setEmpresaId(id);
     const p = parceiras.find((p) => p.id === id);
     setEmpresaNome(p?.nome || '');
+  };
+
+  // Importa os materiais já cadastrados em Peças & Serviços da OS
+  const importarMateriais = () => {
+    if (pecasOcorrencia.length === 0) { toast('Nenhum material em Peças & Serviços', { icon: 'ℹ️' }); return; }
+    const importados: CotacaoItem[] = pecasOcorrencia.map((p) => ({
+      descricao: p.descricao + (p.part_number ? ` (${p.part_number})` : ''),
+      quantidade: p.quantidade || 1,
+      valor_unitario: p.valor_unitario || 0,
+    }));
+    // remove linha vazia inicial se houver
+    const base = itens.filter((it) => it.descricao.trim());
+    const novaLista = [...base, ...importados];
+    setItens(novaLista);
+    // marca todos os índices atuais como importados (já existem na OS)
+    setItensImportados(new Set(novaLista.map((_, i) => i)));
+    toast.success(`${importados.length} material(is) importado(s)`);
   };
 
   const handleUploadPdf = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,7 +110,26 @@ export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, onCriarP
         selecionada: editando?.selecionada ?? false, itens,
       };
       if (editando) { await DataStore.updateCotacao(editando.id, payload); toast.success('Cotacao atualizada'); }
-      else { await DataStore.saveCotacao(payload); toast.success('Cotacao cadastrada'); }
+      else {
+        await DataStore.saveCotacao(payload);
+        // Sincroniza: itens NOVOS (não importados) viram Peças & Serviços na OS
+        const novos = itens.filter((_, i) => !itensImportados.has(i) && itens[i].descricao.trim());
+        if (novos.length > 0) {
+          for (const it of novos) {
+            await DataStore.savePeca({
+              ocorrencia_id: ocorrenciaId,
+              descricao: it.descricao,
+              quantidade: it.quantidade,
+              valor_unitario: it.valor_unitario,
+              status: 'SOLICITADA',
+            } as any);
+          }
+          onItensAdicionados?.();
+          toast.success(`Cotacao salva · ${novos.length} item(ns) adicionado(s) em Peças & Serviços`);
+        } else {
+          toast.success('Cotacao cadastrada');
+        }
+      }
       resetForm(); await load();
     } catch { toast.error('Erro ao salvar'); }
     finally { setSaving(false); }
@@ -99,7 +141,14 @@ export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, onCriarP
   };
 
   const addItem = () => setItens([...itens, { ...ITEM_VAZIO }]);
-  const removeItem = (i: number) => setItens(itens.filter((_, idx) => idx !== i));
+  const removeItem = (i: number) => {
+    setItens(itens.filter((_, idx) => idx !== i));
+    setItensImportados((prev) => {
+      const n = new Set<number>();
+      Array.from(prev).forEach((idx: number) => { if (idx < i) n.add(idx); else if (idx > i) n.add(idx - 1); });
+      return n;
+    });
+  };
   const updateItem = (i: number, field: keyof CotacaoItem, val: string) =>
     setItens(itens.map((it, idx) => idx !== i ? it : { ...it, [field]: field === 'descricao' ? val : Number(val) }));
 
@@ -127,6 +176,7 @@ export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, onCriarP
             <button onClick={resetForm}><X className="w-4 h-4 text-[#8B949E] hover:text-white" /></button>
           </div>
 
+          {/* Empresa */}
           <div>
             <label className="block text-[10px] font-bold text-[#8B949E] uppercase tracking-wider mb-1">Empresa Fornecedora</label>
             <select value={empresaId} onChange={(e) => handleEmpresaChange(e.target.value)}
@@ -141,38 +191,63 @@ export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, onCriarP
             )}
           </div>
 
+          {/* Itens — cada item em bloco próprio (organizado) */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-[10px] font-bold text-[#8B949E] uppercase tracking-wider">Itens</label>
-              <button onClick={addItem} className="text-[11px] text-[#C9D1D9] hover:text-white flex items-center gap-1">
-                <Plus className="w-3 h-3" /> Adicionar item
-              </button>
-            </div>
-            <div className="space-y-2">
-              <div className="grid grid-cols-[1fr_64px_88px_24px] gap-2 text-[9px] font-bold text-[#8B949E] uppercase px-1">
-                <span>Descricao</span><span className="text-center">Qtd</span><span className="text-right">Valor Unit.</span><span />
-              </div>
-              {itens.map((it, i) => (
-                <div key={i} className="grid grid-cols-[1fr_64px_88px_24px] gap-2 items-center">
-                  <input value={it.descricao} onChange={(e) => updateItem(i, 'descricao', e.target.value)}
-                    placeholder="Descricao do item..."
-                    className="h-9 bg-[#161B22] border border-[#30363D] text-[#E6EDF3] text-[12px] rounded-md px-2.5 outline-none focus:border-[#8B949E]" />
-                  <input type="number" min="1" value={it.quantidade} onChange={(e) => updateItem(i, 'quantidade', e.target.value)}
-                    className="h-9 bg-[#161B22] border border-[#30363D] text-[#E6EDF3] text-[12px] rounded-md px-2 outline-none text-center" />
-                  <input type="number" min="0" step="0.01" value={it.valor_unitario} onChange={(e) => updateItem(i, 'valor_unitario', e.target.value)}
-                    className="h-9 bg-[#161B22] border border-[#30363D] text-[#E6EDF3] text-[12px] rounded-md px-2 outline-none text-right" />
-                  <button onClick={() => removeItem(i)} disabled={itens.length === 1}
-                    className="w-6 h-6 rounded text-red-400 hover:text-red-300 disabled:opacity-30 flex items-center justify-center">
-                    <Trash2 className="w-3.5 h-3.5" />
+              <label className="text-[10px] font-bold text-[#8B949E] uppercase tracking-wider">Itens da Cotacao</label>
+              <div className="flex items-center gap-2">
+                {!editando && pecasOcorrencia.length > 0 && (
+                  <button onClick={importarMateriais}
+                    className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-[#1E3A2F] border border-emerald-600/40 text-emerald-400 text-[11px] font-semibold hover:text-emerald-300">
+                    <PackagePlus className="w-3.5 h-3.5" /> Importar materiais da ocorrência ({pecasOcorrencia.length})
                   </button>
+                )}
+                <button onClick={addItem} className="text-[11px] text-[#C9D1D9] hover:text-white flex items-center gap-1">
+                  <Plus className="w-3 h-3" /> Item
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-2.5">
+              {itens.map((it, i) => (
+                <div key={i} className="bg-[#161B22] border border-[#30363D] rounded-lg p-3 space-y-2.5 relative">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold text-[#6E7681] uppercase">
+                      Item {i + 1}{itensImportados.has(i) && <span className="ml-1.5 text-emerald-400 normal-case">· da ocorrência</span>}
+                    </span>
+                    <button onClick={() => removeItem(i)} disabled={itens.length === 1}
+                      className="text-red-400 hover:text-red-300 disabled:opacity-30">
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                  <input value={it.descricao} onChange={(e) => updateItem(i, 'descricao', e.target.value)}
+                    placeholder="Descrição do item / material / serviço"
+                    className="w-full h-10 bg-[#0A0E1A] border border-[#30363D] text-[#E6EDF3] text-[12px] rounded-md px-2.5 outline-none focus:border-[#8B949E]" />
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <div>
+                      <label className="block text-[9px] font-bold text-[#8B949E] uppercase mb-1">Qtd</label>
+                      <input type="number" min="1" value={it.quantidade} onChange={(e) => updateItem(i, 'quantidade', e.target.value)}
+                        className="w-full h-10 bg-[#0A0E1A] border border-[#30363D] text-[#E6EDF3] text-[12px] rounded-md px-2.5 outline-none text-center" />
+                    </div>
+                    <div>
+                      <label className="block text-[9px] font-bold text-[#8B949E] uppercase mb-1">Valor Unit. (R$)</label>
+                      <input type="number" min="0" step="0.01" value={it.valor_unitario} onChange={(e) => updateItem(i, 'valor_unitario', e.target.value)}
+                        className="w-full h-10 bg-[#0A0E1A] border border-[#30363D] text-[#E6EDF3] text-[12px] rounded-md px-2.5 outline-none text-right font-mono" />
+                    </div>
+                  </div>
+                  <div className="text-right text-[11px] text-[#8B949E]">
+                    Subtotal: <strong className="text-[#E6EDF3]">{formatCurrency(Number(it.quantidade) * Number(it.valor_unitario))}</strong>
+                  </div>
                 </div>
               ))}
             </div>
-            <div className="text-right text-[12px] font-bold text-[#E6EDF3] mt-2 pr-7">
-              Total: {formatCurrency(valorTotal)}
+
+            <div className="text-right text-[13px] font-bold text-[#E6EDF3] mt-2.5 border-t border-[#30363D] pt-2">
+              Total da Cotação: {formatCurrency(valorTotal)}
             </div>
           </div>
 
+          {/* Observações */}
           <div>
             <label className="block text-[10px] font-bold text-[#8B949E] uppercase tracking-wider mb-1">Observacoes</label>
             <textarea value={observacoes} onChange={(e) => setObs(e.target.value)} rows={2}
@@ -180,6 +255,7 @@ export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, onCriarP
               placeholder="Condicoes, prazos, validade..." />
           </div>
 
+          {/* Anexo PDF */}
           <div>
             <label className="block text-[10px] font-bold text-[#8B949E] uppercase tracking-wider mb-1">Anexo PDF</label>
             {pdfUrl ? (
