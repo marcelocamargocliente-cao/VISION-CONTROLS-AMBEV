@@ -25,16 +25,20 @@ export const AppLayout: React.FC = () => {
   const location = useLocation();
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [paradosCount, setParadosCount] = useState<number>(2);
+  const [ocorrenciasAbertas, setOcorrenciasAbertas] = useState<number>(0);
   const [recentes, setRecentes] = useState<VwAgingParadas[]>([]);
   const [recentesOpen, setRecentesOpen] = useState(true);
 
   useEffect(() => {
-    DataStore.getVwKpis().then((k) => {
-      setParadosCount(k.parados);
+    // Conta ocorrências que não estão concluídas nem canceladas
+    DataStore.getOcorrencias().then((occs) => {
+      const abertas = occs.filter(
+        (o) => o.status !== 'CONCLUIDA' && o.status !== 'CANCELADA'
+      ).length;
+      setOcorrenciasAbertas(abertas);
     });
     DataStore.getVwAgingParadas().then((aging) => {
-      setRecentes(aging.slice(0, 2)); // Máximo 2 itens
+      setRecentes(aging.slice(0, 2));
     });
   }, [location.pathname]);
 
@@ -52,7 +56,7 @@ export const AppLayout: React.FC = () => {
       short: 'Ocorr.',
       num: '03',
       icon: AlertTriangle,
-      badge: paradosCount > 0 ? `${paradosCount}` : undefined,
+      badge: ocorrenciasAbertas > 0 ? `${ocorrenciasAbertas}` : undefined,
     },
     { to: '/orcamentos', label: 'Orçamentos', short: 'Orçam.', num: '04', icon: FileText },
     ...(canManageCadastros
