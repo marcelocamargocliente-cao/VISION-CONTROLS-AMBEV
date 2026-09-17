@@ -650,8 +650,8 @@ export const NovaOcorrencia: React.FC = () => {
                       </div>
 
                       {/* Linha 3: Qtd + Valor */}
-                      <div className="grid grid-cols-2 gap-2.5">
-                        <div>
+                      <div className="grid grid-cols-1 gap-2.5">
+                        <div className="w-32">
                           <label className="block eyebrow mb-1">QTD</label>
                           <input
                             type="number"
@@ -661,42 +661,7 @@ export const NovaOcorrencia: React.FC = () => {
                             className="w-full bg-[#161B22] border border-[#30363D] focus:border-[#2F81F7] p-2 rounded-lg outline-none text-xs font-bold text-center"
                           />
                         </div>
-                        <div>
-                          <label className="block eyebrow mb-1">VALOR UNIT. (R$)</label>
-                          <input
-                            type="text"
-                            inputMode="numeric"
-                            value={valorDisplays[idx] || ''}
-                            onChange={(e) => {
-                              const raw = e.target.value.replace(/\D/g, '');
-                              const newDisplays = [...valorDisplays];
-                              if (raw === '') {
-                                newDisplays[idx] = '';
-                                setValorDisplays(newDisplays);
-                                handlePecaChange(idx, 'valor_unitario', 0);
-                                return;
-                              }
-                              const cents = parseInt(raw, 10);
-                              const numericValue = cents / 100;
-                              const fmt = numericValue.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                              newDisplays[idx] = fmt;
-                              setValorDisplays(newDisplays);
-                              handlePecaChange(idx, 'valor_unitario', numericValue);
-                            }}
-                            placeholder="0,00"
-                            className="w-full bg-[#161B22] border border-[#30363D] focus:border-[#2F81F7] p-2 rounded-lg outline-none text-xs font-mono text-right"
-                          />
-                        </div>
-                        <div className="sm:col-span-2">
-                          <label className="block eyebrow mb-1">NCM</label>
-                          <input
-                            type="text"
-                            value={peca.ncm || ''}
-                            onChange={(e) => handlePecaChange(idx, 'ncm', e.target.value)}
-                            placeholder="Ex: 8415.10.11"
-                            className="w-full bg-[#161B22] border border-[#30363D] focus:border-[#2F81F7] p-2 rounded-lg outline-none text-xs font-mono"
-                          />
-                        </div>
+                        {/* Valor unitário e NCM mantidos no estado mas ocultos nesta tela */}
                       </div>
                     </div>
                   </div>
