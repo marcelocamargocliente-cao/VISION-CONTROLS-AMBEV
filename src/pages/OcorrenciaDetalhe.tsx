@@ -24,6 +24,9 @@ import {
   Trash2,
   Eye,
   RefreshCw,
+  Pencil,
+  X,
+  Check,
 } from 'lucide-react';
 import { DataStore } from '../lib/dataStore';
 import {
@@ -34,6 +37,7 @@ import {
   Orcamento,
   Anexo,
   VwEquipamento,
+  Criticidade,
 } from '../types/database';
 import { IndustrialTag } from '../components/common/IndustrialTag';
 import { StatusBadge } from '../components/common/StatusBadge';
@@ -83,6 +87,38 @@ export const OcorrenciaDetalhe: React.FC = () => {
   const [fotos, setFotos] = useState<Anexo[]>([]);
   const [pdfs, setPdfs] = useState<Anexo[]>([]);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
+
+  // Edição inline do Diagnóstico de Engenharia & Avaria
+  const [editDiag, setEditDiag] = useState(false);
+  const [diagForm, setDiagForm] = useState({ descricao_anomalia: '', causa_provavel: '', criticidade: 'MEDIA' as Criticidade });
+  const [savingDiag, setSavingDiag] = useState(false);
+
+  const abrirEdicaoDiag = () => {
+    if (!ocorrencia) return;
+    setDiagForm({
+      descricao_anomalia: ocorrencia.descricao_anomalia || '',
+      causa_provavel: ocorrencia.causa_provavel || '',
+      criticidade: ocorrencia.criticidade,
+    });
+    setEditDiag(true);
+  };
+
+  const salvarDiag = async () => {
+    if (!ocorrencia) return;
+    if (!diagForm.descricao_anomalia.trim()) { toast.error('Descrição não pode ficar vazia'); return; }
+    setSavingDiag(true);
+    try {
+      await DataStore.updateOcorrenciaCampos(ocorrencia.id, {
+        criticidade: diagForm.criticidade,
+        descricao_anomalia: diagForm.descricao_anomalia.trim(),
+        causa_provavel: diagForm.causa_provavel.trim(),
+      }, user?.nome || 'Sistema');
+      toast.success('Diagnóstico atualizado');
+      setEditDiag(false);
+      await loadData();
+    } catch { toast.error('Erro ao salvar'); }
+    finally { setSavingDiag(false); }
+  };
   const [loading, setLoading] = useState(true);
 
   // New Event Form State
@@ -575,25 +611,103 @@ export const OcorrenciaDetalhe: React.FC = () => {
           <div className="space-y-3.5 min-w-0">
             {/* Card: Diagnóstico de Engenharia & Avaria */}
             <div className="card space-y-3">
-              <div className="flex items-center gap-2 border-b border-[#30363D] pb-2">
-                <Cpu className="w-4 h-4 " />
-                <h3 className="card-title text-xs uppercase ">
-                  Diagnóstico de Engenharia & Avaria
-                </h3>
-              </div>
-              <div>
-                <span className="eyebrow  block mb-1.5">Descrição do Problema</span>
-                <p className="text-xs  bg-[#0D1117] p-3 rounded-lg border border-[#30363D] leading-relaxed">
-                  {ocorrencia.descricao_anomalia}
-                </p>
-              </div>
-              {ocorrencia.causa_provavel && (
-                <div>
-                  <span className="eyebrow  block mb-1.5">Causa Raiz Provável</span>
-                  <p className="text-xs  bg-[#0D1117] p-2.5 rounded-lg border border-[#30363D]">
-                    {ocorrencia.causa_provavel}
-                  </p>
+              <div className="flex items-center justify-between border-b border-[#30363D] pb-2">
+                <div className="flex items-center gap-2">
+                  <Cpu className="w-4 h-4" />
+                  <h3 className="card-title text-xs uppercase">
+                    Diagnóstico de Engenharia & Avaria
+                  </h3>
                 </div>
+                {canEdit && !editDiag && (
+                  <button
+                    onClick={abrirEdicaoDiag}
+                    title="Editar diagnóstico"
+                    className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-[#21262D] border border-[#30363D] text-[#C9D1D9] hover:text-white text-[11px] font-semibold"
+                  >
+                    <Pencil className="w-3 h-3" /> Editar
+                  </button>
+                )}
+                {editDiag && (
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => setEditDiag(false)}
+                      disabled={savingDiag}
+                      className="w-7 h-7 rounded-md bg-[#21262D] border border-[#30363D] text-[#8B949E] flex items-center justify-center"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={salvarDiag}
+                      disabled={savingDiag}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md btn-primary-gradient text-[11px] font-bold disabled:opacity-60"
+                    >
+                      <Check className="w-3 h-3" />
+                      {savingDiag ? 'Salvando...' : 'Salvar'}
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {editDiag ? (
+                <div className="space-y-3">
+                  {/* Criticidade */}
+                  <div>
+                    <span className="eyebrow block mb-1.5">Criticidade</span>
+                    <div className="grid grid-cols-4 gap-1.5">
+                      {(['BAIXA', 'MEDIA', 'ALTA', 'CRITICA'] as Criticidade[]).map((c) => (
+                        <button
+                          key={c}
+                          onClick={() => setDiagForm((f) => ({ ...f, criticidade: c }))}
+                          className={`h-9 rounded-md text-[11px] font-bold border transition-colors ${
+                            diagForm.criticidade === c
+                              ? 'bg-[#21262D] text-[#E6EDF3] border-[#8B949E]'
+                              : 'bg-[#0D1117] text-[#8B949E] border-[#30363D]'
+                          }`}
+                        >
+                          {c === 'MEDIA' ? 'MÉDIA' : c}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  {/* Descrição */}
+                  <div>
+                    <span className="eyebrow block mb-1.5">Descrição do Problema</span>
+                    <textarea
+                      value={diagForm.descricao_anomalia}
+                      onChange={(e) => setDiagForm((f) => ({ ...f, descricao_anomalia: e.target.value }))}
+                      rows={3}
+                      className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#8B949E] text-[#E6EDF3] text-[12px] rounded-lg p-2.5 outline-none resize-none leading-relaxed"
+                    />
+                  </div>
+                  {/* Causa */}
+                  <div>
+                    <span className="eyebrow block mb-1.5">Causa Raiz Provável</span>
+                    <textarea
+                      value={diagForm.causa_provavel}
+                      onChange={(e) => setDiagForm((f) => ({ ...f, causa_provavel: e.target.value }))}
+                      rows={2}
+                      className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#8B949E] text-[#E6EDF3] text-[12px] rounded-lg p-2.5 outline-none resize-none"
+                      placeholder="(opcional)"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div>
+                    <span className="eyebrow block mb-1.5">Descrição do Problema</span>
+                    <p className="text-xs bg-[#0D1117] p-3 rounded-lg border border-[#30363D] leading-relaxed">
+                      {ocorrencia.descricao_anomalia}
+                    </p>
+                  </div>
+                  {ocorrencia.causa_provavel && (
+                    <div>
+                      <span className="eyebrow block mb-1.5">Causa Raiz Provável</span>
+                      <p className="text-xs bg-[#0D1117] p-2.5 rounded-lg border border-[#30363D]">
+                        {ocorrencia.causa_provavel}
+                      </p>
+                    </div>
+                  )}
+                </>
               )}
             </div>
 

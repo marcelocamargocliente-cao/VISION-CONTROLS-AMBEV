@@ -15,6 +15,10 @@ import {
   FileText,
   Copy,
   Image as ImageIcon,
+  Pencil,
+  Trash2,
+  X,
+  Check,
 } from 'lucide-react';
 import { DataStore } from '../lib/dataStore';
 import {
@@ -23,6 +27,7 @@ import {
   Manutencao,
   Anexo,
   EquipStatus,
+  Criticidade,
 } from '../types/database';
 import { IndustrialTag } from '../components/common/IndustrialTag';
 import { StatusBadge } from '../components/common/StatusBadge';
@@ -34,7 +39,7 @@ import { formatDate, formatDateTime } from '../utils/formatters';
 export const EquipamentoDetalhe: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { canEdit, canCreateOccurrence } = useAuth();
+  const { canEdit, canCreateOccurrence, user } = useAuth();
 
   const [equipamento, setEquipamento] = useState<VwEquipamento | null>(null);
   const [ocorrencias, setOcorrencias] = useState<Ocorrencia[]>([]);
@@ -42,6 +47,49 @@ export const EquipamentoDetalhe: React.FC = () => {
   const [fotos, setFotos] = useState<Anexo[]>([]);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [showPhotoMenu, setShowPhotoMenu] = useState(false);
+
+  // Edição inline do Diagnóstico de Engenharia
+  const [editDiag, setEditDiag] = useState(false);
+  const [diagForm, setDiagForm] = useState({ descricao_anomalia: '', causa_provavel: '', criticidade: 'MEDIA' as Criticidade });
+  const [savingDiag, setSavingDiag] = useState(false);
+
+  // Delete/editar ocorrência da lista da ficha
+  const [confirmDeleteOcc, setConfirmDeleteOcc] = useState<Ocorrencia | null>(null);
+  const [editOcc, setEditOcc] = useState<Ocorrencia | null>(null);
+  const [editOccForm, setEditOccForm] = useState({ criticidade: 'MEDIA' as Criticidade, descricao_anomalia: '', causa_provavel: '', equipamento_parado: false });
+  const [savingOcc, setSavingOcc] = useState(false);
+
+  const abrirEdicaoOcc = (occ: Ocorrencia) => {
+    setEditOccForm({
+      criticidade: occ.criticidade,
+      descricao_anomalia: occ.descricao_anomalia || '',
+      causa_provavel: occ.causa_provavel || '',
+      equipamento_parado: !!occ.equipamento_parado,
+    });
+    setEditOcc(occ);
+  };
+
+  const salvarEdicaoOcc = async () => {
+    if (!editOcc) return;
+    if (!editOccForm.descricao_anomalia.trim()) { toast.error('Descrição não pode ficar vazia'); return; }
+    setSavingOcc(true);
+    try {
+      await DataStore.updateOcorrenciaCampos(editOcc.id, { ...editOccForm, descricao_anomalia: editOccForm.descricao_anomalia.trim(), causa_provavel: editOccForm.causa_provavel.trim() }, user?.nome || 'Sistema');
+      toast.success('Ocorrência atualizada');
+      setEditOcc(null);
+      await loadData();
+    } catch { toast.error('Erro ao salvar'); }
+    finally { setSavingOcc(false); }
+  };
+
+  const deletarOcc = async (occ: Ocorrencia) => {
+    try {
+      await DataStore.deleteOcorrencia(occ.id);
+      toast.success('Ocorrência removida');
+      setConfirmDeleteOcc(null);
+      await loadData();
+    } catch { toast.error('Erro ao deletar'); }
+  };
   const [loading, setLoading] = useState(true);
 
   const [activeTab, setActiveTab] = useState<'ficha' | 'ocorrencias' | 'manutencoes' | 'fotos' | 'qrcode'>('ficha');
@@ -229,6 +277,7 @@ export const EquipamentoDetalhe: React.FC = () => {
   const ugNome = equipamento.ug_ref || 'N1';
 
   return (
+    <>
     <div className="equipamento-detalhe-page flex flex-col px-2 py-3 md:p-4 gap-4 max-w-7xl mx-auto w-full h-full overflow-y-auto scroll-fluido">
       {/* Header Bar */}
       <div className="equipamento-header flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#111827] border border-[#30363D] rounded-lg p-4 shadow-lg">
@@ -628,28 +677,51 @@ export const EquipamentoDetalhe: React.FC = () => {
                 {ocorrencias.map((occ) => (
                   <div
                     key={occ.id}
-                    onClick={() => navigate(`/ocorrencias/${occ.id}`)}
-                    className="p-3.5 rounded-lg bg-[#111827] border border-[#30363D] hover:border-[#30363D] cursor-pointer transition-all hover:bg-[#1E293B]"
+                    className="p-3.5 rounded-lg bg-[#111827] border border-[#30363D] hover:bg-[#1E293B] transition-all"
                   >
-                    <div className="flex items-center justify-between gap-2 mb-1.5">
-                      <div className="flex items-center gap-2 flex-wrap">
+                    <div className="flex items-start justify-between gap-2 mb-1.5">
+                      <div
+                        className="flex items-center gap-2 flex-wrap cursor-pointer flex-1 min-w-0"
+                        onClick={() => navigate(`/ocorrencias/${occ.id}`)}
+                      >
                         <span className="font-mono text-xs font-bold text-[#C9D1D9]">
                           {(occ as any).ordem_sap ? `OS ${(occ as any).ordem_sap}` : (occ as any).codigo || occ.id?.slice(0, 8)}
                         </span>
                         <StatusBadge type="ocorrencia" status={occ.status} size="xs" />
+                        <span className="text-[10px] text-gray-400">{formatDateTime(occ.created_at)}</span>
                       </div>
-                      <span className="text-[10px] text-gray-400">{formatDateTime(occ.created_at)}</span>
+                      {canEdit && (
+                        <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+                          <button
+                            onClick={() => abrirEdicaoOcc(occ)}
+                            title="Editar"
+                            className="w-7 h-7 rounded-md bg-[#21262D] border border-[#30363D] text-[#C9D1D9] hover:text-white flex items-center justify-center"
+                          >
+                            <Pencil className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={() => setConfirmDeleteOcc(occ)}
+                            title="Deletar"
+                            className="w-7 h-7 rounded-md bg-[#21262D] border border-[#30363D] text-red-400 hover:text-red-300 flex items-center justify-center"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      )}
                     </div>
-                    {/* Descrição do problema em destaque */}
-                    <p className="text-[12px] font-semibold text-white mb-1 line-clamp-2">
-                      {(occ as any).descricao_anomalia || (occ as any).tipo_falha || 'Sem descrição'}
-                    </p>
-                    {/* Tipo de serviço menor */}
-                    {((occ as any).tipo_servico || (occ as any).descricao_falha) && (
-                      <p className="text-[10px] text-gray-500 line-clamp-1">
-                        {(occ as any).tipo_servico || (occ as any).descricao_falha}
+                    <div
+                      className="cursor-pointer"
+                      onClick={() => navigate(`/ocorrencias/${occ.id}`)}
+                    >
+                      <p className="text-[12px] font-semibold text-white mb-1 line-clamp-2">
+                        {(occ as any).descricao_anomalia || (occ as any).tipo_falha || 'Sem descrição'}
                       </p>
-                    )}
+                      {((occ as any).tipo_servico || (occ as any).descricao_falha) && (
+                        <p className="text-[10px] text-gray-500 line-clamp-1">
+                          {(occ as any).tipo_servico || (occ as any).descricao_falha}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -826,5 +898,77 @@ export const EquipamentoDetalhe: React.FC = () => {
         )}
       </div>
     </div>
+
+    {/* ===== MODAIS ===== */}
+
+    {/* Modal: Editar Ocorrência */}
+    {editOcc && (
+      <div className="sheet-backdrop fixed inset-0 z-[9999] bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div className="sheet-panel bg-[#111827] border border-[#30363D] rounded-t-2xl sm:rounded-lg w-full max-w-lg max-h-[92vh] flex flex-col shadow-2xl overflow-hidden safe-bottom">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-[#30363D] shrink-0">
+            <div>
+              <h3 className="text-sm font-bold text-[#E6EDF3] uppercase">Editar Ocorrência</h3>
+              <p className="text-[11px] text-[#8B949E] font-mono">{(editOcc as any).ordem_sap ? `OS ${(editOcc as any).ordem_sap}` : `#${editOcc.numero}`}</p>
+            </div>
+            <button onClick={() => !savingOcc && setEditOcc(null)} className="w-9 h-9 rounded-lg bg-[#0A0E1A] border border-[#30363D] text-[#8B949E] flex items-center justify-center">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+          <div className="p-4 space-y-4 overflow-y-auto scroll-fluido">
+            <div>
+              <label className="block text-[11px] font-semibold text-[#8B949E] uppercase tracking-wider mb-1.5">Criticidade</label>
+              <div className="grid grid-cols-4 gap-1.5">
+                {(['BAIXA', 'MEDIA', 'ALTA', 'CRITICA'] as Criticidade[]).map((c) => (
+                  <button key={c} onClick={() => setEditOccForm((f) => ({ ...f, criticidade: c }))}
+                    className={`h-10 rounded-md text-[11px] font-bold border transition-colors ${editOccForm.criticidade === c ? 'bg-[#21262D] text-[#E6EDF3] border-[#8B949E]' : 'bg-[#0A0E1A] text-[#8B949E] border-[#30363D]'}`}>
+                    {c === 'MEDIA' ? 'MÉDIA' : c}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <label className="block text-[11px] font-semibold text-[#8B949E] uppercase tracking-wider mb-1.5">Descrição do Problema</label>
+              <textarea value={editOccForm.descricao_anomalia} onChange={(e) => setEditOccForm((f) => ({ ...f, descricao_anomalia: e.target.value }))} rows={3}
+                className="w-full bg-[#0A0E1A] border border-[#30363D] focus:border-[#8B949E] text-[#E6EDF3] text-[13px] rounded-md p-2.5 outline-none resize-none leading-relaxed" />
+            </div>
+            <div>
+              <label className="block text-[11px] font-semibold text-[#8B949E] uppercase tracking-wider mb-1.5">Causa Raiz Provável</label>
+              <textarea value={editOccForm.causa_provavel} onChange={(e) => setEditOccForm((f) => ({ ...f, causa_provavel: e.target.value }))} rows={2}
+                className="w-full bg-[#0A0E1A] border border-[#30363D] focus:border-[#8B949E] text-[#E6EDF3] text-[13px] rounded-md p-2.5 outline-none resize-none" placeholder="(opcional)" />
+            </div>
+            <button onClick={() => setEditOccForm((f) => ({ ...f, equipamento_parado: !f.equipamento_parado }))}
+              className="w-full flex items-center justify-between gap-3 p-3 rounded-md bg-[#0A0E1A] border border-[#30363D]">
+              <div className="text-left">
+                <p className="text-[13px] font-semibold text-[#E6EDF3]">Equipamento parado</p>
+              </div>
+              <span className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${editOccForm.equipamento_parado ? 'bg-red-500/70' : 'bg-[#30363D]'}`}>
+                <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-all ${editOccForm.equipamento_parado ? 'left-[22px]' : 'left-0.5'}`} />
+              </span>
+            </button>
+          </div>
+          <div className="flex items-center gap-2 p-4 border-t border-[#30363D] shrink-0">
+            <button onClick={() => setEditOcc(null)} disabled={savingOcc} className="flex-1 h-11 rounded-md bg-[#0A0E1A] border border-[#30363D] text-[#C9D1D9] text-sm font-semibold disabled:opacity-60">Cancelar</button>
+            <button onClick={salvarEdicaoOcc} disabled={savingOcc} className="flex-1 h-11 rounded-md btn-primary-gradient text-sm font-bold disabled:opacity-60">
+              {savingOcc ? 'Salvando...' : 'Salvar'}
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* Modal: Confirmar Delete Ocorrência */}
+    {confirmDeleteOcc && (
+      <div className="fixed inset-0 z-[9999] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="bg-[#111827] border border-[#30363D] rounded-lg p-5 w-full max-w-sm text-center shadow-2xl">
+          <p className="text-sm font-bold text-[#E6EDF3] mb-1">Deletar Ocorrência?</p>
+          <p className="text-[11px] text-[#8B949E] mb-4">{(confirmDeleteOcc as any).ordem_sap ? `OS ${(confirmDeleteOcc as any).ordem_sap}` : `#${confirmDeleteOcc.numero}`} — esta ação não pode ser desfeita.</p>
+          <div className="flex gap-2">
+            <button onClick={() => setConfirmDeleteOcc(null)} className="flex-1 h-10 rounded-md bg-[#21262D] border border-[#30363D] text-[#C9D1D9] text-sm font-semibold">Cancelar</button>
+            <button onClick={() => deletarOcc(confirmDeleteOcc)} className="flex-1 h-10 rounded-md bg-red-600 hover:bg-red-500 text-white text-sm font-bold transition-colors">Deletar</button>
+          </div>
+        </div>
+      </div>
+    )}
+  </>
   );
 };
