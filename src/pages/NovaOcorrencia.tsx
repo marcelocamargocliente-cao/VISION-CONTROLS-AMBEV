@@ -70,6 +70,13 @@ export const NovaOcorrencia: React.FC = () => {
           setSelectedEquip(found);
           if (found.ppac) setPpac(found.ppac);
         }
+        // Enriquece com dados frescos do Supabase (TAG AMBEV/patrimônio etc.)
+        DataStore.getEquipamentoById(preselectedId).then((full) => {
+          if (full) {
+            setSelectedEquip((prev) => ({ ...(prev || {}), ...full } as VwEquipamento));
+            if (full.ppac) setPpac(full.ppac);
+          }
+        });
       }
     });
   }, [searchParams]);
@@ -93,6 +100,13 @@ export const NovaOcorrencia: React.FC = () => {
     setSelectedEquip(eq);
     setEquipSearch('');
     if (eq.ppac) setPpac(eq.ppac);
+    // Busca dados frescos do Supabase para garantir TAG AMBEV/patrimônio corretos
+    DataStore.getEquipamentoById(eq.id).then((full) => {
+      if (full) {
+        setSelectedEquip((prev) => ({ ...(prev || {}), ...full } as VwEquipamento));
+        if (full.ppac) setPpac(full.ppac);
+      }
+    });
   };
 
   const handleAddPeca = () => {
