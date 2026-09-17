@@ -198,6 +198,7 @@ export interface CotacaoItem {
   detalhe?: string;        // especificação / dados técnicos / detalhes do item
   tipo?: TipoItem;
   prestador?: string;      // fabricante (peça) ou prestador/técnico (serviço)
+  ncm?: string;
   quantidade: number;
   valor_unitario: number;
 }

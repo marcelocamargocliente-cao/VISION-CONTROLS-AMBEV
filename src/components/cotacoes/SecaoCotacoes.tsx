@@ -24,7 +24,7 @@ const TIPOS: { id: TipoItem; label: string; icon: string }[] = [
   { id: 'FRETE', label: 'Frete', icon: '🚚' },
 ];
 
-const ITEM_VAZIO: CotacaoItem = { descricao: '', detalhe: '', tipo: 'PECA', prestador: '', quantidade: 1, valor_unitario: 0 };
+const ITEM_VAZIO: CotacaoItem = { descricao: '', detalhe: '', tipo: 'PECA', prestador: '', ncm: '', quantidade: 1, valor_unitario: 0 };
 
 // Máscara de moeda baseada em centavos: "250000" -> "2.500,00"
 const centavosParaTexto = (v: number): string =>
@@ -89,6 +89,7 @@ export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, pecasOco
       detalhe: (p as any).especificacao || p.part_number || '',
       tipo: ((p as any).tipo_item as TipoItem) || 'PECA',
       prestador: p.fabricante || '',
+      ncm: (p as any).ncm || '',
       quantidade: p.quantidade || 1,
       valor_unitario: p.valor_unitario || 0,
     }));
@@ -140,6 +141,7 @@ export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, pecasOco
               descricao: it.descricao,
               especificacao: it.detalhe,
               fabricante: it.prestador,
+              ncm: it.ncm,
               tipo_item: it.tipo || 'PECA',
               quantidade: it.quantidade,
               valor_unitario: it.valor_unitario,
@@ -277,6 +279,12 @@ export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, pecasOco
                         className="w-full h-8 bg-[#0A0E1A] border border-[#30363D] text-[#E6EDF3] text-[11px] rounded pl-6 pr-2 outline-none text-right font-mono focus:border-[#8B949E]" />
                     </div>
                   </div>
+
+                  {!isServico && (
+                    <input value={it.ncm || ''} onChange={(e) => updateItem(i, 'ncm', e.target.value)}
+                      placeholder="NCM (ex: 8415.10.11)"
+                      className="w-full h-8 bg-[#0A0E1A] border border-[#30363D] text-[#C9D1D9] text-[11px] rounded px-2.5 outline-none font-mono focus:border-[#8B949E]" />
+                  )}
 
                   <div className="text-right text-[10px] text-[#8B949E]">
                     Subtotal: <strong className="text-[#E6EDF3]">{formatCurrency(Number(it.quantidade) * Number(it.valor_unitario))}</strong>
