@@ -26,6 +26,8 @@ import {
   VwEvolucaoMensal,
   OcorrenciaStatus,
   EquipStatus,
+  EmpresaParceira,
+  CotacaoFornecedor,
 } from '../types/database';
 import {
   INITIAL_PROFILES,
@@ -942,6 +944,99 @@ export const DataStore = {
   },
 
   // Atualiza campos extras da ocorrência (tipo_servico, datas, SAP, etc.)
+  // =========================================================
+  // EMPRESAS PARCEIRAS
+  // =========================================================
+  async getEmpresasParceiras(): Promise<EmpresaParceira[]> {
+    if (isSupabaseConfigured) {
+      try {
+        const { data, error } = await supabase
+          .from('empresas_parceiras')
+          .select('*')
+          .eq('ativo', true)
+          .order('nome');
+        if (!error && data) return data as EmpresaParceira[];
+      } catch (e) { console.warn('getEmpresasParceiras:', e); }
+    }
+    return [];
+  },
+
+  async saveEmpresaParceira(ep: Omit<EmpresaParceira, 'id' | 'created_at'>): Promise<EmpresaParceira> {
+    const genId = () => typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `ep-${Date.now()}`;
+    const record: EmpresaParceira = { ...ep, id: genId(), created_at: new Date().toISOString() };
+    if (isSupabaseConfigured) {
+      try {
+        const { data, error } = await supabase.from('empresas_parceiras').insert(record).select().single();
+        if (!error && data) return data as EmpresaParceira;
+      } catch (e) { console.warn('saveEmpresaParceira:', e); }
+    }
+    return record;
+  },
+
+  async deleteEmpresaParceira(id: string): Promise<void> {
+    if (isSupabaseConfigured) {
+      try { await supabase.from('empresas_parceiras').update({ ativo: false }).eq('id', id); } catch (e) { console.warn(e); }
+    }
+  },
+
+  // =========================================================
+  // COTAÇÕES DE FORNECEDORES
+  // =========================================================
+  async getCotacoesByOcorrencia(ocorrenciaId: string): Promise<CotacaoFornecedor[]> {
+    if (isSupabaseConfigured) {
+      try {
+        const { data, error } = await supabase
+          .from('cotacoes_fornecedor')
+          .select('*')
+          .eq('ocorrencia_id', ocorrenciaId)
+          .order('created_at', { ascending: false });
+        if (!error && data) return data as CotacaoFornecedor[];
+      } catch (e) { console.warn('getCotacoesByOcorrencia:', e); }
+    }
+    return [];
+  },
+
+  async saveCotacao(cotacao: Omit<CotacaoFornecedor, 'id' | 'created_at' | 'updated_at'>): Promise<CotacaoFornecedor> {
+    const genId = () => typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `cot-${Date.now()}`;
+    const now = new Date().toISOString();
+    const record: CotacaoFornecedor = { ...cotacao, id: genId(), created_at: now, updated_at: now };
+    if (isSupabaseConfigured) {
+      try {
+        const { data, error } = await supabase.from('cotacoes_fornecedor').insert(record).select().single();
+        if (!error && data) return data as CotacaoFornecedor;
+      } catch (e) { console.warn('saveCotacao:', e); }
+    }
+    return record;
+  },
+
+  async updateCotacao(id: string, fields: Partial<CotacaoFornecedor>): Promise<void> {
+    const upd = { ...fields, updated_at: new Date().toISOString() };
+    if (isSupabaseConfigured) {
+      try { await supabase.from('cotacoes_fornecedor').update(upd).eq('id', id); } catch (e) { console.warn(e); }
+    }
+  },
+
+  async deleteCotacao(id: string): Promise<void> {
+    if (isSupabaseConfigured) {
+      try { await supabase.from('cotacoes_fornecedor').delete().eq('id', id); } catch (e) { console.warn(e); }
+    }
+  },
+
+  async uploadCotacaoPdf(file: File, ocorrenciaId: string): Promise<string> {
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const path = `${ocorrenciaId}/${Date.now()}_${safeName}`;
+    if (isSupabaseConfigured) {
+      try {
+        const { error } = await supabase.storage.from('cotacoes').upload(path, file, { cacheControl: '3600', upsert: false, contentType: file.type || 'application/pdf' });
+        if (!error) {
+          const { data } = supabase.storage.from('cotacoes').getPublicUrl(path);
+          return data.publicUrl;
+        }
+      } catch (e) { console.warn('uploadCotacaoPdf:', e); }
+    }
+    return '';
+  },
+
   async updateOcorrenciaExtra(
     ocorrenciaId: string,
     extras: Record<string, unknown>

@@ -180,6 +180,38 @@ export interface Peca {
   created_at: string;
 }
 
+export interface EmpresaParceira {
+  id: string;
+  nome: string;
+  cnpj?: string;
+  contato?: string;
+  email?: string;
+  telefone?: string;
+  ativo: boolean;
+  created_at: string;
+}
+
+export interface CotacaoItem {
+  descricao: string;
+  quantidade: number;
+  valor_unitario: number;
+}
+
+export interface CotacaoFornecedor {
+  id: string;
+  ocorrencia_id: string;
+  empresa_id?: string;
+  empresa_nome: string;
+  valor_total?: number;
+  observacoes?: string;
+  pdf_url?: string;
+  pdf_nome?: string;
+  selecionada: boolean;
+  itens: CotacaoItem[];
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Orcamento {
   id: string;
   ocorrencia_id: string;

@@ -38,6 +38,7 @@ import {
   Anexo,
   VwEquipamento,
   Criticidade,
+  CotacaoFornecedor,
 } from '../types/database';
 import { IndustrialTag } from '../components/common/IndustrialTag';
 import { StatusBadge } from '../components/common/StatusBadge';
@@ -57,6 +58,7 @@ import {
 import { ModalOrcamentoDetalhe } from '../components/orcamentos/ModalOrcamentoDetalhe';
 import { ModalRevisaoOrcamento } from '../components/orcamentos/ModalRevisaoOrcamento';
 import { ModalNovoOrcamento } from '../components/orcamentos/ModalNovoOrcamento';
+import { SecaoCotacoes } from '../components/cotacoes/SecaoCotacoes';
 import { ModalDuplicarOrcamento } from '../components/orcamentos/ModalDuplicarOrcamento';
 import { FotoCard } from '../components/ocorrencias/FotoCard';
 
@@ -197,6 +199,12 @@ export const OcorrenciaDetalhe: React.FC = () => {
 
   // New Orcamento Modal & Detalhes
   const [showAddOrcModal, setShowAddOrcModal] = useState(false);
+  const [cotacaoParaProposta, setCotacaoParaProposta] = useState<CotacaoFornecedor | null>(null);
+
+  const handleCriarPropostaDeCotacao = (c: CotacaoFornecedor) => {
+    setCotacaoParaProposta(c);
+    setShowAddOrcModal(true);
+  };
   const [selectedOrcamento, setSelectedOrcamento] = useState<Orcamento | null>(null);
   const [isOrcDetailOpen, setIsOrcDetailOpen] = useState(false);
   const [isOrcEditMode, setIsOrcEditMode] = useState(false);
@@ -876,6 +884,16 @@ export const OcorrenciaDetalhe: React.FC = () => {
             </div>
 
             {/* Card: Orçamentos AMBEV */}
+            {/* Card: Cotações de Fornecedores */}
+            {ocorrencia && (
+              <SecaoCotacoes
+                ocorrenciaId={ocorrencia.id}
+                canEdit={canEdit}
+                onCriarProposta={handleCriarPropostaDeCotacao}
+              />
+            )}
+
+            {/* Card: Orçamentos / Proposta Comercial AMBEV */}
             <div className="card space-y-3">
               <div className="flex items-center justify-between border-b border-[#30363D] pb-2">
                 <div className="flex items-center gap-2">
@@ -886,7 +904,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
                 </div>
                 {canEdit && (
                   <button
-                    onClick={() => setShowAddOrcModal(true)}
+                    onClick={() => { setCotacaoParaProposta(null); setShowAddOrcModal(true); }}
                     className="btn-primary !py-1 !px-2.5 !text-[11px] gap-1 cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
@@ -1444,26 +1462,34 @@ export const OcorrenciaDetalhe: React.FC = () => {
       {/* Modal Cadastro de Proposta / Orçamento Completo */}
       <ModalNovoOrcamento
         isOpen={showAddOrcModal}
-        onClose={() => setShowAddOrcModal(false)}
+        onClose={() => { setShowAddOrcModal(false); setCotacaoParaProposta(null); }}
         onCreated={async (novoOrc) => {
           await loadData();
-          // Buscar orçamento atualizado do banco (com pecas JSONB completo)
           const orcsAtualizados = await DataStore.getOrcamentosByOcorrencia(ocorrencia?.id || '');
           const orcAtualizado = orcsAtualizados.find(o => o.id === novoOrc.id || o.numero === novoOrc.numero) || novoOrc;
           setSelectedOrcamento(orcAtualizado);
           setIsOrcDetailOpen(true);
+          setCotacaoParaProposta(null);
         }}
         defaultOcorrenciaId={ocorrencia?.id}
         ocorrencias={ocorrencia ? [ocorrencia] : []}
         equipamentosMap={equipamento ? new Map([[equipamento.id, equipamento]]) : new Map()}
-        pecasVinculadas={pecas.map(p => ({
-          descricao: p.descricao,
-          part_number: p.part_number,
-          fabricante: p.fabricante,
-          quantidade: p.quantidade,
-          valor_unitario: p.valor_unitario,
-          ncm: p.ncm,
-        }))}
+        pecasVinculadas={
+          cotacaoParaProposta
+            ? cotacaoParaProposta.itens.map(it => ({
+                descricao: it.descricao,
+                quantidade: it.quantidade,
+                valor_unitario: it.valor_unitario,
+              }))
+            : pecas.map(p => ({
+                descricao: p.descricao,
+                part_number: p.part_number,
+                fabricante: p.fabricante,
+                quantidade: p.quantidade,
+                valor_unitario: p.valor_unitario,
+                ncm: p.ncm,
+              }))
+        }
       />
 
       {/* Modal Detalhe do Orçamento */}
