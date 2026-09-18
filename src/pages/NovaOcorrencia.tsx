@@ -64,7 +64,10 @@ export const NovaOcorrencia: React.FC = () => {
     const marca = (eq.marca || '').toLowerCase().trim();
     const modelo = (eq.modelo || '').trim();
     return marca === 'rittal' && modelo.endsWith('100');
-  };<Array<Partial<PecaPendente>>>([]);
+  };
+
+  // Dynamic Peças
+  const [pecas, setPecas] = useState<Array<Partial<PecaPendente>>>([]);
   const [valorDisplays, setValorDisplays] = useState<string[]>([]); // display-only formatted strings for valor_unitario mask
 
   // Dynamic Fotos
