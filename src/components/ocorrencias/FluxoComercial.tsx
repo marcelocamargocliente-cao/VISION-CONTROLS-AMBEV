@@ -10,12 +10,13 @@ import { Ocorrencia, OcorrenciaStatus } from '../../types/database';
 interface Fase {
   id: OcorrenciaStatus;
   label: string;
-  sublabel: string;
+  sublabel: string;       // instrução: o que fazer nessa fase
+  labelConcluido: string; // confirmação: o que foi feito
   icon: React.FC<{ className?: string }>;
   cor: string;
   corBg: string;
-  campo?: keyof Ocorrencia;      // campo de data desta fase
-  campoExtra?: keyof Ocorrencia; // campo de nº (RC, pedido)
+  campo?: keyof Ocorrencia;
+  campoExtra?: keyof Ocorrencia;
   labelExtra?: string;
   placeholderExtra?: string;
 }
@@ -25,6 +26,7 @@ const FASES: Fase[] = [
     id: 'ABERTA',
     label: 'Ocorrência Aberta',
     sublabel: 'Técnico registrou o chamado em campo',
+    labelConcluido: 'Ocorrência registrada em campo',
     icon: AlertTriangle,
     cor: '#F85149',
     corBg: 'rgba(248,81,73,0.12)',
@@ -32,7 +34,8 @@ const FASES: Fase[] = [
   {
     id: 'ORCAMENTO_INTERNO_FEITO',
     label: 'Orçamento Interno',
-    sublabel: 'Gerar proposta comercial (PPAC)',
+    sublabel: 'Levantar custos e gerar orçamento interno',
+    labelConcluido: 'Orçamento interno gerado',
     icon: FileText,
     cor: '#F5A623',
     corBg: 'rgba(245,166,35,0.12)',
@@ -41,7 +44,8 @@ const FASES: Fase[] = [
   {
     id: 'PPAC_ENVIADO',
     label: 'PPAC Enviado',
-    sublabel: 'Proposta comercial enviada à AMBEV',
+    sublabel: 'Emitir e enviar a Proposta Comercial à AMBEV',
+    labelConcluido: 'Proposta comercial (PPAC) enviada à AMBEV',
     icon: Send,
     cor: '#58A6FF',
     corBg: 'rgba(88,166,255,0.12)',
@@ -53,7 +57,8 @@ const FASES: Fase[] = [
   {
     id: 'RC_GERADA',
     label: 'RC Gerada',
-    sublabel: 'AMBEV emitiu a Requisição de Compra',
+    sublabel: 'Aguardando AMBEV emitir a Requisição de Compra',
+    labelConcluido: 'Requisição de Compra emitida pela AMBEV',
     icon: Receipt,
     cor: '#A371F7',
     corBg: 'rgba(163,113,247,0.12)',
@@ -65,7 +70,8 @@ const FASES: Fase[] = [
   {
     id: 'PEDIDO_DE_COMPRA',
     label: 'Pedido de Compra',
-    sublabel: 'Pedido emitido pela AMBEV',
+    sublabel: 'Aguardando AMBEV emitir o Pedido de Compra',
+    labelConcluido: 'Pedido de Compra recebido da AMBEV',
     icon: ShoppingCart,
     cor: '#3FB950',
     corBg: 'rgba(63,185,80,0.12)',
@@ -77,7 +83,8 @@ const FASES: Fase[] = [
   {
     id: 'CONCLUIDA',
     label: 'Entrega / Concluído',
-    sublabel: 'Serviço ou peça entregue à AMBEV',
+    sublabel: 'Entregar serviço ou peça e encerrar a OS',
+    labelConcluido: 'Serviço ou peça entregue — OS encerrada',
     icon: CheckCircle2,
     cor: '#3FB950',
     corBg: 'rgba(63,185,80,0.12)',
@@ -263,10 +270,12 @@ export const FluxoComercial: React.FC<Props> = ({ ocorrencia, canEdit, onAtualiz
                   )}
                 </div>
 
-                {/* Sub-label só na fase atual ou na próxima */}
-                {(atual || idx === faseAtual + 1) && (
-                  <p className="text-[10px] text-[#6E7681] mt-0.5 leading-none">{fase.sublabel}</p>
-                )}
+                {/* Sublabel: instrução (próxima/atual pendente) ou confirmação (concluída) */}
+                <p className={`text-[10px] mt-0.5 leading-tight ${
+                  concluida ? 'text-[#3FB950]/70' : 'text-[#6E7681]'
+                }`}>
+                  {concluida ? fase.labelConcluido : (atual || idx === faseAtual + 1) ? fase.sublabel : ''}
+                </p>
               </div>
             </div>
           );
