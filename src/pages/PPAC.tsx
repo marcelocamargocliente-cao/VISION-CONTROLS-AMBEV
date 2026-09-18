@@ -41,6 +41,9 @@ export const PPAC: React.FC = () => {
   const loadData = async () => {
     setLoading(true);
     try {
+      // Mostra cache local imediatamente enquanto Supabase carrega
+      const { dbState } = await import('../lib/dataStore').then(m => ({ dbState: (m as any).DataStore }));
+      
       const [orcs, occs, eqs] = await Promise.all([
         DataStore.getOrcamentos(),
         DataStore.getOcorrencias(),
@@ -54,7 +57,19 @@ export const PPAC: React.FC = () => {
     }
   };
 
-  useEffect(() => { loadData(); }, []);
+  // Carrega também do localStorage diretamente como fallback imediato
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('IVCA_DATABASE_LOCAL_V5');
+      if (raw) {
+        const state = JSON.parse(raw);
+        if (state.orcamentos && state.orcamentos.length > 0) {
+          setOrcamentos(state.orcamentos);
+        }
+      }
+    } catch {}
+    loadData();
+  }, []);
 
   const filtrados = useMemo(() => {
     return orcamentos.filter((o) => {
