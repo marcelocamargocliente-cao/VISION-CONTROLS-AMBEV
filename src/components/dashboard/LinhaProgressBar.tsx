@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Activity } from 'lucide-react';
+import { ArrowRight, BarChart3 } from 'lucide-react';
 import { VwStatusPorLinha } from '../../types/database';
 
 interface LinhaProgressBarProps {
@@ -10,83 +10,86 @@ interface LinhaProgressBarProps {
 export const LinhaProgressBar: React.FC<LinhaProgressBarProps> = ({ linhas }) => {
   const navigate = useNavigate();
 
-  // Mostrar no máximo 5 linhas de produção distribuídas no flex disponível
-  const displayLinhas =
+  const display =
     linhas && linhas.length > 0
-      ? linhas.slice(0, 5)
+      ? linhas.slice(0, 8)
       : [
-          { linha_id: 'l1', linha_nome: 'Linha 506 (Retornáveis)', total: 10, ok: 8, parado: 2, restricao: 0 },
-          { linha_id: 'l2', linha_nome: 'Linha 503 (Latas)', total: 12, ok: 11, parado: 1, restricao: 0 },
-          { linha_id: 'l3', linha_nome: 'Linha 542 (Long Neck)', total: 8, ok: 8, parado: 0, restricao: 0 },
-          { linha_id: 'l4', linha_nome: 'Linha 501 (Barril)', total: 6, ok: 6, parado: 0, restricao: 0 },
+          { linha_id: 'ret', linha_nome: 'RETORNÁVEIS', total: 60, ok: 38, parado: 22, restricao: 0 },
+          { linha_id: 'ow',  linha_nome: 'ONE WAY CERVEJA', total: 86, ok: 79, parado: 7,  restricao: 0 },
+          { linha_id: 'owref', linha_nome: 'ONE WAY REFRI', total: 15, ok: 13, parado: 2,  restricao: 0 },
+          { linha_id: 'proc', linha_nome: 'PROCESSOS CERVEJA', total: 23, ok: 22, parado: 1, restricao: 0 },
+          { linha_id: 'chopp', linha_nome: 'ÁREA DO CHOPP', total: 1,  ok: 0,  parado: 1,  restricao: 0 },
         ];
 
+  const maxTotal = Math.max(...display.map((l) => l.total), 1);
+
   return (
-    <div className="bg-[#13181F] border border-[#21262D] rounded-xl p-3 flex flex-col justify-between h-full w-full overflow-hidden select-none">
-      {/* Título: 32px shrink-0 */}
-      <div className="flex items-center justify-between gap-2 shrink-0 h-[32px] mb-0.5">
+    <div className="bg-[#13181F] border border-[#21262D] rounded-xl p-3 flex flex-col h-full w-full overflow-hidden select-none">
+      {/* Header */}
+      <div className="flex items-center justify-between gap-2 shrink-0 mb-2">
         <div className="flex items-center gap-1.5 min-w-0">
-          <Activity className="w-4 h-4 text-[#8B949E] shrink-0" />
+          <BarChart3 className="w-4 h-4 text-[#8B949E] shrink-0" />
           <div className="min-w-0">
             <h3 className="text-[12px] font-bold text-[#E6EDF3] tracking-tight truncate leading-tight">
-              Status por Linha
+              Distribuição de Status por Área
             </h3>
             <p className="text-[10px] text-[#8B949E] truncate leading-none">
-              Disponibilidade operacional
+              Operacional (OK) vs Indisponível (NOK)
             </p>
           </div>
         </div>
       </div>
 
-      {/* List of lines distributed evenly: flex-1 min-h-0 */}
-      <div className="flex-1 min-h-0 flex flex-col justify-around py-0.5 space-y-1.5">
-        {displayLinhas.map((l) => {
-          const pct = l.total > 0 ? Math.round(((l.ok + (l.restricao || 0)) / l.total) * 100) : 100;
-          const is100 = pct >= 100;
-          const hasParado = (l.parado || 0) > 0;
+      {/* Legenda */}
+      <div className="flex items-center gap-3 shrink-0 mb-2">
+        <div className="flex items-center gap-1">
+          <span className="w-2.5 h-2.5 rounded-sm bg-[#3FB950]" />
+          <span className="text-[9px] text-[#8B949E] uppercase font-bold tracking-wider">Operacional (OK)</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <span className="w-2.5 h-2.5 rounded-sm bg-[#F85149]" />
+          <span className="text-[9px] text-[#8B949E] uppercase font-bold tracking-wider">Indisponível (NOK)</span>
+        </div>
+      </div>
 
+      {/* Barras horizontais duplas */}
+      <div className="flex-1 min-h-0 flex flex-col justify-around gap-1">
+        {display.map((l) => {
+          const nok = l.parado + (l.restricao || 0);
+          const pctOk  = maxTotal > 0 ? (l.ok  / maxTotal) * 100 : 0;
+          const pctNok = maxTotal > 0 ? (nok   / maxTotal) * 100 : 0;
           return (
-            <div key={l.linha_id} className="group">
-              <div className="flex items-center justify-between text-[11px] mb-1 leading-none font-body">
-                <span className="font-medium text-[#E6EDF3] group-hover:text-[#58A6FF] transition-colors truncate">
-                  {l.linha_nome}
-                </span>
-                <div className="flex items-center gap-1.5 shrink-0 ml-2">
-                  {hasParado && (
-                    <span className="linha-badge-parado">
-                      {l.parado} parado{l.parado > 1 ? 's' : ''}
-                    </span>
-                  )}
-                  <span
-                    className={`linha-pct ${is100 ? 'full' : ''}`}
-                  >
-                    {pct}%
-                  </span>
+            <div key={l.linha_id} className="space-y-0.5">
+              <div className="flex items-center justify-between text-[9px] leading-none mb-0.5">
+                <span className="font-semibold text-[#C9D1D9] truncate uppercase tracking-wide text-[9px]">{l.linha_nome}</span>
+                <div className="flex items-center gap-1.5 shrink-0 ml-1">
+                  <span className="text-[#3FB950] font-mono font-bold">{l.ok}</span>
+                  {nok > 0 && <span className="text-[#F85149] font-mono font-bold">/ {nok}</span>}
                 </div>
               </div>
-
-              {/* Progress bar: 3px height */}
-              <div className="w-full h-[3px] rounded-[2px] bg-[#1A1F28] overflow-hidden">
-                <div
-                  className={`h-full rounded-[2px] transition-all duration-500 ${
-                    is100 ? 'bg-[#3FB950]' : hasParado ? 'bg-[#D29922]' : 'bg-[#484F58]'
-                  }`}
-                  style={{ width: `${pct}%` }}
-                />
+              {/* OK bar */}
+              <div className="w-full h-[6px] rounded-sm bg-[#1A1F28] overflow-hidden">
+                <div className="h-full rounded-sm bg-[#3FB950] transition-all duration-500"
+                  style={{ width: `${pctOk}%` }} />
               </div>
+              {/* NOK bar */}
+              {nok > 0 && (
+                <div className="w-full h-[6px] rounded-sm bg-[#1A1F28] overflow-hidden">
+                  <div className="h-full rounded-sm bg-[#F85149] transition-all duration-500"
+                    style={{ width: `${pctNok}%` }} />
+                </div>
+              )}
             </div>
           );
         })}
       </div>
 
-      {/* Botão "Ver todos": 28px fixo no bottom (shrink-0) */}
-      <div className="pt-1.5 border-t border-[#21262D] shrink-0 h-[28px] flex items-center">
-        <button
-          onClick={() => navigate('/equipamentos')}
-          className="w-full flex items-center justify-center gap-1.5 text-[11px] font-semibold text-[#8B949E] hover:text-[#58A6FF] py-0.5 rounded transition-all cursor-pointer leading-none"
-        >
+      {/* Footer */}
+      <div className="pt-1.5 border-t border-[#21262D] shrink-0 mt-1">
+        <button onClick={() => navigate('/equipamentos')}
+          className="w-full flex items-center justify-center gap-1.5 text-[10px] font-semibold text-[#8B949E] hover:text-[#E6EDF3] py-0.5 rounded transition-all cursor-pointer leading-none">
           <span>Ver todos os equipamentos</span>
-          <ArrowRight className="w-3 h-3 text-[#484F58] hover:text-[#58A6FF]" />
+          <ArrowRight className="w-3 h-3" />
         </button>
       </div>
     </div>

@@ -7,6 +7,8 @@ import {
   XAxis,
   YAxis,
   Tooltip,
+  Cell,
+  LabelList,
 } from 'recharts';
 import { ShieldAlert, ExternalLink } from 'lucide-react';
 import { VwStatusPorUg, VwAgingParadas } from '../../types/database';
@@ -20,26 +22,26 @@ interface BarChartUGsProps {
 export const BarChartUGs: React.FC<BarChartUGsProps> = ({ statusUg, agingParadas }) => {
   const navigate = useNavigate();
 
+  // Usa statusUg que agora agrupa por área real (area_ref)
   const chartData = (statusUg && statusUg.length > 0
     ? statusUg
     : [
-        { ug_codigo: 'N1', ok: 45, parado: 2 },
+        { ug_codigo: 'N1', ok: 45, parado: 0 },
         { ug_codigo: 'N2', ok: 52, parado: 0 },
         { ug_codigo: 'N3', ok: 38, parado: 0 },
         { ug_codigo: 'N4', ok: 44, parado: 0 },
       ]
   ).map((u) => ({
     name: u.ug_codigo,
-    ok: u.ok,
-    parado: u.parado,
-  }));
+    parado: u.parado || 0,
+  })).filter((u) => u.parado > 0); // só mostra quem tem NOK
 
-  // Máximo 2 itens
   const top2Parados = agingParadas.slice(0, 2);
+  const totalNok = chartData.reduce((s, d) => s + d.parado, 0);
 
   return (
-    <div className="bg-[#111827] border border-blue-500/15 rounded-lg p-3 flex flex-col justify-between shadow-lg h-full w-full overflow-hidden">
-      {/* Título: 32px shrink-0 */}
+    <div className="bg-[#13181F] border border-[#21262D] rounded-xl p-3 flex flex-col justify-between shadow-lg h-full w-full overflow-hidden">
+      {/* Título */}
       <div className="flex items-center justify-between shrink-0 h-[32px] mb-0.5">
         <div className="flex items-center gap-1.5 min-w-0">
           <div className="w-6 h-6 rounded-md bg-red-500/15 text-red-400 flex items-center justify-center shrink-0">
@@ -47,90 +49,103 @@ export const BarChartUGs: React.FC<BarChartUGsProps> = ({ statusUg, agingParadas
           </div>
           <div className="min-w-0">
             <h3 className="text-[12px] font-bold text-[#F9FAFB] truncate leading-tight">
-              Equipamentos em Risco
+              Equipamentos Indisponíveis (NOK)
             </h3>
             <p className="text-[10px] text-gray-400 truncate leading-none">
-              Aging crítico de paradas
+              Quantidade parada por área
             </p>
           </div>
         </div>
-
-        <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30 leading-none shrink-0">
-          {agingParadas.length} alerta{agingParadas.length === 1 ? '' : 's'}
-        </span>
+        {totalNok > 0 && (
+          <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30 leading-none shrink-0">
+            {totalNok} NOK
+          </span>
+        )}
       </div>
 
-      {/* Gráfico de barras: flex-1 min-h-0 */}
-      <div className="w-full flex-1 min-h-0 my-0.5">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={chartData} margin={{ top: 4, right: 0, left: -30, bottom: 0 }}>
-            <XAxis
-              dataKey="name"
-              tickLine={false}
-              axisLine={{ stroke: 'rgba(255, 255, 255, 0.08)' }}
-              tick={{ fill: '#9CA3AF', fontSize: 9 }}
-              height={14}
-            />
-            <YAxis
-              tickLine={false}
-              axisLine={{ stroke: 'rgba(255, 255, 255, 0.08)' }}
-              tick={{ fill: '#9CA3AF', fontSize: 9 }}
-            />
-            <Tooltip
-              content={({ active, payload, label }) => {
-                if (active && payload && payload.length) {
-                  return (
-                    <div className="bg-[#0A0E1A] border border-blue-500/30 rounded p-1.5 text-[10px] shadow-xl">
-                      <p className="font-bold text-white mb-0.5">UG {label}</p>
-                      <p className="text-blue-400 font-mono">OK: {payload[0]?.value}</p>
-                      <p className="text-red-400 font-mono">Parados: {payload[1]?.value}</p>
-                    </div>
-                  );
-                }
-                return null;
-              }}
-            />
-            <Bar dataKey="ok" name="Operando" fill="#3B82F6" radius={[2, 2, 0, 0]} />
-            <Bar dataKey="parado" name="Parado" fill="#EF4444" radius={[2, 2, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-
-      {/* Lista de críticos: máximo 2 itens, fixos no bottom (shrink-0) */}
-      <div className="pt-1.5 border-t border-white/[0.06] space-y-1 shrink-0">
-        {top2Parados.length === 0 ? (
-          <p className="text-[11px] text-emerald-400 italic py-1 text-center">
-            Nenhum equipamento parado no momento.
-          </p>
+      {/* Gráfico de barras vermelhas */}
+      <div className="flex-1 min-h-0 w-full">
+        {chartData.length > 0 ? (
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={chartData}
+              margin={{ top: 14, right: 4, left: -20, bottom: 0 }}
+              barCategoryGap="30%"
+            >
+              <XAxis
+                dataKey="name"
+                tick={{ fill: '#8B949E', fontSize: 10, fontFamily: 'monospace' }}
+                axisLine={false}
+                tickLine={false}
+              />
+              <YAxis
+                tick={{ fill: '#484F58', fontSize: 9 }}
+                axisLine={false}
+                tickLine={false}
+                allowDecimals={false}
+              />
+              <Tooltip
+                content={({ active, payload }) => {
+                  if (active && payload && payload.length) {
+                    const d = payload[0].payload;
+                    return (
+                      <div className="bg-[#1A1F28] border border-[#21262D] rounded-lg p-2 text-[10px] shadow-xl">
+                        <p className="font-bold text-[#E6EDF3]">{d.name}</p>
+                        <p className="text-red-400 font-mono">{d.parado} indisponíveis</p>
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
+                cursor={{ fill: 'rgba(255,255,255,0.04)' }}
+              />
+              <Bar dataKey="parado" radius={[4, 4, 0, 0]}>
+                {chartData.map((_, i) => (
+                  <Cell key={i} fill="#F85149" />
+                ))}
+                <LabelList
+                  dataKey="parado"
+                  position="top"
+                  style={{ fill: '#F85149', fontSize: 10, fontWeight: 700, fontFamily: 'monospace' }}
+                />
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
         ) : (
-          top2Parados.map((item) => (
+          <div className="h-full flex flex-col items-center justify-center gap-1">
+            <span className="text-2xl">✅</span>
+            <p className="text-[11px] text-[#3FB950] font-semibold">Nenhum equipamento parado</p>
+            <p className="text-[10px] text-[#8B949E]">Todos os ativos estão operacionais</p>
+          </div>
+        )}
+      </div>
+
+      {/* Aging dos mais críticos */}
+      {top2Parados.length > 0 && (
+        <div className="pt-1.5 border-t border-[#21262D] shrink-0 space-y-1">
+          {top2Parados.map((item) => (
             <div
               key={item.ocorrencia_id}
               onClick={() => navigate(`/ocorrencias/${item.ocorrencia_id}`)}
-              className="p-1.5 rounded bg-[#0A0E1A]/70 border border-red-500/20 hover:border-red-500/50 hover:bg-[#1a2235] transition-all cursor-pointer group text-[11px]"
+              className="flex items-center justify-between gap-2 cursor-pointer group"
             >
-              <div className="flex items-center justify-between gap-1.5">
-                <div className="min-w-0">
-                  <div className="flex items-center gap-1">
-                    <span className="font-mono font-bold text-white group-hover:text-blue-400 transition-colors">
-                      TAG {item.tag}
-                    </span>
-                    <span className="text-gray-500">·</span>
-                    <span className="text-gray-300 truncate text-[10px]">
-                      {item.linha_nome}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="shrink-0 flex items-center gap-1.5">
-                  <AgingBadge dias={item.dias_parado} />
-                  <ExternalLink className="w-3 h-3 text-gray-500 group-hover:text-white transition-colors" />
-                </div>
+              <span className="text-[10px] font-mono font-medium text-[#E6EDF3] group-hover:text-[#F85149] truncate transition-colors">
+                TAG {item.patrimonio_ref || item.tag_sap || item.tag}
+              </span>
+              <div className="flex items-center gap-1 shrink-0">
+                <AgingBadge dias={item.dias_parado} />
+                <ExternalLink className="w-2.5 h-2.5 text-[#484F58] group-hover:text-[#F85149] transition-colors" />
               </div>
             </div>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
+
+      {totalNok === 0 && top2Parados.length === 0 && (
+        <div className="shrink-0 text-center">
+          <p className="text-[10px] text-[#8B949E] italic">Nenhum equipamento parado no momento.</p>
+        </div>
+      )}
     </div>
   );
 };

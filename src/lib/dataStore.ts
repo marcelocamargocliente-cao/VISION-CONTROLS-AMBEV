@@ -340,61 +340,76 @@ export const DataStore = {
     };
   },
 
-  // 4. View: Status por UG (vw_status_por_ug)
+  // 4. View: Status por Área (agrupa por area_ref do equipamento para o gráfico de NOK)
   async getVwStatusPorUg(filters?: GlobalFilters): Promise<VwStatusPorUg[]> {
-    const equips = await this.getVwEquipamentos(filters);
-    return dbState.ugs.map((ug) => {
-      const ugEquips = equips.filter((e) => e.ug_id === ug.id);
-      const total = ugEquips.length;
-      const ok = ugEquips.filter((e) => e.status === 'OK').length;
-      const parado = ugEquips.filter((e) => e.status === 'PARADO').length;
-      const restricao = ugEquips.filter((e) => e.status === 'RESTRICAO').length;
-      const disp = total > 0 ? Number((((ok + restricao) / total) * 100).toFixed(1)) : 100;
-      return {
-        ug_codigo: ug.codigo,
-        ug_nome: ug.nome,
-        total,
-        ok,
-        parado,
-        restricao,
-        disponibilidade_pct: disp,
-      };
-    });
-  },
-
-  // 5. View: Status por Linha (vw_status_por_linha)
-  async getVwStatusPorLinha(filters?: GlobalFilters): Promise<VwStatusPorLinha[]> {
-    // Usar dados reais do Supabase agrupados por UG (ug_ref)
-    let equipamentos: Equipamento[] = dbState.equipamentos;
+    let equipamentos: any[] = dbState.equipamentos;
     if (isSupabaseConfigured) {
       try {
-        const { data } = await supabase.from('equipamentos').select('tag, ug_ref, status');
-        if (data && data.length > 0) equipamentos = data as any[];
+        const { data } = await supabase
+          .from('equipamentos')
+          .select('tag, area_ref, localizacao_ref, ug_ref, status');
+        if (data && data.length > 0) equipamentos = data;
+      } catch (e) { console.warn('getVwStatusPorUg Supabase', e); }
+    }
+
+    const areaMap = new Map<string, { total: number; ok: number; parado: number; restricao: number }>();
+    equipamentos.forEach((e: any) => {
+      const area = (e.area_ref || e.localizacao_ref || e.ug_ref || 'SEM ÁREA').toUpperCase();
+      const cur = areaMap.get(area) || { total: 0, ok: 0, parado: 0, restricao: 0 };
+      cur.total += 1;
+      if (e.status === 'OK') cur.ok += 1;
+      else if (e.status === 'PARADO') cur.parado += 1;
+      else cur.restricao += 1;
+      areaMap.set(area, cur);
+    });
+
+    return Array.from(areaMap.entries()).map(([area, d]) => ({
+      ug_codigo: area,
+      ug_nome: area,
+      total: d.total,
+      ok: d.ok,
+      parado: d.parado,
+      restricao: d.restricao,
+      disponibilidade_pct: d.total > 0 ? Number((((d.ok + d.restricao) / d.total) * 100).toFixed(1)) : 100,
+    })).sort((a, b) => b.parado - a.parado);
+  },
+
+  // 5. View: Status por Área real (usa area_ref do equipamento)
+  async getVwStatusPorLinha(filters?: GlobalFilters): Promise<VwStatusPorLinha[]> {
+    let equipamentos: any[] = dbState.equipamentos;
+    if (isSupabaseConfigured) {
+      try {
+        const { data } = await supabase
+          .from('equipamentos')
+          .select('tag, area_ref, localizacao_ref, status');
+        if (data && data.length > 0) equipamentos = data;
       } catch (e) { console.warn('getVwStatusPorLinha Supabase', e); }
     }
 
-    // Agrupar por ug_ref
-    const ugMap = new Map<string, { ok: number; nok: number; total: number }>();
+    // Agrupar por area_ref (RETORNÁVEIS, ONE WAY CERVEJA, etc.)
+    const areaMap = new Map<string, { ok: number; nok: number; total: number }>();
     equipamentos.forEach((e: any) => {
-      const ug = e.ug_ref || 'SEM UG';
-      const cur = ugMap.get(ug) || { ok: 0, nok: 0, total: 0 };
+      const area = (e.area_ref || e.localizacao_ref || 'SEM ÁREA').toUpperCase();
+      const cur = areaMap.get(area) || { ok: 0, nok: 0, total: 0 };
       cur.total += 1;
       if (e.status === 'OK') cur.ok += 1;
       else cur.nok += 1;
-      ugMap.set(ug, cur);
+      areaMap.set(area, cur);
     });
 
-    const result: VwStatusPorLinha[] = Array.from(ugMap.entries()).map(([ug, data]) => ({
-      linha_id: ug,
-      linha_nome: ug,
-      total: data.total,
-      ok: data.ok,
-      parado: 0,
-      restricao: data.nok,
-    }));
+    const result: VwStatusPorLinha[] = Array.from(areaMap.entries())
+      .map(([area, data]) => ({
+        linha_id: area,
+        linha_nome: area,
+        total: data.total,
+        ok: data.ok,
+        parado: data.nok,
+        restricao: 0,
+      }))
+      .filter((r) => r.total > 0)
+      .sort((a, b) => b.parado - a.parado || b.total - a.total); // mais críticas primeiro
 
-    // Ordem: N1, N2, N3, N4
-    return result.sort((a, b) => a.linha_nome.localeCompare(b.linha_nome));
+    return result;
   },
 
   // 6. View: Status por Área (vw_status_por_area)
