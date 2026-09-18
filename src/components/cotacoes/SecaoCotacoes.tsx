@@ -11,9 +11,10 @@ import { formatCurrency } from '../../utils/formatters';
 interface Props {
   ocorrenciaId: string;
   canEdit: boolean;
-  pecasOcorrencia?: PecaPendente[];       // itens já em Peças & Serviços
-  onItensAdicionados?: () => void;         // recarrega Peças & Serviços na OS
+  pecasOcorrencia?: PecaPendente[];
+  onItensAdicionados?: () => void;
   onCriarProposta: (cotacao: CotacaoFornecedor) => void;
+  onAdicionouCotacao?: () => Promise<void>; // dispara ao salvar nova cotação
 }
 
 const TIPOS: { id: TipoItem; label: string; icon: string }[] = [
@@ -30,7 +31,7 @@ const ITEM_VAZIO: CotacaoItem = { descricao: '', detalhe: '', tipo: 'PECA', pres
 const centavosParaTexto = (v: number): string =>
   v ? v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '';
 
-export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, pecasOcorrencia = [], onItensAdicionados, onCriarProposta }) => {
+export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, pecasOcorrencia = [], onItensAdicionados, onCriarProposta, onAdicionouCotacao }) => {
   const [cotacoes, setCotacoes] = useState<CotacaoFornecedor[]>([]);
   const [parceiras, setParceiras] = useState<EmpresaParceira[]>([]);
   const [expandido, setExpandido] = useState<string | null>(null);
@@ -132,6 +133,8 @@ export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, pecasOco
       if (editando) { await DataStore.updateCotacao(editando.id, payload); toast.success('Cotacao atualizada'); }
       else {
         await DataStore.saveCotacao(payload);
+        // Dispara callback pra marcar Orçamento Interno automaticamente
+        await onAdicionouCotacao?.();
         // Sincroniza: itens NOVOS (não importados) viram Peças & Serviços na OS
         const novos = itens.filter((_, i) => !itensImportados.has(i) && itens[i].descricao.trim());
         if (novos.length > 0) {

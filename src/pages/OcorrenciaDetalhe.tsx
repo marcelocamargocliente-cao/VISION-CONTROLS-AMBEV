@@ -898,6 +898,22 @@ export const OcorrenciaDetalhe: React.FC = () => {
                 pecasOcorrencia={pecas}
                 onItensAdicionados={loadData}
                 onCriarProposta={handleCriarPropostaDeCotacao}
+                onAdicionouCotacao={async () => {
+                  // Ao adicionar cotação, avança automaticamente para Orçamento Interno
+                  if (ocorrencia.status === 'ABERTA' || ocorrencia.status === 'AGUARDANDO_ORCAMENTO') {
+                    const hoje = new Date().toISOString().slice(0, 10);
+                    await DataStore.updateOcorrenciaExtra(ocorrencia.id, {
+                      status: 'ORCAMENTO_INTERNO_FEITO',
+                      data_orcamento_interno: hoje,
+                    });
+                    await DataStore.addComentario(
+                      ocorrencia.id,
+                      user?.nome || 'Sistema',
+                      `Orçamento interno iniciado — Cotação de fornecedor adicionada em ${new Date(hoje + 'T12:00:00').toLocaleDateString('pt-BR')}`
+                    );
+                    await loadData();
+                  }
+                }}
               />
             )}
 
