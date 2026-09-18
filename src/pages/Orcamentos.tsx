@@ -815,10 +815,8 @@ export const Orcamentos: React.FC = () => {
           </div>
         )}
       </div>
-
-      {/* fim aba propostas */}
       </>
-      }
+      )}
 
       {/* Modal 1: Detalhe & Edição do Orçamento */}
       <ModalOrcamentoDetalhe
