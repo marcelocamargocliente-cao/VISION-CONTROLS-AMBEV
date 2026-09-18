@@ -12,12 +12,19 @@ import { formatCurrency, formatDate, buildOrcamentoEmailContent } from '../utils
 import { ModalOrcamentoDetalhe } from '../components/orcamentos/ModalOrcamentoDetalhe';
 
 const STATUS_CONFIG: Record<OrcamentoStatus, { label: string; cor: string; bg: string; icon: React.FC<{ className?: string }> }> = {
-  RASCUNHO:   { label: 'Rascunho',             cor: '#8B949E', bg: 'rgba(139,148,158,0.12)', icon: FileText },
-  ENVIADO:    { label: 'PPAC Enviada',          cor: '#58A6FF', bg: 'rgba(88,166,255,0.12)',  icon: Send },
-  APROVADO:   { label: 'Aprovada AMBEV',        cor: '#3FB950', bg: 'rgba(63,185,80,0.12)',   icon: CheckCircle2 },
-  REPROVADO:  { label: 'Reprovada',             cor: '#F85149', bg: 'rgba(248,81,73,0.12)',   icon: XCircle },
-  EXPIRADO:   { label: 'Expirada',              cor: '#D29922', bg: 'rgba(210,153,34,0.12)',  icon: Clock },
-  CANCELADO:  { label: 'Cancelada',             cor: '#484F58', bg: 'rgba(72,79,88,0.12)',    icon: XCircle },
+  RASCUNHO:        { label: 'Rascunho',         cor: '#8B949E', bg: 'rgba(139,148,158,0.12)', icon: FileText },
+  ELABORACAO:      { label: 'Em Elaboração',     cor: '#8B949E', bg: 'rgba(139,148,158,0.12)', icon: FileText },
+  ENVIADO:         { label: 'PPAC Enviada',       cor: '#58A6FF', bg: 'rgba(88,166,255,0.12)',  icon: Send },
+  EM_ANALISE:      { label: 'Em Análise',         cor: '#D29922', bg: 'rgba(210,153,34,0.12)',  icon: Clock },
+  EM_ANALISE_AMBEV:{ label: 'Análise AMBEV',      cor: '#D29922', bg: 'rgba(210,153,34,0.12)',  icon: Clock },
+  APROVADO:        { label: 'Aprovada',            cor: '#3FB950', bg: 'rgba(63,185,80,0.12)',   icon: CheckCircle2 },
+  APROVADO_AMBEV:  { label: 'Aprovada AMBEV',      cor: '#3FB950', bg: 'rgba(63,185,80,0.12)',   icon: CheckCircle2 },
+  REPROVADO:       { label: 'Reprovada',           cor: '#F85149', bg: 'rgba(248,81,73,0.12)',   icon: XCircle },
+  REJEITADO:       { label: 'Rejeitada',           cor: '#F85149', bg: 'rgba(248,81,73,0.12)',   icon: XCircle },
+  REJEITADO_AMBEV: { label: 'Rejeitada AMBEV',     cor: '#F85149', bg: 'rgba(248,81,73,0.12)',   icon: XCircle },
+  EXPIRADO:        { label: 'Expirada',            cor: '#D29922', bg: 'rgba(210,153,34,0.12)',  icon: Clock },
+  CANCELADO:       { label: 'Cancelada',           cor: '#484F58', bg: 'rgba(72,79,88,0.12)',    icon: XCircle },
+  FATURADO:        { label: 'Faturada',            cor: '#3FB950', bg: 'rgba(63,185,80,0.12)',   icon: CheckCircle2 },
 };
 
 export const PPAC: React.FC = () => {
@@ -108,8 +115,7 @@ export const PPAC: React.FC = () => {
       ug: (occ as any)?.ug || eq?.ug_ref,
       linha: (occ as any)?.linha || eq?.localizacao_ref,
       ordem_sap: (occ as any)?.ordem_sap,
-      pecas: orc.pecas as any[],
-    });
+      status: orc.status,
     window.open(`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
   };
 
