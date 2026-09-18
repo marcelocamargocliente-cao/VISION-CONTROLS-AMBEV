@@ -13,6 +13,7 @@ import {
   ChevronRight,
   Menu,
   X,
+  Stamp,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { DataStore } from '../../lib/dataStore';
@@ -59,8 +60,9 @@ export const AppLayout: React.FC = () => {
       badge: ocorrenciasAbertas > 0 ? `${ocorrenciasAbertas}` : undefined,
     },
     { to: '/orcamentos', label: 'Orçamentos', short: 'Orçam.', num: '04', icon: FileText },
+    { to: '/ppac', label: 'PPAC', short: 'PPAC', num: '05', icon: Stamp },
     ...(canManageCadastros
-      ? [{ to: '/cadastros', label: 'Cadastros', short: 'Config', num: '05', icon: Settings2 }]
+      ? [{ to: '/cadastros', label: 'Cadastros', short: 'Config', num: '06', icon: Settings2 }]
       : []),
   ];
 

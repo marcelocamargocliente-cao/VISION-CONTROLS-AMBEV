@@ -14,6 +14,7 @@ const Ocorrencias = lazy(() => import('./pages/Ocorrencias').then((m) => ({ defa
 const NovaOcorrencia = lazy(() => import('./pages/NovaOcorrencia').then((m) => ({ default: m.NovaOcorrencia })));
 const OcorrenciaDetalhe = lazy(() => import('./pages/OcorrenciaDetalhe').then((m) => ({ default: m.OcorrenciaDetalhe })));
 const Orcamentos = lazy(() => import('./pages/Orcamentos').then((m) => ({ default: m.Orcamentos })));
+const PPAC = lazy(() => import('./pages/PPAC').then((m) => ({ default: m.PPAC })));
 const Cadastros = lazy(() => import('./pages/Cadastros').then((m) => ({ default: m.Cadastros })));
 
 // Detecta viewport de celular (mesmo breakpoint do Tailwind md: 768px)
@@ -95,6 +96,7 @@ export const App: React.FC = () => {
             <Route path="ocorrencias/nova" element={<Suspense fallback={<PageLoader />}><NovaOcorrencia /></Suspense>} />
             <Route path="ocorrencias/:id" element={<Suspense fallback={<PageLoader />}><OcorrenciaDetalhe /></Suspense>} />
             <Route path="orcamentos" element={<Suspense fallback={<PageLoader />}><Orcamentos /></Suspense>} />
+            <Route path="ppac" element={<Suspense fallback={<PageLoader />}><PPAC /></Suspense>} />
             <Route path="cadastros" element={<Suspense fallback={<PageLoader />}><Cadastros /></Suspense>} />
           </Route>
 
