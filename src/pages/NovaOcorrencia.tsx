@@ -63,7 +63,7 @@ export const NovaOcorrencia: React.FC = () => {
   const isObsoleto = (eq: VwEquipamento): boolean => {
     const marca = (eq.marca || '').toLowerCase().trim();
     const modelo = (eq.modelo || '').trim();
-    return marca === 'rittal' && /100$/i.test(modelo);
+    return marca === 'rittal' && modelo.endsWith('100');
   };<Array<Partial<PecaPendente>>>([]);
   const [valorDisplays, setValorDisplays] = useState<string[]>([]); // display-only formatted strings for valor_unitario mask
 
