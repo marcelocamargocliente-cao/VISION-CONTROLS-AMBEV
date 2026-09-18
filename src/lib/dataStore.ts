@@ -1200,11 +1200,49 @@ export const DataStore = {
           .from('orcamentos')
           .select('*')
           .order('created_at', { ascending: false });
-        if (error) { console.warn('getOrcamentos Supabase error:', error.message); }
-        else if (data) {
+
+        if (error) {
+          console.warn('getOrcamentos Supabase error:', error.message);
+        } else if (data && data.length > 0) {
+          // Supabase tem dados — usa eles
           dbState.orcamentos = data as Orcamento[];
           persistState();
           return data as Orcamento[];
+        } else if (data && data.length === 0 && dbState.orcamentos.length > 0) {
+          // Supabase vazio mas cache local tem dados — sincroniza
+          console.log('getOrcamentos: sincronizando', dbState.orcamentos.length, 'orcamentos para Supabase');
+          const isValidUuid = (s?: string) => !!s && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
+          for (const orc of dbState.orcamentos) {
+            try {
+              const payload: Record<string, unknown> = {
+                numero: orc.numero,
+                fornecedor: orc.fornecedor,
+                valor_total: orc.valor_total,
+                data_envio: orc.data_envio,
+                enviado_para: orc.enviado_para || null,
+                validade: orc.validade || null,
+                status: orc.status || 'RASCUNHO',
+                arquivo_pdf_url: orc.arquivo_pdf_url || null,
+                arquivo_url: orc.arquivo_url || null,
+                descricao_anomalia: orc.descricao_anomalia || null,
+                observacoes: orc.observacoes || null,
+                pecas: orc.pecas || null,
+                ocorrencia_id: isValidUuid(orc.ocorrencia_id) ? orc.ocorrencia_id : null,
+                created_at: orc.created_at || new Date().toISOString(),
+              };
+              if (isValidUuid(orc.id)) payload.id = orc.id;
+              const { data: inserted } = await supabase.from('orcamentos').upsert(payload, { onConflict: 'id' }).select().single();
+              if (inserted) orc.id = (inserted as any).id;
+            } catch (syncErr) { console.warn('sync orc error:', syncErr); }
+          }
+          persistState();
+          // Re-busca após sync
+          const { data: refreshed } = await supabase.from('orcamentos').select('*').order('created_at', { ascending: false });
+          if (refreshed && refreshed.length > 0) {
+            dbState.orcamentos = refreshed as Orcamento[];
+            persistState();
+            return refreshed as Orcamento[];
+          }
         }
       } catch (e) { console.warn('getOrcamentos Supabase error:', e); }
     }
