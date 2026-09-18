@@ -576,20 +576,27 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
                 <label className="block text-[10px] uppercase font-mono text-[#94A3B8] mb-1">
                   Nº do Pedido AMBEV
                 </label>
-                {isEditing ? (
-                  <input
-                    type="text"
-                    value={formData.numero_pedido}
-                    onChange={(e) => setFormData({ ...formData, numero_pedido: e.target.value })}
-                    className="w-full bg-[#1C222A] border border-[#2C343E] rounded px-3 py-1.5 text-xs text-[#ECEFF1] focus:border-[#30363D] focus:outline-none font-mono"
-                    placeholder="Ex: 4500123456 — preenchido após aprovação AMBEV"
-                  />
-                ) : (
-                  <div className={`flex items-center gap-2 text-xs bg-[#1C222A] p-2.5 rounded-[4px] border ${orcamento.numero_pedido ? 'border-green-500/40 text-green-400' : 'border-[#2C343E] text-[#94A3B8]'}`}>
-                    <FileText className="w-3.5 h-3.5" />
-                    <span className="font-mono">{orcamento.numero_pedido || '— Aguardando pedido AMBEV'}</span>
-                  </div>
-                )}
+                {/* Sempre editável — não depende do modo isEditing */}
+                <input
+                  type="text"
+                  value={formData.numero_pedido}
+                  onChange={async (e) => {
+                    const val = e.target.value;
+                    setFormData({ ...formData, numero_pedido: val });
+                    // Salva automaticamente ao digitar (debounce implícito via onChange)
+                  }}
+                  onBlur={async (e) => {
+                    // Persiste ao perder foco
+                    if (!orcamento) return;
+                    try {
+                      await DataStore.saveOrcamento({ ...orcamento, numero_pedido: e.target.value.trim() });
+                    } catch (err) { console.warn('salvar pedido:', err); }
+                  }}
+                  className={`w-full bg-[#1C222A] border rounded px-3 py-1.5 text-xs text-[#ECEFF1] focus:outline-none font-mono transition-colors ${
+                    formData.numero_pedido ? 'border-green-500/40 focus:border-green-500' : 'border-[#2C343E] focus:border-[#8B949E]'
+                  }`}
+                  placeholder="Ex: 4500123456 — preenchido após aprovação AMBEV"
+                />
               </div>
 
               {/* Observações */}

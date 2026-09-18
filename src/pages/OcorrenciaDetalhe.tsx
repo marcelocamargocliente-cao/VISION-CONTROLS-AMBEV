@@ -924,7 +924,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <DollarSign className="w-4 h-4 " />
                   <h3 className="card-title text-xs uppercase ">
-                    Orçamentos AMBEV ({orcamentos.length})
+                    Proposta PPAC ({orcamentos.length})
                   </h3>
                 </div>
               </div>
