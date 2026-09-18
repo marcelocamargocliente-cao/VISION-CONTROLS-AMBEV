@@ -24,11 +24,14 @@ import {
   Check,
   Pencil,
   Trash2,
+  RefreshCw,
+  Copy,
+  Share2,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { supabase } from '../lib/supabase';
 import { DataStore } from '../lib/dataStore';
-import { Orcamento, OrcamentoStatus, Ocorrencia, VwEquipamento } from '../types/database';
+import { Orcamento, OrcamentoStatus, Ocorrencia, VwEquipamento, CotacaoFornecedor } from '../types/database';
 import { IndustrialTag } from '../components/common/IndustrialTag';
 import { EmptyState } from '../components/common/EmptyState';
 import { useAuth } from '../context/AuthContext';
@@ -56,6 +59,8 @@ export const Orcamentos: React.FC = () => {
   const podeDeletar = profile?.role === 'ADMIN' || profile?.role === 'GESTOR';
 
   const [orcamentos, setOrcamentos] = useState<Orcamento[]>([]);
+  const [cotacoes, setCotacoes] = useState<CotacaoFornecedor[]>([]);
+  const [activeTab, setActiveTab] = useState<'propostas' | 'cotacoes'>('propostas');
   const [ocorrencias, setOcorrencias] = useState<Ocorrencia[]>([]);
   const [occsMap, setOccsMap] = useState<Map<string, Ocorrencia>>(new Map());
   const [equipsMap, setEquipsMap] = useState<Map<string, VwEquipamento>>(new Map());
@@ -106,11 +111,57 @@ export const Orcamentos: React.FC = () => {
       setOcorrencias(occs);
       setOccsMap(new Map(occs.map((o) => [o.id, o])));
       setEquipsMap(new Map(eqs.map((e) => [e.id, e])));
+
+      // Carrega todas as cotações de fornecedores de todas as ocorrências
+      if (occs.length > 0) {
+        const cotacoesAll: CotacaoFornecedor[] = [];
+        for (const occ of occs) {
+          const cs = await DataStore.getCotacoesByOcorrencia(occ.id);
+          cotacoesAll.push(...cs);
+        }
+        setCotacoes(cotacoesAll);
+      }
     } catch (e) {
       console.error(e);
       showToast('Erro ao carregar orçamentos.', 'error');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Reenviar proposta: duplica a proposta, marca a original como EXPIRADO e cria nova ENVIADO
+  const handleReenviar = async (orc: Orcamento) => {
+    try {
+      // 1. Expira a proposta original
+      await DataStore.saveOrcamento({ ...orc, status: 'EXPIRADO' as OrcamentoStatus });
+
+      // 2. Cria proposta nova (número incrementado, status ENVIADO)
+      const numeroBase = orc.numero.replace(/\D/g, '');
+      const novoNumero = numeroBase
+        ? orc.numero.replace(numeroBase, String(Number(numeroBase) + 1))
+        : orc.numero + '-R';
+
+      const nova: Partial<Orcamento> = {
+        ocorrencia_id: orc.ocorrencia_id,
+        numero: novoNumero,
+        fornecedor: orc.fornecedor,
+        valor_total: orc.valor_total,
+        data_envio: new Date().toISOString().slice(0, 10),
+        enviado_para: orc.enviado_para,
+        validade: orc.validade,
+        status: 'ENVIADO' as OrcamentoStatus,
+        arquivo_pdf_url: orc.arquivo_pdf_url,
+        arquivo_url: orc.arquivo_url,
+        descricao_anomalia: orc.descricao_anomalia,
+        observacoes: orc.observacoes,
+        pecas: orc.pecas,
+      };
+      const criada = await DataStore.saveOrcamento(nova);
+      await loadData();
+      showToast(`Proposta ${criada.numero} reenviada. A anterior (${orc.numero}) foi marcada como Expirada.`, 'success');
+    } catch (e) {
+      console.error(e);
+      showToast('Erro ao reenviar proposta.', 'error');
     }
   };
 
@@ -386,6 +437,118 @@ export const Orcamentos: React.FC = () => {
         </div>
       </div>
 
+      {/* ABAS: Propostas AMBEV | Cotações de Fornecedores */}
+      <div className="flex items-end gap-0 border-b border-[#30363D]">
+        <button
+          onClick={() => setActiveTab('propostas')}
+          className={`flex items-center gap-2 px-4 py-2.5 text-[12px] font-semibold border-b-2 transition-all ${
+            activeTab === 'propostas'
+              ? 'border-[#E6EDF3] text-[#E6EDF3]'
+              : 'border-transparent text-[#8B949E] hover:text-[#C9D1D9]'
+          }`}
+        >
+          <FileText className="w-4 h-4" />
+          Propostas AMBEV
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#21262D] font-mono">{orcamentos.length}</span>
+        </button>
+        <button
+          onClick={() => setActiveTab('cotacoes')}
+          className={`flex items-center gap-2 px-4 py-2.5 text-[12px] font-semibold border-b-2 transition-all ${
+            activeTab === 'cotacoes'
+              ? 'border-[#E6EDF3] text-[#E6EDF3]'
+              : 'border-transparent text-[#8B949E] hover:text-[#C9D1D9]'
+          }`}
+        >
+          <Building2 className="w-4 h-4" />
+          Cotações de Fornecedores
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#21262D] font-mono">{cotacoes.length}</span>
+        </button>
+      </div>
+
+      {/* ABA: COTAÇÕES DE FORNECEDORES */}
+      {activeTab === 'cotacoes' && (
+        <div className="card border border-[#2C343E] rounded-[4px] overflow-hidden shadow-lg">
+          {cotacoes.length === 0 ? (
+            <EmptyState
+              icon={Building2}
+              title="Nenhuma cotação de fornecedor"
+              description="Abra uma ocorrência e adicione cotações de fornecedores na seção de cotações."
+            />
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="bg-[var(--bg-input)] text-[10px] uppercase tracking-wider border-b border-[#2C343E]">
+                    <th className="py-3 px-3">Empresa</th>
+                    <th className="py-3 px-3">OS / Equipamento</th>
+                    <th className="py-3 px-3">Itens</th>
+                    <th className="py-3 px-3">Valor Total</th>
+                    <th className="py-3 px-3">Data</th>
+                    <th className="py-3 px-3 text-right">Ações</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#2C343E]/60">
+                  {cotacoes.map((c) => {
+                    const occ = occsMap.get(c.ocorrencia_id);
+                    const eq = occ ? equipsMap.get(occ.equipamento_id) : null;
+                    return (
+                      <tr key={c.id} className="hover:bg-[#232B35] transition-colors">
+                        <td className="py-3 px-3">
+                          <div className="font-bold text-[#E6EDF3]">{c.empresa_nome}</div>
+                        </td>
+                        <td className="py-3 px-3">
+                          {occ && (
+                            <button
+                              onClick={() => navigate(`/ocorrencias/${occ.id}`)}
+                              className="text-left hover:underline"
+                            >
+                              <div className="font-mono text-[11px] text-[#C9D1D9]">
+                                {(occ as any).ordem_sap ? `OS ${(occ as any).ordem_sap}` : `#${(occ as any).numero}`}
+                              </div>
+                              {eq && <div className="text-[10px] text-[#8B949E]">{eq.tipo} · TAG {eq.patrimonio_ref || eq.tag}</div>}
+                            </button>
+                          )}
+                        </td>
+                        <td className="py-3 px-3">
+                          <span className="text-[#8B949E]">{c.itens.length} {c.itens.length === 1 ? 'item' : 'itens'}</span>
+                        </td>
+                        <td className="py-3 px-3 font-mono font-bold text-[#E6EDF3]">
+                          {formatCurrency(c.valor_total || 0)}
+                        </td>
+                        <td className="py-3 px-3 text-[#8B949E] text-[10px]">
+                          {formatDate(c.created_at)}
+                        </td>
+                        <td className="py-3 px-3">
+                          <div className="flex items-center gap-1.5 justify-end">
+                            {c.pdf_url && (
+                              <a href={c.pdf_url} target="_blank" rel="noreferrer"
+                                className="p-1.5 rounded bg-[#21262D] border border-[#30363D] text-[#C9D1D9] hover:text-white"
+                                title="Ver PDF">
+                                <Download className="w-3.5 h-3.5" />
+                              </a>
+                            )}
+                            <button
+                              onClick={() => navigate(`/ocorrencias/${c.ocorrencia_id}`)}
+                              className="p-1.5 rounded bg-[#21262D] border border-[#30363D] text-[#C9D1D9] hover:text-white"
+                              title="Ver ocorrência">
+                              <ChevronRight className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ABA: PROPOSTAS AMBEV (existente) */}
+      {activeTab === 'propostas' && (
+      <>
+
       {/* Filter Bar */}
       <div className="card border border-[#2C343E] rounded-[4px] p-3 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 shadow-md">
         <div className="flex flex-wrap items-center gap-3 flex-1">
@@ -606,6 +769,17 @@ export const Orcamentos: React.FC = () => {
                             </button>
                           )}
 
+                          {/* Reenviar (duplica + expira original) */}
+                          {isAuthorizedToEdit && (orc.status === 'EXPIRADO' || orc.status === 'REPROVADO') && (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); handleReenviar(orc); }}
+                              title="Duplicar e reenviar (marca original como Expirado)"
+                              className="p-1.5 bg-[#1E3A2F] hover:bg-emerald-600/20 border border-emerald-700/40 rounded transition-colors text-emerald-400"
+                            >
+                              <RefreshCw className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+
                           {/* Deletar */}
                           {podeDeletar && (
                             <button
@@ -641,6 +815,10 @@ export const Orcamentos: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* fim aba propostas */}
+      </>
+      }
 
       {/* Modal 1: Detalhe & Edição do Orçamento */}
       <ModalOrcamentoDetalhe
