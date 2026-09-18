@@ -1492,6 +1492,9 @@ export const OcorrenciaDetalhe: React.FC = () => {
           cotacaoParaProposta
             ? cotacaoParaProposta.itens.map(it => ({
                 descricao: it.descricao,
+                part_number: it.detalhe || '',   // detalhe → especificação na proposta
+                fabricante: it.prestador || '',   // prestador → fabricante na proposta
+                ncm: it.ncm || '',
                 quantidade: it.quantidade,
                 valor_unitario: it.valor_unitario,
               }))
