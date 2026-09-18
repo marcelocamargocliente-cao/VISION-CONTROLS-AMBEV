@@ -116,6 +116,8 @@ export const PPAC: React.FC = () => {
       linha: (occ as any)?.linha || eq?.localizacao_ref,
       ordem_sap: (occ as any)?.ordem_sap,
       status: orc.status,
+      pecas: orc.pecas as any[],
+    });
     window.open(`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
   };
 
