@@ -890,18 +890,6 @@ export const OcorrenciaDetalhe: React.FC = () => {
             </div>
 
             {/* Card: Orçamentos AMBEV */}
-            {/* Card: Fluxo Comercial */}
-            {ocorrencia && (
-              <FluxoComercial
-                ocorrencia={ocorrencia}
-                canEdit={canEdit}
-                onAtualizado={loadData}
-                usuarioNome={user?.nome || 'Sistema'}
-                faseParaAbrir={faseParaAbrir}
-                onFaseAberta={() => setFaseParaAbrir(null)}
-              />
-            )}
-
             {/* Card: Cotações de Fornecedores */}
             {ocorrencia && (
               <SecaoCotacoes
@@ -1069,52 +1057,19 @@ export const OcorrenciaDetalhe: React.FC = () => {
             </div>
           </div>
 
-          {/* Coluna Lateral (Direita, 320px) — Histórico & Timeline Sticky */}
+          {/* Coluna Lateral (Direita, 320px) — Fluxo Comercial Sticky */}
           <div className="md:sticky md:top-0 space-y-3.5">
-            <div className="card flex flex-col lg:max-h-[calc(100vh-190px)] lg:overflow-hidden">
-              <div className="flex items-center gap-2 border-b border-[#30363D] pb-2 mb-3 shrink-0">
-                <MessageSquare className="w-4 h-4 " />
-                <h3 className="card-title text-xs uppercase ">
-                  Histórico & Timeline ({eventos.length})
-                </h3>
-              </div>
-
-              {/* Timeline Stream Scrollable */}
-              <div className="space-y-2.5 flex-1 min-h-0 lg:overflow-y-auto pr-1">
-                {eventos.length === 0 ? (
-                  <p className="text-xs  italic py-2">Nenhum registro no histórico.</p>
-                ) : (
-                  eventos.map((evt) => (
-                    <div key={evt.id} className="p-2.5 bg-[#0D1117] border border-[#30363D] rounded-lg text-xs space-y-1">
-                      <div className="flex items-center justify-between text-[10px] ">
-                        <span className="font-bold ">{evt.autor_nome}</span>
-                        <span className="">{formatDateTime(evt.created_at)}</span>
-                      </div>
-                      <p className=" leading-relaxed font-body text-[12px]">{evt.descricao}</p>
-                    </div>
-                  ))
-                )}
-              </div>
-
-              {/* Add Event / Comment Form */}
-              <form onSubmit={handleAddComment} className="pt-3 border-t border-[#30363D] mt-3 space-y-2 shrink-0">
-                <textarea
-                  rows={2}
-                  required
-                  value={novoComentario}
-                  onChange={(e) => setNovoComentario(e.target.value)}
-                  placeholder="Adicionar nota de campo, avanço no conserto ou alinhamento..."
-                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#30363D]  text-xs p-2 rounded-lg outline-none resize-none font-body"
+            <div className="card flex flex-col lg:max-h-[calc(100vh-190px)] overflow-y-auto scroll-fluido">
+              {ocorrencia && (
+                <FluxoComercial
+                  ocorrencia={ocorrencia}
+                  canEdit={canEdit}
+                  onAtualizado={loadData}
+                  usuarioNome={user?.nome || 'Sistema'}
+                  faseParaAbrir={faseParaAbrir}
+                  onFaseAberta={() => setFaseParaAbrir(null)}
                 />
-                <button
-                  type="submit"
-                  disabled={sendingEvent || !novoComentario.trim()}
-                  className="btn-primary w-full !py-2 text-xs font-display font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-40"
-                >
-                  <Send className="w-3.5 h-3.5" />
-                  <span>{sendingEvent ? 'Gravando...' : 'Publicar Nota'}</span>
-                </button>
-              </form>
+              )}
             </div>
           </div>
         </div>
