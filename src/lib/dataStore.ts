@@ -1196,37 +1196,31 @@ export const DataStore = {
   async getOrcamentos(): Promise<Orcamento[]> {
     if (isSupabaseConfigured) {
       try {
-        const { data, error } = await supabase.from('orcamentos').select('*').order('created_at', { ascending: false });
-        if (error) { console.warn('getOrcamentos Supabase error:', error); }
-        if (data && data.length > 0) {
+        const { data, error } = await supabase
+          .from('orcamentos')
+          .select('*')
+          .order('created_at', { ascending: false });
+        if (error) { console.warn('getOrcamentos Supabase error:', error.message); }
+        else if (data) {
           dbState.orcamentos = data as Orcamento[];
           persistState();
           return data as Orcamento[];
         }
-        // Supabase retornou vazio mas dbState tem dados — retorna dbState
-        if (data && data.length === 0 && dbState.orcamentos.length > 0) {
-          console.warn('getOrcamentos: Supabase vazio, usando cache local:', dbState.orcamentos.length);
-          // Tenta sincronizar os locais para o Supabase
-          for (const orc of dbState.orcamentos) {
-            try {
-              await supabase.from('orcamentos').upsert(orc, { onConflict: 'id' });
-            } catch {}
-          }
-          return [...dbState.orcamentos].sort((a, b) =>
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-          );
-        }
       } catch (e) { console.warn('getOrcamentos Supabase error:', e); }
     }
-    return [...dbState.orcamentos].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    return [...dbState.orcamentos].sort((a, b) =>
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
   },
 
   async getOrcamentosByOcorrencia(ocorrenciaId: string): Promise<Orcamento[]> {
-    if (isSupabaseConfigured) {
+    const isValidUuid = (s?: string) => !!s && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
+    if (isSupabaseConfigured && isValidUuid(ocorrenciaId)) {
       try {
-        const { data } = await supabase.from('orcamentos').select('*').eq('ocorrencia_id', ocorrenciaId);
-        if (data) return data as Orcamento[];
-      } catch (e) { console.warn(e); }
+        const { data, error } = await supabase.from('orcamentos').select('*').eq('ocorrencia_id', ocorrenciaId);
+        if (!error && data) return data as Orcamento[];
+        if (error) console.warn('getOrcamentosByOcorrencia error:', error.message);
+      } catch (e) { console.warn('getOrcamentosByOcorrencia Supabase error:', e); }
     }
     return dbState.orcamentos.filter((o) => o.ocorrencia_id === ocorrenciaId);
   },
@@ -1272,11 +1266,13 @@ export const DataStore = {
       created_at: new Date().toISOString(),
     };
 
+    const isValidUuid = (s?: string) => !!s && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
+
     if (isSupabaseConfigured) {
       try {
-        const insertPayload = {
-          id: newOrc.id,
-          ocorrencia_id: newOrc.ocorrencia_id || null,
+        const insertPayload: Record<string, unknown> = {
+          id: isValidUuid(newOrc.id) ? newOrc.id : undefined,
+          ocorrencia_id: isValidUuid(newOrc.ocorrencia_id) ? newOrc.ocorrencia_id : null,
           numero: newOrc.numero,
           fornecedor: newOrc.fornecedor,
           valor_total: newOrc.valor_total,
@@ -1291,9 +1287,12 @@ export const DataStore = {
           pecas: newOrc.pecas || null,
           created_at: newOrc.created_at,
         };
+        // Remove id undefined para o Supabase gerar UUID
+        if (!insertPayload.id) delete insertPayload.id;
+
         const { data, error } = await supabase.from('orcamentos').insert(insertPayload).select().single();
-        if (error) { console.error('saveOrcamento INSERT ERROR:', error, insertPayload); }
-        if (data) { newOrc.id = (data as any).id; console.log('saveOrcamento ok:', newOrc.id); }
+        if (error) { console.error('saveOrcamento INSERT ERROR:', error.message, error.details); }
+        if (data) { newOrc.id = (data as any).id; }
       } catch (e) { console.warn('saveOrcamento insert Supabase error:', e); }
     }
     dbState.orcamentos.push(newOrc);
@@ -1360,7 +1359,8 @@ export const DataStore = {
   },
 
   async getEventosByOcorrencia(ocorrenciaId: string): Promise<OcorrenciaEvento[]> {
-    if (isSupabaseConfigured) {
+    const isValidUuid = (s?: string) => !!s && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
+    if (isSupabaseConfigured && isValidUuid(ocorrenciaId)) {
       try {
         const { data } = await supabase.from('ocorrencia_eventos').select('*').eq('ocorrencia_id', ocorrenciaId).order('created_at', { ascending: true });
         if (data) return data as OcorrenciaEvento[];
