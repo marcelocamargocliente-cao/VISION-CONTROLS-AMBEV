@@ -309,7 +309,7 @@ export const DataStore = {
     const abertas = dbState.ocorrencias.filter((o) => o.status !== 'CONCLUIDA' && o.status !== 'CANCELADA');
     const aguardandoPeca = abertas.filter((o) => o.status === 'AGUARDANDO_PECA').length;
     const aguardandoOrcamento = abertas.filter(
-      (o) => o.status === 'AGUARDANDO_ORCAMENTO' || o.status === 'ORCAMENTO_ENVIADO' || o.status === 'AGUARDANDO_APROVACAO_AMBEV'
+      (o) => o.status === 'AGUARDANDO_ORCAMENTO' || o.status === 'PPAC_ENVIADO' || o.status === 'AGUARDANDO_APROVACAO_AMBEV'
     ).length;
 
     const valorOrcamentos = dbState.orcamentos

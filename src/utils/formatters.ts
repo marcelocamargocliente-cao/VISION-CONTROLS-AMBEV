@@ -186,78 +186,31 @@ export function getEquipStatusConfig(status: EquipStatus) {
 export function getOcorrenciaStatusConfig(status: OcorrenciaStatus) {
   switch (status) {
     case 'ABERTA':
-      return {
-        label: 'Aberta',
-        step: 1,
-        ledClass: 'led-warn',
-        badgeBg: 'bg-[#D29922]/15 text-[#D29922] border-[#D29922]/30',
-      };
+      return { label: 'Aberta', step: 1, ledClass: 'led-warn', badgeBg: 'bg-[#F85149]/15 text-[#F85149] border-[#F85149]/30' };
     case 'AGUARDANDO_ORCAMENTO':
-      return {
-        label: 'Aguardando Orçamento',
-        step: 2,
-        ledClass: 'led-warn',
-        badgeBg: 'bg-[#D29922]/15 text-[#D29922] border-[#D29922]/30',
-      };
-    case 'ORCAMENTO_ENVIADO':
-      return {
-        label: 'Orçamento Enviado',
-        step: 3,
-        ledClass: 'led-warn',
-        badgeBg: 'bg-[#2F81F7]/15 text-[#58A6FF] border-[#2F81F7]/30',
-      };
+      return { label: 'Aguardando Orçamento', step: 2, ledClass: 'led-warn', badgeBg: 'bg-[#D29922]/15 text-[#D29922] border-[#D29922]/30' };
+    case 'ORCAMENTO_INTERNO_FEITO':
+      return { label: 'Orçamento Interno Feito', step: 3, ledClass: 'led-warn', badgeBg: 'bg-[#D29922]/15 text-[#D29922] border-[#D29922]/30' };
+    case 'PPAC_ENVIADO':
+      return { label: 'PPAC Enviado', step: 4, ledClass: 'led-warn', badgeBg: 'bg-[#58A6FF]/15 text-[#58A6FF] border-[#58A6FF]/30' };
     case 'AGUARDANDO_APROVACAO_AMBEV':
-      return {
-        label: 'Aguard. Aprovação AMBEV',
-        step: 4,
-        ledClass: 'led-warn',
-        badgeBg: 'bg-[#D29922]/15 text-[#D29922] border-[#D29922]/30',
-      };
-    case 'APROVADA':
-      return {
-        label: 'Aprovada AMBEV',
-        step: 5,
-        ledClass: 'led-ok',
-        badgeBg: 'bg-[#3FB950]/15 text-[#3FB950] border-[#3FB950]/30',
-      };
+      return { label: 'Aguard. Aprovação AMBEV', step: 4, ledClass: 'led-warn', badgeBg: 'bg-[#D29922]/15 text-[#D29922] border-[#D29922]/30' };
+    case 'RC_GERADA':
+      return { label: 'RC Gerada', step: 5, ledClass: 'led-warn', badgeBg: 'bg-[#A371F7]/15 text-[#A371F7] border-[#A371F7]/30' };
+    case 'PEDIDO_DE_COMPRA':
+      return { label: 'Pedido de Compra', step: 6, ledClass: 'led-ok', badgeBg: 'bg-[#3FB950]/15 text-[#3FB950] border-[#3FB950]/30' };
     case 'AGUARDANDO_PECA':
-      return {
-        label: 'Aguardando Peça',
-        step: 6,
-        ledClass: 'led-alert',
-        badgeBg: 'bg-[#F85149]/15 text-[#F85149] border-[#F85149]/30',
-      };
+      return { label: 'Aguardando Peça', step: 6, ledClass: 'led-alert', badgeBg: 'bg-[#F85149]/15 text-[#F85149] border-[#F85149]/30' };
     case 'EM_EXECUCAO':
-      return {
-        label: 'Em Execução de Campo',
-        step: 7,
-        ledClass: 'led-warn',
-        badgeBg: 'bg-[#2F81F7]/15 text-[#58A6FF] border-[#2F81F7]/30',
-      };
+      return { label: 'Em Execução de Campo', step: 7, ledClass: 'led-warn', badgeBg: 'bg-[#2F81F7]/15 text-[#58A6FF] border-[#2F81F7]/30' };
     case 'CONCLUIDA':
-      return {
-        label: 'Concluída / OK',
-        step: 8,
-        ledClass: 'led-ok',
-        badgeBg: 'bg-[#3FB950]/15 text-[#3FB950] border-[#3FB950]/30',
-      };
+      return { label: 'Entregue / Concluído', step: 8, ledClass: 'led-ok', badgeBg: 'bg-[#3FB950]/15 text-[#3FB950] border-[#3FB950]/30' };
     case 'CANCELADA':
-      return {
-        label: 'Cancelada',
-        step: 0,
-        ledClass: 'led-off',
-        badgeBg: 'bg-[#30363D]/40 text-[#8B949E] border-[#30363D]',
-      };
+      return { label: 'Cancelada', step: 0, ledClass: 'led-off', badgeBg: 'bg-[#30363D]/40 text-[#8B949E] border-[#30363D]' };
     default:
-      return {
-        label: status,
-        step: 1,
-        ledClass: 'led-off',
-        badgeBg: 'bg-[#30363D]/40 text-[#8B949E] border-[#30363D]',
-      };
+      return { label: status, step: 1, ledClass: 'led-off', badgeBg: 'bg-[#30363D]/40 text-[#8B949E] border-[#30363D]' };
   }
 }
-
 export function getCriticidadeConfig(crit: Criticidade) {
   switch (crit) {
     case 'CRITICA':

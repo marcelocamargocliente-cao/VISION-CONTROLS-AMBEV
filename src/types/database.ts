@@ -23,9 +23,11 @@ export type EquipStatus = 'OK' | 'RESTRICAO' | 'PARADO' | 'DESATIVADO';
 export type OcorrenciaStatus = 
   | 'ABERTA'
   | 'AGUARDANDO_ORCAMENTO'
-  | 'ORCAMENTO_ENVIADO'
+  | 'ORCAMENTO_INTERNO_FEITO'
+  | 'PPAC_ENVIADO'
   | 'AGUARDANDO_APROVACAO_AMBEV'
-  | 'APROVADA'
+  | 'RC_GERADA'
+  | 'PEDIDO_DE_COMPRA'
   | 'AGUARDANDO_PECA'
   | 'EM_EXECUCAO'
   | 'CONCLUIDA'
@@ -158,6 +160,14 @@ export interface Ocorrencia {
   equipamento_parado: boolean;
   parou_linha: boolean;
   data_conclusao?: string;
+  // Campos de fluxo comercial
+  data_orcamento_interno?: string;   // quando o orçamento interno foi concluído
+  data_ppac_enviado?: string;        // quando a PPAC foi enviada à AMBEV
+  numero_rc?: string;                // número da Requisição de Compra gerada pela AMBEV
+  data_rc?: string;                  // data da RC
+  numero_pedido_compra?: string;     // número do Pedido de Compra
+  data_pedido_compra?: string;       // data do pedido
+  data_entrega?: string;             // data de entrega/conclusão
   created_at: string;
   updated_at?: string;
 }

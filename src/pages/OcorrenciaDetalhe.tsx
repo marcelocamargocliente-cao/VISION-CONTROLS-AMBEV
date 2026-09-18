@@ -59,15 +59,16 @@ import { ModalOrcamentoDetalhe } from '../components/orcamentos/ModalOrcamentoDe
 import { ModalRevisaoOrcamento } from '../components/orcamentos/ModalRevisaoOrcamento';
 import { ModalNovoOrcamento } from '../components/orcamentos/ModalNovoOrcamento';
 import { SecaoCotacoes } from '../components/cotacoes/SecaoCotacoes';
+import { FluxoComercial } from '../components/ocorrencias/FluxoComercial';
 import { ModalDuplicarOrcamento } from '../components/orcamentos/ModalDuplicarOrcamento';
 import { FotoCard } from '../components/ocorrencias/FotoCard';
 
 const STATUS_FLOW: OcorrenciaStatus[] = [
   'ABERTA',
   'AGUARDANDO_ORCAMENTO',
-  'ORCAMENTO_ENVIADO',
+  'PPAC_ENVIADO',
   'AGUARDANDO_APROVACAO_AMBEV',
-  'APROVADA',
+  'RC_GERADA',
   'AGUARDANDO_PECA',
   'EM_EXECUCAO',
   'CONCLUIDA',
@@ -884,6 +885,16 @@ export const OcorrenciaDetalhe: React.FC = () => {
             </div>
 
             {/* Card: Orçamentos AMBEV */}
+            {/* Card: Fluxo Comercial */}
+            {ocorrencia && (
+              <FluxoComercial
+                ocorrencia={ocorrencia}
+                canEdit={canEdit}
+                onAtualizado={loadData}
+                usuarioNome={user?.nome || 'Sistema'}
+              />
+            )}
+
             {/* Card: Cotações de Fornecedores */}
             {ocorrencia && (
               <SecaoCotacoes
