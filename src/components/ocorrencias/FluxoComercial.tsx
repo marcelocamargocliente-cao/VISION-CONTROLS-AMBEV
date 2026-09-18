@@ -137,168 +137,136 @@ export const FluxoComercial: React.FC<Props> = ({ ocorrencia, canEdit, onAtualiz
   };
 
   return (
-    <div className="card space-y-3">
-      {/* Header */}
-      <div className="border-b border-[#30363D] pb-2">
-        <h3 className="card-title text-xs uppercase flex items-center gap-2">
-          <ChevronRight className="w-4 h-4" />
-          Fluxo Comercial da OS
+    <div className="card space-y-2">
+      {/* Header compacto */}
+      <div className="flex items-center justify-between border-b border-[#30363D] pb-2">
+        <h3 className="card-title text-xs uppercase flex items-center gap-1.5">
+          <ChevronRight className="w-3.5 h-3.5" />
+          Fluxo Comercial
         </h3>
-        <p className="text-[10px] text-[#8B949E] mt-0.5">
+        <span className="text-[10px] text-[#8B949E]">
           Fase atual: <strong className="text-[#E6EDF3]">{FASES[faseAtual]?.label || 'Aberta'}</strong>
-        </p>
+        </span>
       </div>
 
-      {/* Steps */}
-      <div className="space-y-1.5">
+      {/* Steps — linha do tempo compacta */}
+      <div className="space-y-0">
         {FASES.map((fase, idx) => {
           const concluida = idx < faseAtual;
           const atual = idx === faseAtual;
-          const futura = idx > faseAtual;
           const dataFase = fase.campo ? (ocorrencia[fase.campo] as string) : undefined;
           const extraFase = fase.campoExtra ? (ocorrencia[fase.campoExtra] as string) : undefined;
           const proximaFase = idx === faseAtual + 1;
           const podeAvancar = canEdit && (atual || proximaFase) && !editando;
+          const dataFmt = dataFase
+            ? new Date(dataFase + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' })
+            : null;
 
           return (
-            <div key={fase.id}>
-              <div
-                className={`relative flex items-start gap-3 p-3 rounded-lg border transition-all ${
-                  atual
-                    ? 'border-[#8B949E]/50 bg-[#161B22]'
-                    : concluida
-                    ? 'border-[#30363D] bg-[#0D1117]'
-                    : 'border-[#21262D] bg-[#0A0E1A] opacity-60'
-                }`}
-              >
+            <div key={fase.id} className="flex gap-0">
+              {/* Coluna da linha + ícone */}
+              <div className="flex flex-col items-center w-8 shrink-0">
+                {/* Linha de cima */}
+                <div className={`w-px flex-none ${idx === 0 ? 'invisible' : concluida || atual ? 'bg-[#30363D]' : 'bg-[#21262D]'}`}
+                  style={{ height: 8 }} />
                 {/* Ícone */}
                 <div
-                  className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5 border"
+                  className="w-7 h-7 rounded-full flex items-center justify-center border shrink-0"
                   style={{
                     background: concluida || atual ? fase.corBg : 'transparent',
                     borderColor: concluida || atual ? fase.cor : '#30363D',
                   }}
                 >
-                  {concluida ? (
-                    <Check className="w-4 h-4" style={{ color: fase.cor }} />
-                  ) : (
-                    <fase.icon className="w-4 h-4" style={{ color: atual ? fase.cor : '#6E7681' }} />
-                  )}
+                  {concluida
+                    ? <Check className="w-3.5 h-3.5" style={{ color: fase.cor }} />
+                    : <fase.icon className="w-3.5 h-3.5" style={{ color: atual ? fase.cor : '#484F58' }} />
+                  }
                 </div>
-
-                {/* Conteúdo */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <p className={`text-[12px] font-bold ${atual ? 'text-[#E6EDF3]' : concluida ? 'text-[#C9D1D9]' : 'text-[#6E7681]'}`}>
-                        {fase.label}
-                      </p>
-                      <p className="text-[10px] text-[#8B949E]">{fase.sublabel}</p>
-                    </div>
-
-                    {/* Botão avançar */}
-                    {podeAvancar && idx > 0 && (
-                      <button
-                        onClick={() => abrirAvanco(fase.id)}
-                        className="shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-bold border transition-all"
-                        style={{
-                          background: fase.corBg,
-                          borderColor: fase.cor + '50',
-                          color: fase.cor,
-                        }}
-                      >
-                        <ChevronRight className="w-3 h-3" />
-                        {atual ? 'Editar' : 'Avançar'}
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Dados registrados */}
-                  {(dataFase || extraFase) && (
-                    <div className="flex items-center gap-3 mt-1.5 flex-wrap">
-                      {dataFase && (
-                        <span className="text-[10px] text-[#8B949E] flex items-center gap-1">
-                          <Clock className="w-2.5 h-2.5" />
-                          {new Date(dataFase + 'T12:00:00').toLocaleDateString('pt-BR')}
-                        </span>
-                      )}
-                      {extraFase && (
-                        <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded"
-                          style={{ background: fase.corBg, color: fase.cor }}>
-                          {fase.labelExtra}: {extraFase}
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </div>
+                {/* Linha de baixo */}
+                {idx < FASES.length - 1 && (
+                  <div className={`w-px flex-1 min-h-[12px] ${concluida ? 'bg-[#30363D]' : 'bg-[#21262D]'}`} />
+                )}
               </div>
 
-              {/* Painel de edição inline */}
-              {editando === fase.id && (
-                <div className="mt-1 ml-11 bg-[#161B22] border border-[#30363D] rounded-lg p-3 space-y-2.5">
-                  <p className="text-[11px] font-bold text-[#E6EDF3] uppercase">
-                    Registrar: {fase.label}
-                  </p>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    <div>
-                      <label className="block text-[9px] font-bold text-[#8B949E] uppercase tracking-wider mb-1">
-                        Data {fase.label}
-                      </label>
-                      <input
-                        type="date"
-                        value={dataInput}
-                        onChange={(e) => setDataInput(e.target.value)}
-                        className="w-full h-9 bg-[#0A0E1A] border border-[#30363D] text-[#E6EDF3] text-[12px] rounded-md px-2.5 outline-none focus:border-[#8B949E]"
-                      />
-                    </div>
-
-                    {fase.campoExtra && (
-                      <div>
-                        <label className="block text-[9px] font-bold text-[#8B949E] uppercase tracking-wider mb-1">
-                          {fase.labelExtra}
-                        </label>
-                        <input
-                          type="text"
-                          value={extraInput}
-                          onChange={(e) => setExtraInput(e.target.value)}
-                          placeholder={fase.placeholderExtra}
-                          className="w-full h-9 bg-[#0A0E1A] border border-[#30363D] text-[#E6EDF3] text-[12px] rounded-md px-2.5 outline-none focus:border-[#8B949E] font-mono"
-                        />
-                      </div>
+              {/* Conteúdo da fase */}
+              <div className={`flex-1 min-w-0 ml-2.5 pb-2 ${idx === 0 ? 'pt-1' : 'pt-1'}`}>
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 flex-wrap min-w-0">
+                    <span className={`text-[11px] font-bold leading-none ${
+                      atual ? 'text-[#E6EDF3]' : concluida ? 'text-[#C9D1D9]' : 'text-[#484F58]'
+                    }`}>
+                      {fase.label}
+                    </span>
+                    {dataFmt && (
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded"
+                        style={{ background: fase.corBg, color: fase.cor }}>
+                        {dataFmt}
+                      </span>
+                    )}
+                    {extraFase && (
+                      <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#21262D] text-[#C9D1D9] border border-[#30363D]">
+                        {fase.labelExtra}: {extraFase}
+                      </span>
                     )}
                   </div>
 
-                  <div className="flex gap-2">
+                  {/* Botão avançar/editar */}
+                  {podeAvancar && idx > 0 && (
                     <button
-                      onClick={() => setEditando(null)}
-                      disabled={saving}
-                      className="flex-1 h-9 rounded-md bg-[#0A0E1A] border border-[#30363D] text-[#C9D1D9] text-[11px] font-semibold"
+                      onClick={() => abrirAvanco(fase.id)}
+                      className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold border transition-all"
+                      style={{ background: fase.corBg, borderColor: fase.cor + '50', color: fase.cor }}
                     >
-                      Cancelar
+                      {atual ? '✏ Editar' : '› Avançar'}
                     </button>
-                    <button
-                      onClick={() => salvarAvanco(fase.id)}
-                      disabled={saving}
-                      className="flex-1 h-9 rounded-md text-[11px] font-bold disabled:opacity-60"
-                      style={{ background: fase.cor, color: '#0D1117' }}
-                    >
-                      {saving ? 'Salvando...' : '✓ Confirmar'}
-                    </button>
-                  </div>
+                  )}
                 </div>
-              )}
 
-              {/* Conector vertical */}
-              {idx < FASES.length - 1 && (
-                <div className="flex items-center ml-[19px] py-0.5">
-                  <div className={`w-px h-3 ${idx < faseAtual ? 'bg-[#3FB950]/40' : 'bg-[#30363D]'}`} />
-                </div>
-              )}
+                {/* Sub-label só se atual ou próximo com avançar */}
+                {(atual || (!concluida && proximaFase)) && (
+                  <p className="text-[10px] text-[#6E7681] mt-0.5 leading-none">{fase.sublabel}</p>
+                )}
+              </div>
             </div>
           );
         })}
       </div>
+
+      {/* Painel inline de edição — fora do loop, renderiza abaixo do stepper */}
+      {editando && (() => {
+        const fase = FASES.find((f) => f.id === editando)!;
+        return (
+          <div className="mt-1 bg-[#0A0E1A] border border-[#30363D] rounded-lg p-3 space-y-2.5">
+            <p className="text-[11px] font-bold text-[#E6EDF3] uppercase">Registrar: {fase.label}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div>
+                <label className="block text-[9px] font-bold text-[#8B949E] uppercase tracking-wider mb-1">Data</label>
+                <input type="date" value={dataInput} onChange={(e) => setDataInput(e.target.value)}
+                  className="w-full h-8 bg-[#161B22] border border-[#30363D] text-[#E6EDF3] text-[12px] rounded-md px-2.5 outline-none focus:border-[#8B949E]" />
+              </div>
+              {fase.campoExtra && (
+                <div>
+                  <label className="block text-[9px] font-bold text-[#8B949E] uppercase tracking-wider mb-1">{fase.labelExtra}</label>
+                  <input type="text" value={extraInput} onChange={(e) => setExtraInput(e.target.value)}
+                    placeholder={fase.placeholderExtra}
+                    className="w-full h-8 bg-[#161B22] border border-[#30363D] text-[#E6EDF3] text-[12px] rounded-md px-2.5 outline-none focus:border-[#8B949E] font-mono" />
+                </div>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <button onClick={() => setEditando(null)} disabled={saving}
+                className="flex-1 h-8 rounded-md bg-[#161B22] border border-[#30363D] text-[#C9D1D9] text-[11px] font-semibold">
+                Cancelar
+              </button>
+              <button onClick={() => salvarAvanco(editando)} disabled={saving}
+                className="flex-1 h-8 rounded-md text-[11px] font-bold disabled:opacity-60"
+                style={{ background: fase.cor, color: '#0D1117' }}>
+                {saving ? 'Salvando...' : '✓ Confirmar'}
+              </button>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 };
