@@ -90,9 +90,11 @@ interface Props {
   canEdit: boolean;
   onAtualizado: () => void;
   usuarioNome: string;
+  faseParaAbrir?: OcorrenciaStatus | null;   // dropdown → abre painel automaticamente
+  onFaseAberta?: () => void;                  // avisa que o painel foi aberto (limpa o gatilho)
 }
 
-export const FluxoComercial: React.FC<Props> = ({ ocorrencia, canEdit, onAtualizado, usuarioNome }) => {
+export const FluxoComercial: React.FC<Props> = ({ ocorrencia, canEdit, onAtualizado, usuarioNome, faseParaAbrir, onFaseAberta }) => {
   const faseAtualIdx = FASES.findIndex((f) => f.id === ocorrencia.status);
   const faseAtual = faseAtualIdx >= 0 ? faseAtualIdx : 0;
 
@@ -100,6 +102,17 @@ export const FluxoComercial: React.FC<Props> = ({ ocorrencia, canEdit, onAtualiz
   const [dataInput, setDataInput] = useState('');
   const [extraInput, setExtraInput] = useState('');
   const [saving, setSaving] = useState(false);
+
+  // Quando o dropdown muda de fase, abre o painel de registro automaticamente
+  React.useEffect(() => {
+    if (faseParaAbrir && canEdit) {
+      const fase = FASES.find((f) => f.id === faseParaAbrir);
+      if (fase && faseParaAbrir !== 'ABERTA' && faseParaAbrir !== 'CANCELADA') {
+        abrirAvanco(faseParaAbrir);
+        onFaseAberta?.();
+      }
+    }
+  }, [faseParaAbrir]);
 
   const abrirAvanco = (faseId: string) => {
     const fase = FASES.find((f) => f.id === faseId)!;
@@ -156,8 +169,9 @@ export const FluxoComercial: React.FC<Props> = ({ ocorrencia, canEdit, onAtualiz
           const atual = idx === faseAtual;
           const dataFase = fase.campo ? (ocorrencia[fase.campo] as string) : undefined;
           const extraFase = fase.campoExtra ? (ocorrencia[fase.campoExtra] as string) : undefined;
-          const proximaFase = idx === faseAtual + 1;
-          const podeAvancar = canEdit && (atual || proximaFase) && !editando;
+          const podeAvancar = canEdit && !editando && idx > 0 && (
+            idx <= faseAtual + 1  // próxima ou anterior podem ser editadas
+          );
           const dataFmt = dataFase
             ? new Date(dataFase + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' })
             : null;

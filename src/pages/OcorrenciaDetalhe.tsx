@@ -66,10 +66,10 @@ import { FotoCard } from '../components/ocorrencias/FotoCard';
 const STATUS_FLOW: OcorrenciaStatus[] = [
   'ABERTA',
   'AGUARDANDO_ORCAMENTO',
+  'ORCAMENTO_INTERNO_FEITO',
   'PPAC_ENVIADO',
-  'AGUARDANDO_APROVACAO_AMBEV',
   'RC_GERADA',
-  'AGUARDANDO_PECA',
+  'PEDIDO_DE_COMPRA',
   'EM_EXECUCAO',
   'CONCLUIDA',
   'CANCELADA',
@@ -264,6 +264,9 @@ export const OcorrenciaDetalhe: React.FC = () => {
     loadData();
   }, [id]);
 
+  // Sincronização dropdown → FluxoComercial
+  const [faseParaAbrir, setFaseParaAbrir] = useState<OcorrenciaStatus | null>(null);
+
   const handleStatusChange = async (newStatus: OcorrenciaStatus) => {
     if (!ocorrencia) return;
     try {
@@ -274,6 +277,8 @@ export const OcorrenciaDetalhe: React.FC = () => {
         user?.nome
       );
       await loadData();
+      // Abre automaticamente o painel de registro no FluxoComercial
+      setFaseParaAbrir(newStatus);
     } catch (e) {
       console.error(e);
     }
@@ -892,6 +897,8 @@ export const OcorrenciaDetalhe: React.FC = () => {
                 canEdit={canEdit}
                 onAtualizado={loadData}
                 usuarioNome={user?.nome || 'Sistema'}
+                faseParaAbrir={faseParaAbrir}
+                onFaseAberta={() => setFaseParaAbrir(null)}
               />
             )}
 
