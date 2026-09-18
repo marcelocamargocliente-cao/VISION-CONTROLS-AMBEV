@@ -60,7 +60,7 @@ export const Orcamentos: React.FC = () => {
 
   const [orcamentos, setOrcamentos] = useState<Orcamento[]>([]);
   const [cotacoes, setCotacoes] = useState<CotacaoFornecedor[]>([]);
-  const [activeTab, setActiveTab] = useState<'propostas' | 'cotacoes'>('propostas');
+  const [activeTab] = useState<'cotacoes'>('cotacoes');
   const [ocorrencias, setOcorrencias] = useState<Ocorrencia[]>([]);
   const [occsMap, setOccsMap] = useState<Map<string, Ocorrencia>>(new Map());
   const [equipsMap, setEquipsMap] = useState<Map<string, VwEquipamento>>(new Map());
@@ -437,32 +437,13 @@ export const Orcamentos: React.FC = () => {
         </div>
       </div>
 
-      {/* ABAS: Propostas AMBEV | Cotações de Fornecedores */}
+      {/* Título da seção */}
       <div className="flex items-end gap-0 border-b border-[#30363D]">
-        <button
-          onClick={() => setActiveTab('propostas')}
-          className={`flex items-center gap-2 px-4 py-2.5 text-[12px] font-semibold border-b-2 transition-all ${
-            activeTab === 'propostas'
-              ? 'border-[#E6EDF3] text-[#E6EDF3]'
-              : 'border-transparent text-[#8B949E] hover:text-[#C9D1D9]'
-          }`}
-        >
-          <FileText className="w-4 h-4" />
-          Propostas AMBEV
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#21262D] font-mono">{orcamentos.length}</span>
-        </button>
-        <button
-          onClick={() => setActiveTab('cotacoes')}
-          className={`flex items-center gap-2 px-4 py-2.5 text-[12px] font-semibold border-b-2 transition-all ${
-            activeTab === 'cotacoes'
-              ? 'border-[#E6EDF3] text-[#E6EDF3]'
-              : 'border-transparent text-[#8B949E] hover:text-[#C9D1D9]'
-          }`}
-        >
+        <div className="flex items-center gap-2 px-4 py-2.5 text-[12px] font-semibold border-b-2 border-[#E6EDF3] text-[#E6EDF3]">
           <Building2 className="w-4 h-4" />
           Cotações de Fornecedores
           <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#21262D] font-mono">{cotacoes.length}</span>
-        </button>
+        </div>
       </div>
 
       {/* ABA: COTAÇÕES DE FORNECEDORES */}
@@ -544,10 +525,6 @@ export const Orcamentos: React.FC = () => {
           )}
         </div>
       )}
-
-      {/* ABA: PROPOSTAS AMBEV (existente) */}
-      {activeTab === 'propostas' && (
-      <>
 
       {/* Filter Bar */}
       <div className="card border border-[#2C343E] rounded-[4px] p-3 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 shadow-md">
@@ -815,8 +792,6 @@ export const Orcamentos: React.FC = () => {
           </div>
         )}
       </div>
-      </>
-      )}
 
       {/* Modal 1: Detalhe & Edição do Orçamento */}
       <ModalOrcamentoDetalhe
