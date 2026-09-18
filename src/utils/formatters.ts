@@ -478,114 +478,132 @@ export function buildOrcamentoEmailContent(data: ShareOrcamentoData & {
   const tagAmbev = data.tag_ambev || data.tag || '';
   const localInstalacao = data.local_instalacao || data.linha || '';
   const ordemRef = data.ordem_sap || String(data.numero_ocorrencia || '');
+  const enviado = data.enviado_para || 'Ambev Nova Rio';
 
-  // Assunto simplificado: OS XXXXXX — PROPOSTA COMERCIAL — EQUIPAMENTO — LOCAL — TAG AMBEV XXXX
+  // Assunto fiel ao modelo real da proposta Vision
   const subject = [
-    ordemRef ? `OS ${ordemRef}` : '',
-    'ENVIO DE PROPOSTA COMERCIAL',
+    'PPAC N\u00ba ' + data.numero,
+    'PROPOSTA COMERCIAL VISION CONTROLS',
     equipDesc || 'HVAC INDUSTRIAL',
-    tagAmbev ? `TAG AMBEV ${tagAmbev}` : '',
-  ].filter(Boolean).join(' — ');
+    tagAmbev ? 'TAG AMBEV ' + tagAmbev : '',
+  ].filter(Boolean).join(' \u2014 ');
 
   const valorFmt = Number(data.valor_total ?? 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-  const buildLinhas = () => {
-    if (!data.pecas || data.pecas.length === 0) return '  (Ver itens no PDF em anexo)';
-    return data.pecas.map((p: any, i: number) => {
+  // Tabela de itens fiel ao modelo da proposta
+  const buildTabela = () => {
+    if (!data.pecas || data.pecas.length === 0) return '  (Ver itens detalhados no PDF em anexo)';
+    const header = '  Item | Qtd. | Descri\u00e7\u00e3o                              | NCM         | Vlr. Unit.   | Vlr. Total';
+    const sep    = '  -----+------+---------------------------------------+-------------+--------------+------------';
+    const rows = (data.pecas as any[]).map((p: any, i: number) => {
       const rawUnit = typeof p.valor_unitario === 'string'
         ? p.valor_unitario.replace(/\./g, '').replace(',', '.')
         : String(p.valor_unitario ?? 0);
       const unitario = parseFloat(rawUnit) || 0;
       const qtd = Number(p.quantidade ?? 1);
       const totalItem = unitario * qtd;
-      const unitFmt = unitario.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-      const totalFmt = totalItem.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-      const ncm = p.ncm ? p.ncm.trim() : '-';
-      // part_number é o campo salvo no banco (antes era especificacao no modal)
-      const espec = p.part_number || p.especificacao || '-';
-      const descr = p.descricao || '';
-      // Formato legível em qualquer cliente de email — sem padEnd que quebra em fonte proporcional
-      return `  ${i + 1}. ${qtd}x  ${descr}  |  ${espec}  |  NCM: ${ncm}  |  Unit: R$ ${unitFmt}  |  Total: R$ ${totalFmt}`;
-    }).join('\n');
+      const unitFmt  = 'R$ ' + unitario.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+      const totalFmt = 'R$ ' + totalItem.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+      const ncm  = p.ncm?.trim() || '-';
+      const desc = (p.descricao || '').substring(0, 37).padEnd(37);
+      return '  ' + String(i + 1).padStart(4) + ' | ' + String(qtd).padStart(4) + ' | ' + desc + ' | ' + ncm.padEnd(11) + ' | ' + unitFmt.padStart(12) + ' | ' + totalFmt.padStart(11);
+    });
+    const totalLine = '\n                                                      VALOR TOTAL DOS ITENS:   R$ ' + valorFmt;
+    return [header, sep, ...rows, totalLine].join('\n');
   };
 
-  const sep1 = '════════════════════════════════════════════════════════';
-  const sep2 = '────────────────────────────────────────────────────────';
   const nl = '\n';
+  const sep = '\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500';
 
   const lines: string[] = [
-    // Abertura simples — sem cabeçalho com dados da empresa
-    'Olá Prezados,',
+    'VISION CONTROLS',
+    'VISION CONTROLS ASSOCIADOS LTDA',
+    'Rua Almirante Tamandar\u00e9, 515, Alto da XV \u2014 Curitiba/PR',
+    'CNPJ: 10.823.200/0001-06   Fone: (41) 3667-9835',
     nl,
-    `PROPOSTA COMERCIAL Nº ${data.numero}`,
+    sep,
+    'PPAC N\u00ba ' + data.numero,
+    sep,
+    nl,
+    '\u00c0',
+    nl,
+    enviado,
+    'Ref.: Fornecimento de Pe\u00e7as para equipamentos de refrigera\u00e7\u00e3o',
+    nl,
     today,
     nl,
-    'À',
-    data.enviado_para || 'Ambev — Engenharia de Utilidades',
-    nl,
-    'Ref.: Fornecimento e Manutenção de Equipamento de Refrigeração Industrial',
-    ordemRef ? `Ordem SAP: ${ordemRef}` : '',
-    `Tag AMBEV: ${tagAmbev}  |  Equipamento: ${equipDesc}`,
-    data.ug ? `Setor / UG: ${data.ug}${localInstalacao ? ' / ' + localInstalacao : ''}` : '',
-    nl,
     'Prezado(a),',
+    'Apresentamos nossa proposta comercial para fornecimento de pe\u00e7as para equipamentos de refrigera\u00e7\u00e3o, conforme sua solicita\u00e7\u00e3o.',
     nl,
-    'Apresentamos nossa proposta comercial para manutenção corretiva do equipamento de',
-    'refrigeração industrial identificado acima, conforme levantamento técnico realizado em campo.',
+    sep,
+    '1.0 Escopo de Fornecimento',
+    sep,
     nl,
-    sep2,
-    '1.0 ESCOPO DE FORNECIMENTO',
-    sep2,
+    'Setor: ' + (data.ug || '\u2014') + (localInstalacao ? ' / ' + localInstalacao : '') + (tagAmbev ? '   /   Tag: ' + tagAmbev : ''),
+    ordemRef ? 'Ordem SAP / OS: ' + ordemRef : '',
+    'Equipamento: ' + equipDesc,
     nl,
-    '  Nº   QTD   DESCRIÇÃO  |  ESPECIFICAÇÃO  |  NCM  |  VLR. UNIT.  |  TOTAL',
-    buildLinhas(),
+    buildTabela(),
     nl,
-    `  VALOR TOTAL DA PROPOSTA:                                         R$ ${valorFmt}`,
+    '1.1 Excluso Fornecimento.',
+    'Qualquer item n\u00e3o contemplado neste Escopo de Fornecimento.',
     nl,
-    sep2,
-    '2.0 CONDIÇÕES COMERCIAIS',
-    sep2,
+    sep,
+    '2.0 Condi\u00e7\u00f5es Comerciais.',
+    sep,
     nl,
-    `  Valor Total: R$ ${valorFmt}`,
-    '  Preços incluem todos os impostos, taxas e encargos federais, estaduais e municipais.',
+    'VALOR TOTAL: R$ ' + valorFmt,
+    'Os pre\u00e7os apresentados incluem todos os impostos, taxas, direitos e outros encargos federais, estaduais e municipais.',
     nl,
-    sep2,
-    '3.0 CONDIÇÕES DE PAGAMENTO',
-    sep2,
+    sep,
+    '3.0 Forma de Pagamento / Parcelamento.',
+    sep,
     nl,
-    '  A combinar conforme aprovação AMBEV.',
+    '30 dias',
     nl,
-    sep2,
-    '4.0 VALIDADE DA PROPOSTA',
-    sep2,
+    sep,
+    '4.0 Validade da Proposta.',
+    sep,
     nl,
-    `  Válida até: ${formatValidade(data.validade)}`,
-    '  O preço será mantido por 30 dias da data de emissão.',
+    'O pre\u00e7o ajustado nesta proposta ser\u00e1 mantido por um per\u00edodo de 20 dias da data de emiss\u00e3o (v\u00e1lido at\u00e9 ' + formatValidade(data.validade) + '), quando poder\u00e1 ser reajustado com base no IGPM/FGV.',
     nl,
-    sep2,
-    '5.0 INFORMAÇÕES PARA CADASTRO',
-    sep2,
+    sep,
+    '5.0 Prazo de Entrega.',
+    sep,
     nl,
-    '  Razão Social:   VISION CONTROLS ASSOCIADOS LTDA',
-    '  Nome Fantasia:  VISION CONTROLS',
-    '  CNPJ:           10.823.200/0001-06',
-    '  Insc. Est.:     9048501360',
-    '  Endereço:       Rua Almirante Tamandaré, 515 — Alto da XV, Curitiba/PR — CEP 80045-110',
-    '  Telefone:       (41) 3667-9835',
+    '07 dias \u00fateis ap\u00f3s confirma\u00e7\u00e3o do pedido.',
     nl,
-    sep1,
+    sep,
+    '6.0 Aceita\u00e7\u00e3o de Pedidos.',
+    sep,
     nl,
-    'Ficamos à disposição para esclarecimentos e aguardamos aprovação.',
+    'A confirma\u00e7\u00e3o da proposta dever\u00e1 ser apresentada atrav\u00e9s de documento com assinaturas autorizadas, formalizando assim a concord\u00e2ncia do fornecimento e observ\u00e2ncia de todas as cl\u00e1usulas e condi\u00e7\u00f5es constantes na proposta comercial. O comprovante de que \u00e9 uma assinatura autorizada dever\u00e1 vir junto com a confirma\u00e7\u00e3o do pedido.',
+    nl,
+    sep,
+    '7.0 Informa\u00e7\u00f5es para Cadastro.',
+    sep,
+    nl,
+    'Raz\u00e3o Social:             VISION CONTROLS ASSOCIADOS LTDA',
+    'Nome Fantasia:            VISION CONTROLS',
+    'Inscri\u00e7\u00e3o Estadual:       9048501360',
+    'Cadastro Junta Comercial: 20092507247',
+    'CNPJ:                     10.823.200/0001-06',
+    'Endere\u00e7o:                 Rua Almirante Tamandar\u00e9, 515 \u2014 Alto da XV \u2014 Curitiba/PR \u2014 CEP 80045-110',
+    'Telefone:                 (41) 3667-9835',
+    nl,
+    sep,
+    nl,
+    'Ficamos \u00e0 disposi\u00e7\u00e3o para esclarecimentos e aguardamos aprova\u00e7\u00e3o.',
     nl,
     'Atenciosamente,',
     nl,
     'VISION CONTROLS ASSOCIADOS LTDA',
-    'Equipe Técnica Comercial — HVAC Industrial',
-    'AMBEV Cervejaria RJ',
+    'Jaqueline Maria Pacheco',
+    'Analista Comercial',
+    'Fone: (41) 3667-9835',
   ];
 
-  const body = lines.filter(l => l !== null && l !== undefined && l !== '').join('\n');
-
+  const body = lines.filter(l => l !== null && l !== undefined).join('\n');
   return { subject, body };
 }
 export interface ShareOccurrenceData {
