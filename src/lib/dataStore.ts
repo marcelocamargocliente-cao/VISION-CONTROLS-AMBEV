@@ -340,25 +340,39 @@ export const DataStore = {
     };
   },
 
-  // 4. View: Status por Área (agrupa por area_ref do equipamento para o gráfico de NOK)
+  // 4. View: Status por Área — cruza equipamentos com ocorrências abertas (parado=true)
   async getVwStatusPorUg(filters?: GlobalFilters): Promise<VwStatusPorUg[]> {
     let equipamentos: any[] = dbState.equipamentos;
+    let ocorrencias: any[] = dbState.ocorrencias;
+
     if (isSupabaseConfigured) {
       try {
-        const { data } = await supabase
-          .from('equipamentos')
-          .select('tag, area_ref, localizacao_ref, ug_ref, status');
-        if (data && data.length > 0) equipamentos = data;
+        const [eqRes, occRes] = await Promise.all([
+          supabase.from('equipamentos').select('id, tag, area_ref, localizacao_ref, ug_ref, status'),
+          supabase.from('ocorrencias').select('equipamento_id, equipamento_parado, status')
+            .eq('equipamento_parado', true)
+            .not('status', 'in', '("CONCLUIDA","CANCELADA")'),
+        ]);
+        if (eqRes.data && eqRes.data.length > 0) equipamentos = eqRes.data;
+        if (occRes.data) ocorrencias = occRes.data;
       } catch (e) { console.warn('getVwStatusPorUg Supabase', e); }
     }
+
+    // Equipamentos com ocorrência aberta e parado=true
+    const paradosIds = new Set(
+      ocorrencias
+        .filter((o: any) => o.equipamento_parado === true &&
+          o.status !== 'CONCLUIDA' && o.status !== 'CANCELADA')
+        .map((o: any) => o.equipamento_id)
+    );
 
     const areaMap = new Map<string, { total: number; ok: number; parado: number; restricao: number }>();
     equipamentos.forEach((e: any) => {
       const area = (e.area_ref || e.localizacao_ref || e.ug_ref || 'SEM ÁREA').toUpperCase();
       const cur = areaMap.get(area) || { total: 0, ok: 0, parado: 0, restricao: 0 };
       cur.total += 1;
-      if (e.status === 'OK') cur.ok += 1;
-      else if (e.status === 'PARADO') cur.parado += 1;
+      if (paradosIds.has(e.id)) cur.parado += 1;
+      else if (e.status === 'OK' || !e.status) cur.ok += 1;
       else cur.restricao += 1;
       areaMap.set(area, cur);
     });
@@ -370,30 +384,42 @@ export const DataStore = {
       ok: d.ok,
       parado: d.parado,
       restricao: d.restricao,
-      disponibilidade_pct: d.total > 0 ? Number((((d.ok + d.restricao) / d.total) * 100).toFixed(1)) : 100,
+      disponibilidade_pct: d.total > 0 ? Number((((d.ok) / d.total) * 100).toFixed(1)) : 100,
     })).sort((a, b) => b.parado - a.parado);
   },
 
-  // 5. View: Status por Área real (usa area_ref do equipamento)
+  // 5. View: Status por Área — barras duplas OK/NOK (cruza com ocorrências abertas)
   async getVwStatusPorLinha(filters?: GlobalFilters): Promise<VwStatusPorLinha[]> {
     let equipamentos: any[] = dbState.equipamentos;
+    let ocorrencias: any[] = dbState.ocorrencias;
+
     if (isSupabaseConfigured) {
       try {
-        const { data } = await supabase
-          .from('equipamentos')
-          .select('tag, area_ref, localizacao_ref, status');
-        if (data && data.length > 0) equipamentos = data;
+        const [eqRes, occRes] = await Promise.all([
+          supabase.from('equipamentos').select('id, tag, area_ref, localizacao_ref, status'),
+          supabase.from('ocorrencias').select('equipamento_id, equipamento_parado, status')
+            .eq('equipamento_parado', true)
+            .not('status', 'in', '("CONCLUIDA","CANCELADA")'),
+        ]);
+        if (eqRes.data && eqRes.data.length > 0) equipamentos = eqRes.data;
+        if (occRes.data) ocorrencias = occRes.data;
       } catch (e) { console.warn('getVwStatusPorLinha Supabase', e); }
     }
 
-    // Agrupar por area_ref (RETORNÁVEIS, ONE WAY CERVEJA, etc.)
+    const paradosIds = new Set(
+      ocorrencias
+        .filter((o: any) => o.equipamento_parado === true &&
+          o.status !== 'CONCLUIDA' && o.status !== 'CANCELADA')
+        .map((o: any) => o.equipamento_id)
+    );
+
     const areaMap = new Map<string, { ok: number; nok: number; total: number }>();
     equipamentos.forEach((e: any) => {
       const area = (e.area_ref || e.localizacao_ref || 'SEM ÁREA').toUpperCase();
       const cur = areaMap.get(area) || { ok: 0, nok: 0, total: 0 };
       cur.total += 1;
-      if (e.status === 'OK') cur.ok += 1;
-      else cur.nok += 1;
+      if (paradosIds.has(e.id)) cur.nok += 1;
+      else cur.ok += 1;
       areaMap.set(area, cur);
     });
 
@@ -407,7 +433,7 @@ export const DataStore = {
         restricao: 0,
       }))
       .filter((r) => r.total > 0)
-      .sort((a, b) => b.parado - a.parado || b.total - a.total); // mais críticas primeiro
+      .sort((a, b) => b.parado - a.parado || b.total - a.total);
 
     return result;
   },
