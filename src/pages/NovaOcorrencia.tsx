@@ -56,8 +56,15 @@ export const NovaOcorrencia: React.FC = () => {
   const [equipamentoParado, setEquipamentoParado] = useState<boolean>(true);
   const [parouLinha, setParouLinha] = useState<boolean>(false);
 
-  // Dynamic Peças
-  const [pecas, setPecas] = useState<Array<Partial<PecaPendente>>>([]);
+  // Popup equipamento obsoleto (Rittal modelo terminando em 100)
+  const [showObsoletoPopup, setShowObsoletoPopup] = useState(false);
+  const [equipPendente, setEquipPendente] = useState<VwEquipamento | null>(null);
+
+  const isObsoleto = (eq: VwEquipamento): boolean => {
+    const marca = (eq.marca || '').toLowerCase().trim();
+    const modelo = (eq.modelo || '').trim();
+    return marca === 'rittal' && /100$/i.test(modelo);
+  };<Array<Partial<PecaPendente>>>([]);
   const [valorDisplays, setValorDisplays] = useState<string[]>([]); // display-only formatted strings for valor_unitario mask
 
   // Dynamic Fotos
@@ -124,10 +131,19 @@ export const NovaOcorrencia: React.FC = () => {
   });
 
   const handleSelectEquip = (eq: VwEquipamento) => {
+    // Se for Rittal modelo terminando em 100, mostra popup antes de selecionar
+    if (isObsoleto(eq)) {
+      setEquipPendente(eq);
+      setShowObsoletoPopup(true);
+      return;
+    }
+    confirmarSelecaoEquip(eq);
+  };
+
+  const confirmarSelecaoEquip = (eq: VwEquipamento) => {
     setSelectedEquip(eq);
     setEquipSearch('');
     if (eq.ppac) setPpac(eq.ppac);
-    // Busca dados frescos do Supabase para garantir TAG AMBEV/patrimônio corretos
     DataStore.getEquipamentoById(eq.id).then((full) => {
       if (full) {
         setSelectedEquip((prev) => ({ ...(prev || {}), ...full } as VwEquipamento));
@@ -267,6 +283,83 @@ export const NovaOcorrencia: React.FC = () => {
   };
 
   return (
+    <>
+    {/* POPUP: Equipamento Obsoleto (Rittal modelo termina em 100) */}
+    {showObsoletoPopup && equipPendente && (
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+        <div className="bg-[#111827] border border-yellow-500/40 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
+          {/* Header amarelo de alerta */}
+          <div className="bg-yellow-500/15 border-b border-yellow-500/30 px-5 py-4 flex items-start gap-3">
+            <span className="text-2xl shrink-0">⚠️</span>
+            <div className="min-w-0">
+              <p className="text-[13px] font-display font-bold text-yellow-400 uppercase tracking-wide">Equipamento Obsoleto</p>
+              <p className="text-[11px] text-yellow-300/80 mt-0.5 font-mono">
+                {equipPendente.marca} {equipPendente.modelo} · TAG {equipPendente.tag}
+              </p>
+            </div>
+          </div>
+
+          <div className="px-5 py-4">
+            <p className="text-[13px] text-[#E6EDF3] leading-relaxed">
+              Este modelo <strong className="text-yellow-400">{equipPendente.modelo}</strong> da marca <strong className="text-yellow-400">Rittal</strong> está <strong>obsoleto</strong> e possivelmente não possui mais peças de reposição disponíveis no mercado.
+            </p>
+            <p className="text-[12px] text-[#8B949E] mt-2">Como deseja prosseguir com este chamado?</p>
+          </div>
+
+          <div className="px-5 pb-5 space-y-2">
+            {/* Opção 1: solicitar peça mesmo assim */}
+            <button
+              onClick={() => {
+                if (equipPendente) {
+                  // Pré-seleciona o tipo de serviço como Corretiva e adiciona observação
+                  confirmarSelecaoEquip(equipPendente);
+                  setEquipPendente(null);
+                  setShowObsoletoPopup(false);
+                }
+              }}
+              className="w-full text-left px-4 py-3 rounded-xl bg-[#21262D] border border-[#30363D] hover:border-[#8B949E] transition-colors group"
+            >
+              <p className="text-[13px] font-bold text-[#E6EDF3] group-hover:text-white flex items-center gap-2">
+                🔧 <span>Registrar ocorrência — Solicitação de Peça</span>
+              </p>
+              <p className="text-[11px] text-[#8B949E] mt-0.5 ml-6">Abrir chamado para tentativa de reparo com peça de reposição</p>
+            </button>
+
+            {/* Opção 2: substituição */}
+            <button
+              onClick={() => {
+                if (equipPendente) {
+                  confirmarSelecaoEquip(equipPendente);
+                  // Pré-preenche a descrição da anomalia com solicitação de substituição
+                  setTimeout(() => {
+                    setDescricaoAnomalia(
+                      `SOLICITAÇÃO DE SUBSTITUIÇÃO DE EQUIPAMENTO — ${equipPendente.marca} ${equipPendente.modelo} está obsoleto e sem peças disponíveis no mercado. Solicito substituição por equipamento novo.`
+                    );
+                    setEquipamentoParado(true);
+                  }, 100);
+                  setEquipPendente(null);
+                  setShowObsoletoPopup(false);
+                }
+              }}
+              className="w-full text-left px-4 py-3 rounded-xl bg-[#21262D] border border-[#30363D] hover:border-yellow-500/50 transition-colors group"
+            >
+              <p className="text-[13px] font-bold text-yellow-400 group-hover:text-yellow-300 flex items-center gap-2">
+                🔄 <span>Registrar ocorrência — Solicitação de Substituição</span>
+              </p>
+              <p className="text-[11px] text-[#8B949E] mt-0.5 ml-6">Abrir chamado para substituição por equipamento novo (modelo atualizado)</p>
+            </button>
+
+            <button
+              onClick={() => { setShowObsoletoPopup(false); setEquipPendente(null); }}
+              className="w-full h-9 rounded-xl text-[12px] text-[#8B949E] hover:text-[#E6EDF3] transition-colors"
+            >
+              Cancelar — escolher outro equipamento
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+
     <div className="nova-ocorrencia-page w-full h-full flex flex-col overflow-hidden bg-[#0D1117] font-body ">
       {/* Header Fixo */}
       <div className="nova-ocorrencia-header flex items-center justify-between gap-3 border-b border-[#30363D] bg-[#0D1117] shrink-0">
@@ -741,5 +834,6 @@ export const NovaOcorrencia: React.FC = () => {
         </div>
       </form>
     </div>
+    </>
   );
 };
