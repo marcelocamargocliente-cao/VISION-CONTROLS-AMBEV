@@ -24,7 +24,7 @@ const FASES: Fase[] = [
   {
     id: 'ABERTA',
     label: 'Ocorrência Aberta',
-    sublabel: 'Técnico registrou o chamado',
+    sublabel: 'Técnico registrou o chamado em campo',
     icon: AlertTriangle,
     cor: '#F85149',
     corBg: 'rgba(248,81,73,0.12)',
@@ -32,7 +32,7 @@ const FASES: Fase[] = [
   {
     id: 'ORCAMENTO_INTERNO_FEITO',
     label: 'Orçamento Interno',
-    sublabel: 'Equipe Vision levantou os custos',
+    sublabel: 'Gerar proposta comercial (PPAC)',
     icon: FileText,
     cor: '#F5A623',
     corBg: 'rgba(245,166,35,0.12)',
@@ -90,11 +90,12 @@ interface Props {
   canEdit: boolean;
   onAtualizado: () => void;
   usuarioNome: string;
-  faseParaAbrir?: OcorrenciaStatus | null;   // dropdown → abre painel automaticamente
-  onFaseAberta?: () => void;                  // avisa que o painel foi aberto (limpa o gatilho)
+  faseParaAbrir?: OcorrenciaStatus | null;
+  onFaseAberta?: () => void;
+  onAbrirProposta?: () => void; // abre modal de Nova Proposta Comercial
 }
 
-export const FluxoComercial: React.FC<Props> = ({ ocorrencia, canEdit, onAtualizado, usuarioNome, faseParaAbrir, onFaseAberta }) => {
+export const FluxoComercial: React.FC<Props> = ({ ocorrencia, canEdit, onAtualizado, usuarioNome, faseParaAbrir, onFaseAberta, onAbrirProposta }) => {
   const faseAtualIdx = FASES.findIndex((f) => f.id === ocorrencia.status);
   const faseAtual = faseAtualIdx >= 0 ? faseAtualIdx : 0;
 
@@ -115,12 +116,38 @@ export const FluxoComercial: React.FC<Props> = ({ ocorrencia, canEdit, onAtualiz
   }, [faseParaAbrir]);
 
   const abrirAvanco = (faseId: string) => {
+    // Orçamento Interno: registra a data de hoje automaticamente e abre proposta
+    if (faseId === 'ORCAMENTO_INTERNO_FEITO') {
+      handleOrcamentoInterno();
+      return;
+    }
     const fase = FASES.find((f) => f.id === faseId)!;
     const dataAtual = fase.campo ? (ocorrencia[fase.campo] as string) || '' : '';
     const extraAtual = fase.campoExtra ? (ocorrencia[fase.campoExtra] as string) || '' : '';
     setDataInput(dataAtual ? dataAtual.slice(0, 10) : new Date().toISOString().slice(0, 10));
     setExtraInput(extraAtual);
     setEditando(faseId);
+  };
+
+  const handleOrcamentoInterno = async () => {
+    const hoje = new Date().toISOString().slice(0, 10);
+    try {
+      await DataStore.updateOcorrenciaExtra(ocorrencia.id, {
+        status: 'ORCAMENTO_INTERNO_FEITO',
+        data_orcamento_interno: hoje,
+      });
+      await DataStore.addComentario(
+        ocorrencia.id,
+        usuarioNome,
+        `Orçamento interno concluído em ${new Date(hoje + 'T12:00:00').toLocaleDateString('pt-BR')} — Gerando proposta comercial (PPAC)`
+      );
+      await onAtualizado();
+      // Abre o modal de Nova Proposta Comercial
+      onAbrirProposta?.();
+    } catch (e) {
+      console.error(e);
+      toast.error('Erro ao registrar orçamento interno');
+    }
   };
 
   const salvarAvanco = async (faseId: string) => {

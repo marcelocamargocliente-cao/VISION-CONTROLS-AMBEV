@@ -1068,6 +1068,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
                   usuarioNome={user?.nome || 'Sistema'}
                   faseParaAbrir={faseParaAbrir}
                   onFaseAberta={() => setFaseParaAbrir(null)}
+                  onAbrirProposta={() => { setCotacaoParaProposta(null); setShowAddOrcModal(true); }}
                 />
               )}
             </div>
