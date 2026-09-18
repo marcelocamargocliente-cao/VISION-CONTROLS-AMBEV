@@ -166,7 +166,8 @@ export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, pecasOco
 
   const addItem = () => setItens([...itens, { ...ITEM_VAZIO }]);
   const removeItem = (i: number) => {
-    setItens(itens.filter((_, idx) => idx !== i));
+    const restantes = itens.filter((_, idx) => idx !== i);
+    setItens(restantes.length > 0 ? restantes : [{ ...ITEM_VAZIO }]);
     setItensImportados((prev) => {
       const n = new Set<number>();
       Array.from(prev).forEach((idx: number) => { if (idx < i) n.add(idx); else if (idx > i) n.add(idx - 1); });
@@ -251,8 +252,8 @@ export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, pecasOco
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <span className="text-[9px] text-[#6E7681]">{itensImportados.has(i) && <span className="text-emerald-400">da OS</span>}</span>
-                      <button onClick={() => removeItem(i)} disabled={itens.length === 1}
-                        className="text-red-400 hover:text-red-300 disabled:opacity-30"><Trash2 className="w-3.5 h-3.5" /></button>
+                      <button onClick={() => removeItem(i)}
+                        className="text-red-400 hover:text-red-300"><Trash2 className="w-3.5 h-3.5" /></button>
                     </div>
                   </div>
 
