@@ -1196,9 +1196,27 @@ export const DataStore = {
   async getOrcamentos(): Promise<Orcamento[]> {
     if (isSupabaseConfigured) {
       try {
-        const { data } = await supabase.from('orcamentos').select('*').order('created_at', { ascending: false });
-        if (data) { dbState.orcamentos = data as Orcamento[]; persistState(); return data as Orcamento[]; }
-      } catch (e) { console.warn(e); }
+        const { data, error } = await supabase.from('orcamentos').select('*').order('created_at', { ascending: false });
+        if (error) { console.warn('getOrcamentos Supabase error:', error); }
+        if (data && data.length > 0) {
+          dbState.orcamentos = data as Orcamento[];
+          persistState();
+          return data as Orcamento[];
+        }
+        // Supabase retornou vazio mas dbState tem dados — retorna dbState
+        if (data && data.length === 0 && dbState.orcamentos.length > 0) {
+          console.warn('getOrcamentos: Supabase vazio, usando cache local:', dbState.orcamentos.length);
+          // Tenta sincronizar os locais para o Supabase
+          for (const orc of dbState.orcamentos) {
+            try {
+              await supabase.from('orcamentos').upsert(orc, { onConflict: 'id' });
+            } catch {}
+          }
+          return [...dbState.orcamentos].sort((a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          );
+        }
+      } catch (e) { console.warn('getOrcamentos Supabase error:', e); }
     }
     return [...dbState.orcamentos].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   },
@@ -1256,8 +1274,26 @@ export const DataStore = {
 
     if (isSupabaseConfigured) {
       try {
-        const { data } = await supabase.from('orcamentos').insert({ ...newOrc }).select().single();
-        if (data) newOrc.id = (data as any).id;
+        const insertPayload = {
+          id: newOrc.id,
+          ocorrencia_id: newOrc.ocorrencia_id || null,
+          numero: newOrc.numero,
+          fornecedor: newOrc.fornecedor,
+          valor_total: newOrc.valor_total,
+          data_envio: newOrc.data_envio,
+          enviado_para: newOrc.enviado_para || null,
+          validade: newOrc.validade || null,
+          status: newOrc.status,
+          arquivo_pdf_url: newOrc.arquivo_pdf_url || null,
+          arquivo_url: newOrc.arquivo_url || null,
+          descricao_anomalia: newOrc.descricao_anomalia || null,
+          observacoes: newOrc.observacoes || null,
+          pecas: newOrc.pecas || null,
+          created_at: newOrc.created_at,
+        };
+        const { data, error } = await supabase.from('orcamentos').insert(insertPayload).select().single();
+        if (error) { console.error('saveOrcamento INSERT ERROR:', error, insertPayload); }
+        if (data) { newOrc.id = (data as any).id; console.log('saveOrcamento ok:', newOrc.id); }
       } catch (e) { console.warn('saveOrcamento insert Supabase error:', e); }
     }
     dbState.orcamentos.push(newOrc);
