@@ -270,12 +270,19 @@ export const FluxoComercial: React.FC<Props> = ({ ocorrencia, canEdit, onAtualiz
                   )}
                 </div>
 
-                {/* Sublabel: instrução (próxima/atual pendente) ou confirmação (concluída) */}
-                <p className={`text-[10px] mt-0.5 leading-tight ${
-                  concluida ? 'text-[#3FB950]/70' : 'text-[#6E7681]'
-                }`}>
-                  {concluida ? fase.labelConcluido : (atual || idx === faseAtual + 1) ? fase.sublabel : ''}
-                </p>
+                {/* Sublabel: instrução quando pendente, confirmação quando feito */}
+                {(() => {
+                  const temData = fase.campo && (ocorrencia[fase.campo] as string);
+                  if (concluida || (atual && temData)) {
+                    // Fase concluída OU fase atual já com data registrada → mostra confirmação em verde
+                    return <p className="text-[10px] text-[#3FB950]/70 mt-0.5 leading-tight">{fase.labelConcluido}</p>;
+                  }
+                  if (atual || idx === faseAtual + 1) {
+                    // Fase atual sem data, ou próxima → mostra instrução
+                    return <p className="text-[10px] text-[#6E7681] mt-0.5 leading-tight">{fase.sublabel}</p>;
+                  }
+                  return null;
+                })()}
               </div>
             </div>
           );
