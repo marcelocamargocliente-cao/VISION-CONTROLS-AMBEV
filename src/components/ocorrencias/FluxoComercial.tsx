@@ -236,8 +236,8 @@ export const FluxoComercial: React.FC<Props> = ({ ocorrencia, canEdit, onAtualiz
                   )}
                 </div>
 
-                {/* Sub-label só se atual ou próximo com avançar */}
-                {(atual || (!concluida && proximaFase)) && (
+                {/* Sub-label só na fase atual ou na próxima */}
+                {(atual || idx === faseAtual + 1) && (
                   <p className="text-[10px] text-[#6E7681] mt-0.5 leading-none">{fase.sublabel}</p>
                 )}
               </div>
