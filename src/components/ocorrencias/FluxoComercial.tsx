@@ -32,6 +32,16 @@ const FASES: Fase[] = [
     corBg: 'rgba(248,81,73,0.12)',
   },
   {
+    id: 'AGUARDANDO_ORCAMENTO',
+    label: 'Cotação de Fornecedor',
+    sublabel: 'Solicitar e cadastrar cotações de fornecedores',
+    labelConcluido: 'Cotações de fornecedores recebidas',
+    icon: FileText,
+    cor: '#D29922',
+    corBg: 'rgba(210,153,34,0.12)',
+    campo: 'data_orcamento_interno',
+  },
+  {
     id: 'ORCAMENTO_INTERNO_FEITO',
     label: 'Orçamento Interno',
     sublabel: 'Levantar custos e gerar orçamento interno',
@@ -41,6 +51,56 @@ const FASES: Fase[] = [
     corBg: 'rgba(245,166,35,0.12)',
     campo: 'data_orcamento_interno',
   },
+  {
+    id: 'PPAC_ENVIADO',
+    label: 'PPAC Enviado',
+    sublabel: 'Emitir e enviar a Proposta Comercial à AMBEV',
+    labelConcluido: 'Proposta comercial (PPAC) enviada à AMBEV',
+    icon: Send,
+    cor: '#58A6FF',
+    corBg: 'rgba(88,166,255,0.12)',
+    campo: 'data_ppac_enviado',
+    campoExtra: 'ppac',
+    labelExtra: 'Nº da PPAC',
+    placeholderExtra: 'Ex: 11101',
+  },
+  {
+    id: 'RC_GERADA',
+    label: 'RC Gerada',
+    sublabel: 'Aguardando AMBEV emitir a Requisição de Compra',
+    labelConcluido: 'Requisição de Compra emitida pela AMBEV',
+    icon: Receipt,
+    cor: '#A371F7',
+    corBg: 'rgba(163,113,247,0.12)',
+    campo: 'data_rc',
+    campoExtra: 'numero_rc',
+    labelExtra: 'Nº da RC',
+    placeholderExtra: 'Ex: RC-2026-00123',
+  },
+  {
+    id: 'PEDIDO_DE_COMPRA',
+    label: 'Pedido de Compra',
+    sublabel: 'Aguardando AMBEV emitir o Pedido de Compra',
+    labelConcluido: 'Pedido de Compra recebido da AMBEV',
+    icon: ShoppingCart,
+    cor: '#3FB950',
+    corBg: 'rgba(63,185,80,0.12)',
+    campo: 'data_pedido_compra',
+    campoExtra: 'numero_pedido_compra',
+    labelExtra: 'Nº do Pedido',
+    placeholderExtra: 'Ex: 4500012345',
+  },
+  {
+    id: 'CONCLUIDA',
+    label: 'Entrega / Concluído',
+    sublabel: 'Entregar serviço ou peça e encerrar a OS',
+    labelConcluido: 'Serviço ou peça entregue — OS encerrada',
+    icon: CheckCircle2,
+    cor: '#3FB950',
+    corBg: 'rgba(63,185,80,0.12)',
+    campo: 'data_entrega',
+  },
+];
   {
     id: 'PPAC_ENVIADO',
     label: 'PPAC Enviado',
@@ -123,7 +183,7 @@ export const FluxoComercial: React.FC<Props> = ({ ocorrencia, canEdit, onAtualiz
   }, [faseParaAbrir]);
 
   const abrirAvanco = (faseId: string) => {
-    // Orçamento Interno: registra a data de hoje automaticamente e abre proposta
+    // Fase de Cotação: avança para Orçamento Interno e abre proposta
     if (faseId === 'ORCAMENTO_INTERNO_FEITO') {
       handleOrcamentoInterno();
       return;
