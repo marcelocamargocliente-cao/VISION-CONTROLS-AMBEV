@@ -1084,6 +1084,23 @@ export const OcorrenciaDetalhe: React.FC = () => {
                   faseParaAbrir={faseParaAbrir}
                   onFaseAberta={() => setFaseParaAbrir(null)}
                   onAbrirProposta={() => { setCotacaoParaProposta(null); setShowAddOrcModal(true); }}
+                  onFluxoAvancou={async (novaFase) => {
+                    // Quando o fluxo avança, atualiza o status da(s) proposta(s) vinculadas
+                    const statusPorFase: Partial<Record<OcorrenciaStatus, string>> = {
+                      'RC_GERADA':       'APROVADO',
+                      'PEDIDO_DE_COMPRA': 'APROVADO_AMBEV',
+                      'CONCLUIDA':        'FATURADO',
+                    };
+                    const novoStatusOrc = statusPorFase[novaFase];
+                    if (novoStatusOrc && orcamentos.length > 0) {
+                      for (const orc of orcamentos) {
+                        if (!['EXPIRADO','CANCELADO','FATURADO'].includes(orc.status)) {
+                          await DataStore.saveOrcamento({ ...orc, status: novoStatusOrc as OrcamentoStatus });
+                        }
+                      }
+                      await loadData();
+                    }
+                  }}
                 />
               )}
             </div>

@@ -124,9 +124,10 @@ interface Props {
   faseParaAbrir?: OcorrenciaStatus | null;
   onFaseAberta?: () => void;
   onAbrirProposta?: () => void;
+  onFluxoAvancou?: (novaFase: OcorrenciaStatus) => Promise<void>; // sincroniza status da PPAC
 }
 
-export const FluxoComercial: React.FC<Props> = ({ ocorrencia, canEdit, onAtualizado, usuarioNome, faseParaAbrir, onFaseAberta, onAbrirProposta }) => {
+export const FluxoComercial: React.FC<Props> = ({ ocorrencia, canEdit, onAtualizado, usuarioNome, faseParaAbrir, onFaseAberta, onAbrirProposta, onFluxoAvancou }) => {
   const faseAtualIdx = FASES.findIndex((f) => f.id === ocorrencia.status);
   const faseAtual = faseAtualIdx >= 0 ? faseAtualIdx : 0;
 
@@ -196,6 +197,8 @@ export const FluxoComercial: React.FC<Props> = ({ ocorrencia, canEdit, onAtualiz
         usuarioNome,
         `Fase avançada para: ${fase.label}${extraInput ? ` · ${fase.labelExtra}: ${extraInput}` : ''}${dataInput ? ` · Data: ${new Date(dataInput + 'T12:00:00').toLocaleDateString('pt-BR')}` : ''}`
       );
+      // Sincroniza status da proposta PPAC com a fase do fluxo
+      await onFluxoAvancou?.(faseId as OcorrenciaStatus);
       toast.success(`Fase "${fase.label}" registrada`);
       setEditando(null);
       onAtualizado();
