@@ -285,7 +285,23 @@ export const OcorrenciaDetalhe: React.FC = () => {
     }
   };
 
-  const handleAddComment = async (e: React.FormEvent) => {
+  // Sincroniza status das propostas com a fase atual do fluxo ao carregar
+  useEffect(() => {
+    if (!ocorrencia || orcamentos.length === 0) return;
+    const statusPorFase: Partial<Record<OcorrenciaStatus, string>> = {
+      'RC_GERADA':        'APROVADO',
+      'PEDIDO_DE_COMPRA': 'APROVADO_AMBEV',
+      'CONCLUIDA':        'FATURADO',
+    };
+    const statusEsperado = statusPorFase[ocorrencia.status as OcorrenciaStatus];
+    if (!statusEsperado) return;
+    orcamentos.forEach(async (orc) => {
+      if (!['EXPIRADO','CANCELADO','FATURADO','APROVADO','APROVADO_AMBEV'].includes(orc.status)) {
+        await DataStore.saveOrcamento({ ...orc, status: statusEsperado as OrcamentoStatus });
+        await loadData();
+      }
+    });
+  }, [ocorrencia?.status, orcamentos.length]);
     e.preventDefault();
     if (!ocorrencia || !novoComentario.trim()) return;
     setSendingEvent(true);
