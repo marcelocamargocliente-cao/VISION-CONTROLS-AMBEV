@@ -288,20 +288,32 @@ export const OcorrenciaDetalhe: React.FC = () => {
   // Sincroniza status das propostas com a fase atual do fluxo ao carregar
   useEffect(() => {
     if (!ocorrencia || orcamentos.length === 0) return;
-    const statusPorFase: Partial<Record<OcorrenciaStatus, string>> = {
+
+    const FASE_PARA_STATUS_ORC: Partial<Record<string, string>> = {
       'RC_GERADA':        'APROVADO',
       'PEDIDO_DE_COMPRA': 'APROVADO_AMBEV',
       'CONCLUIDA':        'FATURADO',
     };
-    const statusEsperado = statusPorFase[ocorrencia.status as OcorrenciaStatus];
+
+    const statusEsperado = FASE_PARA_STATUS_ORC[ocorrencia.status];
     if (!statusEsperado) return;
-    orcamentos.forEach(async (orc) => {
-      if (!['EXPIRADO','CANCELADO','FATURADO','APROVADO','APROVADO_AMBEV'].includes(orc.status)) {
-        await DataStore.saveOrcamento({ ...orc, status: statusEsperado as OrcamentoStatus });
-        await loadData();
+
+    const STATUS_JA_OK = ['EXPIRADO','CANCELADO','FATURADO','APROVADO','APROVADO_AMBEV'];
+
+    const precisaAtualizar = orcamentos.some(orc => !STATUS_JA_OK.includes(orc.status));
+    if (!precisaAtualizar) return;
+
+    (async () => {
+      for (const orc of orcamentos) {
+        if (!STATUS_JA_OK.includes(orc.status)) {
+          // Atualiza direto no dbState local
+          const idx = (DataStore as any).__dbState?.orcamentos?.findIndex((o: any) => o.id === orc.id) ?? -1;
+          await DataStore.saveOrcamento({ ...orc, status: statusEsperado as OrcamentoStatus });
+        }
       }
-    });
-  }, [ocorrencia?.status, orcamentos.length]);
+      await loadData();
+    })();
+  }, [ocorrencia?.status, JSON.stringify(orcamentos.map(o => o.id + o.status))]);
     e.preventDefault();
     if (!ocorrencia || !novoComentario.trim()) return;
     setSendingEvent(true);
