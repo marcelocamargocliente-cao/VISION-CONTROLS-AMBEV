@@ -39,6 +39,7 @@ import {
   VwEquipamento,
   Criticidade,
   CotacaoFornecedor,
+  OrcamentoStatus,
 } from '../types/database';
 import { IndustrialTag } from '../components/common/IndustrialTag';
 import { StatusBadge } from '../components/common/StatusBadge';
