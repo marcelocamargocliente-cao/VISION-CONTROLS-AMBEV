@@ -1454,6 +1454,27 @@ export const OcorrenciaDetalhe: React.FC = () => {
           setSelectedOrcamento(orcAtualizado);
           setIsOrcDetailOpen(true);
           setCotacaoParaProposta(null);
+
+          // Avança fluxo automaticamente quando proposta é criada
+          if (ocorrencia) {
+            const hoje = new Date().toISOString().slice(0, 10);
+            const statusAtual = ocorrencia.status;
+            const precisaAvancar = ['ABERTA','AGUARDANDO_ORCAMENTO','ORCAMENTO_INTERNO_FEITO'].includes(statusAtual);
+            if (precisaAvancar) {
+              await DataStore.updateOcorrenciaExtra(ocorrencia.id, {
+                status: 'PPAC_ENVIADO',
+                data_orcamento_interno: (ocorrencia as any).data_orcamento_interno || hoje,
+                data_ppac_enviado: hoje,
+                ppac: novoOrc.numero,
+              });
+              await DataStore.addComentario(
+                ocorrencia.id,
+                user?.nome || 'Sistema',
+                `Proposta PPAC Nº ${novoOrc.numero} gerada e enviada à AMBEV em ${new Date(hoje + 'T12:00:00').toLocaleDateString('pt-BR')}`
+              );
+              await loadData();
+            }
+          }
         }}
         defaultOcorrenciaId={ocorrencia?.id}
         ocorrencias={ocorrencia ? [ocorrencia] : []}
@@ -1494,6 +1515,34 @@ export const OcorrenciaDetalhe: React.FC = () => {
         onUpdated={async (updatedOrc) => {
           setSelectedOrcamento(updatedOrc);
           await loadData();
+
+          // Avança fluxo baseado no status da proposta atualizada
+          if (ocorrencia) {
+            const hoje = new Date().toISOString().slice(0, 10);
+            const statusOrc = updatedOrc.status;
+            let novoStatusOS: string | null = null;
+            const extras: Record<string, unknown> = {};
+
+            if (['ENVIADO','EM_ANALISE','EM_ANALISE_AMBEV'].includes(statusOrc)) {
+              if (!['PPAC_ENVIADO','RC_GERADA','PEDIDO_DE_COMPRA','CONCLUIDA'].includes(ocorrencia.status)) {
+                novoStatusOS = 'PPAC_ENVIADO';
+                extras.data_ppac_enviado = hoje;
+                extras.ppac = updatedOrc.numero;
+              }
+            } else if (['APROVADO','APROVADO_AMBEV'].includes(statusOrc)) {
+              if (!['RC_GERADA','PEDIDO_DE_COMPRA','CONCLUIDA'].includes(ocorrencia.status)) {
+                novoStatusOS = 'RC_GERADA';
+                extras.data_rc = hoje;
+              }
+            }
+
+            if (novoStatusOS) {
+              await DataStore.updateOcorrenciaExtra(ocorrencia.id, { status: novoStatusOS, ...extras });
+              await DataStore.addComentario(ocorrencia.id, user?.nome || 'Sistema',
+                `Proposta PPAC ${updatedOrc.numero} atualizada para "${statusOrc}" — Fluxo avançado automaticamente`);
+              await loadData();
+            }
+          }
         }}
         onOpenRevisao={(orc) => {
           setIsOrcDetailOpen(false);
