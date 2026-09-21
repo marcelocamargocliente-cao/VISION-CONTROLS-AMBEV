@@ -1513,6 +1513,15 @@ export const OcorrenciaDetalhe: React.FC = () => {
                 data_ppac_enviado: hoje,
                 ppac: novoOrc.numero,
               });
+              // Peças avançam para APROVADA quando PPAC é enviada
+              try {
+                const pecasOS = await DataStore.getPecasByOcorrencia(ocorrencia.id);
+                for (const p of pecasOS) {
+                  if (['PENDENTE_COTACAO','SOLICITADA','COTACAO','COTADA'].includes(p.status)) {
+                    await DataStore.savePeca({ ...p, status: 'APROVADA' as any });
+                  }
+                }
+              } catch (e) { console.warn('updatePecas on proposta:', e); }
               await DataStore.addComentario(
                 ocorrencia.id,
                 user?.nome || 'Sistema',

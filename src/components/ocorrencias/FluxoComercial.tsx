@@ -192,6 +192,26 @@ export const FluxoComercial: React.FC<Props> = ({ ocorrencia, canEdit, onAtualiz
       if (faseId === 'CONCLUIDA') extras['data_conclusao'] = dataInput;
 
       await DataStore.updateOcorrenciaExtra(ocorrencia.id, extras);
+
+      // Atualiza status das peças conforme a fase do fluxo
+      const FASE_PARA_STATUS_PECA: Partial<Record<string, string>> = {
+        'AGUARDANDO_ORCAMENTO':   'COTACAO',
+        'ORCAMENTO_INTERNO_FEITO': 'COTADA',
+        'PPAC_ENVIADO':            'APROVADA',
+        'RC_GERADA':               'APROVADA_COMPRA',
+        'PEDIDO_DE_COMPRA':        'COMPRADA',
+        'CONCLUIDA':               'ENTREGUE',
+      };
+      const novoStatusPeca = FASE_PARA_STATUS_PECA[faseId];
+      if (novoStatusPeca) {
+        try {
+          const pecasOS = await DataStore.getPecasByOcorrencia(ocorrencia.id);
+          for (const p of pecasOS) {
+            await DataStore.savePeca({ ...p, status: novoStatusPeca as any });
+          }
+        } catch (e) { console.warn('updatePecas:', e); }
+      }
+
       await DataStore.addComentario(
         ocorrencia.id,
         usuarioNome,
