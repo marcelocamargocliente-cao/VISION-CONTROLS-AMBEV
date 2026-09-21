@@ -227,9 +227,11 @@ export const FluxoComercial: React.FC<Props> = ({ ocorrencia, canEdit, onAtualiz
           const atual = idx === faseAtual;
           const dataFase = fase.campo ? (ocorrencia[fase.campo] as string) : undefined;
           const extraFase = fase.campoExtra ? (ocorrencia[fase.campoExtra] as string) : undefined;
-          const podeAvancar = canEdit && !editando && idx > 0 && (
-            idx <= faseAtual + 1  // próxima ou anterior podem ser editadas
-          );
+          const temDataRegistrada = fase.campo ? !!(ocorrencia[fase.campo] as string) : false;
+          // "Avançar" só na próxima fase ainda não feita
+          const podeAvancar = canEdit && !editando && idx > 0 && idx === faseAtual + 1;
+          // "Editar" apenas nas fases já concluídas que têm campo registrável
+          const podeEditar = canEdit && !editando && idx > 0 && (concluida || (atual && temDataRegistrada)) && fase.campo;
           const dataFmt = dataFase
             ? new Date(dataFase + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' })
             : null;
@@ -282,14 +284,22 @@ export const FluxoComercial: React.FC<Props> = ({ ocorrencia, canEdit, onAtualiz
                     )}
                   </div>
 
-                  {/* Botão avançar/editar */}
-                  {podeAvancar && idx > 0 && (
+                  {/* Botão Avançar (só na próxima fase) ou Editar (nas concluídas) */}
+                  {podeAvancar && (
                     <button
                       onClick={() => abrirAvanco(fase.id)}
                       className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold border transition-all"
                       style={{ background: fase.corBg, borderColor: fase.cor + '50', color: fase.cor }}
                     >
-                      {atual ? '✏ Editar' : '› Avançar'}
+                      › Avançar
+                    </button>
+                  )}
+                  {podeEditar && !podeAvancar && (
+                    <button
+                      onClick={() => abrirAvanco(fase.id)}
+                      className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold border transition-all bg-[#21262D] border-[#30363D] text-[#8B949E] hover:text-white"
+                    >
+                      ✏ Editar
                     </button>
                   )}
                 </div>
