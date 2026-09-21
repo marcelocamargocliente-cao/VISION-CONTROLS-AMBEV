@@ -102,6 +102,30 @@ const FASES: Fase[] = [
   },
 ];
 
+interface Fase {
+  id: OcorrenciaStatus;
+  label: string;
+  sublabel: string;
+  labelConcluido: string;
+  icon: React.FC<{ className?: string }>;
+  cor: string;
+  corBg: string;
+  campo?: keyof Ocorrencia;
+  campoExtra?: keyof Ocorrencia;
+  labelExtra?: string;
+  placeholderExtra?: string;
+}
+
+interface Props {
+  ocorrencia: Ocorrencia;
+  canEdit: boolean;
+  onAtualizado: () => void;
+  usuarioNome: string;
+  faseParaAbrir?: OcorrenciaStatus | null;
+  onFaseAberta?: () => void;
+  onAbrirProposta?: () => void;
+}
+
 export const FluxoComercial: React.FC<Props> = ({ ocorrencia, canEdit, onAtualizado, usuarioNome, faseParaAbrir, onFaseAberta, onAbrirProposta }) => {
   const faseAtualIdx = FASES.findIndex((f) => f.id === ocorrencia.status);
   const faseAtual = faseAtualIdx >= 0 ? faseAtualIdx : 0;
