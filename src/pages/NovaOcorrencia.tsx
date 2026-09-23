@@ -290,7 +290,7 @@ export const NovaOcorrencia: React.FC = () => {
     {/* POPUP: Equipamento Obsoleto (Rittal modelo termina em 100) */}
     {showObsoletoPopup && equipPendente && (
       <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-        <div className="bg-[#F8F9FA] border border-yellow-500/40 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
+        <div className="bg-[#111827] border border-yellow-500/40 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
           {/* Header amarelo de alerta */}
           <div className="bg-yellow-500/15 border-b border-yellow-500/30 px-5 py-4 flex items-start gap-3">
             <span className="text-2xl shrink-0">⚠️</span>
@@ -303,10 +303,10 @@ export const NovaOcorrencia: React.FC = () => {
           </div>
 
           <div className="px-5 py-4">
-            <p className="text-[13px] text-[#1A1A1A] leading-relaxed">
+            <p className="text-[13px] text-[#E6EDF3] leading-relaxed">
               Este modelo <strong className="text-yellow-400">{equipPendente.modelo}</strong> da marca <strong className="text-yellow-400">Rittal</strong> está <strong>obsoleto</strong> e possivelmente não possui mais peças de reposição disponíveis no mercado.
             </p>
-            <p className="text-[12px] text-[#6B7280] mt-2">Como deseja prosseguir com este chamado?</p>
+            <p className="text-[12px] text-[#8B949E] mt-2">Como deseja prosseguir com este chamado?</p>
           </div>
 
           <div className="px-5 pb-5 space-y-2">
@@ -320,12 +320,12 @@ export const NovaOcorrencia: React.FC = () => {
                   setShowObsoletoPopup(false);
                 }
               }}
-              className="w-full text-left px-4 py-3 rounded-xl bg-[#E5E7EB] border border-[#D1D5DB] hover:border-[#8B949E] transition-colors group"
+              className="w-full text-left px-4 py-3 rounded-xl bg-[#21262D] border border-[#30363D] hover:border-[#8B949E] transition-colors group"
             >
-              <p className="text-[13px] font-bold text-[#1A1A1A] group-hover:text-white flex items-center gap-2">
+              <p className="text-[13px] font-bold text-[#E6EDF3] group-hover:text-white flex items-center gap-2">
                 🔧 <span>Registrar ocorrência — Solicitação de Peça</span>
               </p>
-              <p className="text-[11px] text-[#6B7280] mt-0.5 ml-6">Abrir chamado para tentativa de reparo com peça de reposição</p>
+              <p className="text-[11px] text-[#8B949E] mt-0.5 ml-6">Abrir chamado para tentativa de reparo com peça de reposição</p>
             </button>
 
             {/* Opção 2: substituição */}
@@ -344,17 +344,17 @@ export const NovaOcorrencia: React.FC = () => {
                   setShowObsoletoPopup(false);
                 }
               }}
-              className="w-full text-left px-4 py-3 rounded-xl bg-[#E5E7EB] border border-[#D1D5DB] hover:border-yellow-500/50 transition-colors group"
+              className="w-full text-left px-4 py-3 rounded-xl bg-[#21262D] border border-[#30363D] hover:border-yellow-500/50 transition-colors group"
             >
               <p className="text-[13px] font-bold text-yellow-400 group-hover:text-yellow-300 flex items-center gap-2">
                 🔄 <span>Registrar ocorrência — Solicitação de Substituição</span>
               </p>
-              <p className="text-[11px] text-[#6B7280] mt-0.5 ml-6">Abrir chamado para substituição por equipamento novo (modelo atualizado)</p>
+              <p className="text-[11px] text-[#8B949E] mt-0.5 ml-6">Abrir chamado para substituição por equipamento novo (modelo atualizado)</p>
             </button>
 
             <button
               onClick={() => { setShowObsoletoPopup(false); setEquipPendente(null); }}
-              className="w-full h-9 rounded-xl text-[12px] text-[#6B7280] hover:text-[#1A1A1A] transition-colors"
+              className="w-full h-9 rounded-xl text-[12px] text-[#8B949E] hover:text-[#E6EDF3] transition-colors"
             >
               Cancelar — escolher outro equipamento
             </button>
@@ -363,14 +363,14 @@ export const NovaOcorrencia: React.FC = () => {
       </div>
     )}
 
-    <div className="nova-ocorrencia-page w-full h-full flex flex-col overflow-hidden bg-[#F0F2F5] font-body ">
+    <div className="nova-ocorrencia-page w-full h-full flex flex-col overflow-hidden bg-[#0D1117] font-body ">
       {/* Header Fixo */}
-      <div className="nova-ocorrencia-header flex items-center justify-between gap-3 border-b border-[#D1D5DB] bg-[#F0F2F5] shrink-0">
+      <div className="nova-ocorrencia-header flex items-center justify-between gap-3 border-b border-[#30363D] bg-[#0D1117] shrink-0">
         <div className="flex items-center gap-3 min-w-0">
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="p-1.5 rounded-lg bg-[#F8F9FA] hover:bg-[#E5E7EB] border border-[#D1D5DB] transition-colors cursor-pointer shrink-0"
+            className="p-1.5 rounded-lg bg-[#161B22] hover:bg-[#21262D] border border-[#30363D] transition-colors cursor-pointer shrink-0"
             title="Voltar"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -394,7 +394,7 @@ export const NovaOcorrencia: React.FC = () => {
         <div className="nova-ocorrencia-body flex-1 min-h-0 overflow-y-auto p-4 md:p-6 space-y-4 max-w-4xl w-full mx-auto">
           {/* STEP 1: EQUIPAMENTO & LOCALIZAÇÃO */}
           <div className="card space-y-3">
-            <div className="flex items-center justify-between border-b border-[#D1D5DB] pb-2">
+            <div className="flex items-center justify-between border-b border-[#30363D] pb-2">
               <div className="flex items-center gap-2">
                 <span className="w-5 h-5 rounded-full bg-[#2F81F7]  font-display font-bold text-xs flex items-center justify-center">
                   1
@@ -426,18 +426,18 @@ export const NovaOcorrencia: React.FC = () => {
                     value={equipSearch}
                     onChange={(e) => setEquipSearch(e.target.value)}
                     placeholder="Ex: 361, Blue e+, L101..."
-                    className="w-full bg-[#F0F2F5] border border-[#D1D5DB] focus:border-[#2F81F7]  text-xs rounded-lg has-icon-left pr-3 py-2.5 outline-none  transition-colors"
+                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  text-xs rounded-lg has-icon-left pr-3 py-2.5 outline-none  transition-colors"
                   />
                 </div>
 
                 {equipSearch && filteredEquips.length > 0 && (
-                  <div className="bg-[#F0F2F5] border border-[#D1D5DB] rounded-lg max-h-48 overflow-y-auto divide-y divide-[#30363D]">
+                  <div className="bg-[#0D1117] border border-[#30363D] rounded-lg max-h-48 overflow-y-auto divide-y divide-[#30363D]">
                     {filteredEquips.map((eq) => (
                       <button
                         key={eq.id}
                         type="button"
                         onClick={() => handleSelectEquip(eq)}
-                        className="w-full p-2.5 text-left hover:bg-[#F1F3F5] flex items-center justify-between transition-colors cursor-pointer"
+                        className="w-full p-2.5 text-left hover:bg-[#1C2128] flex items-center justify-between transition-colors cursor-pointer"
                       >
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
@@ -459,7 +459,7 @@ export const NovaOcorrencia: React.FC = () => {
                 )}
               </div>
             ) : (
-              <div className="p-3 bg-[#F0F2F5] border border-[#D1D5DB] rounded-lg grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="p-3 bg-[#0D1117] border border-[#30363D] rounded-lg grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <span className="eyebrow  block">TAG AMBEV</span>
                   <p className="font-semibold text-cyan-400 text-xs mt-1">{selectedEquip.tag_sap || selectedEquip.patrimonio_ref || 'Sem Tag AMBEV'}</p>
@@ -491,7 +491,7 @@ export const NovaOcorrencia: React.FC = () => {
 
           {/* STEP 2: PARÂMETROS OPERACIONAIS & CRITICIDADE */}
           <div className="card space-y-4">
-            <div className="flex items-center gap-2 border-b border-[#D1D5DB] pb-2">
+            <div className="flex items-center gap-2 border-b border-[#30363D] pb-2">
               <span className="w-5 h-5 rounded-full bg-[#2F81F7]  font-display font-bold text-xs flex items-center justify-center">
                 2
               </span>
@@ -507,7 +507,7 @@ export const NovaOcorrencia: React.FC = () => {
                 <select
                   value={tipoServico}
                   onChange={(e) => setTipoServico(e.target.value as any)}
-                  className="w-full bg-[#F0F2F5] border border-[#D1D5DB] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none"
+                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none"
                 >
                   <option value="CORRETIVA">Corretiva</option>
                   <option value="PREVENTIVA">Preventiva</option>
@@ -522,7 +522,7 @@ export const NovaOcorrencia: React.FC = () => {
                 <select
                   value={criticidade}
                   onChange={(e) => setCriticidade(e.target.value as Criticidade)}
-                  className="w-full bg-[#F0F2F5] border border-[#D1D5DB] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none font-bold"
+                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none font-bold"
                 >
                   <option value="CRITICA">🔴 Crítica (Impacto em Linha)</option>
                   <option value="ALTA">🟠 Alta</option>
@@ -539,7 +539,7 @@ export const NovaOcorrencia: React.FC = () => {
                   required
                   value={dataAvaria}
                   onChange={(e) => setDataAvaria(e.target.value)}
-                  className="w-full bg-[#F0F2F5] border border-[#D1D5DB] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none "
+                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none "
                 />
               </div>
 
@@ -550,7 +550,7 @@ export const NovaOcorrencia: React.FC = () => {
                   type="date"
                   value={previsaoRetorno}
                   onChange={(e) => setPrevisaoRetorno(e.target.value)}
-                  className="w-full bg-[#F0F2F5] border border-[#D1D5DB] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none "
+                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none "
                 />
               </div>
             </div>
@@ -611,7 +611,7 @@ export const NovaOcorrencia: React.FC = () => {
 
           {/* STEP 3: DIAGNÓSTICO DE CAMPO & CÓDIGOS SAP */}
           <div className="card space-y-4">
-            <div className="flex items-center gap-2 border-b border-[#D1D5DB] pb-2">
+            <div className="flex items-center gap-2 border-b border-[#30363D] pb-2">
               <span className="w-5 h-5 rounded-full bg-[#2F81F7]  font-display font-bold text-xs flex items-center justify-center">
                 3
               </span>
@@ -630,7 +630,7 @@ export const NovaOcorrencia: React.FC = () => {
                 value={descricaoAnomalia}
                 onChange={(e) => setDescricaoAnomalia(e.target.value)}
                 placeholder="Ex: Alarme de alta pressão no display; compressor desarmando por sobrecorrente; ventilador do condensador travado..."
-                className="w-full bg-[#F0F2F5] border border-[#D1D5DB] focus:border-[#2F81F7]  p-3 rounded-lg outline-none leading-relaxed font-body"
+                className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  p-3 rounded-lg outline-none leading-relaxed font-body"
               />
             </div>
 
@@ -643,7 +643,7 @@ export const NovaOcorrencia: React.FC = () => {
                 value={causaProvavel}
                 onChange={(e) => setCausaProvavel(e.target.value)}
                 placeholder="Ex: Queima da bobina do ventilador ou vazamento na válvula Schrader"
-                className="w-full bg-[#F0F2F5] border border-[#D1D5DB] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none font-body"
+                className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none font-body"
               />
             </div>
 
@@ -655,7 +655,7 @@ export const NovaOcorrencia: React.FC = () => {
                   value={notaSap}
                   onChange={(e) => setNotaSap(e.target.value)}
                   placeholder="Ex: 10045892"
-                  className="w-full bg-[#F0F2F5] border border-[#D1D5DB] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none "
+                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none "
                 />
               </div>
 
@@ -666,7 +666,7 @@ export const NovaOcorrencia: React.FC = () => {
                   value={ordemSap}
                   onChange={(e) => setOrdemSap(e.target.value)}
                   placeholder="Ex: 40019283"
-                  className="w-full bg-[#F0F2F5] border border-[#D1D5DB] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none "
+                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none "
                 />
               </div>
 
@@ -676,7 +676,7 @@ export const NovaOcorrencia: React.FC = () => {
                   type="text"
                   value={ordemVision}
                   onChange={(e) => setOrdemVision(e.target.value)}
-                  className="w-full bg-[#F0F2F5] border border-[#D1D5DB] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none "
+                  className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#2F81F7]  p-2.5 rounded-lg outline-none "
                 />
               </div>
             </div>
@@ -684,7 +684,7 @@ export const NovaOcorrencia: React.FC = () => {
 
           {/* STEP 4: PEÇAS & SERVIÇOS */}
           <div className="card space-y-3">
-            <div className="flex items-center justify-between border-b border-[#D1D5DB] pb-2">
+            <div className="flex items-center justify-between border-b border-[#30363D] pb-2">
               <div className="flex items-center gap-2">
                 <span className="w-5 h-5 rounded-full bg-[#2F81F7]  font-display font-bold text-xs flex items-center justify-center">
                   4
@@ -710,7 +710,7 @@ export const NovaOcorrencia: React.FC = () => {
             ) : (
               <div className="space-y-3">
                 {pecas.map((peca, idx) => (
-                  <div key={idx} className="p-3 bg-[#F0F2F5] border border-[#D1D5DB] rounded-lg space-y-2 relative">
+                  <div key={idx} className="p-3 bg-[#0D1117] border border-[#30363D] rounded-lg space-y-2 relative">
                     <button
                       type="button"
                       onClick={() => handleRemovePeca(idx)}
@@ -729,7 +729,7 @@ export const NovaOcorrencia: React.FC = () => {
                           value={peca.descricao || ''}
                           onChange={(e) => handlePecaChange(idx, 'descricao', e.target.value)}
                           placeholder="Ex: Motoventilador Condensador, Compressor, Placa..."
-                          className="w-full bg-[#F8F9FA] border border-[#D1D5DB] focus:border-[#2F81F7] p-2 rounded-lg outline-none font-body text-xs"
+                          className="w-full bg-[#161B22] border border-[#30363D] focus:border-[#2F81F7] p-2 rounded-lg outline-none font-body text-xs"
                         />
                       </div>
 
@@ -741,7 +741,7 @@ export const NovaOcorrencia: React.FC = () => {
                           value={peca.part_number || ''}
                           onChange={(e) => handlePecaChange(idx, 'part_number', e.target.value)}
                           placeholder="Dados técnicos, referência, código SAP, fabricante, modelo, especificação..."
-                          className="w-full bg-[#F8F9FA] border border-[#D1D5DB] focus:border-[#2F81F7] p-2 rounded-lg outline-none text-xs resize-y"
+                          className="w-full bg-[#161B22] border border-[#30363D] focus:border-[#2F81F7] p-2 rounded-lg outline-none text-xs resize-y"
                         />
                       </div>
 
@@ -754,7 +754,7 @@ export const NovaOcorrencia: React.FC = () => {
                             min={1}
                             value={peca.quantidade || 1}
                             onChange={(e) => handlePecaChange(idx, 'quantidade', Number(e.target.value))}
-                            className="w-full bg-[#F8F9FA] border border-[#D1D5DB] focus:border-[#2F81F7] p-2 rounded-lg outline-none text-xs font-bold text-center"
+                            className="w-full bg-[#161B22] border border-[#30363D] focus:border-[#2F81F7] p-2 rounded-lg outline-none text-xs font-bold text-center"
                           />
                         </div>
                         {/* Valor unitário e NCM mantidos no estado mas ocultos nesta tela */}
@@ -768,7 +768,7 @@ export const NovaOcorrencia: React.FC = () => {
 
           {/* STEP 5: FOTOS DE EVIDÊNCIA */}
           <div className="card space-y-3">
-            <div className="flex items-center justify-between border-b border-[#D1D5DB] pb-2">
+            <div className="flex items-center justify-between border-b border-[#30363D] pb-2">
               <div className="flex items-center gap-2">
                 <span className="w-5 h-5 rounded-full bg-[#2F81F7]  font-display font-bold text-xs flex items-center justify-center">
                   5
@@ -798,7 +798,7 @@ export const NovaOcorrencia: React.FC = () => {
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                 {fotos.map((foto, i) => (
-                  <div key={i} className="aspect-video bg-[#F0F2F5] border border-[#D1D5DB] rounded-lg overflow-hidden relative group">
+                  <div key={i} className="aspect-video bg-[#0D1117] border border-[#30363D] rounded-lg overflow-hidden relative group">
                     <img src={foto.url} alt={foto.name} className="w-full h-full object-cover" />
                     <button
                       type="button"

@@ -47,15 +47,15 @@ export const DonutTipos: React.FC<DonutTiposProps> = ({ tipos, marcas }) => {
       ];
 
   return (
-    <div className="bg-white border border-[#E5E7EB] rounded-xl p-3 flex flex-col justify-between h-full w-full overflow-hidden select-none">
+    <div className="bg-[#13181F] border border-[#21262D] rounded-xl p-3 flex flex-col justify-between h-full w-full overflow-hidden select-none">
       {/* Título: 32px shrink-0 */}
       <div className="flex items-center gap-1.5 shrink-0 h-[32px] mb-0.5">
-        <Layers className="w-4 h-4 text-[#6B7280] shrink-0" />
+        <Layers className="w-4 h-4 text-[#8B949E] shrink-0" />
         <div className="min-w-0">
-          <h3 className="text-[12px] font-bold text-[#1A1A1A] tracking-tight truncate leading-tight">
+          <h3 className="text-[12px] font-bold text-[#E6EDF3] tracking-tight truncate leading-tight">
             Performance dos Modelos
           </h3>
-          <p className="text-[10px] text-[#6B7280] truncate leading-none">
+          <p className="text-[10px] text-[#8B949E] truncate leading-none">
             Arquitetura térmica
           </p>
         </div>
@@ -84,9 +84,9 @@ export const DonutTipos: React.FC<DonutTiposProps> = ({ tipos, marcas }) => {
                   if (active && payload && payload.length) {
                     const data = payload[0].payload;
                     return (
-                      <div className="bg-white border border-[#E5E7EB] rounded-lg p-2 text-[10px] shadow-xl">
-                        <p className="font-bold text-[#1A1A1A]">{data.name}</p>
-                        <p className="text-[#6B7280] font-mono">
+                      <div className="bg-[#1A1F28] border border-[#21262D] rounded-lg p-2 text-[10px] shadow-xl">
+                        <p className="font-bold text-[#E6EDF3]">{data.name}</p>
+                        <p className="text-[#8B949E] font-mono">
                           {data.value} un ({Math.round((data.value / totalGeral) * 100)}%)
                         </p>
                       </div>
@@ -100,8 +100,8 @@ export const DonutTipos: React.FC<DonutTiposProps> = ({ tipos, marcas }) => {
 
           {/* Total in center */}
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-            <span className="text-xs font-bold font-mono text-[#1A1A1A] leading-none">{totalGeral}</span>
-            <span className="text-[8px] uppercase text-[#6B7280] leading-none mt-0.5">Ativos</span>
+            <span className="text-xs font-bold font-mono text-[#E6EDF3] leading-none">{totalGeral}</span>
+            <span className="text-[8px] uppercase text-[#8B949E] leading-none mt-0.5">Ativos</span>
           </div>
         </div>
 
@@ -113,9 +113,9 @@ export const DonutTipos: React.FC<DonutTiposProps> = ({ tipos, marcas }) => {
               <div key={`legend-${item.name || idx}-${idx}`} className="flex items-center justify-between leading-none">
                 <div className="flex items-center gap-1.5 min-w-0">
                   <span className="w-2.5 h-[2px] rounded-full shrink-0" style={{ backgroundColor: item.color }} />
-                  <span className="text-[#6B7280] truncate text-[10px]">{item.name}</span>
+                  <span className="text-[#8B949E] truncate text-[10px]">{item.name}</span>
                 </div>
-                <span className="font-mono text-[#1A1A1A] text-[10px] font-semibold ml-1">{pct}%</span>
+                <span className="font-mono text-[#E6EDF3] text-[10px] font-semibold ml-1">{pct}%</span>
               </div>
             );
           })}
@@ -123,8 +123,8 @@ export const DonutTipos: React.FC<DonutTiposProps> = ({ tipos, marcas }) => {
       </div>
 
       {/* Top Fabricantes: ~60px fixo no bottom (shrink-0) */}
-      <div className="pt-1.5 border-t border-[#E5E7EB] space-y-1 shrink-0 h-[58px] flex flex-col justify-center font-body">
-        <div className="flex items-center justify-between text-[9px] uppercase font-bold text-[#6B7280] tracking-wider leading-none">
+      <div className="pt-1.5 border-t border-[#21262D] space-y-1 shrink-0 h-[58px] flex flex-col justify-center font-body">
+        <div className="flex items-center justify-between text-[9px] uppercase font-bold text-[#8B949E] tracking-wider leading-none">
           <span>Top Fabricantes</span>
         </div>
         <div className="grid grid-cols-3 gap-2">
@@ -133,11 +133,11 @@ export const DonutTipos: React.FC<DonutTiposProps> = ({ tipos, marcas }) => {
             return (
               <div key={`top-marca-${m.marca || idx}-${idx}`} className="text-[10px] leading-tight">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="font-medium text-[#6B7280] truncate">{m.marca}</span>
-                  <span className="font-mono text-[10px] font-semibold text-[#1A1A1A] ml-0.5">{pct}%</span>
+                  <span className="font-medium text-[#8B949E] truncate">{m.marca}</span>
+                  <span className="font-mono text-[10px] font-semibold text-[#E6EDF3] ml-0.5">{pct}%</span>
                 </div>
                 {/* 3px height bar */}
-                <div className="w-full h-[3px] rounded-[2px] bg-white overflow-hidden">
+                <div className="w-full h-[3px] rounded-[2px] bg-[#1A1F28] overflow-hidden">
                   <div
                     className="h-full rounded-[2px] bg-[#58A6FF]"
                     style={{ width: `${pct}%` }}

@@ -160,13 +160,13 @@ export const ModalDuplicarOrcamento: React.FC<ModalDuplicarOrcamentoProps> = ({
     >
       <div
         id="modal-duplicar-orcamento-box"
-        className="bg-[#F8F9FA] border border-[#D1D5DB] rounded-xl shadow-2xl w-full max-w-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150 my-auto"
+        className="bg-[#161B22] border border-[#30363D] rounded-xl shadow-2xl w-full max-w-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150 my-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="px-5 py-4 border-b border-[#D1D5DB] bg-[#F0F2F5] flex items-center justify-between">
+        <div className="px-5 py-4 border-b border-[#30363D] bg-[#0D1117] flex items-center justify-between">
           <div>
-            <span className="text-[10px] text-[#6B7280] uppercase font-mono tracking-wider font-semibold block">
+            <span className="text-[10px] text-[#8B949E] uppercase font-mono tracking-wider font-semibold block">
               Nova Revisão — baseada em {orcamentoOriginal.numero}
             </span>
             <h2 className="text-base font-bold text-[#F0F6FC] flex items-center gap-2 mt-0.5">
@@ -176,7 +176,7 @@ export const ModalDuplicarOrcamento: React.FC<ModalDuplicarOrcamentoProps> = ({
           </div>
           <button
             onClick={onFechar}
-            className="text-[#6B7280] hover:text-[#F0F6FC] p-1.5 rounded-lg hover:bg-[#E5E7EB] transition-colors cursor-pointer"
+            className="text-[#8B949E] hover:text-[#F0F6FC] p-1.5 rounded-lg hover:bg-[#21262D] transition-colors cursor-pointer"
             title="Fechar"
           >
             <X className="w-5 h-5" />
@@ -218,7 +218,7 @@ export const ModalDuplicarOrcamento: React.FC<ModalDuplicarOrcamentoProps> = ({
                 value={form.numero}
                 onChange={(e) => setForm((p) => ({ ...p, numero: e.target.value }))}
                 placeholder="Ex: ORC-2026-0825-REV2"
-                className="w-full bg-[#F0F2F5] border border-[#D1D5DB] focus:border-[#58A6FF] rounded-lg px-3 py-2 text-xs font-mono font-bold text-[#58A6FF] placeholder:text-[#6E7681] focus:outline-none"
+                className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#58A6FF] rounded-lg px-3 py-2 text-xs font-mono font-bold text-[#58A6FF] placeholder:text-[#6E7681] focus:outline-none"
               />
             </div>
 
@@ -231,7 +231,7 @@ export const ModalDuplicarOrcamento: React.FC<ModalDuplicarOrcamentoProps> = ({
                 id="duplicar-orc-status"
                 value={form.status}
                 onChange={(e) => setForm((p) => ({ ...p, status: e.target.value as OrcamentoStatus }))}
-                className="w-full bg-[#F0F2F5] border border-[#D1D5DB] focus:border-[#58A6FF] rounded-lg px-3 py-2 text-xs font-mono text-[#F0F6FC] focus:outline-none cursor-pointer"
+                className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#58A6FF] rounded-lg px-3 py-2 text-xs font-mono text-[#F0F6FC] focus:outline-none cursor-pointer"
               >
                 <option value="RASCUNHO">Rascunho</option>
                 <option value="ENVIADO">Enviado</option>
@@ -252,7 +252,7 @@ export const ModalDuplicarOrcamento: React.FC<ModalDuplicarOrcamentoProps> = ({
                 value={form.fornecedor}
                 onChange={(e) => setForm((p) => ({ ...p, fornecedor: e.target.value }))}
                 placeholder="Nome do fornecedor"
-                className="w-full bg-[#F0F2F5] border border-[#D1D5DB] focus:border-[#58A6FF] rounded-lg px-3 py-2 text-xs text-[#F0F6FC] placeholder:text-[#6E7681] focus:outline-none"
+                className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#58A6FF] rounded-lg px-3 py-2 text-xs text-[#F0F6FC] placeholder:text-[#6E7681] focus:outline-none"
               />
             </div>
 
@@ -275,7 +275,7 @@ export const ModalDuplicarOrcamento: React.FC<ModalDuplicarOrcamentoProps> = ({
                   setForm((p) => ({ ...p, valor_total: fmt }));
                 }}
                 placeholder="0,00"
-                className="w-full bg-[#F0F2F5] border border-[#D1D5DB] focus:border-[#58A6FF] rounded-lg px-3 py-2 text-xs font-mono font-bold text-[#374151] placeholder:text-[#6E7681] focus:outline-none text-right"
+                className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#58A6FF] rounded-lg px-3 py-2 text-xs font-mono font-bold text-[#C9D1D9] placeholder:text-[#6E7681] focus:outline-none text-right"
               />
             </div>
 
@@ -289,7 +289,7 @@ export const ModalDuplicarOrcamento: React.FC<ModalDuplicarOrcamentoProps> = ({
                 type="date"
                 value={form.data_envio}
                 onChange={(e) => setForm((p) => ({ ...p, data_envio: e.target.value }))}
-                className="w-full bg-[#F0F2F5] border border-[#D1D5DB] focus:border-[#58A6FF] rounded-lg px-3 py-2 text-xs font-mono text-[#F0F6FC] focus:outline-none"
+                className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#58A6FF] rounded-lg px-3 py-2 text-xs font-mono text-[#F0F6FC] focus:outline-none"
               />
               <span style={{ fontSize: 10, color: '#8B949E' }} className="block mt-1">
                 Preenchida com hoje — altere se necessário
@@ -306,7 +306,7 @@ export const ModalDuplicarOrcamento: React.FC<ModalDuplicarOrcamentoProps> = ({
                 type="date"
                 value={form.validade}
                 onChange={(e) => setForm((p) => ({ ...p, validade: e.target.value }))}
-                className="w-full bg-[#F0F2F5] border border-[#D1D5DB] focus:border-[#58A6FF] rounded-lg px-3 py-2 text-xs font-mono text-[#F0F6FC] focus:outline-none"
+                className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#58A6FF] rounded-lg px-3 py-2 text-xs font-mono text-[#F0F6FC] focus:outline-none"
               />
             </div>
 
@@ -320,7 +320,7 @@ export const ModalDuplicarOrcamento: React.FC<ModalDuplicarOrcamentoProps> = ({
                 value={form.enviado_para}
                 onChange={(e) => setForm((p) => ({ ...p, enviado_para: e.target.value }))}
                 placeholder="Ex: Engenharia de Utilidades AMBEV"
-                className="w-full bg-[#F0F2F5] border border-[#D1D5DB] focus:border-[#58A6FF] rounded-lg px-3 py-2 text-xs text-[#F0F6FC] placeholder:text-[#6E7681] focus:outline-none"
+                className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#58A6FF] rounded-lg px-3 py-2 text-xs text-[#F0F6FC] placeholder:text-[#6E7681] focus:outline-none"
               />
             </div>
 
@@ -335,7 +335,7 @@ export const ModalDuplicarOrcamento: React.FC<ModalDuplicarOrcamentoProps> = ({
                 onChange={(e) => setForm((p) => ({ ...p, observacoes: e.target.value }))}
                 placeholder="Ex: Reajuste de 8% por variação cambial do compressor. Nova validade de 30 dias."
                 rows={3}
-                className="w-full bg-[#F0F2F5] border border-[#D1D5DB] focus:border-[#58A6FF] rounded-lg p-2.5 text-xs text-[#F0F6FC] placeholder:text-[#6E7681] focus:outline-none"
+                className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#58A6FF] rounded-lg p-2.5 text-xs text-[#F0F6FC] placeholder:text-[#6E7681] focus:outline-none"
               />
             </div>
           </div>

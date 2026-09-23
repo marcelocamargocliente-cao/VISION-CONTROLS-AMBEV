@@ -148,13 +148,13 @@ export const PPAC: React.FC = () => {
     <div className="flex-1 flex flex-col gap-4 p-4 overflow-y-auto scroll-fluido max-w-7xl mx-auto w-full">
       {/* Header */}
       <div>
-        <div className="flex items-center gap-2 text-[10px] text-[#6B7280] uppercase tracking-widest mb-1">
-          <span className="px-2 py-0.5 rounded bg-[#E5E7EB] border border-[#D1D5DB]">GESTÃO COMERCIAL</span>
+        <div className="flex items-center gap-2 text-[10px] text-[#8B949E] uppercase tracking-widest mb-1">
+          <span className="px-2 py-0.5 rounded bg-[#21262D] border border-[#30363D]">GESTÃO COMERCIAL</span>
           <span>·</span>
           <span>CONTRATO AMBEV CERVEJARIA RJ</span>
         </div>
         <h1 className="text-lg font-display font-bold uppercase tracking-tight">PPAC — Propostas Comerciais</h1>
-        <p className="text-[11px] text-[#6B7280] mt-0.5">Todas as propostas emitidas pela Vision Controls para aprovação AMBEV</p>
+        <p className="text-[11px] text-[#8B949E] mt-0.5">Todas as propostas emitidas pela Vision Controls para aprovação AMBEV</p>
       </div>
 
       {/* KPIs */}
@@ -165,10 +165,10 @@ export const PPAC: React.FC = () => {
           { label: 'Aprovadas', value: kpis.aprovadas, sub: 'Liberadas', cor: '#3FB950' },
           { label: 'Expiradas', value: kpis.expiradas, sub: 'Candidatas a reenvio', cor: '#D29922' },
         ].map((k) => (
-          <div key={k.label} className="bg-[#F8F9FA] border border-[#E5E7EB] rounded-xl p-3.5">
-            <p className="text-[10px] text-[#6B7280] uppercase tracking-wider mb-1">{k.label}</p>
+          <div key={k.label} className="bg-[#111827] border border-[#21262D] rounded-xl p-3.5">
+            <p className="text-[10px] text-[#8B949E] uppercase tracking-wider mb-1">{k.label}</p>
             <p className="text-xl font-display font-bold" style={{ color: k.cor }}>{k.value}</p>
-            <p className="text-[10px] text-[#6B7280] mt-0.5">{k.sub}</p>
+            <p className="text-[10px] text-[#8B949E] mt-0.5">{k.sub}</p>
           </div>
         ))}
       </div>
@@ -176,13 +176,13 @@ export const PPAC: React.FC = () => {
       {/* Filtros */}
       <div className="flex flex-col sm:flex-row gap-2">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6B7280]" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8B949E]" />
           <input value={busca} onChange={(e) => setBusca(e.target.value)}
             placeholder="Buscar por Nº PPAC, TAG, fornecedor, OS..."
-            className="w-full h-10 bg-[#F8F9FA] border border-[#E5E7EB] text-[#1A1A1A] text-[12px] rounded-lg pl-9 pr-3 outline-none focus:border-[#2563EB]" />
+            className="w-full h-10 bg-[#111827] border border-[#21262D] text-[#E6EDF3] text-[12px] rounded-lg pl-9 pr-3 outline-none focus:border-[#8B949E]" />
         </div>
         <select value={filtroStatus} onChange={(e) => setFiltroStatus(e.target.value as any)}
-          className="h-10 bg-[#F8F9FA] border border-[#E5E7EB] text-[#1A1A1A] text-[12px] rounded-lg px-3 outline-none">
+          className="h-10 bg-[#111827] border border-[#21262D] text-[#E6EDF3] text-[12px] rounded-lg px-3 outline-none">
           <option value="TODOS">Todos os Status</option>
           {Object.entries(STATUS_CONFIG).map(([k, v]) => (
             <option key={k} value={k}>{v.label}</option>
@@ -194,7 +194,7 @@ export const PPAC: React.FC = () => {
       {filtrados.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center gap-3 py-16">
           <FileText className="w-12 h-12 text-[#30363D]" />
-          <p className="text-[13px] font-bold text-[#6B7280]">Nenhuma PPAC encontrada</p>
+          <p className="text-[13px] font-bold text-[#8B949E]">Nenhuma PPAC encontrada</p>
           <p className="text-[11px] text-[#6E7681]">Abra uma OS, adicione cotações e crie sua primeira proposta comercial.</p>
         </div>
       ) : (
@@ -209,7 +209,7 @@ export const PPAC: React.FC = () => {
 
             return (
               <div key={orc.id}
-                className="bg-[#F8F9FA] border border-[#E5E7EB] hover:border-[#D1D5DB] rounded-xl p-4 transition-all">
+                className="bg-[#111827] border border-[#21262D] hover:border-[#30363D] rounded-xl p-4 transition-all">
                 <div className="flex items-start gap-3">
                   {/* Badge status */}
                   <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 border"
@@ -220,7 +220,7 @@ export const PPAC: React.FC = () => {
                   {/* Info principal */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
-                      <span className="text-[13px] font-display font-bold text-[#1A1A1A]">PPAC Nº {orc.numero}</span>
+                      <span className="text-[13px] font-display font-bold text-[#E6EDF3]">PPAC Nº {orc.numero}</span>
                       <span className="text-[10px] px-1.5 py-0.5 rounded font-bold border"
                         style={{ background: c.bg, color: c.cor, borderColor: c.cor + '40' }}>
                         {c.label}
@@ -235,7 +235,7 @@ export const PPAC: React.FC = () => {
                       )}
                     </div>
 
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-[#6B7280]">
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-[#8B949E]">
                       {occ && (
                         <button onClick={() => navigate(`/ocorrencias/${occ.id}`)}
                           className="flex items-center gap-1 hover:text-[#58A6FF] transition-colors">
@@ -267,19 +267,19 @@ export const PPAC: React.FC = () => {
 
                   {/* Valor + ações */}
                   <div className="flex flex-col items-end gap-2 shrink-0">
-                    <p className="text-[15px] font-display font-bold text-[#1A1A1A]">
+                    <p className="text-[15px] font-display font-bold text-[#E6EDF3]">
                       {formatCurrency(Number(orc.valor_total) || 0)}
                     </p>
                     <div className="flex items-center gap-1.5">
                       {/* Ver detalhes */}
                       <button onClick={() => { setSelected(orc); setIsDetailOpen(true); }}
-                        className="w-8 h-8 rounded-lg bg-[#E5E7EB] border border-[#D1D5DB] text-[#374151] hover:text-white flex items-center justify-center"
+                        className="w-8 h-8 rounded-lg bg-[#21262D] border border-[#30363D] text-[#C9D1D9] hover:text-white flex items-center justify-center"
                         title="Ver / Editar proposta">
                         <Eye className="w-3.5 h-3.5" />
                       </button>
                       {/* Email */}
                       <button onClick={() => handleCompartilharEmail(orc)}
-                        className="w-8 h-8 rounded-lg bg-[#E5E7EB] border border-[#D1D5DB] text-[#374151] hover:text-white flex items-center justify-center"
+                        className="w-8 h-8 rounded-lg bg-[#21262D] border border-[#30363D] text-[#C9D1D9] hover:text-white flex items-center justify-center"
                         title="Enviar por e-mail">
                         <Share2 className="w-3.5 h-3.5" />
                       </button>
@@ -294,7 +294,7 @@ export const PPAC: React.FC = () => {
                       {/* Ver OS */}
                       {occ && (
                         <button onClick={() => navigate(`/ocorrencias/${occ.id}`)}
-                          className="w-8 h-8 rounded-lg bg-[#E5E7EB] border border-[#D1D5DB] text-[#374151] hover:text-white flex items-center justify-center"
+                          className="w-8 h-8 rounded-lg bg-[#21262D] border border-[#30363D] text-[#C9D1D9] hover:text-white flex items-center justify-center"
                           title="Ver ocorrência">
                           <ChevronRight className="w-3.5 h-3.5" />
                         </button>

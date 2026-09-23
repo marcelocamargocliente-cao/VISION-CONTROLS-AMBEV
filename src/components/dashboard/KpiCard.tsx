@@ -51,14 +51,14 @@ export const KpiCard: React.FC<KpiCardProps> = ({
         if (variant === 'success') {
           return 'bg-[#3FB950]/10 text-[#3FB950] border-emerald-500/20';
         }
-        return 'bg-white text-[#6B7280] border-[#E5E7EB]';
+        return 'bg-[#1A1F28] text-[#8B949E] border-[#21262D]';
       case 'negative':
         return 'bg-[#F85149]/10 text-[#F85149] border-red-500/20';
       case 'warning':
         return 'bg-[#D29922]/10 text-[#D29922] border-amber-500/20';
       case 'neutral':
       default:
-        return 'bg-white text-[#6B7280] border-[#E5E7EB]';
+        return 'bg-[#1A1F28] text-[#8B949E] border-[#21262D]';
     }
   };
 
@@ -67,14 +67,14 @@ export const KpiCard: React.FC<KpiCardProps> = ({
       id={id}
       onClick={onClick}
       className={`h-full rounded-xl p-3 flex flex-col justify-between relative overflow-hidden transition-all duration-200 select-none ${getVariantClass()} ${
-        onClick ? 'cursor-pointer hover:border-[#D1D5DB]' : ''
+        onClick ? 'cursor-pointer hover:border-[#30363D]' : ''
       }`}
     >
       {/* Top row: Icon + Title & Variation badge */}
       <div className="flex items-center justify-between gap-1.5 leading-none shrink-0">
         <div className="flex items-center gap-1.5 min-w-0">
           <Icon className="w-4 h-4 kpi-icon shrink-0" />
-          <span className="text-[10px] font-body font-bold text-[#6B7280] uppercase tracking-wider truncate">
+          <span className="text-[10px] font-body font-bold text-[#8B949E] uppercase tracking-wider truncate">
             {title}
           </span>
         </div>
@@ -96,10 +96,10 @@ export const KpiCard: React.FC<KpiCardProps> = ({
       {/* Middle row: Big Number + Subtitle + Sparkline in grid */}
       <div className="flex items-end justify-between gap-2 mt-1">
         <div className="min-w-0">
-          <h3 className="kpi-number text-[28px] xl:text-[32px] font-extrabold text-[#1A1A1A] leading-none">
+          <h3 className="kpi-number text-[28px] xl:text-[32px] font-extrabold text-[#E6EDF3] leading-none">
             {value}
           </h3>
-          <p className="text-[11px] font-body text-[#6B7280] mt-1.5 font-normal truncate leading-none">
+          <p className="text-[11px] font-body text-[#8B949E] mt-1.5 font-normal truncate leading-none">
             {subtitle}
           </p>
         </div>

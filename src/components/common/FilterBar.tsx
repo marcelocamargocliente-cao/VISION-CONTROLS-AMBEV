@@ -94,7 +94,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   return (
     <div
       id="global-filter-bar"
-      className={`bg-[#F8F9FA] border border-blue-500/20 rounded-xl p-3.5 shadow-lg ${className}`}
+      className={`bg-[#111827] border border-blue-500/20 rounded-xl p-3.5 shadow-lg ${className}`}
     >
       <div className="flex flex-wrap items-center justify-between gap-3 mb-2.5 pb-2 border-b border-white/[0.06]">
         <div className="flex items-center gap-2 text-xs font-semibold tracking-wider text-blue-400 uppercase">
@@ -124,7 +124,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             id="filter-ug"
             value={filters.ug_id || ''}
             onChange={(e) => handleUgChange(e.target.value)}
-            className="w-full bg-white border border-blue-500/20 focus:border-blue-400 text-white text-xs rounded-lg px-2.5 py-1.5 outline-none transition-colors"
+            className="w-full bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white text-xs rounded-lg px-2.5 py-1.5 outline-none transition-colors"
           >
             <option value="">Todas as UGs (Totalidade)</option>
             {ugs.map((ug) => (
@@ -144,7 +144,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             id="filter-area"
             value={filters.area_id || ''}
             onChange={(e) => handleAreaChange(e.target.value)}
-            className="w-full bg-white border border-blue-500/20 focus:border-blue-400 text-white text-xs rounded-lg px-2.5 py-1.5 outline-none transition-colors"
+            className="w-full bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white text-xs rounded-lg px-2.5 py-1.5 outline-none transition-colors"
           >
             <option value="">Todas as Áreas</option>
             {filteredAreas.map((a) => (
@@ -164,7 +164,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             id="filter-linha"
             value={filters.linha_id || ''}
             onChange={(e) => handleLinhaChange(e.target.value)}
-            className="w-full bg-white border border-blue-500/20 focus:border-blue-400 text-white text-xs rounded-lg px-2.5 py-1.5 outline-none transition-colors"
+            className="w-full bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white text-xs rounded-lg px-2.5 py-1.5 outline-none transition-colors"
           >
             <option value="">Todas as Linhas</option>
             {filteredLinhas.map((l) => (
@@ -184,7 +184,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             id="filter-tipo"
             value={filters.tipo || ''}
             onChange={(e) => handleTipoChange(e.target.value)}
-            className="w-full bg-white border border-blue-500/20 focus:border-blue-400 text-white text-xs rounded-lg px-2.5 py-1.5 outline-none transition-colors"
+            className="w-full bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white text-xs rounded-lg px-2.5 py-1.5 outline-none transition-colors"
           >
             <option value="">Todos os Tipos</option>
             {tipos.map((t) => (
@@ -204,7 +204,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             id="filter-periodo"
             value={filters.periodo || 'tudo'}
             onChange={(e) => handlePeriodoChange(e.target.value)}
-            className="w-full bg-white border border-blue-500/20 focus:border-blue-400 text-white text-xs rounded-lg px-2.5 py-1.5 outline-none transition-colors"
+            className="w-full bg-[#0A0E1A] border border-blue-500/20 focus:border-blue-400 text-white text-xs rounded-lg px-2.5 py-1.5 outline-none transition-colors"
           >
             <option value="tudo">Todo o Histórico</option>
             <option value="7d">Últimos 7 dias</option>

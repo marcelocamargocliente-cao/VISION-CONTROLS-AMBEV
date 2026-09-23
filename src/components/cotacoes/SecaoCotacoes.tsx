@@ -182,47 +182,47 @@ export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, pecasOco
 
   return (
     <div className="card space-y-3">
-      <div className="flex items-center justify-between border-b border-[#D1D5DB] pb-2">
+      <div className="flex items-center justify-between border-b border-[#30363D] pb-2">
         <div className="flex items-center gap-2">
           <Building2 className="w-4 h-4" />
           <h3 className="card-title text-xs uppercase">Cotacoes de Fornecedores ({cotacoes.length})</h3>
         </div>
         {canEdit && !showForm && (
           <button onClick={() => setShowForm(true)}
-            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#E5E7EB] border border-[#D1D5DB] text-[#374151] text-[11px] font-semibold hover:text-white">
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#21262D] border border-[#30363D] text-[#C9D1D9] text-[11px] font-semibold hover:text-white">
             <Plus className="w-3.5 h-3.5" /> Adicionar Cotacao
           </button>
         )}
       </div>
 
       {showForm && (
-        <div className="bg-white border border-[#D1D5DB] rounded-lg p-4 space-y-4">
+        <div className="bg-[#0A0E1A] border border-[#30363D] rounded-lg p-4 space-y-4">
           <div className="flex items-center justify-between">
-            <p className="text-[12px] font-bold text-[#1A1A1A] uppercase tracking-wide">
+            <p className="text-[12px] font-bold text-[#E6EDF3] uppercase tracking-wide">
               {editando ? 'Editar Cotacao' : 'Nova Cotacao'}
             </p>
-            <button onClick={resetForm}><X className="w-4 h-4 text-[#6B7280] hover:text-white" /></button>
+            <button onClick={resetForm}><X className="w-4 h-4 text-[#8B949E] hover:text-white" /></button>
           </div>
 
           {/* Empresa */}
           <div>
-            <label className="block text-[10px] font-bold text-[#6B7280] uppercase tracking-wider mb-1">Empresa Fornecedora</label>
+            <label className="block text-[10px] font-bold text-[#8B949E] uppercase tracking-wider mb-1">Empresa Fornecedora</label>
             <select value={empresaId} onChange={(e) => handleEmpresaChange(e.target.value)}
-              className="w-full h-10 bg-[#F8F9FA] border border-[#D1D5DB] text-[#1A1A1A] text-[12px] rounded-md px-2.5 outline-none mb-1">
+              className="w-full h-10 bg-[#161B22] border border-[#30363D] text-[#E6EDF3] text-[12px] rounded-md px-2.5 outline-none mb-1">
               <option value="">Selecione uma empresa parceira...</option>
               {parceiras.map((p) => <option key={p.id} value={p.id}>{p.nome}</option>)}
             </select>
             {!empresaId && (
               <input value={empresaNome} onChange={(e) => setEmpresaNome(e.target.value)}
                 placeholder="Ou digite o nome da empresa"
-                className="w-full h-10 bg-[#F8F9FA] border border-[#D1D5DB] text-[#1A1A1A] text-[12px] rounded-md px-2.5 outline-none" />
+                className="w-full h-10 bg-[#161B22] border border-[#30363D] text-[#E6EDF3] text-[12px] rounded-md px-2.5 outline-none" />
             )}
           </div>
 
           {/* Itens — cada item em bloco próprio (organizado) */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider">Itens da Cotacao</label>
+              <label className="text-[10px] font-bold text-[#8B949E] uppercase tracking-wider">Itens da Cotacao</label>
               <div className="flex items-center gap-2">
                 {!editando && pecasOcorrencia.length > 0 && (
                   <button onClick={importarMateriais}
@@ -230,7 +230,7 @@ export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, pecasOco
                     <PackagePlus className="w-3.5 h-3.5" /> Importar materiais da ocorrência ({pecasOcorrencia.length})
                   </button>
                 )}
-                <button onClick={addItem} className="text-[11px] text-[#374151] hover:text-white flex items-center gap-1">
+                <button onClick={addItem} className="text-[11px] text-[#C9D1D9] hover:text-white flex items-center gap-1">
                   <Plus className="w-3 h-3" /> Item
                 </button>
               </div>
@@ -240,14 +240,14 @@ export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, pecasOco
               {itens.map((it, i) => {
                 const isServico = it.tipo === 'SERVICO' || it.tipo === 'H_EXTRA';
                 return (
-                <div key={i} className="bg-[#F8F9FA] border border-[#D1D5DB] rounded-lg p-2.5 space-y-1.5">
+                <div key={i} className="bg-[#161B22] border border-[#30363D] rounded-lg p-2.5 space-y-1.5">
                   <div className="flex items-center justify-between gap-2">
                     {/* Tipo de item — botões compactos */}
                     <div className="flex items-center gap-1 flex-wrap">
                       {TIPOS.map((t) => (
                         <button key={t.id} onClick={() => updateItem(i, 'tipo', t.id)}
                           className={`px-1.5 h-6 rounded text-[10px] font-semibold border transition-colors ${
-                            it.tipo === t.id ? 'bg-[#E5E7EB] text-[#1A1A1A] border-[#8B949E]' : 'bg-white text-[#6B7280] border-[#D1D5DB]'
+                            it.tipo === t.id ? 'bg-[#21262D] text-[#E6EDF3] border-[#8B949E]' : 'bg-[#0A0E1A] text-[#8B949E] border-[#30363D]'
                           }`}>
                           {t.icon} {t.label}
                         </button>
@@ -262,66 +262,66 @@ export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, pecasOco
 
                   <input value={it.descricao} onChange={(e) => updateItem(i, 'descricao', e.target.value)}
                     placeholder={isServico ? 'Descrição do serviço' : 'Nome / descrição do item'}
-                    className="w-full h-8 bg-white border border-[#D1D5DB] text-[#1A1A1A] text-[12px] rounded px-2.5 outline-none focus:border-[#2563EB]" />
+                    className="w-full h-8 bg-[#0A0E1A] border border-[#30363D] text-[#E6EDF3] text-[12px] rounded px-2.5 outline-none focus:border-[#8B949E]" />
 
                   <input value={it.detalhe || ''} onChange={(e) => updateItem(i, 'detalhe', e.target.value)}
                     placeholder="Detalhes / especificação / dados técnicos, código SAP..."
-                    className="w-full h-8 bg-white border border-[#D1D5DB] text-[#374151] text-[11px] rounded px-2.5 outline-none focus:border-[#2563EB]" />
+                    className="w-full h-8 bg-[#0A0E1A] border border-[#30363D] text-[#C9D1D9] text-[11px] rounded px-2.5 outline-none focus:border-[#8B949E]" />
 
                   <div className="grid grid-cols-[1fr_60px_100px] gap-1.5">
                     <input value={it.prestador || ''} onChange={(e) => updateItem(i, 'prestador', e.target.value)}
                       placeholder={isServico ? 'Prestador / técnico' : 'Fabricante'}
-                      className="h-8 bg-white border border-[#D1D5DB] text-[#1A1A1A] text-[11px] rounded px-2.5 outline-none focus:border-[#2563EB]" />
+                      className="h-8 bg-[#0A0E1A] border border-[#30363D] text-[#E6EDF3] text-[11px] rounded px-2.5 outline-none focus:border-[#8B949E]" />
                     <input type="text" inputMode="numeric" value={it.quantidade || ''}
                       onChange={(e) => updateItem(i, 'quantidade', Number(e.target.value.replace(/\D/g, '')) || 1)}
                       placeholder={isServico ? 'Horas' : 'Qtd'}
-                      className="h-8 bg-white border border-[#D1D5DB] text-[#1A1A1A] text-[11px] rounded px-2 outline-none text-center focus:border-[#2563EB]" />
+                      className="h-8 bg-[#0A0E1A] border border-[#30363D] text-[#E6EDF3] text-[11px] rounded px-2 outline-none text-center focus:border-[#8B949E]" />
                     <div className="relative">
                       <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] text-[#6E7681]">R$</span>
                       <input type="text" inputMode="numeric" value={centavosParaTexto(it.valor_unitario)}
                         onChange={(e) => updateValor(i, e.target.value)} placeholder="0,00"
-                        className="w-full h-8 bg-white border border-[#D1D5DB] text-[#1A1A1A] text-[11px] rounded pl-6 pr-2 outline-none text-right font-mono focus:border-[#2563EB]" />
+                        className="w-full h-8 bg-[#0A0E1A] border border-[#30363D] text-[#E6EDF3] text-[11px] rounded pl-6 pr-2 outline-none text-right font-mono focus:border-[#8B949E]" />
                     </div>
                   </div>
 
                   {!isServico && (
                     <input value={it.ncm || ''} onChange={(e) => updateItem(i, 'ncm', e.target.value)}
                       placeholder="NCM (ex: 8415.10.11)"
-                      className="w-full h-8 bg-white border border-[#D1D5DB] text-[#374151] text-[11px] rounded px-2.5 outline-none font-mono focus:border-[#2563EB]" />
+                      className="w-full h-8 bg-[#0A0E1A] border border-[#30363D] text-[#C9D1D9] text-[11px] rounded px-2.5 outline-none font-mono focus:border-[#8B949E]" />
                   )}
 
-                  <div className="text-right text-[10px] text-[#6B7280]">
-                    Subtotal: <strong className="text-[#1A1A1A]">{formatCurrency(Number(it.quantidade) * Number(it.valor_unitario))}</strong>
+                  <div className="text-right text-[10px] text-[#8B949E]">
+                    Subtotal: <strong className="text-[#E6EDF3]">{formatCurrency(Number(it.quantidade) * Number(it.valor_unitario))}</strong>
                   </div>
                 </div>
                 );
               })}
             </div>
 
-            <div className="text-right text-[13px] font-bold text-[#1A1A1A] mt-2.5 border-t border-[#D1D5DB] pt-2">
+            <div className="text-right text-[13px] font-bold text-[#E6EDF3] mt-2.5 border-t border-[#30363D] pt-2">
               Total da Cotação: {formatCurrency(valorTotal)}
             </div>
           </div>
 
           {/* Observações */}
           <div>
-            <label className="block text-[10px] font-bold text-[#6B7280] uppercase tracking-wider mb-1">Observacoes</label>
+            <label className="block text-[10px] font-bold text-[#8B949E] uppercase tracking-wider mb-1">Observacoes</label>
             <textarea value={observacoes} onChange={(e) => setObs(e.target.value)} rows={2}
-              className="w-full bg-[#F8F9FA] border border-[#D1D5DB] text-[#1A1A1A] text-[12px] rounded-md p-2.5 outline-none resize-none"
+              className="w-full bg-[#161B22] border border-[#30363D] text-[#E6EDF3] text-[12px] rounded-md p-2.5 outline-none resize-none"
               placeholder="Condicoes, prazos, validade..." />
           </div>
 
           {/* Anexo PDF */}
           <div>
-            <label className="block text-[10px] font-bold text-[#6B7280] uppercase tracking-wider mb-1">Anexo PDF</label>
+            <label className="block text-[10px] font-bold text-[#8B949E] uppercase tracking-wider mb-1">Anexo PDF</label>
             {pdfUrl ? (
-              <div className="flex items-center gap-2 p-2.5 bg-[#F8F9FA] border border-[#D1D5DB] rounded-md">
-                <FileText className="w-4 h-4 text-[#374151] shrink-0" />
-                <a href={pdfUrl} target="_blank" rel="noreferrer" className="text-[12px] text-[#374151] hover:text-white truncate flex-1">{pdfNome || 'PDF'}</a>
+              <div className="flex items-center gap-2 p-2.5 bg-[#161B22] border border-[#30363D] rounded-md">
+                <FileText className="w-4 h-4 text-[#C9D1D9] shrink-0" />
+                <a href={pdfUrl} target="_blank" rel="noreferrer" className="text-[12px] text-[#C9D1D9] hover:text-white truncate flex-1">{pdfNome || 'PDF'}</a>
                 <button onClick={() => { setPdfUrl(''); setPdfNome(''); }}><X className="w-3.5 h-3.5 text-red-400" /></button>
               </div>
             ) : (
-              <label className={`flex items-center gap-2 h-10 px-3 rounded-md bg-[#F8F9FA] border border-[#D1D5DB] text-[#6B7280] text-[12px] ${uploadingPdf ? 'opacity-60 pointer-events-none' : 'cursor-pointer hover:text-white'}`}>
+              <label className={`flex items-center gap-2 h-10 px-3 rounded-md bg-[#161B22] border border-[#30363D] text-[#8B949E] text-[12px] ${uploadingPdf ? 'opacity-60 pointer-events-none' : 'cursor-pointer hover:text-white'}`}>
                 <Upload className="w-4 h-4 shrink-0" />
                 <span>{uploadingPdf ? 'Enviando...' : 'Anexar PDF da cotacao'}</span>
                 <input type="file" accept="application/pdf" onChange={handleUploadPdf} className="hidden" disabled={uploadingPdf} />
@@ -330,7 +330,7 @@ export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, pecasOco
           </div>
 
           <div className="flex gap-2 pt-1">
-            <button onClick={resetForm} className="flex-1 h-10 rounded-md bg-[#F8F9FA] border border-[#D1D5DB] text-[#374151] text-[12px] font-semibold">Cancelar</button>
+            <button onClick={resetForm} className="flex-1 h-10 rounded-md bg-[#161B22] border border-[#30363D] text-[#C9D1D9] text-[12px] font-semibold">Cancelar</button>
             <button onClick={handleSalvar} disabled={saving} className="flex-1 h-10 rounded-md btn-primary-gradient text-[12px] font-bold disabled:opacity-60">
               {saving ? 'Salvando...' : editando ? 'Atualizar' : 'Salvar Cotacao'}
             </button>
@@ -339,36 +339,36 @@ export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, pecasOco
       )}
 
       {cotacoes.length === 0 && !showForm ? (
-        <p className="text-[11px] text-[#6B7280] italic py-2">
+        <p className="text-[11px] text-[#8B949E] italic py-2">
           Nenhuma cotacao cadastrada. Adicione cotacoes de fornecedores antes de criar a proposta comercial.
         </p>
       ) : (
         <div className="space-y-2">
           {cotacoes.map((c) => (
-            <div key={c.id} className="bg-white border border-[#D1D5DB] rounded-lg overflow-hidden">
+            <div key={c.id} className="bg-[#0A0E1A] border border-[#30363D] rounded-lg overflow-hidden">
               <div className="flex items-center gap-2 px-3 py-2.5">
                 <button onClick={() => setExpandido(expandido === c.id ? null : c.id)}
                   className="flex-1 flex items-center gap-2 text-left min-w-0">
-                  <Building2 className="w-4 h-4 text-[#6B7280] shrink-0" />
+                  <Building2 className="w-4 h-4 text-[#8B949E] shrink-0" />
                   <div className="min-w-0 flex-1">
-                    <p className="text-[13px] font-bold text-[#1A1A1A] truncate">{c.empresa_nome}</p>
-                    <p className="text-[11px] text-[#6B7280]">{c.itens.length} {c.itens.length === 1 ? 'item' : 'itens'} · {formatCurrency(c.valor_total || 0)}</p>
+                    <p className="text-[13px] font-bold text-[#E6EDF3] truncate">{c.empresa_nome}</p>
+                    <p className="text-[11px] text-[#8B949E]">{c.itens.length} {c.itens.length === 1 ? 'item' : 'itens'} · {formatCurrency(c.valor_total || 0)}</p>
                   </div>
-                  {expandido === c.id ? <ChevronUp className="w-4 h-4 text-[#6B7280] shrink-0" /> : <ChevronDown className="w-4 h-4 text-[#6B7280] shrink-0" />}
+                  {expandido === c.id ? <ChevronUp className="w-4 h-4 text-[#8B949E] shrink-0" /> : <ChevronDown className="w-4 h-4 text-[#8B949E] shrink-0" />}
                 </button>
                 <div className="flex items-center gap-1.5 shrink-0">
                   {c.pdf_url && (
                     <a href={c.pdf_url} target="_blank" rel="noreferrer"
-                      className="w-7 h-7 rounded-md bg-[#E5E7EB] border border-[#D1D5DB] text-[#374151] hover:text-white flex items-center justify-center" title="Ver PDF">
+                      className="w-7 h-7 rounded-md bg-[#21262D] border border-[#30363D] text-[#C9D1D9] hover:text-white flex items-center justify-center" title="Ver PDF">
                       <FileText className="w-3.5 h-3.5" />
                     </a>
                   )}
                   {canEdit && (
                     <>
-                      <button onClick={() => abrirEditar(c)} className="w-7 h-7 rounded-md bg-[#E5E7EB] border border-[#D1D5DB] text-[#374151] hover:text-white flex items-center justify-center">
+                      <button onClick={() => abrirEditar(c)} className="w-7 h-7 rounded-md bg-[#21262D] border border-[#30363D] text-[#C9D1D9] hover:text-white flex items-center justify-center">
                         <Pencil className="w-3.5 h-3.5" />
                       </button>
-                      <button onClick={() => handleDelete(c.id)} className="w-7 h-7 rounded-md bg-[#E5E7EB] border border-[#D1D5DB] text-red-400 hover:text-red-300 flex items-center justify-center">
+                      <button onClick={() => handleDelete(c.id)} className="w-7 h-7 rounded-md bg-[#21262D] border border-[#30363D] text-red-400 hover:text-red-300 flex items-center justify-center">
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                       <button onClick={() => onCriarProposta(c)}
@@ -380,27 +380,27 @@ export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, pecasOco
                 </div>
               </div>
               {expandido === c.id && (
-                <div className="border-t border-[#D1D5DB] px-3 py-3 space-y-2.5">
+                <div className="border-t border-[#30363D] px-3 py-3 space-y-2.5">
                   <div>
-                    <p className="text-[9px] font-bold text-[#6B7280] uppercase tracking-wider mb-1.5">Itens</p>
+                    <p className="text-[9px] font-bold text-[#8B949E] uppercase tracking-wider mb-1.5">Itens</p>
                     <div className="space-y-1">
                       {c.itens.map((it, i) => (
                         <div key={i} className="flex items-start justify-between gap-2 text-[11px]">
-                          <span className="text-[#1A1A1A]">{it.descricao}</span>
-                          <span className="text-[#6B7280] font-mono shrink-0">
-                            {it.quantidade}x {formatCurrency(it.valor_unitario)} = <strong className="text-[#1A1A1A]">{formatCurrency(it.quantidade * it.valor_unitario)}</strong>
+                          <span className="text-[#E6EDF3]">{it.descricao}</span>
+                          <span className="text-[#8B949E] font-mono shrink-0">
+                            {it.quantidade}x {formatCurrency(it.valor_unitario)} = <strong className="text-[#E6EDF3]">{formatCurrency(it.quantidade * it.valor_unitario)}</strong>
                           </span>
                         </div>
                       ))}
                     </div>
-                    <div className="text-right text-[12px] font-bold text-[#1A1A1A] mt-1.5 border-t border-[#D1D5DB] pt-1.5">
+                    <div className="text-right text-[12px] font-bold text-[#E6EDF3] mt-1.5 border-t border-[#30363D] pt-1.5">
                       Total: {formatCurrency(c.valor_total || 0)}
                     </div>
                   </div>
                   {c.observacoes && (
                     <div>
-                      <p className="text-[9px] font-bold text-[#6B7280] uppercase tracking-wider mb-1">Observacoes</p>
-                      <p className="text-[11px] text-[#374151]">{c.observacoes}</p>
+                      <p className="text-[9px] font-bold text-[#8B949E] uppercase tracking-wider mb-1">Observacoes</p>
+                      <p className="text-[11px] text-[#C9D1D9]">{c.observacoes}</p>
                     </div>
                   )}
                 </div>

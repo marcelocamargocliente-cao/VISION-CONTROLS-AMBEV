@@ -356,7 +356,7 @@ export const ColaboradorModal: React.FC<ColaboradorModalProps> = ({
           </div>
 
           {/* Painel de Permissões Granulares */}
-          <div className="p-3 bg-[#F0F2F5] border border-[#2C343E] rounded-[4px] space-y-2">
+          <div className="p-3 bg-[#0D1117] border border-[#2C343E] rounded-[4px] space-y-2">
             <div className="flex items-center gap-2 mb-1">
               <Shield className="w-3.5 h-3.5 text-[#F5A623]" />
               <span className="text-[10px] font-mono uppercase font-bold text-[#F5A623]">Permissões do Usuário</span>

@@ -25,7 +25,7 @@ export const AgingBadge: React.FC<AgingBadgeProps> = ({ dias, showIcon = true })
   }
 
   return (
-    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-white text-[#6B7280] border border-[#E5E7EB] leading-none">
+    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-[#1A1F28] text-[#8B949E] border border-[#21262D] leading-none">
       {showIcon && <span className="w-1.5 h-1.5 rounded-full bg-[#484F58]" />}
       <span>{dias}d</span>
     </span>

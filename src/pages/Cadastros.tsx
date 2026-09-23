@@ -375,7 +375,7 @@ export const Cadastros: React.FC = () => {
         </div>
 
         {!canAdmin && (
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#F8F9FA] border border-blue-500/15 rounded text-[11px]  ">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#111827] border border-blue-500/15 rounded text-[11px]  ">
             <Lock className="w-3.5 h-3.5 " />
             <span>Modo Leitura — Apenas ADMIN e GESTOR podem alterar cadastros</span>
           </div>
@@ -395,7 +395,7 @@ export const Cadastros: React.FC = () => {
         >
           <Layers className="w-3.5 h-3.5" />
           <span>UGs (Unidades Gerenciais)</span>
-          <span className="text-[10px]  px-1.5 py-0.2 rounded bg-gray-100 ">
+          <span className="text-[10px]  px-1.5 py-0.2 rounded bg-black/40 ">
             {hierarchy.ugs.length}
           </span>
         </button>
@@ -411,7 +411,7 @@ export const Cadastros: React.FC = () => {
         >
           <Building2 className="w-3.5 h-3.5" />
           <span>Estrutura Fabril (Áreas & Linhas)</span>
-          <span className="text-[10px]  px-1.5 py-0.2 rounded bg-gray-100 ">
+          <span className="text-[10px]  px-1.5 py-0.2 rounded bg-black/40 ">
             {hierarchy.areas.length + hierarchy.linhas.length}
           </span>
         </button>
@@ -427,7 +427,7 @@ export const Cadastros: React.FC = () => {
         >
           <Users className="w-3.5 h-3.5" />
           <span>Equipe Vision & Acessos</span>
-          <span className="text-[10px]  px-1.5 py-0.2 rounded bg-gray-100 ">
+          <span className="text-[10px]  px-1.5 py-0.2 rounded bg-black/40 ">
             {profiles.length}
           </span>
         </button>
@@ -442,7 +442,7 @@ export const Cadastros: React.FC = () => {
         >
           <Briefcase className="w-3.5 h-3.5" />
           <span>Empresas Parceiras</span>
-          <span className="text-[10px] px-1.5 py-0.2 rounded bg-gray-100">
+          <span className="text-[10px] px-1.5 py-0.2 rounded bg-black/40">
             {parceiras.length}
           </span>
         </button>
@@ -453,7 +453,7 @@ export const Cadastros: React.FC = () => {
       {/* TAB 1: UGs */}
       {activeTab === 'ugs' && (
         <div className="flex-1 min-h-0 flex flex-col gap-2.5 overflow-hidden">
-          <div className="shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-[#F8F9FA] p-3 rounded-lg border border-blue-500/15">
+          <div className="shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-[#111827] p-3 rounded-lg border border-blue-500/15">
             <div>
               <h3 className="text-sm font-condensed font-bold  uppercase tracking-wide">
                 Unidades Gerenciais da Fábrica AMBEV RJ
@@ -484,7 +484,7 @@ export const Cadastros: React.FC = () => {
                   <div
                     key={ug.id}
                     id={`card-ug-${ug.id}`}
-                    className="bg-[#F8F9FA] border border-blue-500/15 hover:border-blue-500/40 rounded-lg p-3.5 flex flex-col justify-between transition-colors relative"
+                    className="bg-[#111827] border border-blue-500/15 hover:border-blue-500/40 rounded-lg p-3.5 flex flex-col justify-between transition-colors relative"
                   >
                     <div className="space-y-2.5">
                       <div className="flex items-start justify-between gap-3">
@@ -525,7 +525,7 @@ export const Cadastros: React.FC = () => {
                       </div>
 
                       {ug.descricao && (
-                        <p className="text-xs  bg-gray-50 p-2.5 rounded border border-white/5">
+                        <p className="text-xs  bg-black/30 p-2.5 rounded border border-white/5">
                           {ug.descricao}
                         </p>
                       )}
@@ -549,7 +549,7 @@ export const Cadastros: React.FC = () => {
       {activeTab === 'estrutura' && (
         <div className="flex-1 min-h-0 flex flex-col gap-2.5 overflow-hidden">
           {/* Controls / Filter fixos */}
-          <div className="shrink-0 flex flex-col sm:flex-row gap-2 bg-[#F8F9FA] p-2.5 rounded-lg border border-blue-500/15 justify-between items-stretch sm:items-center">
+          <div className="shrink-0 flex flex-col sm:flex-row gap-2 bg-[#111827] p-2.5 rounded-lg border border-blue-500/15 justify-between items-stretch sm:items-center">
             <div className="flex flex-wrap items-center gap-2">
               <div className="relative min-w-[220px]">
                 <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -559,11 +559,11 @@ export const Cadastros: React.FC = () => {
                   placeholder="Buscar área, linha ou código SAP..."
                   value={searchEstrutura}
                   onChange={(e) => setSearchEstrutura(e.target.value)}
-                  className="w-full has-icon-left-sm pr-3 py-1 text-xs bg-gray-100 border border-blue-500/20  rounded outline-none focus:border-cyan-400"
+                  className="w-full has-icon-left-sm pr-3 py-1 text-xs bg-black/40 border border-blue-500/20  rounded outline-none focus:border-cyan-400"
                 />
               </div>
 
-              <div className="flex items-center gap-1 bg-gray-100 border border-blue-500/20 px-2 py-1 rounded">
+              <div className="flex items-center gap-1 bg-black/40 border border-blue-500/20 px-2 py-1 rounded">
                 <Filter className="w-3.5 h-3.5 " />
                 <span className="text-[10px]  ">UG:</span>
                 <select
@@ -572,9 +572,9 @@ export const Cadastros: React.FC = () => {
                   onChange={(e) => setFilterUgEstrutura(e.target.value)}
                   className="bg-transparent text-xs   outline-none cursor-pointer"
                 >
-                  <option value="TODAS" className="bg-[#F8F9FA] ">TODAS AS UGs</option>
+                  <option value="TODAS" className="bg-[#111827] ">TODAS AS UGs</option>
                   {hierarchy.ugs.map((u) => (
-                    <option key={u.id} value={u.id} className="bg-[#F8F9FA] ">
+                    <option key={u.id} value={u.id} className="bg-[#111827] ">
                       {u.codigo} — {u.nome}
                     </option>
                   ))}
@@ -607,7 +607,7 @@ export const Cadastros: React.FC = () => {
           {/* Tabelas de Estrutura Fabril com scroll interno */}
           <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden [scrollbar-width:thin] space-y-3 pr-1">
             {/* Section: Áreas Fabris */}
-            <div className="bg-[#F8F9FA] border border-blue-500/15 rounded-lg overflow-hidden shadow-md">
+            <div className="bg-[#111827] border border-blue-500/15 rounded-lg overflow-hidden shadow-md">
               <div className="p-2.5 bg-[#1a2235] border-b border-blue-500/15 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Building2 className="w-3.5 h-3.5 text-cyan-400" />
@@ -621,7 +621,7 @@ export const Cadastros: React.FC = () => {
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
-                    <tr className="bg-gray-50 border-b border-blue-500/15   text-[10px] uppercase">
+                    <tr className="bg-black/30 border-b border-blue-500/15   text-[10px] uppercase">
                       <th className="py-2 px-3">UG Pertencente</th>
                       <th className="py-2 px-3">Sigla / Código</th>
                       <th className="py-2 px-3">Nome da Área</th>
@@ -659,7 +659,7 @@ export const Cadastros: React.FC = () => {
                               {area.nome}
                             </td>
                             <td className="py-2 px-3 text-center ">
-                              <span className="px-1.5 py-0.5 bg-gray-100 border border-blue-500/20 rounded ">
+                              <span className="px-1.5 py-0.5 bg-black/40 border border-blue-500/20 rounded ">
                                 {linhasInArea.length}
                               </span>
                             </td>
@@ -695,7 +695,7 @@ export const Cadastros: React.FC = () => {
             </div>
 
             {/* Section: Linhas de Produção */}
-            <div className="bg-[#F8F9FA] border border-blue-500/15 rounded-lg overflow-hidden shadow-md">
+            <div className="bg-[#111827] border border-blue-500/15 rounded-lg overflow-hidden shadow-md">
               <div className="p-2.5 bg-[#1a2235] border-b border-blue-500/15 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Layers className="w-3.5 h-3.5 " />
@@ -709,7 +709,7 @@ export const Cadastros: React.FC = () => {
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
-                    <tr className="bg-gray-50 border-b border-blue-500/15   text-[10px] uppercase">
+                    <tr className="bg-black/30 border-b border-blue-500/15   text-[10px] uppercase">
                       <th className="py-2 px-3">Código</th>
                       <th className="py-2 px-3">Nome da Linha</th>
                       <th className="py-2 px-3">Área / UG</th>
@@ -753,7 +753,7 @@ export const Cadastros: React.FC = () => {
                               {linha.codigo_sap || '—'}
                             </td>
                             <td className="py-2 px-3 text-center ">
-                              <span className="px-1.5 py-0.5 bg-gray-100 border border-blue-500/20 rounded ">
+                              <span className="px-1.5 py-0.5 bg-black/40 border border-blue-500/20 rounded ">
                                 {centros.length}
                               </span>
                             </td>
@@ -795,7 +795,7 @@ export const Cadastros: React.FC = () => {
       {activeTab === 'equipe' && (
         <div className="flex-1 min-h-0 flex flex-col gap-2.5 overflow-hidden">
           {/* Controls fixos */}
-          <div className="shrink-0 flex flex-col sm:flex-row gap-2 bg-[#F8F9FA] p-2.5 rounded-lg border border-blue-500/15 justify-between items-stretch sm:items-center">
+          <div className="shrink-0 flex flex-col sm:flex-row gap-2 bg-[#111827] p-2.5 rounded-lg border border-blue-500/15 justify-between items-stretch sm:items-center">
             <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2 w-full sm:w-auto">
               <div className="relative w-full sm:min-w-[240px] sm:w-auto">
                 <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -805,11 +805,11 @@ export const Cadastros: React.FC = () => {
                   placeholder="Buscar por nome, cargo ou e-mail..."
                   value={searchEquipe}
                   onChange={(e) => setSearchEquipe(e.target.value)}
-                  className="w-full pl-8 pr-3 py-2 sm:py-1 text-xs bg-gray-100 border border-blue-500/20 rounded outline-none focus:border-emerald-400"
+                  className="w-full pl-8 pr-3 py-2 sm:py-1 text-xs bg-black/40 border border-blue-500/20 rounded outline-none focus:border-emerald-400"
                 />
               </div>
 
-              <div className="flex items-center gap-1 bg-gray-100 border border-blue-500/20 px-2 py-2 sm:py-1 rounded w-full sm:w-auto">
+              <div className="flex items-center gap-1 bg-black/40 border border-blue-500/20 px-2 py-2 sm:py-1 rounded w-full sm:w-auto">
                 <Shield className="w-3.5 h-3.5 shrink-0" />
                 <span className="text-[10px] shrink-0">Função:</span>
                 <select
@@ -818,12 +818,12 @@ export const Cadastros: React.FC = () => {
                   onChange={(e) => setRoleFilter(e.target.value)}
                   className="bg-transparent text-xs outline-none cursor-pointer flex-1"
                 >
-                  <option value="TODOS" className="bg-[#F8F9FA] ">TODAS AS FUNÇÕES</option>
-                  <option value="ADMIN" className="bg-[#F8F9FA] ">ADMIN</option>
-                  <option value="GESTOR" className="bg-[#F8F9FA] ">GESTOR</option>
-                  <option value="ENCARREGADO" className="bg-[#F8F9FA] ">ENCARREGADO</option>
-                  <option value="TECNICO" className="bg-[#F8F9FA] ">TÉCNICO</option>
-                  <option value="VISUALIZADOR" className="bg-[#F8F9FA] ">VISUALIZADOR</option>
+                  <option value="TODOS" className="bg-[#111827] ">TODAS AS FUNÇÕES</option>
+                  <option value="ADMIN" className="bg-[#111827] ">ADMIN</option>
+                  <option value="GESTOR" className="bg-[#111827] ">GESTOR</option>
+                  <option value="ENCARREGADO" className="bg-[#111827] ">ENCARREGADO</option>
+                  <option value="TECNICO" className="bg-[#111827] ">TÉCNICO</option>
+                  <option value="VISUALIZADOR" className="bg-[#111827] ">VISUALIZADOR</option>
                 </select>
               </div>
             </div>
@@ -857,7 +857,7 @@ export const Cadastros: React.FC = () => {
                   <div
                     key={p.id}
                     id={`card-profile-${p.id}`}
-                    className={`bg-[#F8F9FA] border rounded-lg p-3.5 flex flex-col justify-between transition-colors relative ${
+                    className={`bg-[#111827] border rounded-lg p-3.5 flex flex-col justify-between transition-colors relative ${
                       isAtivo ? 'border-blue-500/15 hover:border-blue-500/40' : 'border-red-500/30 opacity-75'
                     }`}
                   >
@@ -865,7 +865,7 @@ export const Cadastros: React.FC = () => {
                       {/* Header: Avatar, Name, Role */}
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex items-center gap-2.5">
-                          <div className="w-9 h-9 rounded-full bg-gray-100 border border-blue-500/20 flex items-center justify-center  font-bold text-xs  shrink-0">
+                          <div className="w-9 h-9 rounded-full bg-black/40 border border-blue-500/20 flex items-center justify-center  font-bold text-xs  shrink-0">
                             {initials}
                           </div>
                           <div>
@@ -886,7 +886,7 @@ export const Cadastros: React.FC = () => {
                       </div>
 
                       {/* Meta info */}
-                      <div className="space-y-1 text-xs  bg-gray-50 p-2.5 rounded border border-white/5">
+                      <div className="space-y-1 text-xs  bg-black/30 p-2.5 rounded border border-white/5">
                         <div className="flex items-center gap-2">
                           <Mail className="w-3.5 h-3.5  shrink-0" />
                           <span className=" text-[11px]  truncate">{p.email}</span>
@@ -975,10 +975,10 @@ export const Cadastros: React.FC = () => {
       {/* TAB 4: EMPRESAS PARCEIRAS */}
       {activeTab === 'parceiras' && (
         <div className="flex-1 min-h-0 flex flex-col gap-2.5 overflow-hidden">
-          <div className="shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-[#F8F9FA] p-3 rounded-lg border border-[#D1D5DB]">
+          <div className="shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-[#111827] p-3 rounded-lg border border-[#30363D]">
             <div>
               <h3 className="text-sm font-condensed font-bold uppercase tracking-wide">Empresas Parceiras Fornecedoras</h3>
-              <p className="text-[11px] text-[#6B7280] mt-0.5">Empresas cadastradas para cotações e propostas comerciais.</p>
+              <p className="text-[11px] text-[#8B949E] mt-0.5">Empresas cadastradas para cotações e propostas comerciais.</p>
             </div>
             {canAdmin && (
               <button onClick={abrirNovaParceira}
@@ -990,46 +990,46 @@ export const Cadastros: React.FC = () => {
 
           {/* Formulário inline */}
           {showFormParceira && (
-            <div className="shrink-0 bg-[#F8F9FA] border border-[#D1D5DB] rounded-lg p-4 space-y-3">
+            <div className="shrink-0 bg-[#111827] border border-[#30363D] rounded-lg p-4 space-y-3">
               <div className="flex items-center justify-between">
-                <p className="text-[12px] font-bold text-[#1A1A1A] uppercase">{editParceira ? 'Editar Empresa' : 'Nova Empresa Parceira'}</p>
-                <button onClick={() => setShowFormParceira(false)}><X className="w-4 h-4 text-[#6B7280]" /></button>
+                <p className="text-[12px] font-bold text-[#E6EDF3] uppercase">{editParceira ? 'Editar Empresa' : 'Nova Empresa Parceira'}</p>
+                <button onClick={() => setShowFormParceira(false)}><X className="w-4 h-4 text-[#8B949E]" /></button>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="sm:col-span-2">
-                  <label className="block text-[10px] font-bold text-[#6B7280] uppercase tracking-wider mb-1">Nome da Empresa *</label>
+                  <label className="block text-[10px] font-bold text-[#8B949E] uppercase tracking-wider mb-1">Nome da Empresa *</label>
                   <input value={parceiraForm.nome} onChange={(e) => setParceiraForm((f) => ({ ...f, nome: e.target.value }))}
                     placeholder="Nome da empresa..."
-                    className="w-full h-10 bg-white border border-[#D1D5DB] focus:border-[#2563EB] text-[#1A1A1A] text-[12px] rounded-md px-3 outline-none" />
+                    className="w-full h-10 bg-[#0A0E1A] border border-[#30363D] focus:border-[#8B949E] text-[#E6EDF3] text-[12px] rounded-md px-3 outline-none" />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-[#6B7280] uppercase tracking-wider mb-1">CNPJ</label>
+                  <label className="block text-[10px] font-bold text-[#8B949E] uppercase tracking-wider mb-1">CNPJ</label>
                   <input value={parceiraForm.cnpj} onChange={(e) => setParceiraForm((f) => ({ ...f, cnpj: e.target.value }))}
                     placeholder="00.000.000/0000-00"
-                    className="w-full h-10 bg-white border border-[#D1D5DB] text-[#1A1A1A] text-[12px] rounded-md px-3 outline-none" />
+                    className="w-full h-10 bg-[#0A0E1A] border border-[#30363D] text-[#E6EDF3] text-[12px] rounded-md px-3 outline-none" />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-[#6B7280] uppercase tracking-wider mb-1">Contato</label>
+                  <label className="block text-[10px] font-bold text-[#8B949E] uppercase tracking-wider mb-1">Contato</label>
                   <input value={parceiraForm.contato} onChange={(e) => setParceiraForm((f) => ({ ...f, contato: e.target.value }))}
                     placeholder="Nome do responsável"
-                    className="w-full h-10 bg-white border border-[#D1D5DB] text-[#1A1A1A] text-[12px] rounded-md px-3 outline-none" />
+                    className="w-full h-10 bg-[#0A0E1A] border border-[#30363D] text-[#E6EDF3] text-[12px] rounded-md px-3 outline-none" />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-[#6B7280] uppercase tracking-wider mb-1">E-mail</label>
+                  <label className="block text-[10px] font-bold text-[#8B949E] uppercase tracking-wider mb-1">E-mail</label>
                   <input type="email" value={parceiraForm.email} onChange={(e) => setParceiraForm((f) => ({ ...f, email: e.target.value }))}
                     placeholder="email@empresa.com"
-                    className="w-full h-10 bg-white border border-[#D1D5DB] text-[#1A1A1A] text-[12px] rounded-md px-3 outline-none" />
+                    className="w-full h-10 bg-[#0A0E1A] border border-[#30363D] text-[#E6EDF3] text-[12px] rounded-md px-3 outline-none" />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-[#6B7280] uppercase tracking-wider mb-1">Telefone</label>
+                  <label className="block text-[10px] font-bold text-[#8B949E] uppercase tracking-wider mb-1">Telefone</label>
                   <input value={parceiraForm.telefone} onChange={(e) => setParceiraForm((f) => ({ ...f, telefone: e.target.value }))}
                     placeholder="(21) 99999-9999"
-                    className="w-full h-10 bg-white border border-[#D1D5DB] text-[#1A1A1A] text-[12px] rounded-md px-3 outline-none" />
+                    className="w-full h-10 bg-[#0A0E1A] border border-[#30363D] text-[#E6EDF3] text-[12px] rounded-md px-3 outline-none" />
                 </div>
               </div>
               <div className="flex gap-2 pt-1">
                 <button onClick={() => setShowFormParceira(false)}
-                  className="flex-1 h-10 rounded-md bg-white border border-[#D1D5DB] text-[#374151] text-[12px] font-semibold">Cancelar</button>
+                  className="flex-1 h-10 rounded-md bg-[#0A0E1A] border border-[#30363D] text-[#C9D1D9] text-[12px] font-semibold">Cancelar</button>
                 <button onClick={salvarParceira} disabled={savingParceira || !parceiraForm.nome.trim()}
                   className="flex-1 h-10 rounded-md btn-primary-gradient text-[12px] font-bold disabled:opacity-60">
                   {savingParceira ? 'Salvando...' : editParceira ? 'Atualizar' : 'Cadastrar'}
@@ -1041,32 +1041,32 @@ export const Cadastros: React.FC = () => {
           {/* Lista */}
           <div className="flex-1 min-h-0 overflow-y-auto space-y-2 scroll-fluido">
             {parceiras.length === 0 ? (
-              <div className="text-center py-12 text-[#6B7280] text-sm">
+              <div className="text-center py-12 text-[#8B949E] text-sm">
                 Nenhuma empresa parceira cadastrada. Clique em "+ Nova Empresa" para adicionar.
               </div>
             ) : (
               parceiras.map((p) => (
-                <div key={p.id} className="bg-[#F8F9FA] border border-[#D1D5DB] rounded-lg p-3.5 flex items-start gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-[#E5E7EB] border border-[#D1D5DB] flex items-center justify-center shrink-0">
-                    <Briefcase className="w-4 h-4 text-[#6B7280]" />
+                <div key={p.id} className="bg-[#111827] border border-[#30363D] rounded-lg p-3.5 flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-[#21262D] border border-[#30363D] flex items-center justify-center shrink-0">
+                    <Briefcase className="w-4 h-4 text-[#8B949E]" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-[14px] font-bold text-[#1A1A1A] truncate">{p.nome}</p>
+                    <p className="text-[14px] font-bold text-[#E6EDF3] truncate">{p.nome}</p>
                     <div className="flex flex-wrap gap-x-4 gap-y-0.5 mt-1">
-                      {p.cnpj && <span className="text-[11px] text-[#6B7280] font-mono">{p.cnpj}</span>}
-                      {p.contato && <span className="text-[11px] text-[#6B7280]">{p.contato}</span>}
-                      {p.email && <span className="text-[11px] text-[#6B7280]">{p.email}</span>}
-                      {p.telefone && <span className="text-[11px] text-[#6B7280]">{p.telefone}</span>}
+                      {p.cnpj && <span className="text-[11px] text-[#8B949E] font-mono">{p.cnpj}</span>}
+                      {p.contato && <span className="text-[11px] text-[#8B949E]">{p.contato}</span>}
+                      {p.email && <span className="text-[11px] text-[#8B949E]">{p.email}</span>}
+                      {p.telefone && <span className="text-[11px] text-[#8B949E]">{p.telefone}</span>}
                     </div>
                   </div>
                   {canAdmin && (
                     <div className="flex items-center gap-1.5 shrink-0">
                       <button onClick={() => abrirEditarParceira(p)}
-                        className="w-8 h-8 rounded-md bg-[#E5E7EB] border border-[#D1D5DB] text-[#374151] hover:text-white flex items-center justify-center">
+                        className="w-8 h-8 rounded-md bg-[#21262D] border border-[#30363D] text-[#C9D1D9] hover:text-white flex items-center justify-center">
                         <Edit2 className="w-3.5 h-3.5" />
                       </button>
                       <button onClick={() => deletarParceira(p.id)}
-                        className="w-8 h-8 rounded-md bg-[#E5E7EB] border border-[#D1D5DB] text-red-400 hover:text-red-300 flex items-center justify-center">
+                        className="w-8 h-8 rounded-md bg-[#21262D] border border-[#30363D] text-red-400 hover:text-red-300 flex items-center justify-center">
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>

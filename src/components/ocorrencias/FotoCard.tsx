@@ -55,7 +55,7 @@ export const FotoCard: React.FC<FotoCardProps> = ({ foto, canDelete, onDeletada 
   return (
     <>
       {/* Card da foto — toque abre em tela cheia */}
-      <div className="foto-card-container relative overflow-hidden rounded-lg border border-[#D1D5DB] bg-[#F0F2F5] group aspect-video flex items-center justify-center">
+      <div className="foto-card-container relative overflow-hidden rounded-lg border border-[#30363D] bg-[#0D1117] group aspect-video flex items-center justify-center">
         <button
           type="button"
           onClick={() => setVisualizando(true)}
@@ -137,18 +137,18 @@ export const FotoCard: React.FC<FotoCardProps> = ({ foto, canDelete, onDeletada 
           onClick={() => !deletando && setConfirmando(false)}
         >
           <div
-            className="bg-[#F8F9FA] border border-[#D1D5DB] rounded-xl p-6 w-full max-w-[320px] text-center shadow-2xl animate-in fade-in zoom-in-95 duration-150"
+            className="bg-[#161B22] border border-[#30363D] rounded-xl p-6 w-full max-w-[320px] text-center shadow-2xl animate-in fade-in zoom-in-95 duration-150"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="w-11 h-11 rounded-full bg-[#F85149]/15 flex items-center justify-center mx-auto mb-3">
               <Trash2 size={20} className="text-[#F85149]" />
             </div>
 
-            <h3 className="text-sm font-bold text-[#1A1A1A] mb-2">
+            <h3 className="text-sm font-bold text-[#E6EDF3] mb-2">
               Remover foto?
             </h3>
 
-            <p className="text-xs text-[#6B7280] mb-5 leading-relaxed">
+            <p className="text-xs text-[#8B949E] mb-5 leading-relaxed">
               Deseja excluir esta foto? Esta ação não pode ser desfeita.
             </p>
 

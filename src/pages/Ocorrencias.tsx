@@ -175,7 +175,7 @@ export const Ocorrencias: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-[11px]  tracking-widest  bg-[#E5E7EB] px-2 py-0.5 rounded-[2px] border border-[#D1D5DB] uppercase font-bold">
+            <span className="text-[11px]  tracking-widest  bg-[#21262D] px-2 py-0.5 rounded-[2px] border border-[#30363D] uppercase font-bold">
               Gestão de Chamados & Avarias
             </span>
             <span className="text-[11px]  ">•</span>
@@ -235,7 +235,7 @@ export const Ocorrencias: React.FC = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Buscar por # número, TAG, linha, nota SAP, ordem SAP ou sintoma..."
-              className="w-full bg-[var(--bg-input)] border border-[#2C343E] focus:border-[#2563EB]  text-xs rounded-[3px] has-icon-left pr-3 py-2 outline-none"
+              className="w-full bg-[var(--bg-input)] border border-[#2C343E] focus:border-[#8B949E]  text-xs rounded-[3px] has-icon-left pr-3 py-2 outline-none"
             />
           </div>
 
@@ -326,7 +326,7 @@ export const Ocorrencias: React.FC = () => {
                       >
                         {/* Nº / Data */}
                         <td className="py-3 px-3">
-                          <div className="font-bold text-sm text-[#374151]">{occ.ordem_sap ? `OS ${occ.ordem_sap}` : `#${occ.numero}`}</div>
+                          <div className="font-bold text-sm text-[#C9D1D9]">{occ.ordem_sap ? `OS ${occ.ordem_sap}` : `#${occ.numero}`}</div>
                           <div className="text-[10px]  ">{formatDate(occ.data_avaria)}</div>
                         </td>
 
@@ -334,9 +334,9 @@ export const Ocorrencias: React.FC = () => {
                         <td className="py-3 px-3">
                           <div className="flex items-center gap-1.5 flex-wrap mb-1">
                             {(eq?.patrimonio_ref || eq?.tag_sap) && (
-                              <span className="inline-flex items-baseline gap-1 bg-[#E5E7EB] rounded px-1.5 py-0.5 border border-[#D1D5DB]">
+                              <span className="inline-flex items-baseline gap-1 bg-[#21262D] rounded px-1.5 py-0.5 border border-[#30363D]">
                                 <span className="text-[8px] font-bold text-[#6E7681] uppercase">AMBEV</span>
-                                <span className="text-[11px] font-bold font-mono text-[#374151]">{eq.patrimonio_ref || eq.tag_sap}</span>
+                                <span className="text-[11px] font-bold font-mono text-[#C9D1D9]">{eq.patrimonio_ref || eq.tag_sap}</span>
                               </span>
                             )}
                             {eq && (
@@ -353,7 +353,7 @@ export const Ocorrencias: React.FC = () => {
                         <td className="py-3 px-3">
                           <div className="flex items-center gap-1.5 leading-tight">
                             {eq?.ug_codigo && (
-                              <span className="px-1.5 py-0.5 bg-[#E5E7EB] text-[#374151] border border-[#D1D5DB] rounded font-bold text-[9px] shrink-0">
+                              <span className="px-1.5 py-0.5 bg-[#21262D] text-[#C9D1D9] border border-[#30363D] rounded font-bold text-[9px] shrink-0">
                                 UG {eq.ug_codigo}
                               </span>
                             )}
@@ -362,7 +362,7 @@ export const Ocorrencias: React.FC = () => {
                             </span>
                           </div>
                           {eq?.tag_sap && (
-                            <div className="text-[10px] text-[#6B7280] mt-0.5">{eq.tag_sap}</div>
+                            <div className="text-[10px] text-[#8B949E] mt-0.5">{eq.tag_sap}</div>
                           )}
                         </td>
 
@@ -383,10 +383,10 @@ export const Ocorrencias: React.FC = () => {
                           {occ.equipamento_parado ? (
                             <span className="font-bold text-red-400">PARADO</span>
                           ) : (
-                            <span className="text-[#6B7280]">Em Operação</span>
+                            <span className="text-[#8B949E]">Em Operação</span>
                           )}
                           {occ.nota_sap && (
-                            <div className="text-[10px] text-[#6B7280] mt-0.5">Nota: {occ.nota_sap}</div>
+                            <div className="text-[10px] text-[#8B949E] mt-0.5">Nota: {occ.nota_sap}</div>
                           )}
                         </td>
 
@@ -415,7 +415,7 @@ export const Ocorrencias: React.FC = () => {
                             <button
                               onClick={() => navigate(`/ocorrencias/nova?edit=${occ.id}`)}
                               title="Editar ocorrência"
-                              className="p-1.5 rounded-[4px] bg-[#232B35] text-[#374151] hover:bg-[#2C343E] hover:text-white transition-colors"
+                              className="p-1.5 rounded-[4px] bg-[#232B35] text-[#C9D1D9] hover:bg-[#2C343E] hover:text-white transition-colors"
                             >
                               <Pencil className="w-3.5 h-3.5" />
                             </button>
@@ -467,7 +467,7 @@ export const Ocorrencias: React.FC = () => {
                         <span className="text-[13px] font-bold text-white font-mono">
                           {occ.ordem_sap ? `OS ${occ.ordem_sap}` : `#${occ.numero}`}
                         </span>
-                        <span className="text-[10px] text-[#6B7280] ml-2">{formatDate(occ.data_avaria)}</span>
+                        <span className="text-[10px] text-[#8B949E] ml-2">{formatDate(occ.data_avaria)}</span>
                       </div>
                       <StatusBadge type="ocorrencia" status={occ.status} size="sm" />
                     </div>
@@ -475,15 +475,15 @@ export const Ocorrencias: React.FC = () => {
                     {/* Linha 2: TAG + equipamento */}
                     <div className="flex items-center gap-2 mt-1.5 min-w-0">
                       {eq && <IndustrialTag tag={eq.patrimonio_ref || eq.tag_sap || eq.tag} size="sm" />}
-                      <span className="text-[12px] text-[#1A1A1A] truncate">
+                      <span className="text-[12px] text-[#E6EDF3] truncate">
                         {eq ? `${eq.tipo} ${eq.marca || ''}`.trim() : 'Equipamento'}
                       </span>
                     </div>
 
                     {/* Linha 3: local */}
-                    <div className="flex items-center gap-1.5 mt-1.5 min-w-0 text-[#6B7280]">
+                    <div className="flex items-center gap-1.5 mt-1.5 min-w-0 text-[#8B949E]">
                       {eq?.ug_codigo && (
-                        <span className="px-1.5 py-0.5 bg-[#E5E7EB] text-[#374151] border border-[#D1D5DB] rounded font-bold text-[9px] shrink-0">
+                        <span className="px-1.5 py-0.5 bg-[#21262D] text-[#C9D1D9] border border-[#30363D] rounded font-bold text-[9px] shrink-0">
                           UG {eq.ug_codigo}
                         </span>
                       )}
@@ -501,27 +501,27 @@ export const Ocorrencias: React.FC = () => {
                         {occ.equipamento_parado ? (
                           <span className="text-[10px] font-bold text-red-400">PARADO ({dias}d)</span>
                         ) : (
-                          <span className="text-[10px] text-[#6B7280]">Em operação</span>
+                          <span className="text-[10px] text-[#8B949E]">Em operação</span>
                         )}
                       </div>
                       <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
                         <button
                           onClick={() => navigate(`/ocorrencias/nova?edit=${occ.id}`)}
                           title="Editar"
-                          className="w-9 h-9 rounded-md bg-[#E5E7EB] text-[#374151] flex items-center justify-center"
+                          className="w-9 h-9 rounded-md bg-[#21262D] text-[#C9D1D9] flex items-center justify-center"
                         >
                           <Pencil className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => setConfirmDeleteOcc(occ)}
                           title="Deletar"
-                          className="w-9 h-9 rounded-md bg-[#E5E7EB] text-red-400 flex items-center justify-center"
+                          className="w-9 h-9 rounded-md bg-[#21262D] text-red-400 flex items-center justify-center"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => navigate(`/ocorrencias/${occ.id}`)}
-                          className="w-9 h-9 rounded-md bg-[#E5E7EB] text-[#374151] flex items-center justify-center"
+                          className="w-9 h-9 rounded-md bg-[#21262D] text-[#C9D1D9] flex items-center justify-center"
                         >
                           <ChevronRight className="w-4 h-4" />
                         </button>
@@ -584,10 +584,10 @@ export const Ocorrencias: React.FC = () => {
                               if (Math.abs(dx) > 5 || Math.abs(dy) > 5) return;
                               navigate(`/ocorrencias/${occ.id}`);
                             }}
-                            className="p-3 bg-[var(--bg-input)] hover:bg-[#232B35] border border-[#2C343E] hover:border-[#D1D5DB] rounded-[3px] cursor-pointer transition-colors space-y-2 group"
+                            className="p-3 bg-[var(--bg-input)] hover:bg-[#232B35] border border-[#2C343E] hover:border-[#30363D] rounded-[3px] cursor-pointer transition-colors space-y-2 group"
                           >
                             <div className="flex items-center justify-between">
-                              <span className=" font-bold text-xs text-[#374151]">{occ.ordem_sap ? `OS ${occ.ordem_sap}` : `#${occ.numero}`}</span>
+                              <span className=" font-bold text-xs text-[#C9D1D9]">{occ.ordem_sap ? `OS ${occ.ordem_sap}` : `#${occ.numero}`}</span>
                               <span className={`text-[9px]  px-1.5 py-0.2 rounded border ${crit.badgeBg}`}>
                                 {crit.label}
                               </span>
@@ -633,15 +633,15 @@ export const Ocorrencias: React.FC = () => {
           className="sheet-backdrop fixed inset-0 z-[9999] bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
           onClick={(e) => { if (e.target === e.currentTarget && !savingEdit) setEditOcc(null); }}
         >
-          <div className="sheet-panel bg-[#F8F9FA] border border-[#D1D5DB] rounded-t-2xl sm:rounded-lg w-full max-w-lg max-h-[92vh] flex flex-col shadow-2xl overflow-hidden safe-bottom">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-[#D1D5DB] shrink-0">
+          <div className="sheet-panel bg-[#111827] border border-[#30363D] rounded-t-2xl sm:rounded-lg w-full max-w-lg max-h-[92vh] flex flex-col shadow-2xl overflow-hidden safe-bottom">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-[#30363D] shrink-0">
               <div className="min-w-0">
-                <h3 className="text-sm font-display font-bold text-[#1A1A1A] uppercase tracking-wide">Editar Ocorrência</h3>
-                <p className="text-[11px] text-[#6B7280] font-mono truncate">OS {editOcc.ordem_sap || `#${editOcc.numero}`}</p>
+                <h3 className="text-sm font-display font-bold text-[#E6EDF3] uppercase tracking-wide">Editar Ocorrência</h3>
+                <p className="text-[11px] text-[#8B949E] font-mono truncate">OS {editOcc.ordem_sap || `#${editOcc.numero}`}</p>
               </div>
               <button
                 onClick={() => !savingEdit && setEditOcc(null)}
-                className="w-9 h-9 rounded-lg bg-white border border-[#D1D5DB] text-[#6B7280] flex items-center justify-center shrink-0"
+                className="w-9 h-9 rounded-lg bg-[#0A0E1A] border border-[#30363D] text-[#8B949E] flex items-center justify-center shrink-0"
                 aria-label="Fechar"
               >
                 <X className="w-4 h-4" />
@@ -651,7 +651,7 @@ export const Ocorrencias: React.FC = () => {
             <div className="p-4 space-y-4 overflow-y-auto scroll-fluido">
               {/* Criticidade */}
               <div>
-                <label className="block text-[11px] font-semibold text-[#6B7280] uppercase tracking-wider mb-1.5">Criticidade</label>
+                <label className="block text-[11px] font-semibold text-[#8B949E] uppercase tracking-wider mb-1.5">Criticidade</label>
                 <div className="grid grid-cols-4 gap-1.5">
                   {(['BAIXA', 'MEDIA', 'ALTA', 'CRITICA'] as Criticidade[]).map((c) => (
                     <button
@@ -659,8 +659,8 @@ export const Ocorrencias: React.FC = () => {
                       onClick={() => setEditForm((f) => ({ ...f, criticidade: c }))}
                       className={`h-10 rounded-md text-[11px] font-bold border transition-colors ${
                         editForm.criticidade === c
-                          ? 'bg-[#E5E7EB] text-[#1A1A1A] border-[#8B949E]'
-                          : 'bg-white text-[#6B7280] border-[#D1D5DB]'
+                          ? 'bg-[#21262D] text-[#E6EDF3] border-[#8B949E]'
+                          : 'bg-[#0A0E1A] text-[#8B949E] border-[#30363D]'
                       }`}
                     >
                       {c === 'MEDIA' ? 'MÉDIA' : c}
@@ -671,24 +671,24 @@ export const Ocorrencias: React.FC = () => {
 
               {/* Descrição do problema */}
               <div>
-                <label className="block text-[11px] font-semibold text-[#6B7280] uppercase tracking-wider mb-1.5">Descrição do Problema</label>
+                <label className="block text-[11px] font-semibold text-[#8B949E] uppercase tracking-wider mb-1.5">Descrição do Problema</label>
                 <textarea
                   value={editForm.descricao_anomalia}
                   onChange={(e) => setEditForm((f) => ({ ...f, descricao_anomalia: e.target.value }))}
                   rows={3}
-                  className="w-full bg-white border border-[#D1D5DB] focus:border-[#2563EB] text-[#1A1A1A] text-[13px] rounded-md p-2.5 outline-none resize-none leading-relaxed"
+                  className="w-full bg-[#0A0E1A] border border-[#30363D] focus:border-[#8B949E] text-[#E6EDF3] text-[13px] rounded-md p-2.5 outline-none resize-none leading-relaxed"
                   placeholder="Descreva o problema..."
                 />
               </div>
 
               {/* Causa raiz */}
               <div>
-                <label className="block text-[11px] font-semibold text-[#6B7280] uppercase tracking-wider mb-1.5">Causa Raiz Provável</label>
+                <label className="block text-[11px] font-semibold text-[#8B949E] uppercase tracking-wider mb-1.5">Causa Raiz Provável</label>
                 <textarea
                   value={editForm.causa_provavel}
                   onChange={(e) => setEditForm((f) => ({ ...f, causa_provavel: e.target.value }))}
                   rows={2}
-                  className="w-full bg-white border border-[#D1D5DB] focus:border-[#2563EB] text-[#1A1A1A] text-[13px] rounded-md p-2.5 outline-none resize-none"
+                  className="w-full bg-[#0A0E1A] border border-[#30363D] focus:border-[#8B949E] text-[#E6EDF3] text-[13px] rounded-md p-2.5 outline-none resize-none"
                   placeholder="(opcional)"
                 />
               </div>
@@ -696,11 +696,11 @@ export const Ocorrencias: React.FC = () => {
               {/* Equipamento parado */}
               <button
                 onClick={() => setEditForm((f) => ({ ...f, equipamento_parado: !f.equipamento_parado }))}
-                className="w-full flex items-center justify-between gap-3 p-3 rounded-md bg-white border border-[#D1D5DB]"
+                className="w-full flex items-center justify-between gap-3 p-3 rounded-md bg-[#0A0E1A] border border-[#30363D]"
               >
                 <div className="text-left">
-                  <p className="text-[13px] font-semibold text-[#1A1A1A]">Equipamento parado</p>
-                  <p className="text-[11px] text-[#6B7280]">Marca o ativo como PARADO enquanto a ocorrência estiver aberta</p>
+                  <p className="text-[13px] font-semibold text-[#E6EDF3]">Equipamento parado</p>
+                  <p className="text-[11px] text-[#8B949E]">Marca o ativo como PARADO enquanto a ocorrência estiver aberta</p>
                 </div>
                 <span className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${editForm.equipamento_parado ? 'bg-red-500/70' : 'bg-[#30363D]'}`}>
                   <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-all ${editForm.equipamento_parado ? 'left-[22px]' : 'left-0.5'}`} />
@@ -708,11 +708,11 @@ export const Ocorrencias: React.FC = () => {
               </button>
             </div>
 
-            <div className="flex items-center gap-2 p-4 border-t border-[#D1D5DB] shrink-0">
+            <div className="flex items-center gap-2 p-4 border-t border-[#30363D] shrink-0">
               <button
                 onClick={() => setEditOcc(null)}
                 disabled={savingEdit}
-                className="flex-1 h-11 rounded-md bg-white border border-[#D1D5DB] text-[#374151] text-sm font-semibold disabled:opacity-60"
+                className="flex-1 h-11 rounded-md bg-[#0A0E1A] border border-[#30363D] text-[#C9D1D9] text-sm font-semibold disabled:opacity-60"
               >
                 Cancelar
               </button>
