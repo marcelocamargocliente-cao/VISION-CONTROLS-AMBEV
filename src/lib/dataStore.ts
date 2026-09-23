@@ -358,22 +358,14 @@ export const DataStore = {
       } catch (e) { console.warn('getVwStatusPorUg Supabase', e); }
     }
 
-    // Equipamentos com ocorrência aberta e parado=true
-    const paradosIds = new Set(
-      ocorrencias
-        .filter((o: any) => o.equipamento_parado === true &&
-          o.status !== 'CONCLUIDA' && o.status !== 'CANCELADA')
-        .map((o: any) => o.equipamento_id)
-    );
-
     const areaMap = new Map<string, { total: number; ok: number; parado: number; restricao: number }>();
     equipamentos.forEach((e: any) => {
       const area = (e.area_ref || e.localizacao_ref || e.ug_ref || 'SEM ÁREA').toUpperCase();
       const cur = areaMap.get(area) || { total: 0, ok: 0, parado: 0, restricao: 0 };
       cur.total += 1;
-      if (paradosIds.has(e.id)) cur.parado += 1;
-      else if (e.status === 'OK' || !e.status) cur.ok += 1;
-      else cur.restricao += 1;
+      if (e.status === 'PARADO') cur.parado += 1;
+      else if (e.status === 'RESTRICAO') cur.restricao += 1;
+      else cur.ok += 1;
       areaMap.set(area, cur);
     });
 
@@ -510,17 +502,21 @@ export const DataStore = {
     const ctsMap = new Map(dbState.centros_trabalho.map((c) => [c.id, c]));
     const equipsMap = new Map(dbState.equipamentos.map((e) => [e.id, e]));
 
-    const openParadas = dbState.ocorrencias.filter(
-      (o) => o.equipamento_parado && o.status !== 'CONCLUIDA' && o.status !== 'CANCELADA'
-    );
+    // Todos os equipamentos com status PARADO
+    const equipamentosParados = dbState.equipamentos.filter((e) => e.status === 'PARADO');
 
-    const result: VwAgingParadas[] = openParadas.map((occ) => {
-      const eq = equipsMap.get(occ.equipamento_id);
-      const ug = eq ? ugsMap.get(eq.ug_id) : undefined;
-      const linha = eq ? linhasMap.get(eq.linha_id) : undefined;
-      const ct = eq ? ctsMap.get(eq.centro_trabalho_id) : undefined;
+    const result: VwAgingParadas[] = equipamentosParados.map((eq) => {
+      // Pega a OS mais recente aberta vinculada (se houver)
+      const occ = dbState.ocorrencias
+        .filter((o) => o.equipamento_id === eq.id && o.status !== 'CONCLUIDA' && o.status !== 'CANCELADA')
+        .sort((a, b) => new Date(b.data_avaria).getTime() - new Date(a.data_avaria).getTime())[0];
 
-      const diff = Math.floor((new Date().getTime() - new Date(occ.data_avaria).getTime()) / (1000 * 3600 * 24));
+      const ug = ugsMap.get(eq.ug_id);
+      const linha = linhasMap.get(eq.linha_id);
+      const ct = ctsMap.get(eq.centro_trabalho_id);
+
+      const dataRef = occ?.data_avaria || eq.created_at || new Date().toISOString();
+      const diff = Math.floor((new Date().getTime() - new Date(dataRef).getTime()) / (1000 * 3600 * 24));
       const dias = Math.max(0, diff);
 
       let faixa: '0-7 dias' | '8-15 dias' | '16-30 dias' | '31-90 dias' | '90+ dias' = '0-7 dias';
@@ -529,29 +525,29 @@ export const DataStore = {
       else if (dias > 15) faixa = '16-30 dias';
       else if (dias > 7) faixa = '8-15 dias';
 
-      const occPecas = dbState.pecas.filter((p) => p.ocorrencia_id === occ.id);
-      const occOrc = dbState.orcamentos.find((o) => o.ocorrencia_id === occ.id);
+      const occPecas = occ ? dbState.pecas.filter((p) => p.ocorrencia_id === occ.id) : [];
+      const occOrc = occ ? dbState.orcamentos.find((o) => o.ocorrencia_id === occ.id) : undefined;
 
       return {
-        ocorrencia_id: occ.id,
-        ocorrencia_numero: occ.numero,
-        equipamento_id: occ.equipamento_id,
-        tag: eq?.tag || 'N/D',
-        tipo: eq?.tipo || 'N/D',
-        marca: eq?.marca || 'N/D',
-        modelo: eq?.modelo || 'N/D',
-        ug_codigo: ug?.codigo || 'N/D',
-        linha_nome: linha?.nome || 'N/D',
-        centro_trabalho_nome: ct?.nome || 'N/D',
-        data_avaria: occ.data_avaria,
+        ocorrencia_id: occ?.id || eq.id,
+        ocorrencia_numero: occ?.numero || 0,
+        equipamento_id: eq.id,
+        tag: eq.tag || 'N/D',
+        tipo: eq.tipo || 'N/D',
+        marca: eq.marca || 'N/D',
+        modelo: eq.modelo || 'N/D',
+        ug_codigo: ug?.codigo || eq.ug_ref || 'N/D',
+        linha_nome: linha?.nome || eq.area_ref || 'N/D',
+        centro_trabalho_nome: ct?.nome || eq.localizacao_ref || 'N/D',
+        data_avaria: dataRef,
         dias_parado: dias,
         faixa_aging: faixa,
-        ocorrencia_status: occ.status,
+        ocorrencia_status: occ?.status || 'ABERTA',
         pecas_pendentes_count: occPecas.length,
         pecas_resumo: occPecas.map((p) => `${p.quantidade}x ${p.descricao}`).join(', '),
-        nota_sap: occ.nota_sap,
-        ordem_sap: occ.ordem_sap,
-        ordem_vision: occ.ordem_vision,
+        nota_sap: occ?.nota_sap,
+        ordem_sap: occ?.ordem_sap,
+        ordem_vision: occ?.ordem_vision,
         valor_orcamento: occOrc?.valor_total,
       };
     });
