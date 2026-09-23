@@ -363,8 +363,8 @@ export const DataStore = {
       const area = (e.area_ref || e.localizacao_ref || e.ug_ref || 'SEM ÁREA').toUpperCase();
       const cur = areaMap.get(area) || { total: 0, ok: 0, parado: 0, restricao: 0 };
       cur.total += 1;
-      if (e.status === 'PARADO') cur.parado += 1;
-      else if (e.status === 'RESTRICAO') cur.restricao += 1;
+      if (e.status === 'RESTRICAO') cur.parado += 1;      // NOK = RESTRICAO
+      else if (e.status === 'PARADO') cur.parado += 1;    // também conta PARADO
       else cur.ok += 1;
       areaMap.set(area, cur);
     });
@@ -502,8 +502,10 @@ export const DataStore = {
     const ctsMap = new Map(dbState.centros_trabalho.map((c) => [c.id, c]));
     const equipsMap = new Map(dbState.equipamentos.map((e) => [e.id, e]));
 
-    // Todos os equipamentos com status PARADO
-    const equipamentosParados = dbState.equipamentos.filter((e) => e.status === 'PARADO');
+    // Todos os equipamentos NOK (RESTRICAO) ou PARADO
+    const equipamentosParados = dbState.equipamentos.filter(
+      (e) => e.status === 'RESTRICAO' || e.status === 'PARADO'
+    );
 
     const result: VwAgingParadas[] = equipamentosParados.map((eq) => {
       // Pega a OS mais recente aberta vinculada (se houver)
