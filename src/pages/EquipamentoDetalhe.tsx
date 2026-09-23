@@ -280,11 +280,11 @@ export const EquipamentoDetalhe: React.FC = () => {
     <>
     <div className="equipamento-detalhe-page flex flex-col px-2 py-3 md:p-4 gap-4 max-w-7xl mx-auto w-full h-full overflow-y-auto scroll-fluido">
       {/* Header Bar */}
-      <div className="equipamento-header flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#111827] border border-[#30363D] rounded-lg p-4 shadow-lg">
+      <div className="equipamento-header flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#F8F9FA] border border-[#D1D5DB] rounded-lg p-4 shadow-lg">
         <div className="flex items-start gap-3 flex-1 min-w-0">
           <button
             onClick={() => navigate('/equipamentos')}
-            className="p-2 rounded-md bg-[#0A0E1A] hover:bg-[#1E293B] text-gray-400 hover:text-white border border-[#30363D] transition-colors shrink-0"
+            className="p-2 rounded-md bg-white hover:bg-[#1E293B] text-gray-400 hover:text-white border border-[#D1D5DB] transition-colors shrink-0"
             title="Voltar para a lista"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -292,7 +292,7 @@ export const EquipamentoDetalhe: React.FC = () => {
           <div className="flex-1 min-w-0">
             <div className="flex items-center flex-wrap gap-2 mb-1">
               <IndustrialTag tag={equipamento.patrimonio_ref || equipamento.tag_sap || equipamento.tag} size="lg" />
-              <span className="px-2 py-0.5 rounded font-mono font-bold text-xs bg-[#21262D] text-[#8B949E] border border-[#30363D]">
+              <span className="px-2 py-0.5 rounded font-mono font-bold text-xs bg-[#E5E7EB] text-[#6B7280] border border-[#D1D5DB]">
                 UG {ugNome}
               </span>
               <StatusBadge type="equip" status={equipamento.status} size="sm" />
@@ -300,7 +300,7 @@ export const EquipamentoDetalhe: React.FC = () => {
             <h2 className="text-lg md:text-xl font-bold text-white tracking-wide uppercase font-mono">
               {equipamento.localizacao_ref || equipamento.local_instalacao || 'Fábrica AMBEV'} {equipamento.area_ref ? `· Local: ${equipamento.area_ref}` : ''}
             </h2>
-            <div className="text-xs text-[#8B949E] mt-0.5 uppercase tracking-wide">
+            <div className="text-xs text-[#6B7280] mt-0.5 uppercase tracking-wide">
               {tipoNome} · {equipamento.marca || 'EQUIPAMENTO'} {equipamento.modelo ? `(${equipamento.modelo})` : ''}
             </div>
           </div>
@@ -327,7 +327,7 @@ export const EquipamentoDetalhe: React.FC = () => {
               {canEdit && (
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="px-3 py-1.5 rounded-md bg-[#1E293B] hover:bg-[#334155] text-[#C9D1D9] border border-[#30363D] text-xs font-semibold transition-colors flex items-center gap-1.5"
+                  className="px-3 py-1.5 rounded-md bg-[#1E293B] hover:bg-[#334155] text-[#374151] border border-[#D1D5DB] text-xs font-semibold transition-colors flex items-center gap-1.5"
                 >
                   <Edit3 className="w-3.5 h-3.5" />
                   <span>Editar Ficha</span>
@@ -337,7 +337,7 @@ export const EquipamentoDetalhe: React.FC = () => {
                 <button
                   onClick={handleCopyModelo}
                   title="Copiar este equipamento como modelo para um novo cadastro"
-                  className="px-3 py-1.5 rounded-md bg-[#21262D] hover:bg-[#30363D] text-[#C9D1D9] border border-[#30363D] text-xs font-semibold transition-colors flex items-center gap-1.5"
+                  className="px-3 py-1.5 rounded-md bg-[#E5E7EB] hover:bg-[#30363D] text-[#374151] border border-[#D1D5DB] text-xs font-semibold transition-colors flex items-center gap-1.5"
                 >
                   <Copy className="w-3.5 h-3.5" />
                   <span>Copiar Modelo</span>
@@ -358,7 +358,7 @@ export const EquipamentoDetalhe: React.FC = () => {
       </div>
 
       {/* Tabs Navigation */}
-      <div className="equipamento-tabs flex items-center gap-1 overflow-x-auto border-b border-[#30363D] pb-1">
+      <div className="equipamento-tabs flex items-center gap-1 overflow-x-auto border-b border-[#D1D5DB] pb-1">
         {[
           { id: 'ficha', label: 'Ficha Técnica', icon: FileText },
           { id: 'ocorrencias', label: `Ocorrências (${ocorrencias.length})`, icon: AlertTriangle },
@@ -374,7 +374,7 @@ export const EquipamentoDetalhe: React.FC = () => {
               onClick={() => handleTabChange(tab.id as any)}
               className={`flex items-center gap-2 px-3 py-2 rounded-t-md text-xs font-bold transition-colors uppercase tracking-wider ${
                 isActive
-                  ? 'bg-[#111827] text-[#C9D1D9] border-t-2 border-t-[#E6EDF3] border-x border-[#30363D]'
+                  ? 'bg-[#F8F9FA] text-[#374151] border-t-2 border-t-[#E6EDF3] border-x border-[#D1D5DB]'
                   : 'text-gray-400 hover:text-gray-200 hover:bg-white/[0.02]'
               }`}
             >
@@ -389,15 +389,15 @@ export const EquipamentoDetalhe: React.FC = () => {
       <div className="equipamento-tab-content flex-1">
         {/* TAB 1: FICHA TÉCNICA (Campos: Tag Vision, UG, Área, Localização, Patrimônio, Tipo, Marca, Modelo, Capacidade, Aplicação, Status) */}
         {activeTab === 'ficha' && (
-          <div className="bg-[#111827] border border-[#30363D] rounded-lg px-2.5 py-3 md:p-6 space-y-5 md:space-y-6 shadow-xl">
+          <div className="bg-[#F8F9FA] border border-[#D1D5DB] rounded-lg px-2.5 py-3 md:p-6 space-y-5 md:space-y-6 shadow-xl">
             {isEditing && (
-              <div className="flex items-center gap-2 p-3 rounded-lg text-xs font-medium bg-[#21262D] border border-[#30363D] text-[#C9D1D9]">
+              <div className="flex items-center gap-2 p-3 rounded-lg text-xs font-medium bg-[#E5E7EB] border border-[#D1D5DB] text-[#374151]">
                 <Edit3 className="w-4 h-4" /> Modo de edição ativo — altere os campos abaixo e clique em "Salvar Alterações".
               </div>
             )}
 
-            <div className="border-b border-[#30363D] pb-2">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#C9D1D9]">
+            <div className="border-b border-[#D1D5DB] pb-2">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#374151]">
                 Ficha Técnica do Equipamento
               </h3>
               <p className="text-[11px] text-gray-400 mt-0.5">
@@ -408,9 +408,9 @@ export const EquipamentoDetalhe: React.FC = () => {
             {isEditing ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 text-xs">
                 {isCopying && (
-                  <div className="col-span-full bg-[#21262D] border border-[#30363D] rounded-lg p-3 flex items-start gap-2">
-                    <Copy className="w-4 h-4 text-[#C9D1D9] shrink-0 mt-0.5" />
-                    <div className="text-[11px] text-[#C9D1D9]">
+                  <div className="col-span-full bg-[#E5E7EB] border border-[#D1D5DB] rounded-lg p-3 flex items-start gap-2">
+                    <Copy className="w-4 h-4 text-[#374151] shrink-0 mt-0.5" />
+                    <div className="text-[11px] text-[#374151]">
                       <strong>Modo cópia:</strong> os dados foram copiados do equipamento TAG {equipamento.tag}. Informe uma <strong>nova TAG VISION</strong> e ajuste o que for necessário. Ao salvar, um novo equipamento será criado.
                     </div>
                   </div>
@@ -423,8 +423,8 @@ export const EquipamentoDetalhe: React.FC = () => {
                     value={formData.tag || ''}
                     onChange={(e) => setFormData((prev) => ({ ...prev, tag: e.target.value }))}
                     placeholder={isCopying ? 'Digite a nova TAG...' : ''}
-                    className={`w-full h-[36px] bg-[#0A0E1A] border text-white px-3 rounded text-xs outline-none font-mono ${
-                      isCopying ? 'border-[#8B949E] focus:border-[#30363D]' : 'border-[#30363D] focus:border-[#8B949E]'
+                    className={`w-full h-[36px] bg-white border text-white px-3 rounded text-xs outline-none font-mono ${
+                      isCopying ? 'border-[#8B949E] focus:border-[#D1D5DB]' : 'border-[#D1D5DB] focus:border-[#2563EB]'
                     }`}
                   />
                 </div>
@@ -435,7 +435,7 @@ export const EquipamentoDetalhe: React.FC = () => {
                   <select
                     value={formData.ug_ref || 'N1'}
                     onChange={(e) => setFormData((prev) => ({ ...prev, ug_ref: e.target.value }))}
-                    className="w-full h-[36px] bg-[#0A0E1A] border border-[#30363D] text-white px-3 rounded text-xs outline-none font-mono"
+                    className="w-full h-[36px] bg-white border border-[#D1D5DB] text-white px-3 rounded text-xs outline-none font-mono"
                   >
                     <option value="N1">N1</option>
                     <option value="N2">N2</option>
@@ -452,7 +452,7 @@ export const EquipamentoDetalhe: React.FC = () => {
                     value={formData.area_ref || ''}
                     onChange={(e) => setFormData((prev) => ({ ...prev, area_ref: e.target.value }))}
                     placeholder="RETORNÁVEIS, ONE WAY CERVEJA..."
-                    className="w-full h-[36px] bg-[#0A0E1A] border border-[#30363D] focus:border-[#8B949E] text-white px-3 rounded text-xs outline-none"
+                    className="w-full h-[36px] bg-white border border-[#D1D5DB] focus:border-[#2563EB] text-white px-3 rounded text-xs outline-none"
                   />
                 </div>
 
@@ -464,7 +464,7 @@ export const EquipamentoDetalhe: React.FC = () => {
                     value={formData.localizacao_ref || ''}
                     onChange={(e) => setFormData((prev) => ({ ...prev, localizacao_ref: e.target.value }))}
                     placeholder="Ex: LINHA 542 / EMPACOTADORA 03"
-                    className="w-full h-[36px] bg-[#0A0E1A] border border-[#30363D] focus:border-[#8B949E] text-white px-3 rounded text-xs outline-none font-mono"
+                    className="w-full h-[36px] bg-white border border-[#D1D5DB] focus:border-[#2563EB] text-white px-3 rounded text-xs outline-none font-mono"
                   />
                 </div>
 
@@ -476,7 +476,7 @@ export const EquipamentoDetalhe: React.FC = () => {
                     value={formData.patrimonio_ref || ''}
                     onChange={(e) => setFormData((prev) => ({ ...prev, patrimonio_ref: e.target.value }))}
                     placeholder="Ex: 84"
-                    className="w-full h-[36px] bg-[#0A0E1A] border border-[#30363D] focus:border-[#8B949E] text-white px-3 rounded text-xs outline-none font-mono"
+                    className="w-full h-[36px] bg-white border border-[#D1D5DB] focus:border-[#2563EB] text-white px-3 rounded text-xs outline-none font-mono"
                   />
                 </div>
 
@@ -488,7 +488,7 @@ export const EquipamentoDetalhe: React.FC = () => {
                     value={formData.tipo_equipamento || ''}
                     onChange={(e) => setFormData((prev) => ({ ...prev, tipo_equipamento: e.target.value }))}
                     placeholder="RESFRIADOR DE PAINEL, SPLITÃO..."
-                    className="w-full h-[36px] bg-[#0A0E1A] border border-[#30363D] focus:border-[#8B949E] text-white px-3 rounded text-xs outline-none"
+                    className="w-full h-[36px] bg-white border border-[#D1D5DB] focus:border-[#2563EB] text-white px-3 rounded text-xs outline-none"
                   />
                 </div>
 
@@ -500,7 +500,7 @@ export const EquipamentoDetalhe: React.FC = () => {
                     value={formData.marca || ''}
                     onChange={(e) => setFormData((prev) => ({ ...prev, marca: e.target.value }))}
                     placeholder="RITTAL, KRONES, YORK..."
-                    className="w-full h-[36px] bg-[#0A0E1A] border border-[#30363D] focus:border-[#8B949E] text-white px-3 rounded text-xs outline-none"
+                    className="w-full h-[36px] bg-white border border-[#D1D5DB] focus:border-[#2563EB] text-white px-3 rounded text-xs outline-none"
                   />
                 </div>
 
@@ -512,7 +512,7 @@ export const EquipamentoDetalhe: React.FC = () => {
                     value={formData.modelo || ''}
                     onChange={(e) => setFormData((prev) => ({ ...prev, modelo: e.target.value }))}
                     placeholder="Ex: SK 3304.500"
-                    className="w-full h-[36px] bg-[#0A0E1A] border border-[#30363D] focus:border-[#8B949E] text-white px-3 rounded text-xs outline-none font-mono"
+                    className="w-full h-[36px] bg-white border border-[#D1D5DB] focus:border-[#2563EB] text-white px-3 rounded text-xs outline-none font-mono"
                   />
                 </div>
 
@@ -524,7 +524,7 @@ export const EquipamentoDetalhe: React.FC = () => {
                     value={formData.capacidade || ''}
                     onChange={(e) => setFormData((prev) => ({ ...prev, capacidade: e.target.value }))}
                     placeholder="Ex: 1500W, 36.000 BTU'S..."
-                    className="w-full h-[36px] bg-[#0A0E1A] border border-[#30363D] focus:border-[#8B949E] text-white px-3 rounded text-xs outline-none font-mono"
+                    className="w-full h-[36px] bg-white border border-[#D1D5DB] focus:border-[#2563EB] text-white px-3 rounded text-xs outline-none font-mono"
                   />
                 </div>
 
@@ -535,7 +535,7 @@ export const EquipamentoDetalhe: React.FC = () => {
                     type="text"
                     disabled
                     value="INDUSTRIAL"
-                    className="w-full h-[36px] bg-[#0A0E1A]/60 border border-[#30363D] text-gray-400 px-3 rounded text-xs outline-none cursor-not-allowed uppercase font-semibold"
+                    className="w-full h-[36px] bg-white/60 border border-[#D1D5DB] text-gray-400 px-3 rounded text-xs outline-none cursor-not-allowed uppercase font-semibold"
                   />
                 </div>
 
@@ -545,7 +545,7 @@ export const EquipamentoDetalhe: React.FC = () => {
                   <select
                     value={formData.status || 'OK'}
                     onChange={(e) => setFormData((prev) => ({ ...prev, status: e.target.value as EquipStatus }))}
-                    className="w-full h-[36px] bg-[#0A0E1A] border border-[#30363D] text-white px-3 rounded text-xs outline-none"
+                    className="w-full h-[36px] bg-white border border-[#D1D5DB] text-white px-3 rounded text-xs outline-none"
                   >
                     <option value="OK">OK</option>
                     <option value="RESTRICAO">NOK</option>
@@ -555,23 +555,23 @@ export const EquipamentoDetalhe: React.FC = () => {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {/* 1. Tag Vision */}
-                <div className="p-3.5 bg-[#0A0E1A] rounded-lg border border-[#30363D]">
+                <div className="p-3.5 bg-white rounded-lg border border-[#D1D5DB]">
                   <span className="block text-[10px] uppercase text-gray-400 font-bold tracking-wider">Tag Vision</span>
-                  <p className="text-base font-bold text-[#C9D1D9] font-mono mt-1">
+                  <p className="text-base font-bold text-[#374151] font-mono mt-1">
                     {equipamento.tag}
                   </p>
                 </div>
 
                 {/* 2. UG */}
-                <div className="p-3.5 bg-[#0A0E1A] rounded-lg border border-[#30363D]">
+                <div className="p-3.5 bg-white rounded-lg border border-[#D1D5DB]">
                   <span className="block text-[10px] uppercase text-gray-400 font-bold tracking-wider">UG</span>
-                  <p className="text-base font-bold text-[#8B949E] font-mono mt-1">
+                  <p className="text-base font-bold text-[#6B7280] font-mono mt-1">
                     {equipamento.ug_ref || 'N1'}
                   </p>
                 </div>
 
                 {/* 3. Local */}
-                <div className="p-3.5 bg-[#0A0E1A] rounded-lg border border-[#30363D]">
+                <div className="p-3.5 bg-white rounded-lg border border-[#D1D5DB]">
                   <span className="block text-[10px] uppercase text-gray-400 font-bold tracking-wider">Local</span>
                   <p className="text-sm font-semibold text-gray-200 mt-1">
                     {equipamento.area_ref || '—'}
@@ -579,15 +579,15 @@ export const EquipamentoDetalhe: React.FC = () => {
                 </div>
 
                 {/* 4. Local de Instalação */}
-                <div className="p-3.5 bg-[#0A0E1A] rounded-lg border border-[#30363D] sm:col-span-2 lg:col-span-1">
+                <div className="p-3.5 bg-white rounded-lg border border-[#D1D5DB] sm:col-span-2 lg:col-span-1">
                   <span className="block text-[10px] uppercase text-gray-400 font-bold tracking-wider">Local de Instalação</span>
-                  <p className="text-sm font-semibold text-[#8B949E] font-mono mt-1">
+                  <p className="text-sm font-semibold text-[#6B7280] font-mono mt-1">
                     {equipamento.localizacao_ref || equipamento.local_instalacao || '—'}
                   </p>
                 </div>
 
                 {/* 5. Tag AMBEV */}
-                <div className="p-3.5 bg-[#0A0E1A] rounded-lg border border-[#30363D]">
+                <div className="p-3.5 bg-white rounded-lg border border-[#D1D5DB]">
                   <span className="block text-[10px] uppercase text-gray-400 font-bold tracking-wider">Tag AMBEV</span>
                   <p className="text-sm font-mono text-gray-200 mt-1">
                     {equipamento.patrimonio_ref || '—'}
@@ -595,7 +595,7 @@ export const EquipamentoDetalhe: React.FC = () => {
                 </div>
 
                 {/* 6. Tipo */}
-                <div className="p-3.5 bg-[#0A0E1A] rounded-lg border border-[#30363D]">
+                <div className="p-3.5 bg-white rounded-lg border border-[#D1D5DB]">
                   <span className="block text-[10px] uppercase text-gray-400 font-bold tracking-wider">Tipo</span>
                   <p className="text-sm font-semibold text-white mt-1">
                     {equipamento.tipo_equipamento || equipamento.tipo || '—'}
@@ -603,15 +603,15 @@ export const EquipamentoDetalhe: React.FC = () => {
                 </div>
 
                 {/* 7. Marca */}
-                <div className="p-3.5 bg-[#0A0E1A] rounded-lg border border-[#30363D]">
+                <div className="p-3.5 bg-white rounded-lg border border-[#D1D5DB]">
                   <span className="block text-[10px] uppercase text-gray-400 font-bold tracking-wider">Marca</span>
-                  <p className="text-sm font-semibold text-[#C9D1D9] mt-1">
+                  <p className="text-sm font-semibold text-[#374151] mt-1">
                     {equipamento.marca || '—'}
                   </p>
                 </div>
 
                 {/* 8. Modelo */}
-                <div className="p-3.5 bg-[#0A0E1A] rounded-lg border border-[#30363D]">
+                <div className="p-3.5 bg-white rounded-lg border border-[#D1D5DB]">
                   <span className="block text-[10px] uppercase text-gray-400 font-bold tracking-wider">Modelo</span>
                   <p className="text-sm font-mono text-gray-200 mt-1">
                     {equipamento.modelo || '—'}
@@ -619,7 +619,7 @@ export const EquipamentoDetalhe: React.FC = () => {
                 </div>
 
                 {/* 9. Capacidade */}
-                <div className="p-3.5 bg-[#0A0E1A] rounded-lg border border-[#30363D]">
+                <div className="p-3.5 bg-white rounded-lg border border-[#D1D5DB]">
                   <span className="block text-[10px] uppercase text-gray-400 font-bold tracking-wider">Capacidade</span>
                   <p className="text-sm font-mono text-gray-200 font-medium mt-1">
                     {equipamento.capacidade || '—'}
@@ -627,7 +627,7 @@ export const EquipamentoDetalhe: React.FC = () => {
                 </div>
 
                 {/* 10. Aplicação */}
-                <div className="p-3.5 bg-[#0A0E1A] rounded-lg border border-[#30363D]">
+                <div className="p-3.5 bg-white rounded-lg border border-[#D1D5DB]">
                   <span className="block text-[10px] uppercase text-gray-400 font-bold tracking-wider">Aplicação</span>
                   <p className="text-sm font-semibold text-gray-300 mt-1 uppercase">
                     {equipamento.aplicacao || 'INDUSTRIAL'}
@@ -635,7 +635,7 @@ export const EquipamentoDetalhe: React.FC = () => {
                 </div>
 
                 {/* 11. Status */}
-                <div className="p-3.5 bg-[#0A0E1A] rounded-lg border border-[#30363D]">
+                <div className="p-3.5 bg-white rounded-lg border border-[#D1D5DB]">
                   <span className="block text-[10px] uppercase text-gray-400 font-bold tracking-wider">Status</span>
                   <div className="mt-1">
                     <StatusBadge type="equip" status={equipamento.status} size="md" />
@@ -677,14 +677,14 @@ export const EquipamentoDetalhe: React.FC = () => {
                 {ocorrencias.map((occ) => (
                   <div
                     key={occ.id}
-                    className="p-3.5 rounded-lg bg-[#111827] border border-[#30363D] hover:bg-[#1E293B] transition-all"
+                    className="p-3.5 rounded-lg bg-[#F8F9FA] border border-[#D1D5DB] hover:bg-[#1E293B] transition-all"
                   >
                     <div className="flex items-start justify-between gap-2 mb-1.5">
                       <div
                         className="flex items-center gap-2 flex-wrap cursor-pointer flex-1 min-w-0"
                         onClick={() => navigate(`/ocorrencias/${occ.id}`)}
                       >
-                        <span className="font-mono text-xs font-bold text-[#C9D1D9]">
+                        <span className="font-mono text-xs font-bold text-[#374151]">
                           {(occ as any).ordem_sap ? `OS ${(occ as any).ordem_sap}` : (occ as any).codigo || occ.id?.slice(0, 8)}
                         </span>
                         <StatusBadge type="ocorrencia" status={occ.status} size="xs" />
@@ -695,14 +695,14 @@ export const EquipamentoDetalhe: React.FC = () => {
                           <button
                             onClick={() => navigate(`/ocorrencias/nova?edit=${occ.id}`)}
                             title="Editar"
-                            className="w-7 h-7 rounded-md bg-[#21262D] border border-[#30363D] text-[#C9D1D9] hover:text-white flex items-center justify-center"
+                            className="w-7 h-7 rounded-md bg-[#E5E7EB] border border-[#D1D5DB] text-[#374151] hover:text-white flex items-center justify-center"
                           >
                             <Pencil className="w-3.5 h-3.5" />
                           </button>
                           <button
                             onClick={() => setConfirmDeleteOcc(occ)}
                             title="Deletar"
-                            className="w-7 h-7 rounded-md bg-[#21262D] border border-[#30363D] text-red-400 hover:text-red-300 flex items-center justify-center"
+                            className="w-7 h-7 rounded-md bg-[#E5E7EB] border border-[#D1D5DB] text-red-400 hover:text-red-300 flex items-center justify-center"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -742,7 +742,7 @@ export const EquipamentoDetalhe: React.FC = () => {
                 description="Histórico de preventivas e corretivas executadas pela equipe de refrigeração."
               />
             ) : (
-              <div className="bg-[#111827] border border-[#30363D] rounded-lg overflow-hidden">
+              <div className="bg-[#F8F9FA] border border-[#D1D5DB] rounded-lg overflow-hidden">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead className="bg-[#1a2235] text-gray-400 text-[10px] uppercase font-bold">
                     <tr>
@@ -758,7 +758,7 @@ export const EquipamentoDetalhe: React.FC = () => {
                       <tr key={m.id} className="hover:bg-[#30363D]/[0.05]">
                         <td className="py-2.5 px-3 whitespace-nowrap">{formatDate(m.data_execucao)}</td>
                         <td className="py-2.5 px-3">
-                          <span className="px-2 py-0.5 rounded text-[10px] bg-[#21262D] text-[#8B949E] border border-[#30363D] font-semibold">
+                          <span className="px-2 py-0.5 rounded text-[10px] bg-[#E5E7EB] text-[#6B7280] border border-[#D1D5DB] font-semibold">
                             {m.tipo_servico}
                           </span>
                         </td>
@@ -797,9 +797,9 @@ export const EquipamentoDetalhe: React.FC = () => {
                   {showPhotoMenu && !uploadingPhoto && (
                     <>
                       <div className="fixed inset-0 z-20" onClick={() => setShowPhotoMenu(false)} />
-                      <div className="absolute right-0 top-full mt-1 w-52 bg-[#161B22] border border-[#30363D] rounded-lg shadow-2xl p-1 z-30">
-                        <label className="flex items-center gap-2.5 px-3 py-3 text-xs text-[#E6EDF3] rounded-md hover:bg-[#21262D] cursor-pointer">
-                          <Camera className="w-4 h-4 text-[#8B949E] shrink-0" />
+                      <div className="absolute right-0 top-full mt-1 w-52 bg-[#F8F9FA] border border-[#D1D5DB] rounded-lg shadow-2xl p-1 z-30">
+                        <label className="flex items-center gap-2.5 px-3 py-3 text-xs text-[#1A1A1A] rounded-md hover:bg-[#E5E7EB] cursor-pointer">
+                          <Camera className="w-4 h-4 text-[#6B7280] shrink-0" />
                           <span>Tirar foto agora</span>
                           <input
                             type="file"
@@ -809,8 +809,8 @@ export const EquipamentoDetalhe: React.FC = () => {
                             className="hidden"
                           />
                         </label>
-                        <label className="flex items-center gap-2.5 px-3 py-3 text-xs text-[#E6EDF3] rounded-md hover:bg-[#21262D] cursor-pointer">
-                          <ImageIcon className="w-4 h-4 text-[#8B949E] shrink-0" />
+                        <label className="flex items-center gap-2.5 px-3 py-3 text-xs text-[#1A1A1A] rounded-md hover:bg-[#E5E7EB] cursor-pointer">
+                          <ImageIcon className="w-4 h-4 text-[#6B7280] shrink-0" />
                           <span>Escolher da galeria</span>
                           <input
                             type="file"
@@ -849,7 +849,7 @@ export const EquipamentoDetalhe: React.FC = () => {
 
         {/* TAB 5: QR CODE */}
         {activeTab === 'qrcode' && (
-          <div className="bg-[#111827] border border-[#30363D] rounded-lg p-6 text-center max-w-md mx-auto space-y-4 shadow-xl">
+          <div className="bg-[#F8F9FA] border border-[#D1D5DB] rounded-lg p-6 text-center max-w-md mx-auto space-y-4 shadow-xl">
             <h3 className="text-sm font-bold uppercase tracking-wider text-white">
               Etiqueta com QR Code do Ativo
             </h3>
@@ -857,7 +857,7 @@ export const EquipamentoDetalhe: React.FC = () => {
               Cole esta etiqueta na carcaça do climatizador. Ao apontar a câmera do smartphone, a ficha técnica abre instantaneamente.
             </p>
 
-            <div className="inline-block p-4 bg-white rounded-lg shadow-2xl border-4 border-[#30363D]">
+            <div className="inline-block p-4 bg-white rounded-lg shadow-2xl border-4 border-[#D1D5DB]">
               <QRCodeSVG
                 value={qrUrl}
                 size={180}
@@ -904,50 +904,50 @@ export const EquipamentoDetalhe: React.FC = () => {
     {/* Modal: Editar Ocorrência */}
     {editOcc && (
       <div className="sheet-backdrop fixed inset-0 z-[9999] bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
-        <div className="sheet-panel bg-[#111827] border border-[#30363D] rounded-t-2xl sm:rounded-lg w-full max-w-lg max-h-[92vh] flex flex-col shadow-2xl overflow-hidden safe-bottom">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-[#30363D] shrink-0">
+        <div className="sheet-panel bg-[#F8F9FA] border border-[#D1D5DB] rounded-t-2xl sm:rounded-lg w-full max-w-lg max-h-[92vh] flex flex-col shadow-2xl overflow-hidden safe-bottom">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-[#D1D5DB] shrink-0">
             <div>
-              <h3 className="text-sm font-bold text-[#E6EDF3] uppercase">Editar Ocorrência</h3>
-              <p className="text-[11px] text-[#8B949E] font-mono">{(editOcc as any).ordem_sap ? `OS ${(editOcc as any).ordem_sap}` : `#${editOcc.numero}`}</p>
+              <h3 className="text-sm font-bold text-[#1A1A1A] uppercase">Editar Ocorrência</h3>
+              <p className="text-[11px] text-[#6B7280] font-mono">{(editOcc as any).ordem_sap ? `OS ${(editOcc as any).ordem_sap}` : `#${editOcc.numero}`}</p>
             </div>
-            <button onClick={() => !savingOcc && setEditOcc(null)} className="w-9 h-9 rounded-lg bg-[#0A0E1A] border border-[#30363D] text-[#8B949E] flex items-center justify-center">
+            <button onClick={() => !savingOcc && setEditOcc(null)} className="w-9 h-9 rounded-lg bg-white border border-[#D1D5DB] text-[#6B7280] flex items-center justify-center">
               <X className="w-4 h-4" />
             </button>
           </div>
           <div className="p-4 space-y-4 overflow-y-auto scroll-fluido">
             <div>
-              <label className="block text-[11px] font-semibold text-[#8B949E] uppercase tracking-wider mb-1.5">Criticidade</label>
+              <label className="block text-[11px] font-semibold text-[#6B7280] uppercase tracking-wider mb-1.5">Criticidade</label>
               <div className="grid grid-cols-4 gap-1.5">
                 {(['BAIXA', 'MEDIA', 'ALTA', 'CRITICA'] as Criticidade[]).map((c) => (
                   <button key={c} onClick={() => setEditOccForm((f) => ({ ...f, criticidade: c }))}
-                    className={`h-10 rounded-md text-[11px] font-bold border transition-colors ${editOccForm.criticidade === c ? 'bg-[#21262D] text-[#E6EDF3] border-[#8B949E]' : 'bg-[#0A0E1A] text-[#8B949E] border-[#30363D]'}`}>
+                    className={`h-10 rounded-md text-[11px] font-bold border transition-colors ${editOccForm.criticidade === c ? 'bg-[#E5E7EB] text-[#1A1A1A] border-[#8B949E]' : 'bg-white text-[#6B7280] border-[#D1D5DB]'}`}>
                     {c === 'MEDIA' ? 'MÉDIA' : c}
                   </button>
                 ))}
               </div>
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-[#8B949E] uppercase tracking-wider mb-1.5">Descrição do Problema</label>
+              <label className="block text-[11px] font-semibold text-[#6B7280] uppercase tracking-wider mb-1.5">Descrição do Problema</label>
               <textarea value={editOccForm.descricao_anomalia} onChange={(e) => setEditOccForm((f) => ({ ...f, descricao_anomalia: e.target.value }))} rows={3}
-                className="w-full bg-[#0A0E1A] border border-[#30363D] focus:border-[#8B949E] text-[#E6EDF3] text-[13px] rounded-md p-2.5 outline-none resize-none leading-relaxed" />
+                className="w-full bg-white border border-[#D1D5DB] focus:border-[#2563EB] text-[#1A1A1A] text-[13px] rounded-md p-2.5 outline-none resize-none leading-relaxed" />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-[#8B949E] uppercase tracking-wider mb-1.5">Causa Raiz Provável</label>
+              <label className="block text-[11px] font-semibold text-[#6B7280] uppercase tracking-wider mb-1.5">Causa Raiz Provável</label>
               <textarea value={editOccForm.causa_provavel} onChange={(e) => setEditOccForm((f) => ({ ...f, causa_provavel: e.target.value }))} rows={2}
-                className="w-full bg-[#0A0E1A] border border-[#30363D] focus:border-[#8B949E] text-[#E6EDF3] text-[13px] rounded-md p-2.5 outline-none resize-none" placeholder="(opcional)" />
+                className="w-full bg-white border border-[#D1D5DB] focus:border-[#2563EB] text-[#1A1A1A] text-[13px] rounded-md p-2.5 outline-none resize-none" placeholder="(opcional)" />
             </div>
             <button onClick={() => setEditOccForm((f) => ({ ...f, equipamento_parado: !f.equipamento_parado }))}
-              className="w-full flex items-center justify-between gap-3 p-3 rounded-md bg-[#0A0E1A] border border-[#30363D]">
+              className="w-full flex items-center justify-between gap-3 p-3 rounded-md bg-white border border-[#D1D5DB]">
               <div className="text-left">
-                <p className="text-[13px] font-semibold text-[#E6EDF3]">Equipamento parado</p>
+                <p className="text-[13px] font-semibold text-[#1A1A1A]">Equipamento parado</p>
               </div>
               <span className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${editOccForm.equipamento_parado ? 'bg-red-500/70' : 'bg-[#30363D]'}`}>
                 <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-all ${editOccForm.equipamento_parado ? 'left-[22px]' : 'left-0.5'}`} />
               </span>
             </button>
           </div>
-          <div className="flex items-center gap-2 p-4 border-t border-[#30363D] shrink-0">
-            <button onClick={() => setEditOcc(null)} disabled={savingOcc} className="flex-1 h-11 rounded-md bg-[#0A0E1A] border border-[#30363D] text-[#C9D1D9] text-sm font-semibold disabled:opacity-60">Cancelar</button>
+          <div className="flex items-center gap-2 p-4 border-t border-[#D1D5DB] shrink-0">
+            <button onClick={() => setEditOcc(null)} disabled={savingOcc} className="flex-1 h-11 rounded-md bg-white border border-[#D1D5DB] text-[#374151] text-sm font-semibold disabled:opacity-60">Cancelar</button>
             <button onClick={salvarEdicaoOcc} disabled={savingOcc} className="flex-1 h-11 rounded-md btn-primary-gradient text-sm font-bold disabled:opacity-60">
               {savingOcc ? 'Salvando...' : 'Salvar'}
             </button>
@@ -959,11 +959,11 @@ export const EquipamentoDetalhe: React.FC = () => {
     {/* Modal: Confirmar Delete Ocorrência */}
     {confirmDeleteOcc && (
       <div className="fixed inset-0 z-[9999] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-        <div className="bg-[#111827] border border-[#30363D] rounded-lg p-5 w-full max-w-sm text-center shadow-2xl">
-          <p className="text-sm font-bold text-[#E6EDF3] mb-1">Deletar Ocorrência?</p>
-          <p className="text-[11px] text-[#8B949E] mb-4">{(confirmDeleteOcc as any).ordem_sap ? `OS ${(confirmDeleteOcc as any).ordem_sap}` : `#${confirmDeleteOcc.numero}`} — esta ação não pode ser desfeita.</p>
+        <div className="bg-[#F8F9FA] border border-[#D1D5DB] rounded-lg p-5 w-full max-w-sm text-center shadow-2xl">
+          <p className="text-sm font-bold text-[#1A1A1A] mb-1">Deletar Ocorrência?</p>
+          <p className="text-[11px] text-[#6B7280] mb-4">{(confirmDeleteOcc as any).ordem_sap ? `OS ${(confirmDeleteOcc as any).ordem_sap}` : `#${confirmDeleteOcc.numero}`} — esta ação não pode ser desfeita.</p>
           <div className="flex gap-2">
-            <button onClick={() => setConfirmDeleteOcc(null)} className="flex-1 h-10 rounded-md bg-[#21262D] border border-[#30363D] text-[#C9D1D9] text-sm font-semibold">Cancelar</button>
+            <button onClick={() => setConfirmDeleteOcc(null)} className="flex-1 h-10 rounded-md bg-[#E5E7EB] border border-[#D1D5DB] text-[#374151] text-sm font-semibold">Cancelar</button>
             <button onClick={() => deletarOcc(confirmDeleteOcc)} className="flex-1 h-10 rounded-md bg-red-600 hover:bg-red-500 text-white text-sm font-bold transition-colors">Deletar</button>
           </div>
         </div>

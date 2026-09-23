@@ -522,14 +522,14 @@ export const OcorrenciaDetalhe: React.FC = () => {
   return (
     <div
       id="ocorrencia-detalhe-page"
-      className="ocorrencia-detalhe-page w-full bg-[#0D1117] font-body "
+      className="ocorrencia-detalhe-page w-full bg-[#F0F2F5] font-body "
     >
       {/* HEADER FIXO (shrink-0) — número da ocorrência, criticidade, fase e ações */}
-      <header className="ocorrencia-header no-print shrink-0 px-4 py-2.5 border-b border-[#30363D] bg-[#0D1117] sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3">
+      <header className="ocorrencia-header no-print shrink-0 px-4 py-2.5 border-b border-[#D1D5DB] bg-[#F0F2F5] sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
           <button
             onClick={() => navigate('/ocorrencias')}
-            className="p-1.5 rounded-lg bg-[#161B22] hover:bg-[#21262D]  hover: border border-[#30363D] transition-colors cursor-pointer shrink-0"
+            className="p-1.5 rounded-lg bg-[#F8F9FA] hover:bg-[#E5E7EB]  hover: border border-[#D1D5DB] transition-colors cursor-pointer shrink-0"
             title="Voltar para ocorrências"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -558,12 +558,12 @@ export const OcorrenciaDetalhe: React.FC = () => {
                 onChange={(e) => handleStatusChange(e.target.value as OcorrenciaStatus)}
                 className={`font-display font-bold text-xs rounded-lg px-3 py-1.5 outline-none cursor-pointer tracking-wide transition-colors ${
                   todasPropostasExpiradas
-                    ? 'bg-[#21262D] border border-[#30363D] text-[#C9D1D9] hover:border-[#30363D]'
-                    : 'bg-[#161B22] border border-[#30363D] hover:border-[#30363D]'
+                    ? 'bg-[#E5E7EB] border border-[#D1D5DB] text-[#374151] hover:border-[#D1D5DB]'
+                    : 'bg-[#F8F9FA] border border-[#D1D5DB] hover:border-[#D1D5DB]'
                 }`}
               >
                 {STATUS_FLOW.map((st) => (
-                  <option key={st} value={st} className="bg-[#161B22] text-white">
+                  <option key={st} value={st} className="bg-[#F8F9FA] text-white">
                     {todasPropostasExpiradas && ocorrencia.status === st
                       ? `⚠ PROPOSTA EXPIRADA — ${getOcorrenciaStatusConfig(st).label}`
                       : `Fase: ${getOcorrenciaStatusConfig(st).label}`}
@@ -574,7 +574,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
           )}
           {/* Alerta visual quando todas propostas expiradas */}
           {todasPropostasExpiradas && (
-            <span className="text-[10px] font-bold px-2 py-1 rounded-md bg-[#21262D] border border-[#30363D] text-[#C9D1D9] animate-pulse">
+            <span className="text-[10px] font-bold px-2 py-1 rounded-md bg-[#E5E7EB] border border-[#D1D5DB] text-[#374151] animate-pulse">
               ⚠ ORÇAMENTO EXPIRADO
             </span>
           )}
@@ -614,7 +614,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
                 window.print();
               }
             }}
-            className="p-1.5 rounded-lg bg-[#161B22] hover:bg-[#21262D]  hover: border border-[#30363D] transition-colors cursor-pointer shrink-0"
+            className="p-1.5 rounded-lg bg-[#F8F9FA] hover:bg-[#E5E7EB]  hover: border border-[#D1D5DB] transition-colors cursor-pointer shrink-0"
             title="Imprimir / PDF"
           >
             <Printer className="w-4 h-4" />
@@ -624,7 +624,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
 
       {/* CARD RESUMO DO EQUIPAMENTO FIXO (shrink-0) */}
       <div className="ocorrencia-equipamento-card shrink-0 px-4 pt-3">
-        <div className="bg-[#161B22] border border-[#30363D] rounded-xl p-3.5 shadow-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-center">
+        <div className="bg-[#F8F9FA] border border-[#D1D5DB] rounded-xl p-3.5 shadow-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-center">
           <div>
             <span className="eyebrow  block mb-1">Equipamento Ativo</span>
             <div className="flex items-center gap-2.5">
@@ -686,7 +686,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
           <div className="space-y-3.5 min-w-0">
             {/* Card: Diagnóstico de Engenharia & Avaria */}
             <div className="card space-y-3">
-              <div className="flex items-center justify-between border-b border-[#30363D] pb-2">
+              <div className="flex items-center justify-between border-b border-[#D1D5DB] pb-2">
                 <div className="flex items-center gap-2">
                   <Cpu className="w-4 h-4" />
                   <h3 className="card-title text-xs uppercase">
@@ -697,7 +697,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
                   <button
                     onClick={abrirEdicaoDiag}
                     title="Editar diagnóstico"
-                    className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-[#21262D] border border-[#30363D] text-[#C9D1D9] hover:text-white text-[11px] font-semibold"
+                    className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-[#E5E7EB] border border-[#D1D5DB] text-[#374151] hover:text-white text-[11px] font-semibold"
                   >
                     <Pencil className="w-3 h-3" /> Editar
                   </button>
@@ -707,7 +707,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
                     <button
                       onClick={() => setEditDiag(false)}
                       disabled={savingDiag}
-                      className="w-7 h-7 rounded-md bg-[#21262D] border border-[#30363D] text-[#8B949E] flex items-center justify-center"
+                      className="w-7 h-7 rounded-md bg-[#E5E7EB] border border-[#D1D5DB] text-[#6B7280] flex items-center justify-center"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
@@ -735,8 +735,8 @@ export const OcorrenciaDetalhe: React.FC = () => {
                           onClick={() => setDiagForm((f) => ({ ...f, criticidade: c }))}
                           className={`h-9 rounded-md text-[11px] font-bold border transition-colors ${
                             diagForm.criticidade === c
-                              ? 'bg-[#21262D] text-[#E6EDF3] border-[#8B949E]'
-                              : 'bg-[#0D1117] text-[#8B949E] border-[#30363D]'
+                              ? 'bg-[#E5E7EB] text-[#1A1A1A] border-[#8B949E]'
+                              : 'bg-[#F0F2F5] text-[#6B7280] border-[#D1D5DB]'
                           }`}
                         >
                           {c === 'MEDIA' ? 'MÉDIA' : c}
@@ -751,7 +751,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
                       value={diagForm.descricao_anomalia}
                       onChange={(e) => setDiagForm((f) => ({ ...f, descricao_anomalia: e.target.value }))}
                       rows={3}
-                      className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#8B949E] text-[#E6EDF3] text-[12px] rounded-lg p-2.5 outline-none resize-none leading-relaxed"
+                      className="w-full bg-[#F0F2F5] border border-[#D1D5DB] focus:border-[#2563EB] text-[#1A1A1A] text-[12px] rounded-lg p-2.5 outline-none resize-none leading-relaxed"
                     />
                   </div>
                   {/* Causa */}
@@ -761,7 +761,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
                       value={diagForm.causa_provavel}
                       onChange={(e) => setDiagForm((f) => ({ ...f, causa_provavel: e.target.value }))}
                       rows={2}
-                      className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#8B949E] text-[#E6EDF3] text-[12px] rounded-lg p-2.5 outline-none resize-none"
+                      className="w-full bg-[#F0F2F5] border border-[#D1D5DB] focus:border-[#2563EB] text-[#1A1A1A] text-[12px] rounded-lg p-2.5 outline-none resize-none"
                       placeholder="(opcional)"
                     />
                   </div>
@@ -770,14 +770,14 @@ export const OcorrenciaDetalhe: React.FC = () => {
                 <>
                   <div>
                     <span className="eyebrow block mb-1.5">Descrição do Problema</span>
-                    <p className="text-xs bg-[#0D1117] p-3 rounded-lg border border-[#30363D] leading-relaxed">
+                    <p className="text-xs bg-[#F0F2F5] p-3 rounded-lg border border-[#D1D5DB] leading-relaxed">
                       {ocorrencia.descricao_anomalia}
                     </p>
                   </div>
                   {ocorrencia.causa_provavel && (
                     <div>
                       <span className="eyebrow block mb-1.5">Causa Raiz Provável</span>
-                      <p className="text-xs bg-[#0D1117] p-2.5 rounded-lg border border-[#30363D]">
+                      <p className="text-xs bg-[#F0F2F5] p-2.5 rounded-lg border border-[#D1D5DB]">
                         {ocorrencia.causa_provavel}
                       </p>
                     </div>
@@ -788,7 +788,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
 
             {/* Card: Peças & Componentes */}
             <div className="card space-y-3">
-              <div className="flex items-center justify-between border-b border-[#30363D] pb-2">
+              <div className="flex items-center justify-between border-b border-[#D1D5DB] pb-2">
                 <div className="flex items-center gap-2">
                   <Package className="w-4 h-4 " />
                   <h3 className="card-title text-xs uppercase ">
@@ -815,7 +815,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
                   {pecas.map((p) => (
                     <div
                       key={p.id}
-                      className="flex items-start gap-3 p-3 rounded-lg border border-[#30363D] bg-[#0D1117] hover:bg-[#1C2128] transition-colors"
+                      className="flex items-start gap-3 p-3 rounded-lg border border-[#D1D5DB] bg-[#F0F2F5] hover:bg-[#F1F3F5] transition-colors"
                     >
                       {/* Qtd badge */}
                       <span style={{ minWidth: 32, textAlign: 'center', fontWeight: 700, fontSize: 12, color: '#E6EDF3', paddingTop: 2 }}>
@@ -980,7 +980,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
             {/* Card: Orçamentos / Proposta Comercial AMBEV — exibido apenas quando há propostas */}
             {orcamentos.length > 0 && (
             <div className="card space-y-3">
-              <div className="flex items-center justify-between border-b border-[#30363D] pb-2">
+              <div className="flex items-center justify-between border-b border-[#D1D5DB] pb-2">
                 <div className="flex items-center gap-2">
                   <DollarSign className="w-4 h-4 " />
                   <h3 className="card-title text-xs uppercase ">
@@ -1003,7 +1003,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
                         setIsOrcEditMode(false);
                         setIsOrcDetailOpen(true);
                       }}
-                      className="p-3 bg-[#0D1117] hover:bg-[#1C2128] border border-[#30363D] hover:border-[#30363D] rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs cursor-pointer transition-all group"
+                      className="p-3 bg-[#F0F2F5] hover:bg-[#F1F3F5] border border-[#D1D5DB] hover:border-[#D1D5DB] rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs cursor-pointer transition-all group"
                     >
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 flex-wrap">
@@ -1020,16 +1020,16 @@ export const OcorrenciaDetalhe: React.FC = () => {
                           })()}
                         </div>
                         <p className="mt-1 font-medium truncate">{orc.fornecedor}</p>
-                        <p className="text-[10px] text-[#8B949E]">
+                        <p className="text-[10px] text-[#6B7280]">
                           Enviado em {formatDate(orc.data_envio)} • {calculateDaysDiff(orc.data_envio)} dias aguardando
                         </p>
                       </div>
                       <div className="flex flex-col sm:items-end gap-1.5 shrink-0">
                         <div className="flex items-center sm:flex-col sm:items-end justify-between gap-1">
-                          <span className="text-sm font-bold text-[#C9D1D9]">
+                          <span className="text-sm font-bold text-[#374151]">
                             {formatCurrency(orc.valor_total)}
                           </span>
-                          <span className="block text-[10px] text-[#8B949E] hidden sm:inline">Clique para detalhes</span>
+                          <span className="block text-[10px] text-[#6B7280] hidden sm:inline">Clique para detalhes</span>
                         </div>
                         {canEdit && (
                           <div className="flex items-center gap-1.5 pt-0.5">
@@ -1077,7 +1077,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
 
             {/* Card: Fotos da Ocorrência */}
             <div className="card space-y-3">
-              <div className="flex items-center justify-between border-b border-[#30363D] pb-2">
+              <div className="flex items-center justify-between border-b border-[#D1D5DB] pb-2">
                 <div className="flex items-center gap-2">
                   <Camera className="w-4 h-4 " />
                   <h3 className="card-title text-xs uppercase ">
@@ -1172,7 +1172,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
       {/* MODAL: VISUALIZAR ITEM */}
       {viewPeca && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#161B22] border border-[#30363D] rounded-xl w-full max-w-md p-5 space-y-3 shadow-2xl">
+          <div className="bg-[#F8F9FA] border border-[#D1D5DB] rounded-xl w-full max-w-md p-5 space-y-3 shadow-2xl">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-display font-bold uppercase">Detalhes do Item</h3>
               <button onClick={() => setViewPeca(null)} className="text-gray-400 hover:text-white cursor-pointer text-lg">&times;</button>
@@ -1181,7 +1181,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
             <div className="space-y-2.5 text-xs">
               {/* Tipo */}
               <div className="flex items-center gap-2">
-                <span className="text-[10px] text-[#8B949E] uppercase w-24 shrink-0">Tipo</span>
+                <span className="text-[10px] text-[#6B7280] uppercase w-24 shrink-0">Tipo</span>
                 <span className="px-2 py-0.5 rounded text-[10px] font-bold" style={{
                   background: (viewPeca as any).tipo_item === 'SERVICO' ? '#8B949E22' : (viewPeca as any).tipo_item === 'HORA_EXTRA' ? '#8B949E22' : (viewPeca as any).tipo_item === 'INSUMO' ? '#8B949E22' : (viewPeca as any).tipo_item === 'FRETE' ? '#8B949E22' : '#8B949E22',
                   color: (viewPeca as any).tipo_item === 'SERVICO' ? '#8B949E' : (viewPeca as any).tipo_item === 'HORA_EXTRA' ? '#8B949E' : (viewPeca as any).tipo_item === 'INSUMO' ? '#8B949E' : (viewPeca as any).tipo_item === 'FRETE' ? '#8B949E' : '#8B949E',
@@ -1193,14 +1193,14 @@ export const OcorrenciaDetalhe: React.FC = () => {
 
               {/* Nome */}
               <div className="flex gap-2">
-                <span className="text-[10px] text-[#8B949E] uppercase w-24 shrink-0">Nome</span>
+                <span className="text-[10px] text-[#6B7280] uppercase w-24 shrink-0">Nome</span>
                 <span className="text-[#ECEFF1] font-semibold">{viewPeca.descricao}</span>
               </div>
 
               {/* Descrição */}
               {viewPeca.part_number && (
                 <div className="flex gap-2">
-                  <span className="text-[10px] text-[#8B949E] uppercase w-24 shrink-0">Descrição</span>
+                  <span className="text-[10px] text-[#6B7280] uppercase w-24 shrink-0">Descrição</span>
                   <span className="text-[#94A3B8] font-mono">{viewPeca.part_number}</span>
                 </div>
               )}
@@ -1208,27 +1208,27 @@ export const OcorrenciaDetalhe: React.FC = () => {
               {/* Fabricante */}
               {viewPeca.fabricante && (
                 <div className="flex gap-2">
-                  <span className="text-[10px] text-[#8B949E] uppercase w-24 shrink-0">Fabricante</span>
+                  <span className="text-[10px] text-[#6B7280] uppercase w-24 shrink-0">Fabricante</span>
                   <span className="text-[#94A3B8]">{viewPeca.fabricante}</span>
                 </div>
               )}
 
               {/* Quantidade */}
               <div className="flex gap-2">
-                <span className="text-[10px] text-[#8B949E] uppercase w-24 shrink-0">Quantidade</span>
+                <span className="text-[10px] text-[#6B7280] uppercase w-24 shrink-0">Quantidade</span>
                 <span className="text-[#ECEFF1] font-mono">{viewPeca.quantidade} {viewPeca.unidade || 'UN'}</span>
               </div>
 
               {/* Valor */}
               <div className="flex gap-2">
-                <span className="text-[10px] text-[#8B949E] uppercase w-24 shrink-0">Valor Unit.</span>
-                <span className="text-[#C9D1D9] font-mono font-bold">{viewPeca.valor_unitario ? formatCurrency(viewPeca.valor_unitario) : '—'}</span>
+                <span className="text-[10px] text-[#6B7280] uppercase w-24 shrink-0">Valor Unit.</span>
+                <span className="text-[#374151] font-mono font-bold">{viewPeca.valor_unitario ? formatCurrency(viewPeca.valor_unitario) : '—'}</span>
               </div>
 
               {/* Valor Total */}
               <div className="flex gap-2">
-                <span className="text-[10px] text-[#8B949E] uppercase w-24 shrink-0">Valor Total</span>
-                <span className="text-[#C9D1D9] font-mono font-bold">
+                <span className="text-[10px] text-[#6B7280] uppercase w-24 shrink-0">Valor Total</span>
+                <span className="text-[#374151] font-mono font-bold">
                   {viewPeca.valor_unitario ? formatCurrency(Number(viewPeca.valor_unitario) * Number(viewPeca.quantidade || 1)) : '—'}
                 </span>
               </div>
@@ -1236,15 +1236,15 @@ export const OcorrenciaDetalhe: React.FC = () => {
               {/* NCM */}
               {viewPeca.ncm && (
                 <div className="flex gap-2">
-                  <span className="text-[10px] text-[#8B949E] uppercase w-24 shrink-0">NCM</span>
+                  <span className="text-[10px] text-[#6B7280] uppercase w-24 shrink-0">NCM</span>
                   <span className="text-[#94A3B8] font-mono">{viewPeca.ncm}</span>
                 </div>
               )}
 
               {/* Status */}
               <div className="flex gap-2">
-                <span className="text-[10px] text-[#8B949E] uppercase w-24 shrink-0">Status</span>
-                <span className="text-[#C9D1D9] font-mono text-[10px]">{viewPeca.status}</span>
+                <span className="text-[10px] text-[#6B7280] uppercase w-24 shrink-0">Status</span>
+                <span className="text-[#374151] font-mono text-[10px]">{viewPeca.status}</span>
               </div>
             </div>
 
@@ -1260,14 +1260,14 @@ export const OcorrenciaDetalhe: React.FC = () => {
       {/* MODAL: ADICIONAR / EDITAR ITEM — com carrinho e rascunhos por tipo */}
       {showAddPecaModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#161B22] border border-[#30363D] rounded-xl w-full max-w-md shadow-2xl flex flex-col max-h-[90vh]">
+          <div className="bg-[#F8F9FA] border border-[#D1D5DB] rounded-xl w-full max-w-md shadow-2xl flex flex-col max-h-[90vh]">
 
             {/* Header */}
-            <div className="px-5 pt-5 pb-3 border-b border-[#30363D] shrink-0">
+            <div className="px-5 pt-5 pb-3 border-b border-[#D1D5DB] shrink-0">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-display font-bold uppercase">{(newPeca as any).id ? 'Editar Item' : 'Adicionar Itens'}</h3>
                 {!(newPeca as any).id && carritoItems.length > 0 && (
-                  <span className="text-[10px] font-bold bg-[#21262D] text-[#C9D1D9] border border-[#30363D] rounded-full px-2 py-0.5">
+                  <span className="text-[10px] font-bold bg-[#E5E7EB] text-[#374151] border border-[#D1D5DB] rounded-full px-2 py-0.5">
                     {carritoItems.length} no carrinho
                   </span>
                 )}
@@ -1333,7 +1333,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
                       tipoAtivo === 'INSUMO' ? 'Ex: Gás R-410A cilindro 11kg' :
                       'Ex: Compressor Scroll Copeland'
                     }
-                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#30363D] p-2.5 rounded-lg outline-none"
+                    className="w-full bg-[#F0F2F5] border border-[#D1D5DB] focus:border-[#D1D5DB] p-2.5 rounded-lg outline-none"
                   />
                 </div>
 
@@ -1346,7 +1346,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
                         <input type="text" value={newPeca.part_number || ''}
                           onChange={(e) => setNewPeca({ ...newPeca, part_number: e.target.value })}
                           placeholder="Ex: Hermético, Scroll, Semi-hermético..."
-                          className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#30363D] p-2.5 rounded-lg outline-none" />
+                          className="w-full bg-[#F0F2F5] border border-[#D1D5DB] focus:border-[#D1D5DB] p-2.5 rounded-lg outline-none" />
                       </>
                     )}
                     {tipoAtivo === 'SERVICO' && (
@@ -1355,7 +1355,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
                         <input type="text" value={newPeca.fabricante || ''}
                           onChange={(e) => setNewPeca({ ...newPeca, fabricante: e.target.value })}
                           placeholder="Ex: Vision Controls"
-                          className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#30363D] p-2.5 rounded-lg outline-none" />
+                          className="w-full bg-[#F0F2F5] border border-[#D1D5DB] focus:border-[#D1D5DB] p-2.5 rounded-lg outline-none" />
                       </>
                     )}
                     {tipoAtivo === 'HORA_EXTRA' && (
@@ -1363,7 +1363,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
                         <label className="block eyebrow mb-1">Tipo de H. Extra</label>
                         <select value={newPeca.part_number || '100%'}
                           onChange={(e) => setNewPeca({ ...newPeca, part_number: e.target.value })}
-                          className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#30363D] p-2.5 rounded-lg outline-none">
+                          className="w-full bg-[#F0F2F5] border border-[#D1D5DB] focus:border-[#D1D5DB] p-2.5 rounded-lg outline-none">
                           <option value="100%">100% (Domingo/Feriado)</option>
                           <option value="50%">50% (Dia útil)</option>
                           <option value="75%">75% (Sábado)</option>
@@ -1377,7 +1377,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
                         <input type="text" value={newPeca.part_number || ''}
                           onChange={(e) => setNewPeca({ ...newPeca, part_number: e.target.value })}
                           placeholder="Ex: Cilindro 11kg, Fluido, Solda..."
-                          className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#30363D] p-2.5 rounded-lg outline-none" />
+                          className="w-full bg-[#F0F2F5] border border-[#D1D5DB] focus:border-[#D1D5DB] p-2.5 rounded-lg outline-none" />
                       </>
                     )}
                     {tipoAtivo === 'FRETE' && (
@@ -1386,7 +1386,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
                         <input type="text" value={newPeca.part_number || ''}
                           onChange={(e) => setNewPeca({ ...newPeca, part_number: e.target.value })}
                           placeholder="Ex: NF 001234, Entrega expressa..."
-                          className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#30363D] p-2.5 rounded-lg outline-none" />
+                          className="w-full bg-[#F0F2F5] border border-[#D1D5DB] focus:border-[#D1D5DB] p-2.5 rounded-lg outline-none" />
                       </>
                     )}
                   </div>
@@ -1407,7 +1407,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
                       }}
                       onBlur={() => { if (!newPeca.quantidade || newPeca.quantidade < 1) setNewPeca({ ...newPeca, quantidade: 1 }); }}
                       placeholder="1"
-                      className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#30363D] p-2.5 rounded-lg outline-none text-center"
+                      className="w-full bg-[#F0F2F5] border border-[#D1D5DB] focus:border-[#D1D5DB] p-2.5 rounded-lg outline-none text-center"
                     />
                   </div>
                 </div>
@@ -1420,14 +1420,14 @@ export const OcorrenciaDetalhe: React.FC = () => {
                       <input type="text" value={newPeca.fabricante || ''}
                         onChange={(e) => setNewPeca({ ...newPeca, fabricante: e.target.value })}
                         placeholder="Ex: Copeland"
-                        className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#30363D] p-2.5 rounded-lg outline-none" />
+                        className="w-full bg-[#F0F2F5] border border-[#D1D5DB] focus:border-[#D1D5DB] p-2.5 rounded-lg outline-none" />
                     </div>
                     <div>
                       <label className="block eyebrow mb-1">NCM</label>
                       <input type="text" value={(newPeca as any).ncm || ''}
                         onChange={(e) => setNewPeca({ ...newPeca, ...{ ncm: e.target.value } })}
                         placeholder="Ex: 8415.10.11"
-                        className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#30363D] p-2.5 rounded-lg outline-none font-mono" />
+                        className="w-full bg-[#F0F2F5] border border-[#D1D5DB] focus:border-[#D1D5DB] p-2.5 rounded-lg outline-none font-mono" />
                     </div>
                   </div>
                 )}
@@ -1451,7 +1451,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
                       setNewPeca({ ...newPeca, valor_unitario: cents / 100 });
                     }}
                     placeholder="0,00"
-                    className="w-full bg-[#0D1117] border border-[#30363D] focus:border-[#30363D] p-2.5 rounded-lg outline-none font-mono text-right"
+                    className="w-full bg-[#F0F2F5] border border-[#D1D5DB] focus:border-[#D1D5DB] p-2.5 rounded-lg outline-none font-mono text-right"
                   />
                 </div>
 
@@ -1460,7 +1460,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
                   <button
                     type="button"
                     onClick={handleAdicionarAoCarrinho}
-                    className="w-full py-2 text-xs font-bold rounded-lg border border-dashed border-[#30363D] text-[#C9D1D9] hover:bg-[#21262D] transition-colors cursor-pointer"
+                    className="w-full py-2 text-xs font-bold rounded-lg border border-dashed border-[#D1D5DB] text-[#374151] hover:bg-[#E5E7EB] transition-colors cursor-pointer"
                   >
                     + Adicionar mais um item ao lote
                   </button>
@@ -1473,12 +1473,12 @@ export const OcorrenciaDetalhe: React.FC = () => {
                     {carritoItems.map((item, idx) => {
                       const tipoLabel: Record<string, string> = { PECA: '🔧', SERVICO: '🛠️', HORA_EXTRA: '⏱️', INSUMO: '🧴', FRETE: '🚚' };
                       return (
-                        <div key={idx} className="flex items-center justify-between bg-[#0D1117] border border-[#30363D] rounded-lg px-3 py-2 gap-2">
+                        <div key={idx} className="flex items-center justify-between bg-[#F0F2F5] border border-[#D1D5DB] rounded-lg px-3 py-2 gap-2">
                           <div className="flex items-center gap-2 flex-1 min-w-0">
                             <span className="text-sm shrink-0">{tipoLabel[item.tipo_item || 'PECA'] || '🔧'}</span>
                             <div className="min-w-0">
                               <p className="text-xs font-semibold text-[#ECEFF1] truncate">{item.descricao}</p>
-                              <p className="text-[10px] text-[#8B949E]">
+                              <p className="text-[10px] text-[#6B7280]">
                                 {item.quantidade}x
                                 {item.valor_unitario ? ` · R$ ${(item.valor_unitario).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : ''}
                               </p>
@@ -1497,7 +1497,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
             </div>
 
             {/* Footer fixo */}
-            <div className="px-5 pb-5 pt-3 border-t border-[#30363D] shrink-0 flex items-center justify-between gap-2">
+            <div className="px-5 pb-5 pt-3 border-t border-[#D1D5DB] shrink-0 flex items-center justify-between gap-2">
               <button type="button"
                 onClick={() => { setShowAddPecaModal(false); resetModal(); }}
                 className="btn-secondary !py-1.5 !px-3 text-xs cursor-pointer">

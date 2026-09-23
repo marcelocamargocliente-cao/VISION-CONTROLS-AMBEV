@@ -47,15 +47,15 @@ const EquipCard = memo<EquipCardProps>(({ eq, onOpen }) => {
       {/* Linha 1: TAGs + UG (esquerda) · Status (direita) */}
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
-          <span className="inline-flex items-baseline gap-1 bg-[#21262D] rounded px-2 py-0.5 border border-[#30363D]">
+          <span className="inline-flex items-baseline gap-1 bg-[#E5E7EB] rounded px-2 py-0.5 border border-[#D1D5DB]">
             <span className="text-[8px] font-semibold tracking-wider text-[#6E7681] uppercase">AMBEV</span>
-            <span className="text-[11px] font-bold font-mono text-[#C9D1D9]">{eq.patrimonio_ref || eq.tag_sap || '—'}</span>
+            <span className="text-[11px] font-bold font-mono text-[#374151]">{eq.patrimonio_ref || eq.tag_sap || '—'}</span>
           </span>
-          <span className="inline-flex items-baseline gap-1 bg-[#21262D] rounded px-2 py-0.5 border border-[#30363D]">
+          <span className="inline-flex items-baseline gap-1 bg-[#E5E7EB] rounded px-2 py-0.5 border border-[#D1D5DB]">
             <span className="text-[8px] font-semibold tracking-wider text-[#6E7681] uppercase">VISION</span>
-            <span className="text-[11px] font-bold font-mono text-[#C9D1D9]">{eq.tag}</span>
+            <span className="text-[11px] font-bold font-mono text-[#374151]">{eq.tag}</span>
           </span>
-          <span className="text-[11px] font-mono text-[#8B949E]">UG {eq.ug_ref || '—'}</span>
+          <span className="text-[11px] font-mono text-[#6B7280]">UG {eq.ug_ref || '—'}</span>
         </div>
         {isOk ? (
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shrink-0">
@@ -71,18 +71,18 @@ const EquipCard = memo<EquipCardProps>(({ eq, onOpen }) => {
       </div>
 
       {/* Linha 2: Tipo + área */}
-      <p className="text-[13px] text-[#E6EDF3] truncate mt-1.5">
+      <p className="text-[13px] text-[#1A1A1A] truncate mt-1.5">
         <span className="font-semibold">{eq.tipo_equipamento || eq.tipo || 'Equipamento'}</span>
-        {eq.area_ref ? <span className="text-[#8B949E]"> · {eq.area_ref}</span> : null}
+        {eq.area_ref ? <span className="text-[#6B7280]"> · {eq.area_ref}</span> : null}
       </p>
 
       {/* Linha 3: Local (esquerda) · Ficha (direita) */}
       <div className="flex items-center justify-between gap-2 mt-1.5">
-        <div className="flex items-center gap-1.5 min-w-0 text-[#8B949E]">
+        <div className="flex items-center gap-1.5 min-w-0 text-[#6B7280]">
           <MapPin className="w-3.5 h-3.5 shrink-0" />
           <span className="font-mono text-[11px] truncate">{local || '—'}</span>
         </div>
-        <span className="inline-flex items-center gap-0.5 text-[#E6EDF3] font-semibold text-[11px] shrink-0">
+        <span className="inline-flex items-center gap-0.5 text-[#1A1A1A] font-semibold text-[11px] shrink-0">
           Ficha <ChevronRight className="w-3.5 h-3.5" />
         </span>
       </div>
@@ -301,16 +301,16 @@ export const Equipamentos: React.FC = () => {
   return (
     <div
       id="equipamentos-page"
-      className="flex flex-col h-full min-h-0 p-3 md:px-4 md:py-3 gap-2 overflow-hidden box-border bg-[#0A0E1A] select-none"
+      className="flex flex-col h-full min-h-0 p-3 md:px-4 md:py-3 gap-2 overflow-hidden box-border bg-white select-none"
     >
       {/* 1. HEADER DA PÁGINA (Fixo, max 56px) */}
       <header
         id="equipamentos-header"
-        className="shrink-0 min-h-[56px] flex items-center justify-between gap-3 px-3 md:px-3.5 py-2 rounded-lg bg-[#111827] border border-[#30363D]"
+        className="shrink-0 min-h-[56px] flex items-center justify-between gap-3 px-3 md:px-3.5 py-2 rounded-lg bg-[#F8F9FA] border border-[#D1D5DB]"
       >
         <div className="min-w-0">
           <div className="flex items-center gap-2 mb-0.5 leading-none">
-            <span className="text-[9px] tracking-widest bg-[#21262D] text-[#8B949E] px-1.5 py-0.5 rounded border border-[#30363D] uppercase font-bold">
+            <span className="text-[9px] tracking-widest bg-[#E5E7EB] text-[#6B7280] px-1.5 py-0.5 rounded border border-[#D1D5DB] uppercase font-bold">
               Cadastro de Ativos
             </span>
             <span className="hidden sm:inline text-[10px] text-gray-500">·</span>
@@ -342,9 +342,9 @@ export const Equipamentos: React.FC = () => {
           <button
             onClick={loadData}
             title="Atualizar lista"
-            className="h-9 w-9 md:h-[32px] md:w-[32px] flex items-center justify-center rounded-md bg-[#0A0E1A] border border-[#30363D] text-gray-400 hover:text-white transition-colors cursor-pointer"
+            className="h-9 w-9 md:h-[32px] md:w-[32px] flex items-center justify-center rounded-md bg-white border border-[#D1D5DB] text-gray-400 hover:text-white transition-colors cursor-pointer"
           >
-            <RefreshCw className={`w-4 h-4 md:w-3.5 md:h-3.5 ${loading ? 'animate-spin text-[#C9D1D9]' : ''}`} />
+            <RefreshCw className={`w-4 h-4 md:w-3.5 md:h-3.5 ${loading ? 'animate-spin text-[#374151]' : ''}`} />
           </button>
         </div>
       </header>
@@ -363,7 +363,7 @@ export const Equipamentos: React.FC = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Buscar TAG, marca, modelo ou local..."
-            className="w-full h-11 md:h-[36px] bg-[#111827] border border-[#30363D] focus:border-[#8B949E] text-white text-[12px] placeholder-gray-500 rounded-md has-icon-left pr-3 outline-none transition-colors"
+            className="w-full h-11 md:h-[36px] bg-[#F8F9FA] border border-[#D1D5DB] focus:border-[#2563EB] text-white text-[12px] placeholder-gray-500 rounded-md has-icon-left pr-3 outline-none transition-colors"
           />
         </div>
 
@@ -371,7 +371,7 @@ export const Equipamentos: React.FC = () => {
         {hasActiveFilters && (
           <button
             onClick={clearFilters}
-            className="h-11 md:h-[36px] px-3 text-[11px] font-medium text-gray-400 hover:text-white bg-[#111827] border border-[#30363D] hover:border-[#30363D] rounded-md transition-colors shrink-0 flex items-center gap-1 cursor-pointer"
+            className="h-11 md:h-[36px] px-3 text-[11px] font-medium text-gray-400 hover:text-white bg-[#F8F9FA] border border-[#D1D5DB] hover:border-[#D1D5DB] rounded-md transition-colors shrink-0 flex items-center gap-1 cursor-pointer"
           >
             <X className="w-3 h-3" />
             <span>Limpar filtros</span>
@@ -382,7 +382,7 @@ export const Equipamentos: React.FC = () => {
       {/* 3. FILTROS DA TELA (Status, UG, Área, Tipo) */}
       <div
         id="equipamentos-filters-row"
-        className="shrink-0 bg-[#111827] border border-[#30363D] rounded-lg px-3 py-2"
+        className="shrink-0 bg-[#F8F9FA] border border-[#D1D5DB] rounded-lg px-3 py-2"
       >
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
           {/* Filtro 1: Status (OK / PARADO) */}
@@ -391,7 +391,7 @@ export const Equipamentos: React.FC = () => {
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="w-full h-10 sm:h-[30px] bg-[#0A0E1A] border border-[#30363D] text-white text-[11px] rounded px-2 outline-none cursor-pointer"
+              className="w-full h-10 sm:h-[30px] bg-white border border-[#D1D5DB] text-white text-[11px] rounded px-2 outline-none cursor-pointer"
             >
               <option value="">Todos os Status</option>
               <option value="OK">OK</option>
@@ -405,7 +405,7 @@ export const Equipamentos: React.FC = () => {
             <select
               value={selectedUg}
               onChange={(e) => setSelectedUg(e.target.value)}
-              className="w-full h-10 sm:h-[30px] bg-[#0A0E1A] border border-[#30363D] text-white text-[11px] rounded px-2 outline-none cursor-pointer font-mono"
+              className="w-full h-10 sm:h-[30px] bg-white border border-[#D1D5DB] text-white text-[11px] rounded px-2 outline-none cursor-pointer font-mono"
             >
               <option value="">Todas as UGs</option>
               {distinctUgs.map((ug) => (
@@ -422,7 +422,7 @@ export const Equipamentos: React.FC = () => {
             <select
               value={selectedArea}
               onChange={(e) => setSelectedArea(e.target.value)}
-              className="w-full h-10 sm:h-[30px] bg-[#0A0E1A] border border-[#30363D] text-white text-[11px] rounded px-2 outline-none cursor-pointer truncate"
+              className="w-full h-10 sm:h-[30px] bg-white border border-[#D1D5DB] text-white text-[11px] rounded px-2 outline-none cursor-pointer truncate"
             >
               <option value="">Todos os Locais</option>
               {distinctAreas.map((area) => (
@@ -439,7 +439,7 @@ export const Equipamentos: React.FC = () => {
             <select
               value={selectedTipo}
               onChange={(e) => setSelectedTipo(e.target.value)}
-              className="w-full h-10 sm:h-[30px] bg-[#0A0E1A] border border-[#30363D] text-white text-[11px] rounded px-2 outline-none cursor-pointer truncate"
+              className="w-full h-10 sm:h-[30px] bg-white border border-[#D1D5DB] text-white text-[11px] rounded px-2 outline-none cursor-pointer truncate"
             >
               <option value="">Todos os Tipos</option>
               {distinctTipos.map((tipo) => (
@@ -455,7 +455,7 @@ export const Equipamentos: React.FC = () => {
       {/* 4. TABELA DE LISTAGEM — COLUNAS: TAG | UG | ÁREA | LOCALIZAÇÃO | TIPO | MARCA | MODELO | CAPACIDADE | STATUS | AÇÃO */}
       <div
         id="equipamentos-table-container"
-        className="flex-1 min-h-0 bg-[#111827] border border-[#30363D] rounded-lg overflow-y-auto overflow-x-auto flex flex-col relative shadow-lg"
+        className="flex-1 min-h-0 bg-[#F8F9FA] border border-[#D1D5DB] rounded-lg overflow-y-auto overflow-x-auto flex flex-col relative shadow-lg"
       >
         {filteredEquipamentos.length === 0 ? (
           <div className="flex-1 flex items-center justify-center p-6">
@@ -473,7 +473,7 @@ export const Equipamentos: React.FC = () => {
           <div className="hidden md:block">
           <table className="w-full text-left border-collapse min-w-[980px]">
             {/* CABEÇALHO DA TABELA (sticky) */}
-            <thead className="sticky top-0 z-10 bg-[#1a2235] border-b border-[#30363D] shadow-sm text-gray-300">
+            <thead className="sticky top-0 z-10 bg-[#1a2235] border-b border-[#D1D5DB] shadow-sm text-gray-300">
               <tr className="text-[10px] uppercase tracking-wider h-[36px]">
                 <th className="py-2 px-3 w-[90px]">TAG AMBEV</th>
                 <th className="py-2 px-3 w-[90px]">TAG VISION</th>
@@ -505,21 +505,21 @@ export const Equipamentos: React.FC = () => {
                   >
                     {/* 1. TAG AMBEV */}
                     <td className="py-2 px-3 align-middle w-[90px]">
-                      <span className="bg-[#21262D] text-[#C9D1D9] font-bold text-[11px] rounded px-2 py-0.5 inline-flex items-center border border-[#30363D] font-mono">
+                      <span className="bg-[#E5E7EB] text-[#374151] font-bold text-[11px] rounded px-2 py-0.5 inline-flex items-center border border-[#D1D5DB] font-mono">
                         {eq.patrimonio_ref || eq.tag_sap || '—'}
                       </span>
                     </td>
 
                     {/* 1b. TAG VISION */}
                     <td className="py-2 px-3 align-middle w-[90px]">
-                      <span className="bg-[#21262D] text-[#C9D1D9] font-bold text-[11px] rounded px-2 py-0.5 inline-flex items-center border border-[#30363D] font-mono">
+                      <span className="bg-[#E5E7EB] text-[#374151] font-bold text-[11px] rounded px-2 py-0.5 inline-flex items-center border border-[#D1D5DB] font-mono">
                         {eq.tag}
                       </span>
                     </td>
 
                     {/* 2. UG */}
                     <td className="py-2 px-3 align-middle w-[60px] text-center">
-                      <span className="inline-block px-1.5 py-0.5 bg-[#21262D] text-[#8B949E] border border-[#30363D] rounded font-mono font-bold text-[10px]">
+                      <span className="inline-block px-1.5 py-0.5 bg-[#E5E7EB] text-[#6B7280] border border-[#D1D5DB] rounded font-mono font-bold text-[10px]">
                         {ugCode}
                       </span>
                     </td>
@@ -533,7 +533,7 @@ export const Equipamentos: React.FC = () => {
 
                     {/* 4. LOCAL DE INSTALAÇÃO */}
                     <td className="py-2 px-3 align-middle min-w-[180px]">
-                      <div className="text-[#8B949E] font-mono text-[11px] font-medium truncate leading-tight" title={eq.localizacao_ref || eq.local_instalacao}>
+                      <div className="text-[#6B7280] font-mono text-[11px] font-medium truncate leading-tight" title={eq.localizacao_ref || eq.local_instalacao}>
                         {eq.localizacao_ref || eq.local_instalacao || '—'}
                       </div>
                     </td>
@@ -547,7 +547,7 @@ export const Equipamentos: React.FC = () => {
 
                     {/* 6. MARCA */}
                     <td className="py-2 px-3 align-middle w-[110px]">
-                      <span className="text-[#C9D1D9] font-semibold text-[11px] truncate block" title={eq.marca}>
+                      <span className="text-[#374151] font-semibold text-[11px] truncate block" title={eq.marca}>
                         {eq.marca || '—'}
                       </span>
                     </td>
@@ -561,7 +561,7 @@ export const Equipamentos: React.FC = () => {
 
                     {/* 8. CAPACIDADE */}
                     <td className="py-2 px-3 align-middle w-[100px]">
-                      <span className="text-[#C9D1D9] font-mono text-[11px] font-medium truncate block" title={eq.capacidade}>
+                      <span className="text-[#374151] font-mono text-[11px] font-medium truncate block" title={eq.capacidade}>
                         {eq.capacidade || '—'}
                       </span>
                     </td>
@@ -583,7 +583,7 @@ export const Equipamentos: React.FC = () => {
 
                     {/* 10. AÇÃO */}
                     <td className="py-2 px-3 align-middle w-[75px] text-right">
-                      <span className="inline-flex items-center text-[#C9D1D9] group-hover:text-[#8B949E] font-semibold text-[11px] transition-colors leading-none">
+                      <span className="inline-flex items-center text-[#374151] group-hover:text-[#6B7280] font-semibold text-[11px] transition-colors leading-none">
                         <span>Ficha</span>
                         <ChevronRight className="w-3.5 h-3.5" />
                       </span>
@@ -608,7 +608,7 @@ export const Equipamentos: React.FC = () => {
       {/* 5. RODAPÉ DA TABELA (Fixo no bottom) */}
       <footer
         id="equipamentos-table-footer"
-        className="shrink-0 h-[32px] flex items-center justify-between px-3 rounded-md bg-[#111827] border border-[#30363D] text-[11px] text-gray-400"
+        className="shrink-0 h-[32px] flex items-center justify-between px-3 rounded-md bg-[#F8F9FA] border border-[#D1D5DB] text-[11px] text-gray-400"
       >
         <div className="flex items-center gap-1.5 truncate">
           <span className="font-medium text-gray-300">
@@ -637,10 +637,10 @@ export const Equipamentos: React.FC = () => {
             if (e.target === e.currentTarget) setShowNewModal(false);
           }}
         >
-          <div className="sheet-panel bg-[#111827] border border-[#30363D] rounded-t-2xl sm:rounded-lg w-full max-w-xl max-h-[92vh] sm:max-h-[90vh] flex flex-col shadow-2xl overflow-hidden safe-bottom">
-            <div className="p-3.5 border-b border-white/[0.06] flex items-center justify-between bg-[#0A0E1A]">
+          <div className="sheet-panel bg-[#F8F9FA] border border-[#D1D5DB] rounded-t-2xl sm:rounded-lg w-full max-w-xl max-h-[92vh] sm:max-h-[90vh] flex flex-col shadow-2xl overflow-hidden safe-bottom">
+            <div className="p-3.5 border-b border-white/[0.06] flex items-center justify-between bg-white">
               <div className="flex items-center gap-2">
-                <Plus className="w-4 h-4 text-[#C9D1D9]" />
+                <Plus className="w-4 h-4 text-[#374151]" />
                 <h3 className="text-[14px] font-bold text-white uppercase tracking-tight">
                   Novo Equipamento
                 </h3>
@@ -664,7 +664,7 @@ export const Equipamentos: React.FC = () => {
                     value={newEquip.tag}
                     onChange={(e) => setNewEquip({ ...newEquip, tag: e.target.value })}
                     placeholder="Ex: 352"
-                    className="w-full h-11 sm:h-[32px] bg-[#0A0E1A] border border-[#30363D] focus:border-[#8B949E] text-white px-2.5 rounded text-[11px] outline-none font-mono"
+                    className="w-full h-11 sm:h-[32px] bg-white border border-[#D1D5DB] focus:border-[#2563EB] text-white px-2.5 rounded text-[11px] outline-none font-mono"
                   />
                 </div>
 
@@ -674,7 +674,7 @@ export const Equipamentos: React.FC = () => {
                   <select
                     value={newEquip.ug_ref}
                     onChange={(e) => setNewEquip({ ...newEquip, ug_ref: e.target.value })}
-                    className="w-full h-11 sm:h-[32px] bg-[#0A0E1A] border border-[#30363D] text-white px-2 rounded text-[11px] outline-none font-mono"
+                    className="w-full h-11 sm:h-[32px] bg-white border border-[#D1D5DB] text-white px-2 rounded text-[11px] outline-none font-mono"
                   >
                     <option value="N1">N1</option>
                     <option value="N2">N2</option>
@@ -691,7 +691,7 @@ export const Equipamentos: React.FC = () => {
                     value={newEquip.patrimonio_ref || ''}
                     onChange={(e) => setNewEquip({ ...newEquip, patrimonio_ref: e.target.value })}
                     placeholder="Ex: 84"
-                    className="w-full h-11 sm:h-[32px] bg-[#0A0E1A] border border-[#30363D] focus:border-[#8B949E] text-white px-2.5 rounded text-[11px] outline-none font-mono"
+                    className="w-full h-11 sm:h-[32px] bg-white border border-[#D1D5DB] focus:border-[#2563EB] text-white px-2.5 rounded text-[11px] outline-none font-mono"
                   />
                 </div>
               </div>
@@ -705,7 +705,7 @@ export const Equipamentos: React.FC = () => {
                     value={newEquip.area_ref}
                     onChange={(e) => setNewEquip({ ...newEquip, area_ref: e.target.value })}
                     placeholder="Ex: RETORNÁVEIS, ONE WAY CERVEJA..."
-                    className="w-full h-11 sm:h-[32px] bg-[#0A0E1A] border border-[#30363D] focus:border-[#8B949E] text-white px-2.5 rounded text-[11px] outline-none"
+                    className="w-full h-11 sm:h-[32px] bg-white border border-[#D1D5DB] focus:border-[#2563EB] text-white px-2.5 rounded text-[11px] outline-none"
                   />
                 </div>
 
@@ -717,7 +717,7 @@ export const Equipamentos: React.FC = () => {
                     value={newEquip.localizacao_ref}
                     onChange={(e) => setNewEquip({ ...newEquip, localizacao_ref: e.target.value })}
                     placeholder="Ex: LINHA 542 / EMPACOTADORA 03"
-                    className="w-full h-11 sm:h-[32px] bg-[#0A0E1A] border border-[#30363D] focus:border-[#8B949E] text-white px-2.5 rounded text-[11px] outline-none"
+                    className="w-full h-11 sm:h-[32px] bg-white border border-[#D1D5DB] focus:border-[#2563EB] text-white px-2.5 rounded text-[11px] outline-none"
                   />
                 </div>
               </div>
@@ -731,7 +731,7 @@ export const Equipamentos: React.FC = () => {
                     value={newEquip.tipo_equipamento}
                     onChange={(e) => setNewEquip({ ...newEquip, tipo_equipamento: e.target.value })}
                     placeholder="Ex: RESFRIADOR DE PAINEL, SPLITÃO..."
-                    className="w-full h-11 sm:h-[32px] bg-[#0A0E1A] border border-[#30363D] focus:border-[#8B949E] text-white px-2.5 rounded text-[11px] outline-none"
+                    className="w-full h-11 sm:h-[32px] bg-white border border-[#D1D5DB] focus:border-[#2563EB] text-white px-2.5 rounded text-[11px] outline-none"
                   />
                 </div>
 
@@ -743,7 +743,7 @@ export const Equipamentos: React.FC = () => {
                     value={newEquip.marca}
                     onChange={(e) => setNewEquip({ ...newEquip, marca: e.target.value })}
                     placeholder="Ex: RITTAL, KRONES, YORK..."
-                    className="w-full h-11 sm:h-[32px] bg-[#0A0E1A] border border-[#30363D] focus:border-[#8B949E] text-white px-2.5 rounded text-[11px] outline-none"
+                    className="w-full h-11 sm:h-[32px] bg-white border border-[#D1D5DB] focus:border-[#2563EB] text-white px-2.5 rounded text-[11px] outline-none"
                   />
                 </div>
 
@@ -755,7 +755,7 @@ export const Equipamentos: React.FC = () => {
                     value={newEquip.modelo}
                     onChange={(e) => setNewEquip({ ...newEquip, modelo: e.target.value })}
                     placeholder="Ex: SK 3304.500"
-                    className="w-full h-11 sm:h-[32px] bg-[#0A0E1A] border border-[#30363D] focus:border-[#8B949E] text-white px-2.5 rounded text-[11px] outline-none font-mono"
+                    className="w-full h-11 sm:h-[32px] bg-white border border-[#D1D5DB] focus:border-[#2563EB] text-white px-2.5 rounded text-[11px] outline-none font-mono"
                   />
                 </div>
               </div>
@@ -769,7 +769,7 @@ export const Equipamentos: React.FC = () => {
                     value={newEquip.capacidade}
                     onChange={(e) => setNewEquip({ ...newEquip, capacidade: e.target.value })}
                     placeholder="Ex: 1500W, 36.000 BTU'S..."
-                    className="w-full h-11 sm:h-[32px] bg-[#0A0E1A] border border-[#30363D] focus:border-[#8B949E] text-white px-2.5 rounded text-[11px] outline-none font-mono"
+                    className="w-full h-11 sm:h-[32px] bg-white border border-[#D1D5DB] focus:border-[#2563EB] text-white px-2.5 rounded text-[11px] outline-none font-mono"
                   />
                 </div>
 
@@ -780,7 +780,7 @@ export const Equipamentos: React.FC = () => {
                     type="text"
                     disabled
                     value="INDUSTRIAL"
-                    className="w-full h-11 sm:h-[32px] bg-[#0A0E1A]/60 border border-[#30363D] text-gray-400 px-2.5 rounded text-[11px] outline-none cursor-not-allowed uppercase font-semibold"
+                    className="w-full h-11 sm:h-[32px] bg-white/60 border border-[#D1D5DB] text-gray-400 px-2.5 rounded text-[11px] outline-none cursor-not-allowed uppercase font-semibold"
                   />
                 </div>
 
@@ -790,7 +790,7 @@ export const Equipamentos: React.FC = () => {
                   <select
                     value={newEquip.status}
                     onChange={(e) => setNewEquip({ ...newEquip, status: e.target.value as EquipStatus })}
-                    className="w-full h-11 sm:h-[32px] bg-[#0A0E1A] border border-[#30363D] text-white px-2 rounded text-[11px] outline-none"
+                    className="w-full h-11 sm:h-[32px] bg-white border border-[#D1D5DB] text-white px-2 rounded text-[11px] outline-none"
                   >
                     <option value="OK">OK</option>
                     <option value="RESTRICAO">NOK</option>
@@ -802,7 +802,7 @@ export const Equipamentos: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowNewModal(false)}
-                  className="h-11 sm:h-[30px] px-3 rounded bg-[#0A0E1A] border border-white/[0.08] text-gray-300 hover:text-white cursor-pointer"
+                  className="h-11 sm:h-[30px] px-3 rounded bg-white border border-white/[0.08] text-gray-300 hover:text-white cursor-pointer"
                 >
                   Cancelar
                 </button>

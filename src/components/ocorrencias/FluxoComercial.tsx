@@ -233,13 +233,13 @@ export const FluxoComercial: React.FC<Props> = ({ ocorrencia, canEdit, onAtualiz
   return (
     <div className="card space-y-2">
       {/* Header compacto */}
-      <div className="flex items-center justify-between border-b border-[#30363D] pb-2">
+      <div className="flex items-center justify-between border-b border-[#D1D5DB] pb-2">
         <h3 className="card-title text-xs uppercase flex items-center gap-1.5">
           <ChevronRight className="w-3.5 h-3.5" />
           Fluxo Comercial
         </h3>
-        <span className="text-[10px] text-[#8B949E]">
-          Fase atual: <strong className="text-[#E6EDF3]">{FASES[faseAtual]?.label || 'Aberta'}</strong>
+        <span className="text-[10px] text-[#6B7280]">
+          Fase atual: <strong className="text-[#1A1A1A]">{FASES[faseAtual]?.label || 'Aberta'}</strong>
         </span>
       </div>
 
@@ -264,7 +264,7 @@ export const FluxoComercial: React.FC<Props> = ({ ocorrencia, canEdit, onAtualiz
               {/* Coluna da linha + ícone */}
               <div className="flex flex-col items-center w-8 shrink-0">
                 {/* Linha de cima */}
-                <div className={`w-px flex-none ${idx === 0 ? 'invisible' : concluida || atual ? 'bg-[#30363D]' : 'bg-[#21262D]'}`}
+                <div className={`w-px flex-none ${idx === 0 ? 'invisible' : concluida || atual ? 'bg-[#30363D]' : 'bg-[#E5E7EB]'}`}
                   style={{ height: 8 }} />
                 {/* Ícone */}
                 <div
@@ -281,7 +281,7 @@ export const FluxoComercial: React.FC<Props> = ({ ocorrencia, canEdit, onAtualiz
                 </div>
                 {/* Linha de baixo */}
                 {idx < FASES.length - 1 && (
-                  <div className={`w-px flex-1 min-h-[12px] ${concluida ? 'bg-[#30363D]' : 'bg-[#21262D]'}`} />
+                  <div className={`w-px flex-1 min-h-[12px] ${concluida ? 'bg-[#30363D]' : 'bg-[#E5E7EB]'}`} />
                 )}
               </div>
 
@@ -290,7 +290,7 @@ export const FluxoComercial: React.FC<Props> = ({ ocorrencia, canEdit, onAtualiz
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2 flex-wrap min-w-0">
                     <span className={`text-[11px] font-bold leading-none ${
-                      atual ? 'text-[#E6EDF3]' : concluida ? 'text-[#C9D1D9]' : 'text-[#484F58]'
+                      atual ? 'text-[#1A1A1A]' : concluida ? 'text-[#374151]' : 'text-[#9CA3AF]'
                     }`}>
                       {fase.label}
                     </span>
@@ -301,7 +301,7 @@ export const FluxoComercial: React.FC<Props> = ({ ocorrencia, canEdit, onAtualiz
                       </span>
                     )}
                     {extraFase && (
-                      <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#21262D] text-[#C9D1D9] border border-[#30363D]">
+                      <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#E5E7EB] text-[#374151] border border-[#D1D5DB]">
                         {fase.labelExtra}: {extraFase}
                       </span>
                     )}
@@ -320,7 +320,7 @@ export const FluxoComercial: React.FC<Props> = ({ ocorrencia, canEdit, onAtualiz
                   {podeEditar && !podeAvancar && (
                     <button
                       onClick={() => abrirAvanco(fase.id)}
-                      className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold border transition-all bg-[#21262D] border-[#30363D] text-[#8B949E] hover:text-white"
+                      className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold border transition-all bg-[#E5E7EB] border-[#D1D5DB] text-[#6B7280] hover:text-white"
                     >
                       ✏ Editar
                     </button>
@@ -350,26 +350,26 @@ export const FluxoComercial: React.FC<Props> = ({ ocorrencia, canEdit, onAtualiz
       {editando && (() => {
         const fase = FASES.find((f) => f.id === editando)!;
         return (
-          <div className="mt-1 bg-[#0A0E1A] border border-[#30363D] rounded-lg p-3 space-y-2.5">
-            <p className="text-[11px] font-bold text-[#E6EDF3] uppercase">Registrar: {fase.label}</p>
+          <div className="mt-1 bg-white border border-[#D1D5DB] rounded-lg p-3 space-y-2.5">
+            <p className="text-[11px] font-bold text-[#1A1A1A] uppercase">Registrar: {fase.label}</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div>
-                <label className="block text-[9px] font-bold text-[#8B949E] uppercase tracking-wider mb-1">Data</label>
+                <label className="block text-[9px] font-bold text-[#6B7280] uppercase tracking-wider mb-1">Data</label>
                 <input type="date" value={dataInput} onChange={(e) => setDataInput(e.target.value)}
-                  className="w-full h-8 bg-[#161B22] border border-[#30363D] text-[#E6EDF3] text-[12px] rounded-md px-2.5 outline-none focus:border-[#8B949E]" />
+                  className="w-full h-8 bg-[#F8F9FA] border border-[#D1D5DB] text-[#1A1A1A] text-[12px] rounded-md px-2.5 outline-none focus:border-[#2563EB]" />
               </div>
               {fase.campoExtra && (
                 <div>
-                  <label className="block text-[9px] font-bold text-[#8B949E] uppercase tracking-wider mb-1">{fase.labelExtra}</label>
+                  <label className="block text-[9px] font-bold text-[#6B7280] uppercase tracking-wider mb-1">{fase.labelExtra}</label>
                   <input type="text" value={extraInput} onChange={(e) => setExtraInput(e.target.value)}
                     placeholder={fase.placeholderExtra}
-                    className="w-full h-8 bg-[#161B22] border border-[#30363D] text-[#E6EDF3] text-[12px] rounded-md px-2.5 outline-none focus:border-[#8B949E] font-mono" />
+                    className="w-full h-8 bg-[#F8F9FA] border border-[#D1D5DB] text-[#1A1A1A] text-[12px] rounded-md px-2.5 outline-none focus:border-[#2563EB] font-mono" />
                 </div>
               )}
             </div>
             <div className="flex gap-2">
               <button onClick={() => setEditando(null)} disabled={saving}
-                className="flex-1 h-8 rounded-md bg-[#161B22] border border-[#30363D] text-[#C9D1D9] text-[11px] font-semibold">
+                className="flex-1 h-8 rounded-md bg-[#F8F9FA] border border-[#D1D5DB] text-[#374151] text-[11px] font-semibold">
                 Cancelar
               </button>
               <button onClick={() => salvarAvanco(editando)} disabled={saving}

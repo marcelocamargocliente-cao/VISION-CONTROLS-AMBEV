@@ -40,40 +40,40 @@ export const AreaChartOcorrencias: React.FC<AreaChartOcorrenciasProps> = ({
   const minAbertas = [...chartData].sort((a, b) => a.abertas - b.abertas)[0];
 
   return (
-    <div className="bg-[#13181F] border border-[#21262D] rounded-xl p-3 flex flex-col justify-between h-full w-full overflow-hidden select-none">
+    <div className="bg-white border border-[#E5E7EB] rounded-xl p-3 flex flex-col justify-between h-full w-full overflow-hidden select-none">
       {/* Header (shrink-0: título, número e seletores) */}
       <div className="flex items-center justify-between gap-2 shrink-0 h-[36px]">
         <div className="flex items-center gap-3 min-w-0">
           <div className="flex items-center gap-1.5">
-            <h2 className="text-[13px] font-bold text-[#E6EDF3] tracking-tight truncate">
+            <h2 className="text-[13px] font-bold text-[#1A1A1A] tracking-tight truncate">
               Análise de Ocorrências
             </h2>
             <div className="group relative">
-              <Info className="w-3.5 h-3.5 text-[#484F58] hover:text-[#8B949E] transition-colors cursor-help" />
-              <div className="absolute left-0 bottom-full mb-1.5 hidden group-hover:block bg-[#1A1F28] border border-[#21262D] text-[10px] text-[#8B949E] p-2 rounded-lg shadow-lg w-48 z-30">
+              <Info className="w-3.5 h-3.5 text-[#9CA3AF] hover:text-[#6B7280] transition-colors cursor-help" />
+              <div className="absolute left-0 bottom-full mb-1.5 hidden group-hover:block bg-white border border-[#E5E7EB] text-[10px] text-[#6B7280] p-2 rounded-lg shadow-lg w-48 z-30">
                 Histórico temporal de ordens de serviço e taxa de abertura de ocorrências.
               </div>
             </div>
           </div>
 
-          <div className="flex items-baseline gap-1.5 border-l border-[#21262D] pl-3">
-            <span className="text-[26px] xl:text-[28px] font-extrabold text-[#E6EDF3] tracking-tight leading-none font-sans">
+          <div className="flex items-baseline gap-1.5 border-l border-[#E5E7EB] pl-3">
+            <span className="text-[26px] xl:text-[28px] font-extrabold text-[#1A1A1A] tracking-tight leading-none font-sans">
               {totalAbertas}
             </span>
-            <span className="hidden md:inline text-[10px] font-body text-[#8B949E]">
+            <span className="hidden md:inline text-[10px] font-body text-[#6B7280]">
               total no período
             </span>
           </div>
         </div>
 
         {/* Seletores discretos */}
-        <div className="flex items-center bg-[#1A1F28] p-0.5 rounded-lg border border-[#21262D] shrink-0">
+        <div className="flex items-center bg-white p-0.5 rounded-lg border border-[#E5E7EB] shrink-0">
           <button
             onClick={() => setPeriodo('mes')}
             className={`h-[24px] px-2.5 text-[11px] font-medium rounded-md transition-all leading-none ${
               periodo === 'mes'
-                ? 'bg-[#21262D] text-[#E6EDF3] font-semibold shadow-xs'
-                : 'text-[#8B949E] hover:text-[#E6EDF3]'
+                ? 'bg-[#E5E7EB] text-[#1A1A1A] font-semibold shadow-xs'
+                : 'text-[#6B7280] hover:text-[#1A1A1A]'
             }`}
           >
             Este Mês
@@ -82,8 +82,8 @@ export const AreaChartOcorrencias: React.FC<AreaChartOcorrenciasProps> = ({
             onClick={() => setPeriodo('6m')}
             className={`h-[24px] px-2.5 text-[11px] font-medium rounded-md transition-all leading-none ${
               periodo === '6m'
-                ? 'bg-[#21262D] text-[#E6EDF3] font-semibold shadow-xs'
-                : 'text-[#8B949E] hover:text-[#E6EDF3]'
+                ? 'bg-[#E5E7EB] text-[#1A1A1A] font-semibold shadow-xs'
+                : 'text-[#6B7280] hover:text-[#1A1A1A]'
             }`}
           >
             6 Meses
@@ -92,8 +92,8 @@ export const AreaChartOcorrencias: React.FC<AreaChartOcorrenciasProps> = ({
             onClick={() => setPeriodo('ano')}
             className={`h-[24px] px-2.5 text-[11px] font-medium rounded-md transition-all leading-none ${
               periodo === 'ano'
-                ? 'bg-[#21262D] text-[#E6EDF3] font-semibold shadow-xs'
-                : 'text-[#8B949E] hover:text-[#E6EDF3]'
+                ? 'bg-[#E5E7EB] text-[#1A1A1A] font-semibold shadow-xs'
+                : 'text-[#6B7280] hover:text-[#1A1A1A]'
             }`}
           >
             Este Ano
@@ -135,11 +135,11 @@ export const AreaChartOcorrencias: React.FC<AreaChartOcorrenciasProps> = ({
               content={({ active, payload, label }) => {
                 if (active && payload && payload.length) {
                   return (
-                    <div className="bg-[#1A1F28] border border-[#21262D] rounded-lg p-2 shadow-xl text-[11px]">
-                      <p className="font-semibold text-[#8B949E] mb-1">{label}</p>
+                    <div className="bg-white border border-[#E5E7EB] rounded-lg p-2 shadow-xl text-[11px]">
+                      <p className="font-semibold text-[#6B7280] mb-1">{label}</p>
                       <div className="flex items-center justify-between gap-3 text-[#58A6FF]">
                         <span>Abertas:</span>
-                        <span className="font-mono font-bold text-[#E6EDF3]">{payload[0]?.value}</span>
+                        <span className="font-mono font-bold text-[#1A1A1A]">{payload[0]?.value}</span>
                       </div>
                     </div>
                   );
@@ -163,29 +163,29 @@ export const AreaChartOcorrencias: React.FC<AreaChartOcorrenciasProps> = ({
       </div>
 
       {/* Footer: Estatísticas inline separadas por · */}
-      <div className="h-[28px] pt-1.5 border-t border-[#21262D] flex items-center justify-between text-[11px] text-[#8B949E] shrink-0 font-body">
+      <div className="h-[28px] pt-1.5 border-t border-[#E5E7EB] flex items-center justify-between text-[11px] text-[#6B7280] shrink-0 font-body">
         <div className="flex items-center gap-1.5">
-          <span className="text-[10px] uppercase text-[#8B949E] font-medium tracking-wider">Média:</span>
-          <span className="font-bold font-mono text-[#E6EDF3]">{mediaMensal} OS/mês</span>
+          <span className="text-[10px] uppercase text-[#6B7280] font-medium tracking-wider">Média:</span>
+          <span className="font-bold font-mono text-[#1A1A1A]">{mediaMensal} OS/mês</span>
         </div>
-        <span className="text-[#484F58]">·</span>
+        <span className="text-[#9CA3AF]">·</span>
         <div className="flex items-center gap-1.5">
-          <span className="text-[10px] uppercase text-[#8B949E] font-medium tracking-wider">Pior Mês:</span>
-          <span className="font-bold font-mono text-[#E6EDF3]">
+          <span className="text-[10px] uppercase text-[#6B7280] font-medium tracking-wider">Pior Mês:</span>
+          <span className="font-bold font-mono text-[#1A1A1A]">
             {maxAbertas?.mes_label || 'Jun'} ({maxAbertas?.abertas || 14})
           </span>
         </div>
-        <span className="text-[#484F58]">·</span>
+        <span className="text-[#9CA3AF]">·</span>
         <div className="flex items-center gap-1.5">
-          <span className="text-[10px] uppercase text-[#8B949E] font-medium tracking-wider">Melhor Mês:</span>
-          <span className="font-bold font-mono text-[#E6EDF3]">
+          <span className="text-[10px] uppercase text-[#6B7280] font-medium tracking-wider">Melhor Mês:</span>
+          <span className="font-bold font-mono text-[#1A1A1A]">
             {minAbertas?.mes_label || 'Ago'} ({minAbertas?.abertas || 4})
           </span>
         </div>
-        <span className="text-[#484F58]">·</span>
+        <span className="text-[#9CA3AF]">·</span>
         <div className="flex items-center gap-1.5">
-          <span className="text-[10px] uppercase text-[#8B949E] font-medium tracking-wider">MTTR Médio:</span>
-          <span className="font-bold font-mono text-[#E6EDF3]">{mttrMedio} dias</span>
+          <span className="text-[10px] uppercase text-[#6B7280] font-medium tracking-wider">MTTR Médio:</span>
+          <span className="font-bold font-mono text-[#1A1A1A]">{mttrMedio} dias</span>
         </div>
       </div>
     </div>

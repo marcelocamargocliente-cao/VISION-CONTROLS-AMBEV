@@ -197,7 +197,7 @@ export const CompartilharOrcamento: React.FC<CompartilharOrcamentoProps> = ({
           <button
             id={`${idPrefix}-opt-whatsapp`}
             type="button"
-            className="compartilhar-item flex items-center gap-[10px] w-full py-[9px] px-[12px] rounded-[7px] border-0 bg-transparent text-[#E6EDF3] text-[13px] font-medium text-left cursor-pointer transition-colors whitespace-nowrap hover:bg-white/[0.06]"
+            className="compartilhar-item flex items-center gap-[10px] w-full py-[9px] px-[12px] rounded-[7px] border-0 bg-transparent text-[#1A1A1A] text-[13px] font-medium text-left cursor-pointer transition-colors whitespace-nowrap hover:bg-white/[0.06]"
             onClick={handleWhatsApp}
           >
             <MessageCircle className="w-4 h-4 text-[#25D366] shrink-0" color="#25D366" />
@@ -208,7 +208,7 @@ export const CompartilharOrcamento: React.FC<CompartilharOrcamentoProps> = ({
           <button
             id={`${idPrefix}-opt-email`}
             type="button"
-            className="compartilhar-item flex items-center gap-[10px] w-full py-[9px] px-[12px] rounded-[7px] border-0 bg-transparent text-[#E6EDF3] text-[13px] font-medium text-left cursor-pointer transition-colors whitespace-nowrap hover:bg-white/[0.06]"
+            className="compartilhar-item flex items-center gap-[10px] w-full py-[9px] px-[12px] rounded-[7px] border-0 bg-transparent text-[#1A1A1A] text-[13px] font-medium text-left cursor-pointer transition-colors whitespace-nowrap hover:bg-white/[0.06]"
             onClick={handleEmail}
           >
             <Mail className="w-4 h-4 shrink-0 text-[#38BDF8]" />
@@ -219,7 +219,7 @@ export const CompartilharOrcamento: React.FC<CompartilharOrcamentoProps> = ({
           <button
             id={`${idPrefix}-opt-copy`}
             type="button"
-            className="compartilhar-item flex items-center gap-[10px] w-full py-[9px] px-[12px] rounded-[7px] border-0 bg-transparent text-[#E6EDF3] text-[13px] font-medium text-left cursor-pointer transition-colors whitespace-nowrap hover:bg-white/[0.06]"
+            className="compartilhar-item flex items-center gap-[10px] w-full py-[9px] px-[12px] rounded-[7px] border-0 bg-transparent text-[#1A1A1A] text-[13px] font-medium text-left cursor-pointer transition-colors whitespace-nowrap hover:bg-white/[0.06]"
             onClick={handleCopy}
           >
             {copied ? <Check className="w-4 h-4 text-[#2ECC71] shrink-0" /> : <Copy className="w-4 h-4 text-[#F5A623] shrink-0" />}
@@ -230,7 +230,7 @@ export const CompartilharOrcamento: React.FC<CompartilharOrcamentoProps> = ({
           <button
             id={`${idPrefix}-opt-pdf`}
             type="button"
-            className="compartilhar-item flex items-center gap-[10px] w-full py-[9px] px-[12px] rounded-[7px] border-0 bg-transparent text-[#E6EDF3] text-[13px] font-medium text-left cursor-pointer transition-colors whitespace-nowrap hover:bg-white/[0.06]"
+            className="compartilhar-item flex items-center gap-[10px] w-full py-[9px] px-[12px] rounded-[7px] border-0 bg-transparent text-[#1A1A1A] text-[13px] font-medium text-left cursor-pointer transition-colors whitespace-nowrap hover:bg-white/[0.06]"
             onClick={handleDownloadOrPrint}
           >
             <Download className="w-4 h-4 text-[#38BDF8] shrink-0" />

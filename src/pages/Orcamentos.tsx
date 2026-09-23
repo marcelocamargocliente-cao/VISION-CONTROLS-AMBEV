@@ -325,7 +325,7 @@ export const Orcamentos: React.FC = () => {
               ? 'card  border-[#2ECC71]'
               : toast.type === 'error'
               ? 'card  border-[#E5484D]'
-              : 'card  border-[#30363D]'
+              : 'card  border-[#D1D5DB]'
           }`}
         >
           {toast.type === 'success' ? (
@@ -343,7 +343,7 @@ export const Orcamentos: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-[11px]  tracking-widest  bg-[#21262D] px-2 py-0.5 rounded-[2px] border border-[#30363D] uppercase font-bold">
+            <span className="text-[11px]  tracking-widest  bg-[#E5E7EB] px-2 py-0.5 rounded-[2px] border border-[#D1D5DB] uppercase font-bold">
               Gestão Comercial & Faturamento
             </span>
             <span className="text-[11px]  ">•</span>
@@ -358,7 +358,7 @@ export const Orcamentos: React.FC = () => {
           <button
             id="btn-emitir-novo-orcamento"
             onClick={() => setIsNovoOpen(true)}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-[4px] bg-[#21262D] hover:bg-[#0284C7]  font-bold text-xs uppercase tracking-wider transition-all shadow-md active:scale-95 shrink-0"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-[4px] bg-[#E5E7EB] hover:bg-[#0284C7]  font-bold text-xs uppercase tracking-wider transition-all shadow-md active:scale-95 shrink-0"
           >
             <Plus className="w-4 h-4 stroke-[2.5]" />
             <span>Emitir Novo Orçamento</span>
@@ -438,11 +438,11 @@ export const Orcamentos: React.FC = () => {
       </div>
 
       {/* Título da seção */}
-      <div className="flex items-end gap-0 border-b border-[#30363D]">
-        <div className="flex items-center gap-2 px-4 py-2.5 text-[12px] font-semibold border-b-2 border-[#E6EDF3] text-[#E6EDF3]">
+      <div className="flex items-end gap-0 border-b border-[#D1D5DB]">
+        <div className="flex items-center gap-2 px-4 py-2.5 text-[12px] font-semibold border-b-2 border-[#E6EDF3] text-[#1A1A1A]">
           <Building2 className="w-4 h-4" />
           Cotações de Fornecedores
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#21262D] font-mono">{cotacoes.length}</span>
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#E5E7EB] font-mono">{cotacoes.length}</span>
         </div>
       </div>
 
@@ -475,7 +475,7 @@ export const Orcamentos: React.FC = () => {
                     return (
                       <tr key={c.id} className="hover:bg-[#232B35] transition-colors">
                         <td className="py-3 px-3">
-                          <div className="font-bold text-[#E6EDF3]">{c.empresa_nome}</div>
+                          <div className="font-bold text-[#1A1A1A]">{c.empresa_nome}</div>
                         </td>
                         <td className="py-3 px-3">
                           {occ && (
@@ -483,34 +483,34 @@ export const Orcamentos: React.FC = () => {
                               onClick={() => navigate(`/ocorrencias/${occ.id}`)}
                               className="text-left hover:underline"
                             >
-                              <div className="font-mono text-[11px] text-[#C9D1D9]">
+                              <div className="font-mono text-[11px] text-[#374151]">
                                 {(occ as any).ordem_sap ? `OS ${(occ as any).ordem_sap}` : `#${(occ as any).numero}`}
                               </div>
-                              {eq && <div className="text-[10px] text-[#8B949E]">{eq.tipo} · TAG {eq.patrimonio_ref || eq.tag}</div>}
+                              {eq && <div className="text-[10px] text-[#6B7280]">{eq.tipo} · TAG {eq.patrimonio_ref || eq.tag}</div>}
                             </button>
                           )}
                         </td>
                         <td className="py-3 px-3">
-                          <span className="text-[#8B949E]">{c.itens.length} {c.itens.length === 1 ? 'item' : 'itens'}</span>
+                          <span className="text-[#6B7280]">{c.itens.length} {c.itens.length === 1 ? 'item' : 'itens'}</span>
                         </td>
-                        <td className="py-3 px-3 font-mono font-bold text-[#E6EDF3]">
+                        <td className="py-3 px-3 font-mono font-bold text-[#1A1A1A]">
                           {formatCurrency(c.valor_total || 0)}
                         </td>
-                        <td className="py-3 px-3 text-[#8B949E] text-[10px]">
+                        <td className="py-3 px-3 text-[#6B7280] text-[10px]">
                           {formatDate(c.created_at)}
                         </td>
                         <td className="py-3 px-3">
                           <div className="flex items-center gap-1.5 justify-end">
                             {c.pdf_url && (
                               <a href={c.pdf_url} target="_blank" rel="noreferrer"
-                                className="p-1.5 rounded bg-[#21262D] border border-[#30363D] text-[#C9D1D9] hover:text-white"
+                                className="p-1.5 rounded bg-[#E5E7EB] border border-[#D1D5DB] text-[#374151] hover:text-white"
                                 title="Ver PDF">
                                 <Download className="w-3.5 h-3.5" />
                               </a>
                             )}
                             <button
                               onClick={() => navigate(`/ocorrencias/${c.ocorrencia_id}`)}
-                              className="p-1.5 rounded bg-[#21262D] border border-[#30363D] text-[#C9D1D9] hover:text-white"
+                              className="p-1.5 rounded bg-[#E5E7EB] border border-[#D1D5DB] text-[#374151] hover:text-white"
                               title="Ver ocorrência">
                               <ChevronRight className="w-3.5 h-3.5" />
                             </button>
@@ -538,7 +538,7 @@ export const Orcamentos: React.FC = () => {
               placeholder="Buscar por Nº, TAG, Fornecedor ou Contato..."
               value={searchFilter}
               onChange={(e) => setSearchFilter(e.target.value)}
-              className="w-full bg-[var(--bg-input)] border border-[#2C343E] rounded-[3px] has-icon-left-sm pr-3 py-1.5 text-xs  placeholder-[#6B7683] focus:border-[#30363D] focus:outline-none"
+              className="w-full bg-[var(--bg-input)] border border-[#2C343E] rounded-[3px] has-icon-left-sm pr-3 py-1.5 text-xs  placeholder-[#6B7683] focus:border-[#D1D5DB] focus:outline-none"
             />
           </div>
 
@@ -665,14 +665,14 @@ export const Orcamentos: React.FC = () => {
                           <div onClick={(e) => e.stopPropagation()}>
                             <button
                               onClick={() => navigate(`/ocorrencias/${occ.id}`)}
-                              className="font-bold text-xs text-[#C9D1D9] hover:underline block"
+                              className="font-bold text-xs text-[#374151] hover:underline block"
                             >
                               {occ.ordem_sap ? `OS ${occ.ordem_sap}` : `OS #${occ.numero}`}
                             </button>
                             {eq && (
                               <div className="mt-0.5 flex items-center gap-1">
                                 <span className="text-[9px] text-gray-500 uppercase">TAG</span>
-                                <span className="bg-[#21262D] text-[#C9D1D9] font-bold text-[10px] rounded px-1.5 py-0.5 border border-[#30363D] font-mono">
+                                <span className="bg-[#E5E7EB] text-[#374151] font-bold text-[10px] rounded px-1.5 py-0.5 border border-[#D1D5DB] font-mono">
                                   {eq.patrimonio_ref || eq.tag_sap || eq.tag}
                                 </span>
                               </div>
@@ -695,7 +695,7 @@ export const Orcamentos: React.FC = () => {
                             isLate
                               ? 'bg-[#E5484D]/25  border-[#E5484D]/60 animate-pulse'
                               : isMedium
-                              ? 'bg-[#21262D]  border-[#30363D]'
+                              ? 'bg-[#E5E7EB]  border-[#D1D5DB]'
                               : 'bg-[#232B35]  border-[#2C343E]'
                           }`}
                         >
@@ -730,7 +730,7 @@ export const Orcamentos: React.FC = () => {
                             id={`btn-ver-orc-${orc.id}`}
                             onClick={() => handleOpenDetail(orc)}
                             title="Ver detalhes da proposta"
-                            className="p-1.5 bg-[var(--bg-input)] hover:bg-[#21262D]  hover: border border-[#2C343E] rounded transition-colors"
+                            className="p-1.5 bg-[var(--bg-input)] hover:bg-[#E5E7EB]  hover: border border-[#2C343E] rounded transition-colors"
                           >
                             <Eye className="w-3.5 h-3.5" />
                           </button>
@@ -740,7 +740,7 @@ export const Orcamentos: React.FC = () => {
                             <button
                               onClick={() => abrirEdicao(orc)}
                               title="Editar orçamento"
-                              className="p-1.5 bg-[var(--bg-input)] hover:bg-[var(--blue)]/20 hover:border-[#30363D] rounded transition-colors text-[#C9D1D9]"
+                              className="p-1.5 bg-[var(--bg-input)] hover:bg-[var(--blue)]/20 hover:border-[#D1D5DB] rounded transition-colors text-[#374151]"
                             >
                               <Pencil className="w-3.5 h-3.5" />
                             </button>

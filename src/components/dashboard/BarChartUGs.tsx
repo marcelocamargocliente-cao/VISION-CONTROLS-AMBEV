@@ -40,7 +40,7 @@ export const BarChartUGs: React.FC<BarChartUGsProps> = ({ statusUg, agingParadas
   const totalNok = chartData.reduce((s, d) => s + d.parado, 0);
 
   return (
-    <div className="bg-[#13181F] border border-[#21262D] rounded-xl p-3 flex flex-col justify-between shadow-lg h-full w-full overflow-hidden">
+    <div className="bg-white border border-[#E5E7EB] rounded-xl p-3 flex flex-col justify-between shadow-lg h-full w-full overflow-hidden">
       {/* Título */}
       <div className="flex items-center justify-between shrink-0 h-[32px] mb-0.5">
         <div className="flex items-center gap-1.5 min-w-0">
@@ -89,8 +89,8 @@ export const BarChartUGs: React.FC<BarChartUGsProps> = ({ statusUg, agingParadas
                   if (active && payload && payload.length) {
                     const d = payload[0].payload;
                     return (
-                      <div className="bg-[#1A1F28] border border-[#21262D] rounded-lg p-2 text-[10px] shadow-xl">
-                        <p className="font-bold text-[#E6EDF3]">{d.name}</p>
+                      <div className="bg-white border border-[#E5E7EB] rounded-lg p-2 text-[10px] shadow-xl">
+                        <p className="font-bold text-[#1A1A1A]">{d.name}</p>
                         <p className="text-red-400 font-mono">{d.parado} indisponíveis</p>
                       </div>
                     );
@@ -115,26 +115,26 @@ export const BarChartUGs: React.FC<BarChartUGsProps> = ({ statusUg, agingParadas
           <div className="h-full flex flex-col items-center justify-center gap-1">
             <span className="text-2xl">✅</span>
             <p className="text-[11px] text-[#3FB950] font-semibold">Nenhum equipamento parado</p>
-            <p className="text-[10px] text-[#8B949E]">Todos os ativos estão operacionais</p>
+            <p className="text-[10px] text-[#6B7280]">Todos os ativos estão operacionais</p>
           </div>
         )}
       </div>
 
       {/* Aging dos mais críticos */}
       {top2Parados.length > 0 && (
-        <div className="pt-1.5 border-t border-[#21262D] shrink-0 space-y-1">
+        <div className="pt-1.5 border-t border-[#E5E7EB] shrink-0 space-y-1">
           {top2Parados.map((item) => (
             <div
               key={item.ocorrencia_id}
               onClick={() => navigate(`/ocorrencias/${item.ocorrencia_id}`)}
               className="flex items-center justify-between gap-2 cursor-pointer group"
             >
-              <span className="text-[10px] font-mono font-medium text-[#E6EDF3] group-hover:text-[#F85149] truncate transition-colors">
+              <span className="text-[10px] font-mono font-medium text-[#1A1A1A] group-hover:text-[#F85149] truncate transition-colors">
                 TAG {item.patrimonio_ref || item.tag_sap || item.tag}
               </span>
               <div className="flex items-center gap-1 shrink-0">
                 <AgingBadge dias={item.dias_parado} />
-                <ExternalLink className="w-2.5 h-2.5 text-[#484F58] group-hover:text-[#F85149] transition-colors" />
+                <ExternalLink className="w-2.5 h-2.5 text-[#9CA3AF] group-hover:text-[#F85149] transition-colors" />
               </div>
             </div>
           ))}
@@ -143,7 +143,7 @@ export const BarChartUGs: React.FC<BarChartUGsProps> = ({ statusUg, agingParadas
 
       {totalNok === 0 && top2Parados.length === 0 && (
         <div className="shrink-0 text-center">
-          <p className="text-[10px] text-[#8B949E] italic">Nenhum equipamento parado no momento.</p>
+          <p className="text-[10px] text-[#6B7280] italic">Nenhum equipamento parado no momento.</p>
         </div>
       )}
     </div>

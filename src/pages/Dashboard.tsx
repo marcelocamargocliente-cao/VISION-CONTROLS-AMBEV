@@ -173,20 +173,20 @@ export const Dashboard: React.FC = () => {
   return (
     <div
       id="dashboard-container"
-      className="w-full h-full min-h-0 md:overflow-hidden overflow-y-auto scroll-fluido p-3 box-border flex flex-col gap-2.5 bg-[#0D1117] select-none font-body"
+      className="w-full h-full min-h-0 md:overflow-hidden overflow-y-auto scroll-fluido p-3 box-border flex flex-col gap-2.5 bg-[#F0F2F5] select-none font-body"
     >
       {/* HEADER DO CONTEÚDO — empilha no mobile, linha única no desktop */}
       <header
         id="dashboard-header"
-        className="shrink-0 flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:h-[40px] px-3 py-2 md:py-0 rounded-xl bg-[#161B22] border border-[#30363D]"
+        className="shrink-0 flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:h-[40px] px-3 py-2 md:py-0 rounded-xl bg-[#F8F9FA] border border-[#D1D5DB]"
       >
         {/* Título inline com subtítulo separado por · */}
         <div className="flex items-center gap-2 min-w-0">
           <h1 className="text-[15px] md:text-[14px] font-display font-bold tracking-tight truncate leading-none">
             Bom dia, {firstName}.
           </h1>
-          <span className="text-[11px] text-[#8B949E]">·</span>
-          <p className="text-[12px] font-body text-[#8B949E] truncate leading-none hidden sm:inline">
+          <span className="text-[11px] text-[#6B7280]">·</span>
+          <p className="text-[12px] font-body text-[#6B7280] truncate leading-none hidden sm:inline">
             181 climatizadores industriais monitorados
           </p>
         </div>
@@ -201,7 +201,7 @@ export const Dashboard: React.FC = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Buscar TAG, OS..."
-              className="w-full h-9 md:h-[28px] bg-[#21262D] border border-[#30363D] rounded-lg has-icon-left-sm pr-2.5 text-[12px] font-body text-[#E6EDF3] placeholder-[#484F58] focus:outline-none focus:border-[#2F81F7] transition-all leading-none"
+              className="w-full h-9 md:h-[28px] bg-[#E5E7EB] border border-[#D1D5DB] rounded-lg has-icon-left-sm pr-2.5 text-[12px] font-body text-[#1A1A1A] placeholder-[#484F58] focus:outline-none focus:border-[#2F81F7] transition-all leading-none"
             />
           </form>
 
@@ -211,7 +211,7 @@ export const Dashboard: React.FC = () => {
             className={`h-9 md:h-[28px] flex items-center gap-1.5 px-2.5 rounded-lg text-[11px] font-body font-semibold border transition-all cursor-pointer leading-none shrink-0 ${
               showFilters || Object.keys(filters).length > 0
                 ? 'bg-[#2F81F7]/20 text-[#58A6FF] border-[#2F81F7]/40'
-                : 'bg-[#21262D] text-[#8B949E] border-[#30363D] hover:border-[#2F81F7]/40'
+                : 'bg-[#E5E7EB] text-[#6B7280] border-[#D1D5DB] hover:border-[#2F81F7]/40'
             }`}
           >
             <Filter className="w-3.5 h-3.5" />
@@ -225,7 +225,7 @@ export const Dashboard: React.FC = () => {
           <button
             onClick={loadData}
             title="Atualizar dados"
-            className="h-9 w-9 md:h-[28px] md:w-[28px] flex items-center justify-center rounded-lg bg-[#21262D] border border-[#30363D] text-[#8B949E] hover:text-[#E6EDF3] hover:border-[#2F81F7]/40 transition-colors cursor-pointer shrink-0"
+            className="h-9 w-9 md:h-[28px] md:w-[28px] flex items-center justify-center rounded-lg bg-[#E5E7EB] border border-[#D1D5DB] text-[#6B7280] hover:text-[#1A1A1A] hover:border-[#2F81F7]/40 transition-colors cursor-pointer shrink-0"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-[#58A6FF]' : ''}`} />
           </button>
@@ -234,14 +234,14 @@ export const Dashboard: React.FC = () => {
           <button
             onClick={handleExportCsv}
             title="Exportar dados em CSV"
-            className="h-9 w-9 md:h-[28px] md:w-[28px] flex items-center justify-center rounded-lg bg-[#21262D] border border-[#30363D] text-[#8B949E] hover:text-[#E6EDF3] hover:border-[#2F81F7]/40 transition-colors cursor-pointer shrink-0"
+            className="h-9 w-9 md:h-[28px] md:w-[28px] flex items-center justify-center rounded-lg bg-[#E5E7EB] border border-[#D1D5DB] text-[#6B7280] hover:text-[#1A1A1A] hover:border-[#2F81F7]/40 transition-colors cursor-pointer shrink-0"
           >
             <Download className="w-3.5 h-3.5" />
           </button>
 
           {/* Live Clock & Badge Online */}
-          <div className="hidden lg:flex items-center gap-2 border-l border-[#30363D] pl-2.5">
-            <div className="flex items-center gap-1 text-[11px] text-[#8B949E] leading-none">
+          <div className="hidden lg:flex items-center gap-2 border-l border-[#D1D5DB] pl-2.5">
+            <div className="flex items-center gap-1 text-[11px] text-[#6B7280] leading-none">
               <Clock className="w-3 h-3" />
               <span>{currentTime}</span>
             </div>
@@ -348,14 +348,14 @@ export const Dashboard: React.FC = () => {
       {/* Modal / Floating Filter Bar se aberto */}
       {showFilters && (
         <div className="fixed inset-x-0 top-14 md:top-16 z-50 px-3 md:px-6 max-w-4xl mx-auto drop-shadow-2xl">
-          <div className="bg-[#111827] border border-blue-500/40 rounded-xl p-3 shadow-2xl backdrop-blur-xl">
+          <div className="bg-[#F8F9FA] border border-blue-500/40 rounded-xl p-3 shadow-2xl backdrop-blur-xl">
             <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/[0.06]">
-              <span className="text-xs font-bold text-[#E6EDF3] uppercase tracking-wider">
+              <span className="text-xs font-bold text-[#1A1A1A] uppercase tracking-wider">
                 Filtragem Global
               </span>
               <button
                 onClick={() => setShowFilters(false)}
-                className="text-xs text-[#8B949E] hover:text-[#E6EDF3] px-2 py-1 rounded bg-[#0A0E1A]"
+                className="text-xs text-[#6B7280] hover:text-[#1A1A1A] px-2 py-1 rounded bg-white"
               >
                 Fechar
               </button>

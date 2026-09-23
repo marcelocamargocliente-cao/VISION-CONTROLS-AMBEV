@@ -32,13 +32,13 @@ export class ErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="flex-1 min-h-[60vh] w-full flex flex-col items-center justify-center gap-4 p-6 text-center bg-[#0D1117]">
-          <div className="w-14 h-14 rounded-2xl bg-[#21262D] border border-[#30363D] flex items-center justify-center text-2xl">
+        <div className="flex-1 min-h-[60vh] w-full flex flex-col items-center justify-center gap-4 p-6 text-center bg-[#F0F2F5]">
+          <div className="w-14 h-14 rounded-2xl bg-[#E5E7EB] border border-[#D1D5DB] flex items-center justify-center text-2xl">
             &#9888;
           </div>
           <div>
-            <h1 className="text-[#E6EDF3] font-bold text-base">Não foi possível abrir esta tela</h1>
-            <p className="text-[#8B949E] text-sm mt-1 max-w-xs">
+            <h1 className="text-[#1A1A1A] font-bold text-base">Não foi possível abrir esta tela</h1>
+            <p className="text-[#6B7280] text-sm mt-1 max-w-xs">
               Seus dados foram salvos. Recarregue para continuar.
             </p>
           </div>
@@ -49,7 +49,7 @@ export class ErrorBoundary extends Component<Props, State> {
             Recarregar
           </button>
           {this.state.error?.message && (
-            <p className="text-[10px] text-[#484F58] font-mono max-w-xs break-words mt-1">
+            <p className="text-[10px] text-[#9CA3AF] font-mono max-w-xs break-words mt-1">
               {this.state.error.message}
             </p>
           )}
