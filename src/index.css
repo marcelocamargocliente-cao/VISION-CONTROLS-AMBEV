@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
 
@@ -11,10 +10,10 @@
    VARIÁVEIS GLOBAIS
    ============================================ */
 :root {
-  /* Fontes */
-  --font-display: 'Plus Jakarta Sans', sans-serif;
-  --font-body:    'DM Sans', sans-serif;
-  --font-mono:    'JetBrains Mono', monospace;
+  /* Fontes — system stack (igual ao Gestão de PTAs) */
+  --font-display: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-body:    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono:    'SF Mono', 'Cascadia Code', 'Fira Code', Consolas, 'Liberation Mono', monospace;
 
   /* Fundos */
   --bg-app:     #0D1117;
@@ -61,8 +60,8 @@ html, body, #root {
 
 body {
   font-family: var(--font-body);
-  font-size: 13px;
-  line-height: 1.5;
+  font-size: 14px;
+  line-height: 1.55;
   color: var(--text-1);
   background: var(--bg-app);
   -webkit-font-smoothing: antialiased;
@@ -76,9 +75,9 @@ body {
 /* Títulos de página */
 h1 {
   font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   color: var(--text-1);
   margin: 0;
 }
@@ -86,16 +85,16 @@ h1 {
 /* Títulos de seção e cards */
 h2, h3 {
   font-family: var(--font-display);
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
   color: var(--text-1);
   margin: 0;
 }
 
 h4, h5, h6 {
   font-family: var(--font-display);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--text-1);
   margin: 0;
@@ -104,7 +103,7 @@ h4, h5, h6 {
 /* Parágrafos e texto corrido */
 p {
   font-family: var(--font-body);
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text-2);
   margin: 0;
 }
@@ -150,12 +149,11 @@ textarea::placeholder {
   color: var(--text-3);
   font-weight: 400;
 }
-/* Allow icon-padded search inputs to override global padding */
 input.has-icon-left {
-  padding-left: 2.25rem; /* pl-9 = 36px */
+  padding-left: 2.25rem;
 }
 input.has-icon-left-sm {
-  padding-left: 2rem; /* pl-8 = 32px */
+  padding-left: 2rem;
 }
 
 
@@ -173,8 +171,8 @@ select {
    ============================================ */
 button {
   font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
   border-radius: 8px;
   transition: all 150ms ease;
@@ -244,9 +242,9 @@ table {
 }
 
 thead th {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-3);
   padding: 8px 12px;
@@ -256,7 +254,7 @@ thead th {
 }
 
 tbody td {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-1);
   padding: 10px 12px;
   border-bottom: 1px solid var(--border);
@@ -276,8 +274,8 @@ tbody tr:last-child td {
    ============================================ */
 .badge {
   font-family: var(--font-body);
-  font-size: 10px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 500;
   border-radius: 20px;
   padding: 3px 10px;
   display: inline-flex;
@@ -328,7 +326,7 @@ kbd {
    ============================================ */
 .tab-item {
   font-family: var(--font-body);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--text-2);
   padding: 10px 16px;
@@ -408,9 +406,9 @@ a:hover {
 
 .kpi-number {
   font-family: var(--font-display);
-  font-size: 32px;
-  font-weight: 800;
-  letter-spacing: -0.03em;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   line-height: 1;
 }
 
@@ -421,7 +419,7 @@ a:hover {
   flex: 1 1 0;
   min-height: 0;
   box-sizing: border-box;
-  overflow-y: auto;                 /* MOBILE: a página inteira rola */
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
 }
@@ -447,7 +445,6 @@ a:hover {
   }
 }
 
-/* DESKTOP: volta o comportamento de painéis fixos com scroll interno */
 @media (min-width: 769px) {
   .ocorrencia-detalhe-page, .nova-ocorrencia-page {
     overflow: hidden;
@@ -479,7 +476,6 @@ a:hover {
   z-index: 30;
 }
 
-/* Barra de progresso por linha */
 .linha-bar-fill {
   background: var(--text-3);
   border-radius: 2px;
@@ -505,13 +501,11 @@ a:hover {
 }
 .linha-pct.full { color: var(--green); }
 
-/* Sidebar */
 .sidebar {
   background: var(--bg-sidebar);
   border-right: 1px solid var(--border);
 }
 
-/* LED Indicators */
 .led-dot {
   width: 6px;
   height: 6px;
@@ -540,7 +534,6 @@ a:hover {
   box-shadow: none;
 }
 
-/* Wrapper geral da página de detalhe */
 .equipamento-detalhe-page {
   display: flex;
   flex-direction: column;
@@ -551,30 +544,26 @@ a:hover {
   background: var(--bg-app);
 }
 
-/* Header — TAG, status, título, botões Editar/Abrir Ocorrência */
 .equipamento-header {
   flex-shrink: 0;
   padding: 16px 24px;
   border-bottom: 1px solid var(--border);
 }
 
-/* Abas — Ficha Técnica, Ocorrências, Manutenções, Fotos, Etiqueta */
 .equipamento-tabs {
   flex-shrink: 0;
   border-bottom: 1px solid var(--border);
   padding: 0 24px;
 }
 
-/* Conteúdo da aba ativa — ROLA */
 .equipamento-tab-content {
   flex: 1 1 0;
-  min-height: 0;          /* ESSENCIAL */
+  min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
   padding: 24px;
 }
 
-/* Scrollbar customizada */
 .equipamento-tab-content::-webkit-scrollbar {
   width: 6px;
 }
@@ -589,10 +578,9 @@ a:hover {
   background: var(--text-3);
 }
 
-/* Container do dropdown de compartilhamento */
 .compartilhar-dropdown {
   position: absolute;
-  bottom: calc(100% + 8px);  /* abre ACIMA do botão */
+  bottom: calc(100% + 8px);
   right: 0;
   z-index: 9999;
   min-width: 200px;
@@ -600,7 +588,7 @@ a:hover {
   border: 1px solid var(--border-hover);
   border-radius: 10px;
   padding: 6px;
-  box-shadow: 0 -4px 24px rgba(0,0,0,0.4);  /* sombra para cima */
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.4);
   animation: slideUp 150ms ease;
 }
 
@@ -636,25 +624,22 @@ a:hover {
   margin: 4px 0;
 }
 
-/* Container dos filtros */
 .filters-row {
   display: flex;
-  flex-wrap: wrap;          /* quebra linha se não couber */
+  flex-wrap: wrap;
   gap: 8px;
   align-items: flex-end;
 }
 
-/* Cada grupo de filtro (label + select) */
 .filter-group {
   display: flex;
   flex-direction: column;
   gap: 3px;
-  min-width: 140px;         /* largura mínima para texto não cortar */
-  flex: 1 1 140px;          /* cresce mas não fica menor que 140px */
+  min-width: 140px;
+  flex: 1 1 140px;
   max-width: 200px;
 }
 
-/* Label acima do select */
 .filter-group label {
   font-size: 10px;
   font-weight: 600;
@@ -664,7 +649,6 @@ a:hover {
   white-space: nowrap;
 }
 
-/* Select */
 .filter-group select {
   height: 32px;
   font-size: 12px;
@@ -698,9 +682,6 @@ a:hover {
 .filter-tipo    { min-width: 140px; flex: 1 1 140px; }
 .filter-marca   { min-width: 140px; flex: 1 1 140px; }
 
-/* ============================================
-   BOTÃO DELETAR FOTO NA GALERIA (HOVER & MOBILE)
-   ============================================ */
 .foto-card-container:hover .foto-delete-btn {
   opacity: 1;
 }
@@ -712,7 +693,7 @@ a:hover {
 }
 
 /* ============================================
-   BOTÕES COM GRADIENTE (usados em ações primárias)
+   BOTÕES COM GRADIENTE
    ============================================ */
 .btn-primary-gradient {
   background: linear-gradient(135deg, #2F81F7 0%, #58A6FF 100%);
@@ -736,20 +717,17 @@ a:hover {
 .btn-nova-ocorrencia:active { transform: scale(0.98); }
 
 /* ============================================
-   MOBILE — FUNDAÇÃO (safe-area, scroll fluido, alvos de toque)
+   MOBILE — FUNDAÇÃO
    ============================================ */
 
-/* Momentum scroll em iOS + sem "bounce" horizontal */
 .scroll-fluido {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
 }
 
-/* Utilitário: respeita a barra inferior do sistema (notch/gesture bar) */
 .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
 .safe-top { padding-top: env(safe-area-inset-top); }
 
-/* Barra de navegação inferior (mobile) */
 .bottom-nav {
   background: rgba(13,17,23,0.92);
   backdrop-filter: blur(16px);
@@ -802,7 +780,6 @@ a:hover {
   justify-content: center;
 }
 
-/* Botão de ação flutuante (FAB) — Nova Ocorrência no mobile */
 .fab {
   position: fixed;
   right: 16px;
@@ -818,14 +795,12 @@ a:hover {
 }
 .fab:active { transform: scale(0.94); }
 
-/* Menu lateral retrátil (mobile) — desliza da esquerda */
 @keyframes drawerIn {
   from { transform: translateX(-100%); }
   to   { transform: translateX(0); }
 }
 .drawer-panel { animation: drawerIn 240ms cubic-bezier(0.32, 0.72, 0, 1); }
 
-/* Bottom sheet — modais deslizam de baixo no mobile */
 @keyframes sheetUp {
   from { transform: translateY(100%); }
   to   { transform: translateY(0); }
@@ -837,7 +812,6 @@ a:hover {
 .sheet-backdrop { animation: fadeIn 180ms ease; }
 .sheet-panel { animation: sheetUp 260ms cubic-bezier(0.32, 0.72, 0, 1); }
 
-/* Card de equipamento (mobile) */
 .equip-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -852,30 +826,22 @@ a:hover {
    AJUSTES SÓ PARA TELAS ≤ 768px
    ============================================ */
 @media (max-width: 768px) {
-  /* Evita o zoom automático do iOS ao focar inputs (exige ≥16px) */
   input, select, textarea {
     font-size: 16px !important;
   }
 
-  /* Alvos de toque confortáveis: mínimo 44px em ações-ícone */
   .touch-target {
     min-width: 44px;
     min-height: 44px;
   }
 
-  /* Título de página um pouco menor no celular */
-  h1 { font-size: 19px; }
+  h1 { font-size: 18px; }
 
-  /* KPI numbers proporcionais */
-  .kpi-number { font-size: 26px; }
+  .kpi-number { font-size: 24px; }
 }
 
 /* ============================================
-   PALETA NEUTRA (aplica em TUDO, menos o Dashboard)
-   Botões, abas, links, foco e navegação em tons de cinza.
-   Só permanecem coloridos os SINAIS: OK/NOK, ONLINE e alertas.
-   O Dashboard usa cores inline nos próprios componentes, então
-   estas regras não afetam os gráficos/KPIs.
+   PALETA NEUTRA
    ============================================ */
 .btn-primary-gradient,
 .btn-nova-ocorrencia {
