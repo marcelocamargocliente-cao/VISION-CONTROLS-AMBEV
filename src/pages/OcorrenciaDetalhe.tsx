@@ -314,6 +314,38 @@ export const OcorrenciaDetalhe: React.FC = () => {
       await loadData();
     })();
   }, [ocorrencia?.status, JSON.stringify(orcamentos.map(o => o.id + o.status))]);
+
+  // Sincroniza status das PEÇAS com a fase atual do fluxo ao carregar (retroativo)
+  useEffect(() => {
+    if (!ocorrencia || pecas.length === 0) return;
+    const FASE_PARA_STATUS_PECA: Partial<Record<string, string>> = {
+      'AGUARDANDO_ORCAMENTO':    'COTACAO',
+      'ORCAMENTO_INTERNO_FEITO': 'COTADA',
+      'PPAC_ENVIADO':            'APROVADA',
+      'RC_GERADA':               'APROVADA_COMPRA',
+      'PEDIDO_DE_COMPRA':        'COMPRADA',
+      'CONCLUIDA':               'ENTREGUE',
+    };
+    const statusEsperado = FASE_PARA_STATUS_PECA[ocorrencia.status];
+    if (!statusEsperado) return;
+    const ORDEM_PECA: Record<string, number> = {
+      SOLICITADA: 0, PENDENTE_COTACAO: 0,
+      COTACAO: 1, COTADA: 2, APROVADA: 3,
+      APROVADA_COMPRA: 4, COMPRADA: 5,
+      ENTREGUE: 6, RECEBIDA: 6, INSTALADA: 6, APLICADA: 6,
+    };
+    const rankEsperado = ORDEM_PECA[statusEsperado] ?? 0;
+    const atrasadas = pecas.filter((p) => (ORDEM_PECA[p.status] ?? 0) < rankEsperado);
+    if (atrasadas.length === 0) return;
+    (async () => {
+      for (const p of atrasadas) {
+        try { await DataStore.savePeca({ ...p, status: statusEsperado as any }); } catch (e) { console.warn(e); }
+      }
+      await loadData();
+    })();
+  }, [ocorrencia?.status, JSON.stringify(pecas.map((p) => p.id + p.status))]);
+
+  const handleEnviarComentario = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!ocorrencia || !novoComentario.trim()) return;
     setSendingEvent(true);
