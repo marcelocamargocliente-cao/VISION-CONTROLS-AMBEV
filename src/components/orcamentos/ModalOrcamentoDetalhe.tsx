@@ -219,7 +219,6 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
   };
 
   const handleSave = async () => {
-    if (!isAuthorizedToEdit) return;
     setSaving(true);
     try {
       const numValue =
