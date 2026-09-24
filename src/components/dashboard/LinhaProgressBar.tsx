@@ -46,39 +46,22 @@ export const LinhaProgressBar: React.FC<LinhaProgressBarProps> = ({ linhas }) =>
           <span className="w-2.5 h-2.5 rounded-sm bg-[#3FB950]" />
           <span className="text-[9px] text-[#8B949E] uppercase font-bold tracking-wider">Operacional (OK)</span>
         </div>
-        <div className="flex items-center gap-1">
-          <span className="w-2.5 h-2.5 rounded-sm bg-[#F85149]" />
-          <span className="text-[9px] text-[#8B949E] uppercase font-bold tracking-wider">Indisponível (NOK)</span>
-        </div>
       </div>
 
-      {/* Barras horizontais duplas */}
+      {/* Barras horizontais OK */}
       <div className="flex-1 min-h-0 flex flex-col justify-around gap-1">
         {display.map((l) => {
-          const nok = l.parado + (l.restricao || 0);
-          const pctOk  = maxTotal > 0 ? (l.ok  / maxTotal) * 100 : 0;
-          const pctNok = maxTotal > 0 ? (nok   / maxTotal) * 100 : 0;
+          const pctOk = maxTotal > 0 ? (l.ok / maxTotal) * 100 : 0;
           return (
             <div key={l.linha_id} className="space-y-0.5">
               <div className="flex items-center justify-between text-[9px] leading-none mb-0.5">
                 <span className="font-semibold text-[#C9D1D9] truncate uppercase tracking-wide text-[9px]">{l.linha_nome}</span>
-                <div className="flex items-center gap-1.5 shrink-0 ml-1">
-                  <span className="text-[#3FB950] font-mono font-bold">{l.ok}</span>
-                  {nok > 0 && <span className="text-[#F85149] font-mono font-bold">/ {nok}</span>}
-                </div>
+                <span className="text-[#3FB950] font-mono font-bold shrink-0 ml-1">{l.ok}</span>
               </div>
-              {/* OK bar */}
               <div className="w-full h-[6px] rounded-sm bg-[#1A1F28] overflow-hidden">
                 <div className="h-full rounded-sm bg-[#3FB950] transition-all duration-500"
                   style={{ width: `${pctOk}%` }} />
               </div>
-              {/* NOK bar */}
-              {nok > 0 && (
-                <div className="w-full h-[6px] rounded-sm bg-[#1A1F28] overflow-hidden">
-                  <div className="h-full rounded-sm bg-[#F85149] transition-all duration-500"
-                    style={{ width: `${pctNok}%` }} />
-                </div>
-              )}
             </div>
           );
         })}
