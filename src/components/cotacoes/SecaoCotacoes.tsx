@@ -344,7 +344,18 @@ export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, pecasOco
         </p>
       ) : (
         <div className="space-y-2">
-          {cotacoes.map((c) => (
+          {(() => {
+            // Ranking por preço: menor = verde, meio = laranja, maior = vermelho
+            const sorted = [...cotacoes].sort((a, b) => (a.valor_total || 0) - (b.valor_total || 0));
+            const rankColor = (id: string) => {
+              const idx = sorted.findIndex((c) => c.id === id);
+              const total = sorted.length;
+              if (total === 1) return 'text-[#3FB950]';
+              if (idx === 0) return 'text-[#3FB950]';                      // menor → verde
+              if (idx === total - 1) return 'text-[#F85149]';              // maior → vermelho
+              return 'text-[#F5A623]';                                      // meio → laranja
+            };
+            return cotacoes.map((c) => (
             <div key={c.id} className="bg-[#0A0E1A] border border-[#30363D] rounded-lg overflow-hidden">
               <div className="flex items-center gap-2 px-3 py-2.5">
                 <button onClick={() => setExpandido(expandido === c.id ? null : c.id)}
@@ -352,7 +363,7 @@ export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, pecasOco
                   <Building2 className="w-4 h-4 text-[#8B949E] shrink-0" />
                   <div className="min-w-0 flex-1">
                     <p className="text-[13px] font-bold text-[#E6EDF3] truncate">{c.empresa_nome}</p>
-                    <p className="text-[11px] text-[#8B949E]">{c.itens.length} {c.itens.length === 1 ? 'item' : 'itens'} · {formatCurrency(c.valor_total || 0)}</p>
+                    <p className="text-[11px] text-[#8B949E]">{c.itens.length} {c.itens.length === 1 ? 'item' : 'itens'} · <span className={`font-bold ${rankColor(c.id)}`}>{formatCurrency(c.valor_total || 0)}</span></p>
                   </div>
                   {expandido === c.id ? <ChevronUp className="w-4 h-4 text-[#8B949E] shrink-0" /> : <ChevronDown className="w-4 h-4 text-[#8B949E] shrink-0" />}
                 </button>
@@ -406,7 +417,8 @@ export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, pecasOco
                 </div>
               )}
             </div>
-          ))}
+          ));
+          })()}
         </div>
       )}
     </div>
