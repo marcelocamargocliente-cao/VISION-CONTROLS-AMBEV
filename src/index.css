@@ -428,6 +428,11 @@ a:hover {
     overscroll-behavior-y: contain;
     height: 100%;
   }
+  /* No mobile o header NÃO é sticky — scrolla junto com a página */
+  .ocorrencia-header, .nova-ocorrencia-header {
+    position: relative !important;
+    top: auto !important;
+  }
 }
 
 .ocorrencia-header, .nova-ocorrencia-header {
