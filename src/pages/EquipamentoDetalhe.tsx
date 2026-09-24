@@ -278,7 +278,7 @@ export const EquipamentoDetalhe: React.FC = () => {
 
   return (
     <>
-    <div className="equipamento-detalhe-page flex flex-col px-2 py-3 md:p-4 gap-4 max-w-7xl mx-auto w-full h-full">
+    <div className="equipamento-detalhe-page flex flex-col px-2 py-3 md:p-4 gap-4 max-w-7xl mx-auto w-full h-full overflow-y-auto scroll-fluido">
       {/* Header Bar */}
       <div className="equipamento-header flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#111827] border border-[#30363D] rounded-lg p-4 shadow-lg">
         <div className="flex items-start gap-3 flex-1 min-w-0">

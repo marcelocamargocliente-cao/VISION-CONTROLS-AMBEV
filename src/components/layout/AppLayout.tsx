@@ -278,7 +278,7 @@ export const AppLayout: React.FC = () => {
         </header>
 
         {/* VIEWPORT DE CONTEÚDO */}
-        <main className="flex-1 min-w-0 min-h-0 bg-[var(--bg-app)] flex flex-col overflow-hidden">
+        <main className="flex-1 min-w-0 min-h-0 bg-[var(--bg-app)] flex flex-col md:overflow-hidden">
           <ErrorBoundary key={location.pathname}>
             <Outlet />
           </ErrorBoundary>
