@@ -298,18 +298,19 @@ export const OcorrenciaDetalhe: React.FC = () => {
     const statusEsperado = FASE_PARA_STATUS_ORC[ocorrencia.status];
     if (!statusEsperado) return;
 
-    // Nunca sobrescrever proposta nova (ENVIADO/EM_ANALISE) — só as que já estavam em análise
-    const STATUS_JA_OK = ['EXPIRADO','CANCELADO','FATURADO','APROVADO','APROVADO_AMBEV','ENVIADO','EM_ANALISE','EM_ANALISE_AMBEV','RASCUNHO','ELABORACAO'];
+    // Só atualiza a proposta ativa mais recente — nunca sobrescreve propostas em status manual
+    const STATUS_PROTEGIDOS = ['EXPIRADO','CANCELADO','FATURADO','APROVADO','APROVADO_AMBEV','ENVIADO','EM_ANALISE','EM_ANALISE_AMBEV','RASCUNHO','ELABORACAO'];
 
-    const precisaAtualizar = orcamentos.some(orc => !STATUS_JA_OK.includes(orc.status));
-    if (!precisaAtualizar) return;
+    const ativas = orcamentos
+      .filter(o => !['EXPIRADO','CANCELADO','FATURADO'].includes(o.status))
+      .sort((a, b) => new Date(b.data_envio || '').getTime() - new Date(a.data_envio || '').getTime());
+
+    if (ativas.length === 0) return;
+    const proposta = ativas[0];
+    if (STATUS_PROTEGIDOS.includes(proposta.status)) return;
 
     (async () => {
-      for (const orc of orcamentos) {
-        if (!STATUS_JA_OK.includes(orc.status)) {
-          await DataStore.saveOrcamento({ ...orc, status: statusEsperado as OrcamentoStatus });
-        }
-      }
+      await DataStore.saveOrcamento({ ...proposta, status: statusEsperado as OrcamentoStatus });
       await loadData();
     })();
   }, [ocorrencia?.status, JSON.stringify(orcamentos.map(o => o.id + o.status))]);
@@ -1145,20 +1146,21 @@ export const OcorrenciaDetalhe: React.FC = () => {
                   onFaseAberta={() => setFaseParaAbrir(null)}
                   onAbrirProposta={() => { setCotacaoParaProposta(null); setShowAddOrcModal(true); }}
                   onFluxoAvancou={async (novaFase) => {
-                    // Quando o fluxo avança, atualiza o status da(s) proposta(s) vinculadas
                     const statusPorFase: Partial<Record<OcorrenciaStatus, string>> = {
-                      'RC_GERADA':       'APROVADO',
+                      'RC_GERADA':        'APROVADO',
                       'PEDIDO_DE_COMPRA': 'APROVADO_AMBEV',
                       'CONCLUIDA':        'FATURADO',
                     };
                     const novoStatusOrc = statusPorFase[novaFase];
                     if (novoStatusOrc && orcamentos.length > 0) {
-                      for (const orc of orcamentos) {
-                        if (!['EXPIRADO','CANCELADO','FATURADO'].includes(orc.status)) {
-                          await DataStore.saveOrcamento({ ...orc, status: novoStatusOrc as OrcamentoStatus });
-                        }
+                      // Só atualiza a proposta ativa mais recente (não expirada/cancelada)
+                      const ativas = orcamentos
+                        .filter(o => !['EXPIRADO','CANCELADO','FATURADO'].includes(o.status))
+                        .sort((a, b) => new Date(b.data_envio || '').getTime() - new Date(a.data_envio || '').getTime());
+                      if (ativas.length > 0) {
+                        await DataStore.saveOrcamento({ ...ativas[0], status: novoStatusOrc as OrcamentoStatus });
+                        await loadData();
                       }
-                      await loadData();
                     }
                   }}
                 />
