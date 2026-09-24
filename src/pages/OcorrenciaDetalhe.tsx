@@ -298,7 +298,8 @@ export const OcorrenciaDetalhe: React.FC = () => {
     const statusEsperado = FASE_PARA_STATUS_ORC[ocorrencia.status];
     if (!statusEsperado) return;
 
-    const STATUS_JA_OK = ['EXPIRADO','CANCELADO','FATURADO','APROVADO','APROVADO_AMBEV'];
+    // Nunca sobrescrever proposta nova (ENVIADO/EM_ANALISE) — só as que já estavam em análise
+    const STATUS_JA_OK = ['EXPIRADO','CANCELADO','FATURADO','APROVADO','APROVADO_AMBEV','ENVIADO','EM_ANALISE','EM_ANALISE_AMBEV','RASCUNHO','ELABORACAO'];
 
     const precisaAtualizar = orcamentos.some(orc => !STATUS_JA_OK.includes(orc.status));
     if (!precisaAtualizar) return;
@@ -306,8 +307,6 @@ export const OcorrenciaDetalhe: React.FC = () => {
     (async () => {
       for (const orc of orcamentos) {
         if (!STATUS_JA_OK.includes(orc.status)) {
-          // Atualiza direto no dbState local
-          const idx = (DataStore as any).__dbState?.orcamentos?.findIndex((o: any) => o.id === orc.id) ?? -1;
           await DataStore.saveOrcamento({ ...orc, status: statusEsperado as OrcamentoStatus });
         }
       }

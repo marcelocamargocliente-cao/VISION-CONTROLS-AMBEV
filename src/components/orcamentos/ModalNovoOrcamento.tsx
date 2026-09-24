@@ -275,14 +275,14 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
       let resultingOrc: Orcamento;
 
       if (orcamentoToEdit) {
-        // Atualiza no Supabase
-        const { error } = await supabase
-          .from('orcamentos')
-          .update(payload)
-          .eq('id', orcamentoToEdit.id);
-        
-        if (error) {
-          console.warn('Erro ao atualizar no Supabase:', error);
+        // Tenta atualizar no Supabase (ignora erro se tabela não existir)
+        try {
+          await supabase
+            .from('orcamentos')
+            .update(payload)
+            .eq('id', orcamentoToEdit.id);
+        } catch (supabaseErr) {
+          console.warn('Supabase update ignorado:', supabaseErr);
         }
 
         resultingOrc = await DataStore.saveOrcamento({

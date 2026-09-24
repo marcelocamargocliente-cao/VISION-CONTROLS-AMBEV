@@ -108,6 +108,14 @@ export const PPAC: React.FC = () => {
         ...orc, id: undefined as any, numero: novoNum, status: 'ENVIADO' as OrcamentoStatus,
         data_envio: new Date().toISOString().slice(0, 10),
       });
+      // Registra histórico na timeline da ocorrência
+      if (orc.ocorrencia_id) {
+        await DataStore.addEvento({
+          ocorrencia_id: orc.ocorrencia_id,
+          tipo_evento: 'ORCAMENTO_ENVIADO',
+          descricao: `Proposta ${nova.numero} reenviada (revisão de ${orc.numero} expirada)`,
+        });
+      }
       await loadData();
       toast.success(`PPAC ${nova.numero} reenviada · ${orc.numero} marcada como Expirada`);
     } catch { toast.error('Erro ao reenviar'); }
