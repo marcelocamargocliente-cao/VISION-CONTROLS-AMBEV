@@ -92,7 +92,7 @@ export const PPAC: React.FC = () => {
 
   // KPIs
   const kpis = useMemo(() => {
-    const enviadas  = orcamentos.filter((o) => o.status === 'ENVIADO');
+    const enviadas  = orcamentos.filter((o) => ['ENVIADO','EM_ANALISE','EM_ANALISE_AMBEV'].includes(o.status));
     const aprovadas = orcamentos.filter((o) => o.status === 'APROVADO' || o.status === 'APROVADO_AMBEV');
     const expiradas = orcamentos.filter((o) => o.status === 'EXPIRADO');
     const total     = orcamentos.reduce((s, o) => s + (Number(o.valor_total) || 0), 0);
@@ -209,7 +209,7 @@ export const PPAC: React.FC = () => {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
           { label: 'Total Emitido', value: formatCurrency(kpis.total), sub: `${kpis.qtd} proposta(s)`, cor: '#E6EDF3' },
-          { label: 'Aguardando AMBEV', value: kpis.enviadas, sub: 'Em análise', cor: '#58A6FF' },
+          { label: 'Em Análise AMBEV', value: kpis.enviadas, sub: 'Aguardando aprovação', cor: '#58A6FF' },
           { label: 'Aprovadas', value: kpis.aprovadas, sub: 'Liberadas', cor: '#3FB950' },
           { label: 'Expiradas', value: kpis.expiradas, sub: 'Candidatas a reenvio', cor: '#D29922' },
         ].map((k) => (
