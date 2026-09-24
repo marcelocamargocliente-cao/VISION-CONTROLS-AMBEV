@@ -163,8 +163,11 @@ export const Orcamentos: React.FC = () => {
         const novoNumero = numeroBase
           ? orc.numero.replace(numeroBase, String(Number(numeroBase) + 1))
           : orc.numero + '-R';
+        await DataStore.updateOcorrenciaStatus(
+          orc.ocorrencia_id, 'PPAC_ENVIADO', 'Sistema',
+          'Fluxo reiniciado por reenvio de proposta'
+        );
         await DataStore.updateOcorrenciaExtra(orc.ocorrencia_id, {
-          status: 'PPAC_ENVIADO',
           ppac: novoNumero,
           data_ppac_enviado: new Date().toISOString().slice(0, 10),
           data_rc: null, numero_rc: null,

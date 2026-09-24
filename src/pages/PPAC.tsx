@@ -130,17 +130,18 @@ export const PPAC: React.FC = () => {
         // 3. Reseta o fluxo para PPAC_ENVIADO com a nova proposta
         const base = orc.numero.replace(/\D/g, '');
         const novoNum = base ? orc.numero.replace(base, String(Number(base) + 1)) : orc.numero + '-R';
+        // Reset status via método correto
+        await DataStore.updateOcorrenciaStatus(
+          orc.ocorrencia_id, 'PPAC_ENVIADO', 'Sistema',
+          'Fluxo reiniciado por reenvio de proposta'
+        );
+        // Reseta campos das fases posteriores
         await DataStore.updateOcorrenciaExtra(orc.ocorrencia_id, {
-          status: 'PPAC_ENVIADO',
           ppac: novoNum,
           data_ppac_enviado: new Date().toISOString().slice(0, 10),
-          // Limpa fases posteriores
-          data_rc: null,
-          numero_rc: null,
-          data_pedido_compra: null,
-          numero_pedido_compra: null,
-          data_entrega: null,
-          data_conclusao: null,
+          data_rc: null, numero_rc: null,
+          data_pedido_compra: null, numero_pedido_compra: null,
+          data_entrega: null, data_conclusao: null,
         });
       }
 
