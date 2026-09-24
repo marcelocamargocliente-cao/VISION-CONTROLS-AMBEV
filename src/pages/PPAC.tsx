@@ -226,25 +226,25 @@ export const PPAC: React.FC = () => {
       </div>
 
       {/* Filtros */}
-      <div className="flex gap-2 items-center w-full min-w-0">
-        <label className="flex items-center gap-2 min-w-0 flex-1 bg-[#111827] border border-[#21262D] rounded-lg h-9 px-3 cursor-text focus-within:border-[#8B949E] transition-colors">
-          <Search className="w-4 h-4 text-[#484F58] shrink-0" />
+      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', width: '100%' }}>
+        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, minWidth: 0, background: '#111827', border: '1px solid #21262D', borderRadius: '8px', height: '36px', padding: '0 12px', cursor: 'text' }}>
+          <Search style={{ width: '16px', height: '16px', color: '#8B949E', flexShrink: 0 }} />
           <input
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
             placeholder="Nº PPAC, OS, RC, Pedido, TAG..."
-            className="min-w-0 w-full bg-transparent text-[#E6EDF3] text-[12px] outline-none placeholder:text-[#484F58]"
+            style={{ flex: 1, minWidth: 0, background: 'transparent', color: '#E6EDF3', fontSize: '12px', outline: 'none', border: 'none' }}
           />
           {busca && (
-            <button onClick={() => setBusca('')} className="text-[#484F58] hover:text-[#8B949E] shrink-0">
-              <X className="w-3.5 h-3.5" />
+            <button onClick={() => setBusca('')} style={{ color: '#484F58', flexShrink: 0, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+              <X style={{ width: '14px', height: '14px' }} />
             </button>
           )}
         </label>
         <select
           value={filtroStatus}
           onChange={(e) => setFiltroStatus(e.target.value as any)}
-          className="h-9 w-40 shrink-0 bg-[#111827] border border-[#21262D] text-[#E6EDF3] text-[11px] rounded-lg px-2 outline-none focus:border-[#8B949E]">
+          style={{ width: '160px', flexShrink: 0, height: '36px', background: '#111827', border: '1px solid #21262D', color: '#E6EDF3', fontSize: '11px', borderRadius: '8px', padding: '0 8px', outline: 'none' }}>
           <option value="TODOS">Todos os Status</option>
           <option value="RASCUNHO">Rascunho</option>
           <option value="ELABORACAO">Em Elaboração</option>
