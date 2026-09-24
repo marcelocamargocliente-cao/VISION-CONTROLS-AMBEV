@@ -268,20 +268,17 @@ export const SecaoCotacoes: React.FC<Props> = ({ ocorrenciaId, canEdit, pecasOco
                     placeholder="Detalhes / especificação / dados técnicos, código SAP..."
                     className="w-full h-8 bg-[#0A0E1A] border border-[#30363D] text-[#C9D1D9] text-[11px] rounded px-2.5 outline-none focus:border-[#8B949E]" />
 
-                  <div className="grid grid-cols-[1fr_60px_100px] gap-1.5">
+                  <div className="grid grid-cols-[1fr_52px_90px] gap-1.5">
                     <input value={it.prestador || ''} onChange={(e) => updateItem(i, 'prestador', e.target.value)}
                       placeholder={isServico ? 'Prestador / técnico' : 'Fabricante'}
-                      className="h-8 bg-[#0A0E1A] border border-[#30363D] text-[#E6EDF3] text-[11px] rounded px-2.5 outline-none focus:border-[#8B949E]" />
+                      className="h-8 bg-[#0A0E1A] border border-[#30363D] text-[#E6EDF3] text-[11px] rounded px-2 outline-none focus:border-[#8B949E] min-w-0" />
                     <input type="text" inputMode="numeric" value={it.quantidade || ''}
                       onChange={(e) => updateItem(i, 'quantidade', Number(e.target.value.replace(/\D/g, '')) || 1)}
-                      placeholder={isServico ? 'Horas' : 'Qtd'}
-                      className="h-8 bg-[#0A0E1A] border border-[#30363D] text-[#E6EDF3] text-[11px] rounded px-2 outline-none text-center focus:border-[#8B949E]" />
-                    <div className="relative">
-                      <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] text-[#6E7681]">R$</span>
-                      <input type="text" inputMode="numeric" value={centavosParaTexto(it.valor_unitario)}
-                        onChange={(e) => updateValor(i, e.target.value)} placeholder="0,00"
-                        className="w-full h-8 bg-[#0A0E1A] border border-[#30363D] text-[#E6EDF3] text-[11px] rounded pl-6 pr-2 outline-none text-right font-mono focus:border-[#8B949E]" />
-                    </div>
+                      placeholder="Qtd"
+                      className="h-8 bg-[#0A0E1A] border border-[#30363D] text-[#E6EDF3] text-[11px] rounded px-1 outline-none text-center focus:border-[#8B949E]" />
+                    <input type="text" inputMode="numeric" value={centavosParaTexto(it.valor_unitario)}
+                      onChange={(e) => updateValor(i, e.target.value)} placeholder="R$ 0,00"
+                      className="h-8 bg-[#0A0E1A] border border-[#30363D] text-[#E6EDF3] text-[11px] rounded px-2 outline-none text-right font-mono focus:border-[#8B949E] min-w-0" />
                   </div>
 
                   {!isServico && (

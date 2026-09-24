@@ -1104,6 +1104,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
                     <input
                       type="file"
                       accept="image/*"
+                      capture="environment"
                       onChange={handleUploadPhoto}
                       disabled={uploadingPhoto}
                       className="hidden"
