@@ -15,13 +15,13 @@ const STATUS_CONFIG: Record<OrcamentoStatus, { label: string; cor: string; bg: s
   RASCUNHO:        { label: 'Rascunho',         cor: '#8B949E', bg: 'rgba(139,148,158,0.12)', icon: FileText },
   ELABORACAO:      { label: 'Em Elaboração',     cor: '#8B949E', bg: 'rgba(139,148,158,0.12)', icon: FileText },
   ENVIADO:         { label: 'PPAC Enviada',       cor: '#58A6FF', bg: 'rgba(88,166,255,0.12)',  icon: Send },
-  EM_ANALISE:      { label: 'Em Análise',         cor: '#D29922', bg: 'rgba(210,153,34,0.12)',  icon: Clock },
-  EM_ANALISE_AMBEV:{ label: 'Análise AMBEV',      cor: '#D29922', bg: 'rgba(210,153,34,0.12)',  icon: Clock },
-  APROVADO:        { label: 'Aprovada',            cor: '#3FB950', bg: 'rgba(63,185,80,0.12)',   icon: CheckCircle2 },
+  EM_ANALISE_AMBEV:{ label: 'Em Análise AMBEV',   cor: '#D29922', bg: 'rgba(210,153,34,0.12)',  icon: Clock },
+  EM_ANALISE:      { label: 'Em Análise AMBEV',   cor: '#D29922', bg: 'rgba(210,153,34,0.12)',  icon: Clock },
   APROVADO_AMBEV:  { label: 'Aprovada AMBEV',      cor: '#3FB950', bg: 'rgba(63,185,80,0.12)',   icon: CheckCircle2 },
-  REPROVADO:       { label: 'Reprovada',           cor: '#F85149', bg: 'rgba(248,81,73,0.12)',   icon: XCircle },
-  REJEITADO:       { label: 'Rejeitada',           cor: '#F85149', bg: 'rgba(248,81,73,0.12)',   icon: XCircle },
+  APROVADO:        { label: 'Aprovada AMBEV',      cor: '#3FB950', bg: 'rgba(63,185,80,0.12)',   icon: CheckCircle2 },
   REJEITADO_AMBEV: { label: 'Rejeitada AMBEV',     cor: '#F85149', bg: 'rgba(248,81,73,0.12)',   icon: XCircle },
+  REJEITADO:       { label: 'Rejeitada AMBEV',     cor: '#F85149', bg: 'rgba(248,81,73,0.12)',   icon: XCircle },
+  REPROVADO:       { label: 'Rejeitada AMBEV',     cor: '#F85149', bg: 'rgba(248,81,73,0.12)',   icon: XCircle },
   EXPIRADO:        { label: 'Expirada',            cor: '#D29922', bg: 'rgba(210,153,34,0.12)',  icon: Clock },
   CANCELADO:       { label: 'Cancelada',           cor: '#484F58', bg: 'rgba(72,79,88,0.12)',    icon: XCircle },
   FATURADO:        { label: 'Faturada',            cor: '#3FB950', bg: 'rgba(63,185,80,0.12)',   icon: CheckCircle2 },
@@ -82,8 +82,12 @@ export const PPAC: React.FC = () => {
           o.numero?.toLowerCase().includes(b) ||
           o.fornecedor?.toLowerCase().includes(b) ||
           (occ as any)?.ordem_sap?.toLowerCase().includes(b) ||
+          (occ as any)?.nota_sap?.toLowerCase().includes(b) ||
+          (occ as any)?.numero_rc?.toLowerCase().includes(b) ||
+          (occ as any)?.numero_pedido_compra?.toLowerCase().includes(b) ||
           eq?.tipo?.toLowerCase().includes(b) ||
-          eq?.patrimonio_ref?.toLowerCase().includes(b)
+          eq?.patrimonio_ref?.toLowerCase().includes(b) ||
+          eq?.tag?.toLowerCase().includes(b)
         );
       }
       return true;
@@ -224,17 +228,23 @@ export const PPAC: React.FC = () => {
       {/* Filtros */}
       <div className="flex flex-col sm:flex-row gap-2">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8B949E]" />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#8B949E] pointer-events-none" />
           <input value={busca} onChange={(e) => setBusca(e.target.value)}
-            placeholder="Buscar por Nº PPAC, TAG, fornecedor, OS..."
-            className="w-full h-10 bg-[#111827] border border-[#21262D] text-[#E6EDF3] text-[12px] rounded-lg pl-9 pr-3 outline-none focus:border-[#8B949E]" />
+            placeholder="Buscar por Nº PPAC, OS, Nº RC, Nº Pedido, TAG, fornecedor..."
+            className="w-full h-10 bg-[#111827] border border-[#21262D] text-[#E6EDF3] text-[12px] rounded-lg pl-8 pr-3 outline-none focus:border-[#8B949E]" />
         </div>
         <select value={filtroStatus} onChange={(e) => setFiltroStatus(e.target.value as any)}
           className="h-10 bg-[#111827] border border-[#21262D] text-[#E6EDF3] text-[12px] rounded-lg px-3 outline-none">
           <option value="TODOS">Todos os Status</option>
-          {Object.entries(STATUS_CONFIG).map(([k, v]) => (
-            <option key={k} value={k}>{v.label}</option>
-          ))}
+          <option value="RASCUNHO">Rascunho</option>
+          <option value="ELABORACAO">Em Elaboração</option>
+          <option value="ENVIADO">PPAC Enviada</option>
+          <option value="EM_ANALISE_AMBEV">Em Análise AMBEV</option>
+          <option value="APROVADO_AMBEV">Aprovada AMBEV</option>
+          <option value="REJEITADO_AMBEV">Rejeitada AMBEV</option>
+          <option value="EXPIRADO">Expirada</option>
+          <option value="CANCELADO">Cancelada</option>
+          <option value="FATURADO">Faturada</option>
         </select>
       </div>
 
