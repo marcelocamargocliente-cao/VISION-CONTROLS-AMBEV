@@ -101,21 +101,60 @@ export const PPAC: React.FC = () => {
 
   const handleReenviar = async (orc: Orcamento) => {
     try {
+      // 1. Busca ocorrência vinculada para snapshot do fluxo
+      const ocorrencia = orc.ocorrencia_id
+        ? await DataStore.getOcorrenciaById(orc.ocorrencia_id)
+        : null;
+
+      // 2. Registra histórico do fluxo anterior na timeline
+      if (ocorrencia) {
+        const faseAnterior = ocorrencia.status || 'PPAC_ENVIADO';
+        const labelFase: Record<string, string> = {
+          PPAC_ENVIADO: 'PPAC Enviado',
+          RC_GERADA: 'RC Gerada',
+          PEDIDO_DE_COMPRA: 'Pedido de Compra',
+          CONCLUIDA: 'Entrega / Concluído',
+        };
+        const detalhes = [
+          ocorrencia.ppac ? `PPAC: ${ocorrencia.ppac}` : null,
+          ocorrencia.numero_rc ? `RC: ${ocorrencia.numero_rc}` : null,
+          ocorrencia.numero_pedido_compra ? `Pedido: ${ocorrencia.numero_pedido_compra}` : null,
+        ].filter(Boolean).join(' · ');
+
+        await DataStore.addEvento({
+          ocorrencia_id: orc.ocorrencia_id,
+          tipo_evento: 'COMENTARIO',
+          descricao: `📋 HISTÓRICO DO FLUXO ANTERIOR — Proposta ${orc.numero} expirada na fase "${labelFase[faseAnterior] || faseAnterior}"${detalhes ? ` (${detalhes})` : ''}. Nova proposta reenviada.`,
+        });
+
+        // 3. Reseta o fluxo para PPAC_ENVIADO com a nova proposta
+        const base = orc.numero.replace(/\D/g, '');
+        const novoNum = base ? orc.numero.replace(base, String(Number(base) + 1)) : orc.numero + '-R';
+        await DataStore.updateOcorrenciaExtra(orc.ocorrencia_id, {
+          status: 'PPAC_ENVIADO',
+          ppac: novoNum,
+          data_ppac_enviado: new Date().toISOString().slice(0, 10),
+          // Limpa fases posteriores
+          data_rc: null,
+          numero_rc: null,
+          data_pedido_compra: null,
+          numero_pedido_compra: null,
+          data_entrega: null,
+          data_conclusao: null,
+        });
+      }
+
+      // 4. Expira a proposta original
       await DataStore.saveOrcamento({ ...orc, status: 'EXPIRADO' as OrcamentoStatus });
+
+      // 5. Cria nova proposta
       const base = orc.numero.replace(/\D/g, '');
       const novoNum = base ? orc.numero.replace(base, String(Number(base) + 1)) : orc.numero + '-R';
       const nova = await DataStore.saveOrcamento({
         ...orc, id: undefined as any, numero: novoNum, status: 'ENVIADO' as OrcamentoStatus,
         data_envio: new Date().toISOString().slice(0, 10),
       });
-      // Registra histórico na timeline da ocorrência
-      if (orc.ocorrencia_id) {
-        await DataStore.addEvento({
-          ocorrencia_id: orc.ocorrencia_id,
-          tipo_evento: 'ORCAMENTO_ENVIADO',
-          descricao: `Proposta ${nova.numero} reenviada (revisão de ${orc.numero} expirada)`,
-        });
-      }
+
       await loadData();
       toast.success(`PPAC ${nova.numero} reenviada · ${orc.numero} marcada como Expirada`);
     } catch { toast.error('Erro ao reenviar'); }
