@@ -19,22 +19,35 @@ interface BarChartUGsProps {
   agingParadas: VwAgingParadas[];
 }
 
+// Abrevia nomes longos de área para caber no eixo X
+const abreviaArea = (nome: string): string => {
+  if (!nome || nome === 'SEM ÁREA') return 'S/Á';
+  const mapa: Record<string, string> = {
+    'RETORNAVEIS':        'RETORN.',
+    'ONE WAY CERVEJA':    'OW CERV.',
+    'ONE WAY REFRI':      'OW REFRI',
+    'PROCESSOS CERVEJA':  'PROC.',
+    'ÁREA COMUM':         'COMUM',
+    'AREA COMUM':         'COMUM',
+    'ETA':                'ETA',
+    'PAF / ENTRADA':      'PAF',
+    'ÁREA DO CHOPP':      'CHOPP',
+    'AREA DO CHOPP':      'CHOPP',
+  };
+  return mapa[nome.toUpperCase()] || nome.slice(0, 8);
+};
+
 export const BarChartUGs: React.FC<BarChartUGsProps> = ({ statusUg, agingParadas }) => {
   const navigate = useNavigate();
 
-  // Usa statusUg que agora agrupa por área real (area_ref)
-  const chartData = (statusUg && statusUg.length > 0
-    ? statusUg
-    : [
-        { ug_codigo: 'N1', ok: 45, parado: 0 },
-        { ug_codigo: 'N2', ok: 52, parado: 0 },
-        { ug_codigo: 'N3', ok: 38, parado: 0 },
-        { ug_codigo: 'N4', ok: 44, parado: 0 },
-      ]
-  ).map((u) => ({
-    name: u.ug_codigo,
-    parado: u.parado || 0,
-  })).filter((u) => u.parado > 0); // só mostra quem tem NOK
+  const chartData = (statusUg && statusUg.length > 0 ? statusUg : [])
+    .map((u) => ({
+      name: abreviaArea(u.ug_codigo || u.ug_nome || ''),
+      fullName: u.ug_codigo || u.ug_nome || 'S/Á',
+      parado: u.parado || 0,
+    }))
+    .filter((u) => u.parado > 0)
+    .sort((a, b) => b.parado - a.parado);
 
   const top2Parados = agingParadas.slice(0, 2);
   const totalNok = chartData.reduce((s, d) => s + d.parado, 0);
@@ -63,26 +76,29 @@ export const BarChartUGs: React.FC<BarChartUGsProps> = ({ statusUg, agingParadas
         )}
       </div>
 
-      {/* Gráfico de barras vermelhas */}
+      {/* Gráfico */}
       <div className="flex-1 min-h-0 w-full">
         {chartData.length > 0 ? (
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={chartData}
-              margin={{ top: 14, right: 4, left: -20, bottom: 0 }}
-              barCategoryGap="30%"
+              margin={{ top: 14, right: 4, left: -24, bottom: 4 }}
+              barCategoryGap="40%"
+              barSize={18}
             >
               <XAxis
                 dataKey="name"
-                tick={{ fill: '#8B949E', fontSize: 10, fontFamily: 'monospace' }}
+                tick={{ fill: '#8B949E', fontSize: 9, fontFamily: 'sans-serif' }}
                 axisLine={false}
                 tickLine={false}
+                interval={0}
               />
               <YAxis
                 tick={{ fill: '#484F58', fontSize: 9 }}
                 axisLine={false}
                 tickLine={false}
                 allowDecimals={false}
+                width={20}
               />
               <Tooltip
                 content={({ active, payload }) => {
@@ -90,7 +106,7 @@ export const BarChartUGs: React.FC<BarChartUGsProps> = ({ statusUg, agingParadas
                     const d = payload[0].payload;
                     return (
                       <div className="bg-[#1A1F28] border border-[#21262D] rounded-lg p-2 text-[10px] shadow-xl">
-                        <p className="font-bold text-[#E6EDF3]">{d.name}</p>
+                        <p className="font-bold text-[#E6EDF3]">{d.fullName}</p>
                         <p className="text-red-400 font-mono">{d.parado} indisponíveis</p>
                       </div>
                     );
@@ -99,14 +115,14 @@ export const BarChartUGs: React.FC<BarChartUGsProps> = ({ statusUg, agingParadas
                 }}
                 cursor={{ fill: 'rgba(255,255,255,0.04)' }}
               />
-              <Bar dataKey="parado" radius={[4, 4, 0, 0]}>
+              <Bar dataKey="parado" radius={[3, 3, 0, 0]}>
                 {chartData.map((_, i) => (
                   <Cell key={i} fill="#F85149" />
                 ))}
                 <LabelList
                   dataKey="parado"
                   position="top"
-                  style={{ fill: '#F85149', fontSize: 10, fontWeight: 700, fontFamily: 'monospace' }}
+                  style={{ fill: '#F85149', fontSize: 9, fontWeight: 700 }}
                 />
               </Bar>
             </BarChart>
@@ -130,7 +146,7 @@ export const BarChartUGs: React.FC<BarChartUGsProps> = ({ statusUg, agingParadas
               className="flex items-center justify-between gap-2 cursor-pointer group"
             >
               <span className="text-[10px] font-mono font-medium text-[#E6EDF3] group-hover:text-[#F85149] truncate transition-colors">
-                TAG {item.patrimonio_ref || item.tag_sap || item.tag}
+                TAG {item.tag}
               </span>
               <div className="flex items-center gap-1 shrink-0">
                 <AgingBadge dias={item.dias_parado} />

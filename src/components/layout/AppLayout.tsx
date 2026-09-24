@@ -286,17 +286,6 @@ export const AppLayout: React.FC = () => {
 
       </div>
 
-      {/* FAB — Nova Ocorrência (mobile), some na própria tela de criação */}
-      {canCreateOccurrence && !isNovaOcorrenciaRoute && (
-        <button
-          onClick={() => navigate('/ocorrencias/nova')}
-          className="fab md:hidden flex items-center justify-center"
-          aria-label="Nova ocorrência"
-        >
-          <PlusCircle className="w-6 h-6" strokeWidth={2.2} />
-        </button>
-      )}
-
       {/* ============================================================
           DRAWER LATERAL RETRÁTIL (mobile) — navegação + perfil
           ============================================================ */}
