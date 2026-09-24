@@ -1135,7 +1135,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
 
           {/* Coluna Lateral (Direita, 320px) — Fluxo Comercial Sticky */}
           <div className="md:sticky md:top-0 space-y-3.5">
-            <div className="card flex flex-col lg:max-h-[calc(100vh-190px)] overflow-y-auto scroll-fluido">
+            <div className="card flex flex-col md:max-h-[calc(100vh-190px)] md:overflow-y-auto md:scroll-fluido">
               {ocorrencia && (
                 <FluxoComercial
                   ocorrencia={ocorrencia}
