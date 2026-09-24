@@ -258,6 +258,7 @@ export const ModalOrcamentoDetalhe: React.FC<ModalOrcamentoDetalheProps> = ({
 
       setIsEditing(false);
       onUpdated(updatedOrc);
+      onClose();
     } catch (err) {
       console.error(err);
       showToast('Erro ao salvar alterações do orçamento.', 'error');
