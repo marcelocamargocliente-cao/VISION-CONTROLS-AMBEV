@@ -93,7 +93,7 @@ export const PPAC: React.FC = () => {
   // KPIs
   const kpis = useMemo(() => {
     const enviadas  = orcamentos.filter((o) => ['ENVIADO','EM_ANALISE','EM_ANALISE_AMBEV'].includes(o.status));
-    const aprovadas = orcamentos.filter((o) => o.status === 'APROVADO' || o.status === 'APROVADO_AMBEV');
+    const aprovadas = orcamentos.filter((o) => ['APROVADO','APROVADO_AMBEV','FATURADO'].includes(o.status));
     const expiradas = orcamentos.filter((o) => o.status === 'EXPIRADO');
     const total     = orcamentos.reduce((s, o) => s + (Number(o.valor_total) || 0), 0);
     return { enviadas: enviadas.length, aprovadas: aprovadas.length, expiradas: expiradas.length, total, qtd: orcamentos.length };

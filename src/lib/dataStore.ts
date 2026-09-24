@@ -77,6 +77,7 @@ function getInitialDbState(): LocalDbState {
         parsed.orcamentos = parsed.orcamentos.map((o: any) => {
           if (o.status === 'EM_ANALISE') return { ...o, status: 'EM_ANALISE_AMBEV' };
           if (o.status === 'APROVADO')   return { ...o, status: 'APROVADO_AMBEV' };
+          if (o.status === 'FATURADO')   return { ...o, status: 'APROVADO_AMBEV' };
           if (o.status === 'REJEITADO' || o.status === 'REPROVADO') return { ...o, status: 'REJEITADO_AMBEV' };
           return o;
         });
