@@ -22,32 +22,43 @@ interface BarChartUGsProps {
 // Abrevia nomes longos de área para caber no eixo X
 const abreviaArea = (nome: string): string => {
   if (!nome || nome === 'SEM ÁREA') return 'S/Á';
-  const mapa: Record<string, string> = {
-    'RETORNAVEIS':        'RETORN.',
-    'ONE WAY CERVEJA':    'OW CERV.',
-    'ONE WAY REFRI':      'OW REFRI',
-    'PROCESSOS CERVEJA':  'PROC.',
-    'ÁREA COMUM':         'COMUM',
-    'AREA COMUM':         'COMUM',
-    'ETA':                'ETA',
-    'PAF / ENTRADA':      'PAF',
-    'ÁREA DO CHOPP':      'CHOPP',
-    'AREA DO CHOPP':      'CHOPP',
-  };
-  return mapa[nome.toUpperCase()] || nome.slice(0, 8);
+  const upper = nome.toUpperCase();
+  if (upper.includes('RETORN'))                          return 'RET.';
+  if (upper.includes('ONE WAY') || upper.startsWith('OW')) return 'OW';
+  if (upper.includes('PROCESSO') || upper.includes('PROC')) return 'PROCESSO';
+  if (upper.includes('CHOPP'))                           return 'CHOPP';
+  if (upper.includes('COMUM'))                           return 'COMUM';
+  if (upper === 'ETA')                                   return 'ETA';
+  if (upper.includes('PAF'))                             return 'PAF';
+  return nome.slice(0, 8);
 };
 
 export const BarChartUGs: React.FC<BarChartUGsProps> = ({ statusUg, agingParadas }) => {
   const navigate = useNavigate();
 
-  const chartData = (statusUg && statusUg.length > 0 ? statusUg : [])
-    .map((u) => ({
-      name: abreviaArea(u.ug_codigo || u.ug_nome || ''),
-      fullName: u.ug_codigo || u.ug_nome || 'S/Á',
-      parado: u.parado || 0,
-    }))
-    .filter((u) => u.parado > 0)
-    .sort((a, b) => b.parado - a.parado);
+  const chartData = (() => {
+    const raw = (statusUg && statusUg.length > 0 ? statusUg : [])
+      .map((u) => ({
+        name: abreviaArea(u.ug_codigo || u.ug_nome || ''),
+        fullName: u.ug_codigo || u.ug_nome || 'S/Á',
+        parado: u.parado || 0,
+      }))
+      .filter((u) => u.parado > 0);
+
+    // Agrupa entradas com mesmo nome abreviado (ex: OW CERVEJA + OW REFRI → OW)
+    const grouped = new Map<string, { name: string; fullName: string; parado: number }>();
+    raw.forEach((d) => {
+      const existing = grouped.get(d.name);
+      if (existing) {
+        existing.parado += d.parado;
+        existing.fullName = `${existing.fullName} + ${d.fullName}`;
+      } else {
+        grouped.set(d.name, { ...d });
+      }
+    });
+
+    return Array.from(grouped.values()).sort((a, b) => b.parado - a.parado);
+  })();
 
   const top2Parados = agingParadas.slice(0, 2);
   const totalNok = chartData.reduce((s, d) => s + d.parado, 0);
