@@ -231,11 +231,11 @@ export const FluxoComercial: React.FC<Props> = ({ ocorrencia, canEdit, onAtualiz
   };
 
   return (
-    <div className="card space-y-2">
+    <div className="card space-y-1 !p-2">
       {/* Header compacto */}
-      <div className="flex items-center justify-between border-b border-[#30363D] pb-2">
+      <div className="flex items-center justify-between border-b border-[#30363D] pb-1">
         <h3 className="card-title text-xs uppercase flex items-center gap-1.5">
-          <ChevronRight className="w-3.5 h-3.5" />
+          <ChevronRight className="w-3 h-3" />
           Fluxo Comercial
         </h3>
         <span className="text-[10px] text-[#8B949E]">
@@ -262,21 +262,21 @@ export const FluxoComercial: React.FC<Props> = ({ ocorrencia, canEdit, onAtualiz
           return (
             <div key={fase.id} className="flex gap-0">
               {/* Coluna da linha + ícone */}
-              <div className="flex flex-col items-center w-8 shrink-0">
+              <div className="flex flex-col items-center w-6 shrink-0">
                 {/* Linha de cima */}
                 <div className={`w-px flex-none ${idx === 0 ? 'invisible' : concluida || atual ? 'bg-[#30363D]' : 'bg-[#21262D]'}`}
                   style={{ height: 8 }} />
                 {/* Ícone */}
                 <div
-                  className="w-7 h-7 rounded-full flex items-center justify-center border shrink-0"
+                  className="w-5 h-5 rounded-full flex items-center justify-center border shrink-0"
                   style={{
                     background: concluida || atual ? fase.corBg : 'transparent',
                     borderColor: concluida || atual ? fase.cor : '#30363D',
                   }}
                 >
                   {concluida
-                    ? <Check className="w-3.5 h-3.5" style={{ color: fase.cor }} />
-                    : <fase.icon className="w-3.5 h-3.5" style={{ color: atual ? fase.cor : '#484F58' }} />
+                    ? <Check className="w-2.5 h-2.5" style={{ color: fase.cor }} />
+                    : <fase.icon className="w-2.5 h-2.5" style={{ color: atual ? fase.cor : '#484F58' }} />
                   }
                 </div>
                 {/* Linha de baixo */}
@@ -286,22 +286,22 @@ export const FluxoComercial: React.FC<Props> = ({ ocorrencia, canEdit, onAtualiz
               </div>
 
               {/* Conteúdo da fase */}
-              <div className={`flex-1 min-w-0 ml-2.5 pb-2 ${idx === 0 ? 'pt-1' : 'pt-1'}`}>
+              <div className={`flex-1 min-w-0 ml-1.5 pb-1 ${idx === 0 ? 'pt-1' : 'pt-1'}`}>
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2 flex-wrap min-w-0">
-                    <span className={`text-[11px] font-bold leading-none ${
+                    <span className={`text-[10px] font-bold leading-none ${
                       atual ? 'text-[#E6EDF3]' : concluida ? 'text-[#C9D1D9]' : 'text-[#484F58]'
                     }`}>
                       {fase.label}
                     </span>
                     {dataFmt && (
-                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded"
+                      <span className="text-[9px] font-mono px-1 py-0 rounded"
                         style={{ background: fase.corBg, color: fase.cor }}>
                         {dataFmt}
                       </span>
                     )}
                     {extraFase && (
-                      <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#21262D] text-[#C9D1D9] border border-[#30363D]">
+                      <span className="text-[9px] font-mono font-bold px-1 py-0 rounded bg-[#21262D] text-[#C9D1D9] border border-[#30363D]">
                         {fase.labelExtra}: {extraFase}
                       </span>
                     )}
@@ -311,7 +311,7 @@ export const FluxoComercial: React.FC<Props> = ({ ocorrencia, canEdit, onAtualiz
                   {podeAvancar && (
                     <button
                       onClick={() => abrirAvanco(fase.id)}
-                      className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold border transition-all"
+                      className="shrink-0 inline-flex items-center gap-1 px-1.5 py-0 rounded text-[9px] font-bold border transition-all"
                       style={{ background: fase.corBg, borderColor: fase.cor + '50', color: fase.cor }}
                     >
                       › Avançar
@@ -320,7 +320,7 @@ export const FluxoComercial: React.FC<Props> = ({ ocorrencia, canEdit, onAtualiz
                   {podeEditar && !podeAvancar && (
                     <button
                       onClick={() => abrirAvanco(fase.id)}
-                      className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold border transition-all bg-[#21262D] border-[#30363D] text-[#8B949E] hover:text-white"
+                      className="shrink-0 inline-flex items-center gap-1 px-1.5 py-0 rounded text-[9px] font-bold border transition-all bg-[#21262D] border-[#30363D] text-[#8B949E] hover:text-white"
                     >
                       ✏ Editar
                     </button>
@@ -332,11 +332,11 @@ export const FluxoComercial: React.FC<Props> = ({ ocorrencia, canEdit, onAtualiz
                   const temData = fase.campo && (ocorrencia[fase.campo] as string);
                   if (concluida || (atual && temData)) {
                     // Fase concluída OU fase atual já com data registrada → mostra confirmação em verde
-                    return <p className="text-[10px] text-[#3FB950]/70 mt-0.5 leading-tight">{fase.labelConcluido}</p>;
+                    return <p className="text-[9px] text-[#3FB950]/70 leading-tight">{fase.labelConcluido}</p>;
                   }
                   if (atual || idx === faseAtual + 1) {
                     // Fase atual sem data, ou próxima → mostra instrução
-                    return <p className="text-[10px] text-[#6E7681] mt-0.5 leading-tight">{fase.sublabel}</p>;
+                    return <p className="text-[9px] text-[#6E7681] leading-tight">{fase.sublabel}</p>;
                   }
                   return null;
                 })()}
@@ -350,30 +350,30 @@ export const FluxoComercial: React.FC<Props> = ({ ocorrencia, canEdit, onAtualiz
       {editando && (() => {
         const fase = FASES.find((f) => f.id === editando)!;
         return (
-          <div className="mt-1 bg-[#0A0E1A] border border-[#30363D] rounded-lg p-3 space-y-2.5">
-            <p className="text-[11px] font-bold text-[#E6EDF3] uppercase">Registrar: {fase.label}</p>
+          <div className="mt-0.5 bg-[#0A0E1A] border border-[#30363D] rounded-lg p-2 space-y-1.5">
+            <p className="text-[10px] font-bold text-[#E6EDF3] uppercase">Registrar: {fase.label}</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div>
-                <label className="block text-[9px] font-bold text-[#8B949E] uppercase tracking-wider mb-1">Data</label>
+                <label className="block text-[9px] font-bold text-[#8B949E] uppercase tracking-wider">Data</label>
                 <input type="date" value={dataInput} onChange={(e) => setDataInput(e.target.value)}
-                  className="w-full h-8 bg-[#161B22] border border-[#30363D] text-[#E6EDF3] text-[12px] rounded-md px-2.5 outline-none focus:border-[#8B949E]" />
+                  className="w-full h-7 bg-[#161B22] border border-[#30363D] text-[#E6EDF3] text-[11px] rounded px-2 outline-none focus:border-[#8B949E]" />
               </div>
               {fase.campoExtra && (
                 <div>
-                  <label className="block text-[9px] font-bold text-[#8B949E] uppercase tracking-wider mb-1">{fase.labelExtra}</label>
+                  <label className="block text-[9px] font-bold text-[#8B949E] uppercase tracking-wider">{fase.labelExtra}</label>
                   <input type="text" value={extraInput} onChange={(e) => setExtraInput(e.target.value)}
                     placeholder={fase.placeholderExtra}
-                    className="w-full h-8 bg-[#161B22] border border-[#30363D] text-[#E6EDF3] text-[12px] rounded-md px-2.5 outline-none focus:border-[#8B949E] font-mono" />
+                    className="w-full h-7 bg-[#161B22] border border-[#30363D] text-[#E6EDF3] text-[11px] rounded px-2 outline-none focus:border-[#8B949E] font-mono" />
                 </div>
               )}
             </div>
             <div className="flex gap-2">
               <button onClick={() => setEditando(null)} disabled={saving}
-                className="flex-1 h-8 rounded-md bg-[#161B22] border border-[#30363D] text-[#C9D1D9] text-[11px] font-semibold">
+                className="flex-1 h-7 rounded bg-[#161B22] border border-[#30363D] text-[#C9D1D9] text-[10px] font-semibold">
                 Cancelar
               </button>
               <button onClick={() => salvarAvanco(editando)} disabled={saving}
-                className="flex-1 h-8 rounded-md text-[11px] font-bold disabled:opacity-60"
+                className="flex-1 h-7 rounded text-[10px] font-bold disabled:opacity-60"
                 style={{ background: fase.cor, color: '#0D1117' }}>
                 {saving ? 'Salvando...' : '✓ Confirmar'}
               </button>
