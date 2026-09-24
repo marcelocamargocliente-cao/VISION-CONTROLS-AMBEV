@@ -70,7 +70,7 @@ export const AppLayout: React.FC = () => {
   const isNovaOcorrenciaRoute = location.pathname.includes('/ocorrencias/nova');
 
   return (
-    <div className="h-screen w-full flex overflow-hidden bg-[#0D1117] font-body text-[#E6EDF3]">
+    <div className="h-screen w-full flex bg-[#0D1117] font-body text-[#E6EDF3] overflow-hidden md:overflow-hidden">
       {/* ============================================================
           DESKTOP SIDEBAR (240px) — inalterada
           ============================================================ */}
@@ -250,7 +250,7 @@ export const AppLayout: React.FC = () => {
       {/* ============================================================
           CONTAINER PRINCIPAL
           ============================================================ */}
-      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden md:overflow-hidden">
         {/* MOBILE HEADER (slim, 52px) */}
         <header className="no-print h-[52px] md:hidden border-b border-[#30363D] bg-[#161B22] flex items-center justify-between px-3 shrink-0 z-20 safe-top">
           <div className="flex items-center gap-2 min-w-0">
@@ -278,7 +278,7 @@ export const AppLayout: React.FC = () => {
         </header>
 
         {/* VIEWPORT DE CONTEÚDO */}
-        <main className="flex-1 min-w-0 min-h-0 bg-[var(--bg-app)] flex flex-col overflow-hidden md:overflow-hidden overflow-y-auto">
+        <main className="flex-1 min-w-0 min-h-0 bg-[var(--bg-app)] flex flex-col md:overflow-hidden overflow-y-auto">
           <ErrorBoundary key={location.pathname}>
             <Outlet />
           </ErrorBoundary>

@@ -423,10 +423,8 @@ a:hover {
 
 @media (max-width: 768px) {
   .ocorrencia-detalhe-page, .nova-ocorrencia-page {
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior-y: contain;
-    height: 100%;
+    overflow: visible;
+    height: auto;
   }
   /* No mobile o header NÃO é sticky — scrolla junto com a página */
   .ocorrencia-header, .nova-ocorrencia-header {
