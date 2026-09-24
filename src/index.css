@@ -567,6 +567,20 @@ a:hover {
   background: var(--bg-app);
 }
 
+@media (max-width: 768px) {
+  .equipamento-detalhe-page {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    height: 100%;
+  }
+  .equipamento-tab-content {
+    overflow: visible;
+    height: auto;
+    min-height: 0;
+    padding: 12px;
+  }
+}
+
 .equipamento-header {
   flex-shrink: 0;
   padding: 16px 24px;

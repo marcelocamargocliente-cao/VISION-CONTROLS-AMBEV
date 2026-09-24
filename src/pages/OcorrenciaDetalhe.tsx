@@ -522,7 +522,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
   return (
     <div
       id="ocorrencia-detalhe-page"
-      className="flex flex-col h-full min-h-0 w-full bg-[#0D1117] font-body overflow-hidden"
+      className="flex flex-col h-full min-h-0 w-full bg-[#0D1117] font-body"
     >
       {/* HEADER FIXO (shrink-0) — número da ocorrência, criticidade, fase e ações */}
       <header className="no-print shrink-0 px-4 py-2.5 border-b border-[#30363D] bg-[#0D1117] sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3">
