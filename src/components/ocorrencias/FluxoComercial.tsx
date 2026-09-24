@@ -44,7 +44,7 @@ const FASES: Fase[] = [
   {
     id: 'ORCAMENTO_INTERNO_FEITO',
     label: 'Orçamento Interno',
-    sublabel: 'Levantar custos e gerar orçamento interno',
+    sublabel: 'Levantar cotação com fornecedores e gerar orçamento interno',
     labelConcluido: 'Orçamento interno gerado',
     icon: FileText,
     cor: '#F5A623',
