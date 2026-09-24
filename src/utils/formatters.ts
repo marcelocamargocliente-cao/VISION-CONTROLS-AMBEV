@@ -204,7 +204,7 @@ export function getOcorrenciaStatusConfig(status: OcorrenciaStatus) {
     case 'EM_EXECUCAO':
       return { label: 'Em Execução de Campo', step: 7, ledClass: 'led-warn', badgeBg: 'bg-[#2F81F7]/15 text-[#58A6FF] border-[#2F81F7]/30' };
     case 'CONCLUIDA':
-      return { label: 'Concluída', step: 8, ledClass: 'led-ok', badgeBg: 'bg-[#3FB950]/15 text-[#3FB950] border-[#3FB950]/30' };
+      return { label: 'Ocorrência Registrada', step: 8, ledClass: 'led-ok', badgeBg: 'bg-[#3FB950]/15 text-[#3FB950] border-[#3FB950]/30' };
     case 'CANCELADA':
       return { label: 'Cancelada', step: 0, ledClass: 'led-off', badgeBg: 'bg-[#30363D]/40 text-[#8B949E] border-[#30363D]' };
     default:

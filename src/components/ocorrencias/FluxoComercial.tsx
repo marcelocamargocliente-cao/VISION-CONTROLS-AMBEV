@@ -92,9 +92,9 @@ const FASES: Fase[] = [
   },
   {
     id: 'CONCLUIDA',
-    label: 'Concluída',
+    label: 'Ocorrência Registrada',
     sublabel: 'Entregar serviço ou peça e encerrar a OS',
-    labelConcluido: 'Serviço ou peça entregue — OS Concluída',
+    labelConcluido: 'Serviço ou peça entregue — OS Ocorrência Registrada',
     icon: CheckCircle2,
     cor: '#3FB950',
     corBg: 'rgba(63,185,80,0.12)',
