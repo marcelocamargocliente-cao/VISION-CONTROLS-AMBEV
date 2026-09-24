@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  FileText, Search, Send, CheckCircle2, XCircle, Clock,
+  FileText, Search, Send, CheckCircle2, XCircle, Clock, X,
   RefreshCw, Eye, Share2, ChevronRight, AlertTriangle,
   Download, Copy, MessageSquare,
 } from 'lucide-react';
@@ -226,16 +226,26 @@ export const PPAC: React.FC = () => {
       </div>
 
       {/* Filtros */}
-      <div className="flex flex-col sm:flex-row gap-2">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8B949E] pointer-events-none" />
-          <input value={busca} onChange={(e) => setBusca(e.target.value)}
-            placeholder="Buscar por Nº PPAC, OS, Nº RC, Nº Pedido, TAG, fornecedor..."
-            style={{ color: '#E6EDF3', backgroundColor: '#111827' }}
-            className="w-full h-10 border border-[#21262D] text-[12px] rounded-lg pl-10 pr-3 outline-none focus:border-[#8B949E]" />
+      <div className="flex gap-2 items-center">
+        {/* Campo de busca — ocupa toda a largura disponível */}
+        <div className="flex items-center flex-1 bg-[#111827] border border-[#21262D] rounded-lg focus-within:border-[#8B949E] h-9 px-3 gap-2">
+          <Search className="w-4 h-4 text-[#8B949E] shrink-0" />
+          <input
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+            placeholder="Nº PPAC, OS, RC, Pedido, TAG, fornecedor..."
+            style={{ color: '#E6EDF3', background: 'transparent' }}
+            className="flex-1 text-[12px] outline-none border-none placeholder-[#484F58]"
+          />
+          {busca && (
+            <button onClick={() => setBusca('')} className="text-[#484F58] hover:text-[#8B949E]">
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
+        {/* Dropdown de status — largura fixa */}
         <select value={filtroStatus} onChange={(e) => setFiltroStatus(e.target.value as any)}
-          className="h-10 bg-[#111827] border border-[#21262D] text-[#E6EDF3] text-[12px] rounded-lg px-3 outline-none">
+          className="h-9 bg-[#111827] border border-[#21262D] text-[#E6EDF3] text-[11px] rounded-lg px-2 outline-none shrink-0 focus:border-[#8B949E]">
           <option value="TODOS">Todos os Status</option>
           <option value="RASCUNHO">Rascunho</option>
           <option value="ELABORACAO">Em Elaboração</option>
@@ -332,7 +342,7 @@ export const PPAC: React.FC = () => {
 
                   {/* Valor + ações */}
                   <div className="flex flex-col items-end gap-2 shrink-0">
-                    <p className="text-[15px] font-display font-bold text-[#E6EDF3]">
+                    <p className="text-[13px] font-display font-bold text-[#E6EDF3]">
                       {formatCurrency(Number(orc.valor_total) || 0)}
                     </p>
                     <div className="flex items-center gap-1.5">
