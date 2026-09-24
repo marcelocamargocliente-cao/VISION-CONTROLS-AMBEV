@@ -522,10 +522,10 @@ export const OcorrenciaDetalhe: React.FC = () => {
   return (
     <div
       id="ocorrencia-detalhe-page"
-      className="ocorrencia-detalhe-page w-full bg-[#0D1117] font-body "
+      className="flex flex-col h-full min-h-0 w-full bg-[#0D1117] font-body overflow-hidden"
     >
       {/* HEADER FIXO (shrink-0) — número da ocorrência, criticidade, fase e ações */}
-      <header className="ocorrencia-header no-print shrink-0 px-4 py-2.5 border-b border-[#30363D] bg-[#0D1117] sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3">
+      <header className="no-print shrink-0 px-4 py-2.5 border-b border-[#30363D] bg-[#0D1117] sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
           <button
             onClick={() => navigate('/ocorrencias')}
@@ -680,7 +680,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
       </div>
 
       {/* ÁREA DE CONTEÚDO PRINCIPAL (ROLA COM SCROLL DEDICADO) */}
-      <div className="ocorrencia-content">
+      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-3 md:px-4 py-3 pb-6">
         <div className="grid grid-cols-1 md:grid-cols-[1fr_320px] gap-3.5 items-start max-w-7xl mx-auto">
           {/* Coluna Principal (Esquerda) */}
           <div className="space-y-3.5 min-w-0">
