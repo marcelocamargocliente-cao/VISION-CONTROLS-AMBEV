@@ -231,7 +231,8 @@ export const PPAC: React.FC = () => {
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#8B949E] pointer-events-none" />
           <input value={busca} onChange={(e) => setBusca(e.target.value)}
             placeholder="Buscar por Nº PPAC, OS, Nº RC, Nº Pedido, TAG, fornecedor..."
-            className="w-full h-10 bg-[#111827] border border-[#21262D] text-[#E6EDF3] text-[12px] rounded-lg pl-8 pr-3 outline-none focus:border-[#8B949E]" />
+            style={{ color: '#E6EDF3', backgroundColor: '#111827' }}
+            className="w-full h-10 border border-[#21262D] text-[12px] rounded-lg pl-8 pr-3 outline-none focus:border-[#8B949E]" />
         </div>
         <select value={filtroStatus} onChange={(e) => setFiltroStatus(e.target.value as any)}
           className="h-10 bg-[#111827] border border-[#21262D] text-[#E6EDF3] text-[12px] rounded-lg px-3 outline-none">
