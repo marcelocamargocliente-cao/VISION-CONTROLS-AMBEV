@@ -226,25 +226,24 @@ export const PPAC: React.FC = () => {
       </div>
 
       {/* Filtros */}
-      <div className="flex gap-2 items-center">
-        {/* Campo de busca — ocupa toda a largura disponível */}
-        <div className="flex items-center flex-1 bg-[#111827] border border-[#21262D] rounded-lg focus-within:border-[#8B949E] h-9 px-3 gap-2">
-          <Search className="w-4 h-4 text-[#8B949E] shrink-0" />
+      <div className="flex gap-2 items-center w-full">
+        <label className="flex items-center gap-2 flex-1 bg-[#111827] border border-[#21262D] rounded-lg h-9 px-3 cursor-text focus-within:border-[#8B949E] transition-colors">
+          <Search className="w-4 h-4 text-[#484F58] shrink-0" />
           <input
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
-            placeholder="Nº PPAC, OS, RC, Pedido, TAG, fornecedor..."
-            style={{ color: '#E6EDF3', background: 'transparent' }}
-            className="flex-1 text-[12px] outline-none border-none placeholder-[#484F58]"
+            placeholder="Nº PPAC, OS, RC, Pedido, TAG..."
+            className="flex-1 bg-transparent text-[#E6EDF3] text-[12px] outline-none placeholder:text-[#484F58]"
           />
           {busca && (
-            <button onClick={() => setBusca('')} className="text-[#484F58] hover:text-[#8B949E]">
+            <button onClick={() => setBusca('')} className="text-[#484F58] hover:text-[#8B949E] shrink-0">
               <X className="w-3.5 h-3.5" />
             </button>
           )}
-        </div>
-        {/* Dropdown de status — largura fixa */}
-        <select value={filtroStatus} onChange={(e) => setFiltroStatus(e.target.value as any)}
+        </label>
+        <select
+          value={filtroStatus}
+          onChange={(e) => setFiltroStatus(e.target.value as any)}
           className="h-9 bg-[#111827] border border-[#21262D] text-[#E6EDF3] text-[11px] rounded-lg px-2 outline-none shrink-0 focus:border-[#8B949E]">
           <option value="TODOS">Todos os Status</option>
           <option value="RASCUNHO">Rascunho</option>
@@ -267,7 +266,7 @@ export const PPAC: React.FC = () => {
           <p className="text-[11px] text-[#6E7681]">Abra uma OS, adicione cotações e crie sua primeira proposta comercial.</p>
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           {filtrados.map((orc) => {
             const occ  = occsMap.get(orc.ocorrencia_id);
             const eq   = occ ? eqsMap.get(occ.equipamento_id) : null;
