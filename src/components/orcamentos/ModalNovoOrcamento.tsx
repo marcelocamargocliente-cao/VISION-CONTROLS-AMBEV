@@ -105,7 +105,9 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
         setNumero(orcamentoToEdit.numero || '');
         setStatus(orcamentoToEdit.status || 'RASCUNHO');
         setFornecedor(orcamentoToEdit.fornecedor || '');
-        setValorTotal(orcamentoToEdit.valor_total || '');
+        // Garante que o valor seja sempre string formatada pt-BR
+        const vEdit = Number(orcamentoToEdit.valor_total) || 0;
+        setValorTotal(vEdit > 0 ? vEdit.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '');
         setDataEnvio(orcamentoToEdit.data_envio ? new Date(orcamentoToEdit.data_envio).toISOString().split('T')[0] : '');
         setValidade(orcamentoToEdit.validade ? new Date(orcamentoToEdit.validade).toISOString().split('T')[0] : '');
         setEnviadoPara(orcamentoToEdit.enviado_para || '');
@@ -225,7 +227,9 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
       setErrorMsg('Informe o número da proposta.');
       return;
     }
-    if (!ocorrenciaId) {
+    // No modo edição, ocorrenciaId vem do orcamentoToEdit — usa o salvo se o state estiver vazio
+    const ocIdFinal = ocorrenciaId || orcamentoToEdit?.ocorrencia_id || '';
+    if (!ocIdFinal) {
       setErrorMsg('Selecione a ocorrência vinculada.');
       return;
     }
@@ -257,7 +261,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
       }));
 
       const payload = {
-        ocorrencia_id: ocorrenciaId,
+        ocorrencia_id: ocIdFinal,
         numero: numero.trim(),
         fornecedor: fornecedor.trim(),
         valor_total: numValor,
@@ -297,7 +301,7 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
         
         // Adicionar evento na timeline da ocorrência
         await DataStore.addEvento({
-          ocorrencia_id: ocorrenciaId,
+          ocorrencia_id: ocIdFinal,
           tipo_evento: 'ORCAMENTO_ENVIADO',
           descricao: `Proposta orçamentária ${resultingOrc.numero} (${formatCurrency(
             resultingOrc.valor_total
