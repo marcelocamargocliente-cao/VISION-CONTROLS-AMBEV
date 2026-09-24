@@ -113,7 +113,7 @@ export const PPAC: React.FC = () => {
           PPAC_ENVIADO: 'PPAC Enviado',
           RC_GERADA: 'RC Gerada',
           PEDIDO_DE_COMPRA: 'Pedido de Compra',
-          CONCLUIDA: 'Entrega / Concluído',
+          CONCLUIDA: 'Concluída',
         };
         const detalhes = [
           ocorrencia.ppac ? `PPAC: ${ocorrencia.ppac}` : null,
