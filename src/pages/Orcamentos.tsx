@@ -599,8 +599,8 @@ export const Orcamentos: React.FC = () => {
               <option value="">Todos os Status</option>
               <option value="AGUARDANDO">Aguardando Aprovação (Geral)</option>
               <option value="ENVIADO">Enviado</option>
-              <option value="EM_ANALISE">Em Análise AMBEV</option>
-              <option value="APROVADO">Aprovado AMBEV</option>
+              <option value="EM_ANALISE_AMBEV">Em Análise AMBEV</option>
+              <option value="APROVADO_AMBEV">Aprovada AMBEV</option>
               <option value="REPROVADO">Reprovado / Rejeitado</option>
               <option value="EXPIRADO">Expirado</option>
               <option value="RASCUNHO">Rascunho</option>

@@ -290,7 +290,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
     if (!ocorrencia || orcamentos.length === 0) return;
 
     const FASE_PARA_STATUS_ORC: Partial<Record<string, string>> = {
-      'RC_GERADA':        'APROVADO',
+      'RC_GERADA':        'APROVADO_AMBEV',
       'PEDIDO_DE_COMPRA': 'APROVADO_AMBEV',
       'CONCLUIDA':        'FATURADO',
     };
@@ -1147,7 +1147,7 @@ export const OcorrenciaDetalhe: React.FC = () => {
                   onAbrirProposta={() => { setCotacaoParaProposta(null); setShowAddOrcModal(true); }}
                   onFluxoAvancou={async (novaFase) => {
                     const statusPorFase: Partial<Record<OcorrenciaStatus, string>> = {
-                      'RC_GERADA':        'APROVADO',
+                      'RC_GERADA':        'APROVADO_AMBEV',
                       'PEDIDO_DE_COMPRA': 'APROVADO_AMBEV',
                       'CONCLUIDA':        'FATURADO',
                     };

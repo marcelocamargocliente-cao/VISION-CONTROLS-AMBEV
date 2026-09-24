@@ -421,10 +421,10 @@ export const ModalNovoOrcamento: React.FC<ModalNovoOrcamentoProps> = ({
               >
                 <option value="RASCUNHO">Rascunho</option>
                 <option value="ENVIADO">Enviado</option>
-                <option value="EM_ANALISE">Em Análise</option>
+                <option value="EM_ANALISE_AMBEV">Em Análise AMBEV</option>
                 <option value="AGUARDANDO_APROVACAO_AMBEV">Aguardando Aprovação AMBEV</option>
-                <option value="APROVADO">Aprovado</option>
-                <option value="REPROVADO">Reprovado</option>
+                <option value="APROVADO_AMBEV">Aprovada AMBEV</option>
+                <option value="REJEITADO_AMBEV">Rejeitada AMBEV</option>
                 <option value="EXPIRADO">Expirado</option>
               </select>
             </div>

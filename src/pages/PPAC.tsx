@@ -93,7 +93,7 @@ export const PPAC: React.FC = () => {
   // KPIs
   const kpis = useMemo(() => {
     const enviadas  = orcamentos.filter((o) => o.status === 'ENVIADO');
-    const aprovadas = orcamentos.filter((o) => o.status === 'APROVADO');
+    const aprovadas = orcamentos.filter((o) => o.status === 'APROVADO' || o.status === 'APROVADO_AMBEV');
     const expiradas = orcamentos.filter((o) => o.status === 'EXPIRADO');
     const total     = orcamentos.reduce((s, o) => s + (Number(o.valor_total) || 0), 0);
     return { enviadas: enviadas.length, aprovadas: aprovadas.length, expiradas: expiradas.length, total, qtd: orcamentos.length };
@@ -257,41 +257,47 @@ export const PPAC: React.FC = () => {
 
             return (
               <div key={orc.id}
-                className="bg-[#111827] border border-[#21262D] hover:border-[#30363D] rounded-xl p-4 transition-all">
-                <div className="flex items-start gap-3">
+                className="bg-[#111827] border border-[#21262D] hover:border-[#30363D] rounded-lg p-2.5 transition-all">
+                <div className="flex items-start gap-2">
                   {/* Badge status */}
-                  <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 border"
+                  <div className="w-7 h-7 rounded-md flex items-center justify-center shrink-0 border"
                     style={{ background: c.bg, borderColor: c.cor + '40' }}>
-                    <c.icon className="w-4 h-4" style={{ color: c.cor }} />
+                    <c.icon className="w-3.5 h-3.5" style={{ color: c.cor }} />
                   </div>
 
                   {/* Info principal */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap mb-1">
-                      <span className="text-[13px] font-display font-bold text-[#E6EDF3]">PPAC Nº {orc.numero}</span>
-                      <span className="text-[10px] px-1.5 py-0.5 rounded font-bold border"
+                    <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
+                      <span className="text-[11px] font-display font-bold text-[#E6EDF3]">PPAC Nº {orc.numero}</span>
+                      <span className="text-[9px] px-1.5 py-0 rounded font-bold border"
                         style={{ background: c.bg, color: c.cor, borderColor: c.cor + '40' }}>
                         {c.label}
                       </span>
                       {diasValidade !== null && diasValidade > 0 && (
-                        <span className="text-[10px] text-[#D29922]">Vence em {diasValidade}d</span>
+                        <span className="text-[9px] text-[#D29922]">Vence em {diasValidade}d</span>
                       )}
                       {diasValidade !== null && diasValidade <= 0 && (
-                        <span className="text-[10px] text-[#F85149] flex items-center gap-1">
-                          <AlertTriangle className="w-3 h-3" /> Vencida
+                        <span className="text-[9px] text-[#F85149] flex items-center gap-1">
+                          <AlertTriangle className="w-2.5 h-2.5" /> Vencida
                         </span>
                       )}
                     </div>
 
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-[#8B949E]">
+                    <div className="flex flex-wrap gap-x-3 gap-y-0 text-[10px] text-[#8B949E]">
                       {occ && (
                         <button onClick={() => navigate(`/ocorrencias/${occ.id}`)}
                           className="flex items-center gap-1 hover:text-[#58A6FF] transition-colors">
-                          <MessageSquare className="w-3 h-3" />
+                          <MessageSquare className="w-2.5 h-2.5" />
                           OS {(occ as any).ordem_sap || `#${(occ as any).numero}`}
                         </button>
                       )}
-                      {eq && <span>{eq.tipo} · TAG {eq.patrimonio_ref || eq.tag}</span>}
+                      {eq && (
+                        <span className="flex items-center gap-1">
+                          {eq.tipo}
+                          {eq.patrimonio_ref && <span className="font-mono text-[9px] px-1 rounded bg-[#21262D] border border-[#30363D] text-[#E6EDF3]">A {eq.patrimonio_ref}</span>}
+                          {eq.tag && <span className="font-mono text-[9px] px-1 rounded bg-[#1B2A4A] border border-[#2F4A7A] text-[#60A5FA]">V {eq.tag}</span>}
+                        </span>
+                      )}
                       {orc.enviado_para && <span>Para: {orc.enviado_para}</span>}
                       {orc.data_envio && <span>Enviada: {formatDate(orc.data_envio)}</span>}
                       {orc.validade && <span>Válida até: {formatDate(orc.validade)}</span>}
@@ -299,15 +305,15 @@ export const PPAC: React.FC = () => {
 
                     {/* Itens da proposta */}
                     {(orc.pecas as any[])?.length > 0 && (
-                      <div className="mt-2 space-y-0.5">
-                        {(orc.pecas as any[]).slice(0, 3).map((p: any, i: number) => (
+                      <div className="mt-0.5 space-y-0">
+                        {(orc.pecas as any[]).slice(0, 2).map((p: any, i: number) => (
                           <p key={i} className="text-[10px] text-[#6E7681] truncate">
                             {i + 1}. {p.descricao} {p.quantidade > 1 ? `(${p.quantidade}x)` : ''}
                             {p.valor_unitario ? ` · R$ ${Number(p.valor_unitario * (p.quantidade || 1)).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : ''}
                           </p>
                         ))}
-                        {(orc.pecas as any[]).length > 3 && (
-                          <p className="text-[10px] text-[#6E7681]">+{(orc.pecas as any[]).length - 3} item(ns)...</p>
+                        {(orc.pecas as any[]).length > 2 && (
+                          <p className="text-[10px] text-[#6E7681]">+{(orc.pecas as any[]).length - 2} item(ns)...</p>
                         )}
                       </div>
                     )}

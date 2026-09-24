@@ -72,6 +72,15 @@ function getInitialDbState(): LocalDbState {
       const parsed = JSON.parse(saved);
       // Sempre usar equipamentos do JSON (nunca do cache — dados podem estar desatualizados)
       parsed.equipamentos = [...INITIAL_EQUIPAMENTOS];
+      // Migração: EM_ANALISE→EM_ANALISE_AMBEV, APROVADO→APROVADO_AMBEV, REJEITADO/REPROVADO→REJEITADO_AMBEV
+      if (parsed.orcamentos) {
+        parsed.orcamentos = parsed.orcamentos.map((o: any) => {
+          if (o.status === 'EM_ANALISE') return { ...o, status: 'EM_ANALISE_AMBEV' };
+          if (o.status === 'APROVADO')   return { ...o, status: 'APROVADO_AMBEV' };
+          if (o.status === 'REJEITADO' || o.status === 'REPROVADO') return { ...o, status: 'REJEITADO_AMBEV' };
+          return o;
+        });
+      }
       return parsed;
     }
   } catch (e) {
